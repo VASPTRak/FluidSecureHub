@@ -195,7 +195,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_vehicle_no_below"
-                    android:gravity="left"
+                    android:gravity="center"
                     android:layout_marginLeft="20dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
@@ -210,6 +210,7 @@
                     android:layout_marginLeft="20dp"
                     android:id="@+id/tv_fob_number"
                     android:gravity="left"
+                    android:visibility="gone"
                     android:text="Access Device:"
                     android:textSize="@dimen/date_text" />
 
@@ -281,8 +282,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="100dp"
-                android:layout_marginLeft="100dp"
+                android:layout_marginRight="90dp"
+                android:layout_marginLeft="90dp"
                 android:layout_marginBottom="90dp"
                 android:orientation="vertical"
                 android:layout_gravity="center">
@@ -303,8 +304,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"
+                    android:visibility="gone"
                     android:background="@color/colorFluid"
-                    android:text=" Use Barcode "
+                    android:text=" Tap to use On-Screen barcode "
                     android:textColor="@color/white"
                     android:textSize="@dimen/go_button_text" />
 

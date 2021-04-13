@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.enity.TransactionStatus;
@@ -59,7 +59,7 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i(TAG, "BackgroundService is on....");
-       // Log.e("Totaloffline_check","Online data BackgroundService");
+        //Log.e("Totaloffline_check","Online data BackgroundService");
         //If all hoses are free cleare
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
             AppConstants.ListOfRunningTransactiins.clear();
@@ -120,7 +120,6 @@ public class BackgroundService extends Service {
                         controller.deleteTransactions(Id);
                         System.out.println("deleteTransactions..." + Id);
                         Log.i(TAG, " Empty json Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
-                        AppConstants.WriteinFile(TAG + "  Empty json Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
 
                     }
 
@@ -138,45 +137,98 @@ public class BackgroundService extends Service {
 
         }
 
-
-        SharedPreferences myPrefslo = this.getSharedPreferences("storeIsRenameFlag", 0);
-        boolean pflag = myPrefslo.getBoolean("flag", false);
-        String jsonData = myPrefslo.getString("jsonData", "");
-        String authString = myPrefslo.getString("authString", "");
-
-        if (pflag && !jsonData.trim().isEmpty() && !authString.trim().isEmpty()) {
-
-            System.out.println("sent to rename...............");
-
-            new SetHoseNameReplacedFlag().execute(jsonData, authString);
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+            ReplaceHoseNameFlagSynToServer();
         }
-
 //        uploadLast10Transaction("storeCmtxtnid_10_record0"); //link0 last 10 trxn
 //        uploadLast10Transaction("storeCmtxtnid_10_record1"); //link1 last 10 trxn
 //        uploadLast10Transaction("storeCmtxtnid_10_record2"); //link2 last 10 trxn
 //        uploadLast10Transaction("storeCmtxtnid_10_record3"); //link3 last 10 trxn
 
-        // uploadLast10TransactionOnce("storeCmtxtnid_10_record"); // last 10 trxn
+//        uploadLast10TransactionOnce("storeCmtxtnid_10_record"); // last 10 trxn
 
         stopSelf();
 
         return super.onStartCommand(intent, flags, startId);
     }
 
+   void ReplaceHoseNameFlagSynToServer(){
+
+        //For Hose One......1
+       SharedPreferences FS1Pref = this.getSharedPreferences("storeIsRenameFlagFS1", 0);
+       boolean pflag1 = FS1Pref.getBoolean("flag", false);
+       String jsonData1 = FS1Pref.getString("jsonData", "");
+       String authString1 = FS1Pref.getString("authString", "");
+
+       if (pflag1 && !jsonData1.trim().isEmpty() && !authString1.trim().isEmpty()) {
+          Log.i("SharedPreferences_check1 ",pflag1+">>"+jsonData1);
+           new SetHoseNameReplacedFlag().execute(jsonData1, authString1,"storeIsRenameFlagFS1");
+       }
+
+       //For Hose Two....2
+       SharedPreferences FS2Pref = this.getSharedPreferences("storeIsRenameFlagFS2", 0);
+       boolean pflag2 = FS2Pref.getBoolean("flag", false);
+       String jsonData2 = FS2Pref.getString("jsonData", "");
+       String authString2 = FS2Pref.getString("authString", "");
+
+       if (pflag2 && !jsonData2.trim().isEmpty() && !authString2.trim().isEmpty()) {
+           Log.i("SharedPreferences_check2 ",pflag2+">>"+jsonData2);
+           new SetHoseNameReplacedFlag().execute(jsonData2, authString2,"storeIsRenameFlagFS2");
+       }
+
+       //For Hose Three..3
+       SharedPreferences FS3Pref = this.getSharedPreferences("storeIsRenameFlagFS3", 0);
+       boolean pflag3 = FS3Pref.getBoolean("flag", false);
+       String jsonData3 = FS3Pref.getString("jsonData", "");
+       String authString3 = FS3Pref.getString("authString", "");
+
+       if (pflag3 && !jsonData3.trim().isEmpty() && !authString3.trim().isEmpty()) {
+           Log.i("SharedPreferences_check3 ",pflag3+">>"+jsonData3);
+           new SetHoseNameReplacedFlag().execute(jsonData3, authString3,"storeIsRenameFlagFS3");
+       }
+
+
+       //For Hose 4
+       SharedPreferences FS4Pref = this.getSharedPreferences("storeIsRenameFlagFS4", 0);
+       boolean pflag4 = FS4Pref.getBoolean("flag", false);
+       String jsonData4 = FS4Pref.getString("jsonData", "");
+       String authString4 = FS4Pref.getString("authString", "");
+
+       if (pflag4 && !jsonData4.trim().isEmpty() && !authString4.trim().isEmpty()) {
+           Log.i("SharedPreferences_check4 ",pflag4+">>"+jsonData4);
+           new SetHoseNameReplacedFlag().execute(jsonData4, authString4,"storeIsRenameFlagFS4");
+       }
+
+
+       //For Hose 5
+       SharedPreferences FS5Pref = this.getSharedPreferences("storeIsRenameFlagFS5", 0);
+       boolean pflag5 = FS5Pref.getBoolean("flag", false);
+       String jsonData5 = FS5Pref.getString("jsonData", "");
+       String authString5 = FS5Pref.getString("authString", "");
+
+       if (pflag5 && !jsonData5.trim().isEmpty() && !authString5.trim().isEmpty()) {
+           new SetHoseNameReplacedFlag().execute(jsonData5, authString5,"storeIsRenameFlagFS5");
+       }
+
+       //For Hose 6
+       SharedPreferences FS6Pref = this.getSharedPreferences("storeIsRenameFlagFS6", 0);
+       boolean pflag6 = FS6Pref.getBoolean("flag", false);
+       String jsonData6 = FS6Pref.getString("jsonData", "");
+       String authString6 = FS6Pref.getString("authString", "");
+
+       if (pflag6 && !jsonData6.trim().isEmpty() && !authString6.trim().isEmpty()) {
+           new SetHoseNameReplacedFlag().execute(jsonData6, authString6,"storeIsRenameFlagFS6");
+       }
+
+    }
 
 
     public class SetHoseNameReplacedFlag extends AsyncTask<String, Void, String> {
 
-
-        @Override
-        protected void onPreExecute() {
-
-
-        }
-
+        String PrefName = "";
         protected String doInBackground(String... param) {
             String resp = "";
-
+            PrefName = param[2];
 
             try {
                 OkHttpClient client = new OkHttpClient();
@@ -205,9 +257,9 @@ public class BackgroundService extends Service {
             try {
 
                 System.out.println("Wifi renamed on server---" + result);
-
-                if (result.contains("success")) {
-                    SharedPreferences preferences = getSharedPreferences("storeIsRenameFlag", Context.MODE_PRIVATE);
+                Log.i("SharedPreferences_check R ",PrefName+">>"+result);
+                if (result.contains("success") && !PrefName.isEmpty()) {
+                    SharedPreferences preferences = getSharedPreferences(PrefName, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.clear();
                     editor.commit();

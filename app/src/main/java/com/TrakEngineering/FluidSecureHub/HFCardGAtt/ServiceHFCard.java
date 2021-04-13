@@ -182,7 +182,7 @@ public class ServiceHFCard extends Service {
                     last_val = Seperate[Seperate.length - 1];
                 }
 
-                if (!last_val.equals("00 00 00 ")) {
+                if (!last_val.equals("00 00 00 ") && !last_val.equalsIgnoreCase("00 00 00 00 00 00 00 00 00")) {
                     sendHFDetailsToActivity(last_val);
                 }
 
@@ -242,13 +242,13 @@ public class ServiceHFCard extends Service {
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
         IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
         BLEVersion = myPrefslo.getString("BLEVersion", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
+        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
         String CheckVersionFileLocation = FOLDER_PATH_BLE + BLEVersion + "_check.txt";
 
         if (IsHFUpdate.trim().equalsIgnoreCase("Y")) {
 
             DeleteOldVersionTxtFiles(FOLDER_PATH_BLE);
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader_" + BLEType);
+            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader");
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();
@@ -266,7 +266,7 @@ public class ServiceHFCard extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
                 } else {
-                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader_" + BLEType + ".bin", "BLEUpdate");
+                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader.bin", "BLEUpdate");
                 }
 
             } else {

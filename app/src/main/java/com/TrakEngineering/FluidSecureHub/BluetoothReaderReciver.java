@@ -13,9 +13,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.acs.bluetooth.Acr1255uj1Reader;
 import com.acs.bluetooth.Acr3901us1Reader;
@@ -25,8 +24,6 @@ import com.acs.bluetooth.BluetoothReaderManager;
 
 import java.io.UnsupportedEncodingException;
 
-import static android.support.v4.app.ActivityCompat.invalidateOptionsMenu;
-import static com.google.android.gms.internal.zzid.runOnUiThread;
 
 /**
  * Created by root on 1/9/18.
@@ -140,9 +137,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                     public void onAuthenticationComplete(
                             BluetoothReader bluetoothReader, final int errorCode) {
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+
                                 if (errorCode == BluetoothReader.ERROR_SUCCESS) {
 
 
@@ -153,8 +148,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                                 } else {
                                     //Toast.makeText(getApplicationContext(), "Authentication Failed!", Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+
                     }
 
                 });
@@ -166,9 +160,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                     @Override
                     public void onAtrAvailable(BluetoothReader bluetoothReader,
                                                final byte[] atr, final int errorCode) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+
                                 if (atr == null) {
                                     //Toast.makeText(getApplicationContext(), getErrorString(errorCode), Toast.LENGTH_SHORT).show();
                                     System.out.println("result APDU " + getErrorString(errorCode));
@@ -176,8 +168,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                                     // Toast.makeText(getApplicationContext(), CommonUtils.toHexString(atr), Toast.LENGTH_SHORT).show();
                                     System.out.println("result APDU " + getErrorString(errorCode));
                                 }
-                            }
-                        });
+
                     }
 
                 });
@@ -190,15 +181,12 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                     public void onResponseApduAvailable(
                             BluetoothReader bluetoothReader, final byte[] apdu,
                             final int errorCode) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+
 
                                 System.out.println("result APDU " + getResponseString(apdu, errorCode));
                                 String FobKey = getResponseString(apdu, errorCode);
 
-                            }
-                        });
+
                     }
 
                 });
@@ -211,9 +199,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                             BluetoothReader bluetoothReader, final int sta) {
 
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+
                                 String CardStatus = getCardStatusString(sta);
                                 if (CardStatus.equalsIgnoreCase("Present.")) {
                                     TransmitApdu();
@@ -221,8 +207,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                                 } else if (CardStatus.equalsIgnoreCase("Power saving mode.")) {
 
                                 }
-                            }
-                        });
+
                     }
 
                 });
@@ -258,9 +243,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                             final BluetoothGatt gatt, final int state,
                             final int newState) {
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+
                                 if (state != BluetoothGatt.GATT_SUCCESS) {
                                     /*
                                      * Show the message on fail to
@@ -302,8 +285,7 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                                         mBluetoothGatt = null;
                                     }
                                 }
-                            }
-                        });
+
                     }
                 });
 
@@ -324,17 +306,13 @@ public class BluetoothReaderReciver extends BroadcastReceiver{
                             /* The connected reader is ACR1255U-J1 reader. */
                             Log.v("A_pin Btreader", "On Acr1255uj1Reader Detected.");
                         } else {
-                            runOnUiThread(new Runnable() {
-                                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-                                @Override
-                                public void run() {
+
 
 
                                     /* Disconnect Bluetooth reader */
                                     Log.v("A_pin Btreader", "Disconnect reader!!!");
                                     //disconnectReader();
-                                }
-                            });
+
                             return;
                         }
 

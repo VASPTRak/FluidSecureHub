@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
+import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
@@ -65,12 +66,18 @@ public class AcceptServiceCall {
 
     public void checkAllFields() {
 
-        if (!activity.isFinishing()) {
-
-            AppConstants.AUTH_CALL_SUCCESS = false;
-            new ServerCall().execute();
+        if (!activity.isFinishing() && !AppConstants.serverCallInProgress) {
+               AppConstants.serverCallInProgress = true;
+               AppConstants.AUTH_CALL_SUCCESS = false;
+               Log.e(TAG,"Activity started");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "  ServerCall..");
+               new ServerCall().execute();
+        }else{
+            Log.e(TAG,"Activity skip call..");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "  ServerCall skip..");
         }
-
     }
 
     public class ServerCall extends AsyncTask<Void, Void, String> {
@@ -90,9 +97,6 @@ public class AcceptServiceCall {
         @Override
         protected void onPreExecute() {
 
-            if (AppConstants.ServerCallLogs)Log.w(TAG,"SC_Log ServerCall onPreExecute ");
-            if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "SC_Log ServerCall onPreExecute ");
-
             String s= "Please wait...";
             SpannableString ss2=  new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
@@ -107,8 +111,6 @@ public class AcceptServiceCall {
         protected String doInBackground(Void... arg0) {
 
             try {
-                if (AppConstants.ServerCallLogs)Log.w(TAG,"SC_Log ServerCall doInBackground ");
-                if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "SC_Log ServerCall doInBackground ");
 
                 SharedPreferences sharedPrefODO = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
@@ -203,7 +205,7 @@ public class AcceptServiceCall {
                     accHours = Constants.AccHours_FS3;
                     CONNECTED_SSID = AppConstants.FS3_CONNECTED_SSID;
                     Log.i("ps_Vechile no","Step 4:"+vehicleNumber);
-                } else {
+                }  else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4"))  {
                     pinNumber = Constants.AccPersonnelPIN_FS4;
                     vehicleNumber = Constants.AccVehicleNumber_FS4;
                     DeptNumber = Constants.AccDepartmentNumber_FS4;
@@ -212,6 +214,24 @@ public class AcceptServiceCall {
                     accOdoMeter = Constants.AccOdoMeter_FS4;
                     accHours = Constants.AccHours_FS4;
                     CONNECTED_SSID = AppConstants.FS4_CONNECTED_SSID;
+                }  else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5"))  {
+                    pinNumber = Constants.AccPersonnelPIN_FS5;
+                    vehicleNumber = Constants.AccVehicleNumber_FS5;
+                    DeptNumber = Constants.AccDepartmentNumber_FS5;
+                    accVehOther = Constants.AccVehicleOther_FS5;
+                    accOther = Constants.AccOther_FS5;
+                    accOdoMeter = Constants.AccOdoMeter_FS5;
+                    accHours = Constants.AccHours_FS5;
+                    CONNECTED_SSID = AppConstants.FS5_CONNECTED_SSID;
+                }  else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6"))  {
+                    pinNumber = Constants.AccPersonnelPIN_FS6;
+                    vehicleNumber = Constants.AccVehicleNumber_FS6;
+                    DeptNumber = Constants.AccDepartmentNumber_FS6;
+                    accVehOther = Constants.AccVehicleOther_FS6;
+                    accOther = Constants.AccOther_FS6;
+                    accOdoMeter = Constants.AccOdoMeter_FS6;
+                    accHours = Constants.AccHours_FS6;
+                    CONNECTED_SSID = AppConstants.FS6_CONNECTED_SSID;
                 }
 
 
@@ -245,14 +265,14 @@ public class AcceptServiceCall {
 
                 System.out.println("Service call data--"+jsonData);
 
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Authorization Sequence Data: " + jsonData);
+                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Authorization Sequence Data: " + jsonData);
 
                 String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + CommonUtils.getCustomerDetails(activity).Email + ":" + "AuthorizationSequence");
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
@@ -270,7 +290,9 @@ public class AcceptServiceCall {
 
 
             } catch (IOException e) {
+                AppConstants.serverCallInProgress =  false;
                 e.printStackTrace();
+                if(OfflineConstants.isOfflineAccess(activity)){AppConstants.NETWORK_STRENGTH = false;}
             }
             return resp;
         }
@@ -281,9 +303,8 @@ public class AcceptServiceCall {
 
 
             try {
-
-                if (AppConstants.ServerCallLogs)Log.w(TAG,"SC_Log ServerCall onPostExecute ");
-                if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "SC_Log ServerCall onPostExecute ");
+                AppConstants.serverCallInProgress =  false;
+                Log.e(TAG,"Activity OnPostExecute");
 
                 if (serverRes != null && !serverRes.isEmpty()) {
 
@@ -492,7 +513,7 @@ public class AcceptServiceCall {
                             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             activity.startActivity(intent);
 
-                        } else {
+                        }  else if (Constants.CurrentSelectedHose.equals("FS4")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
@@ -546,6 +567,112 @@ public class AcceptServiceCall {
                             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             activity.startActivity(intent);
 
+                        } else if (Constants.CurrentSelectedHose.equals("FS5")) {
+
+                            String ResponceData = jsonObject.getString("ResponceData");
+
+                            JSONObject jsonObjectRD = new JSONObject(ResponceData);
+
+                            String TransactionId_FS5 = jsonObjectRD.getString("TransactionId");
+                            String VehicleId_FS5 = jsonObjectRD.getString("VehicleId");
+                            String PhoneNumber_FS5 = jsonObjectRD.getString("PhoneNumber");
+                            String PersonId_FS5 = jsonObjectRD.getString("PersonId");
+                            String PulseRatio_FS5 = jsonObjectRD.getString("PulseRatio");
+                            String MinLimit_FS5 = jsonObjectRD.getString("MinLimit");
+                            String FuelTypeId_FS5 = jsonObjectRD.getString("FuelTypeId");
+                            String ServerDate_FS5 = jsonObjectRD.getString("ServerDate");
+                            String IntervalToStopFuel_FS5 = jsonObjectRD.getString("PumpOffTime");
+                            String PumpOnTime_FS5 = jsonObjectRD.getString("PumpOnTime");
+                            String IsTLDCall_FS5 = jsonObjectRD.getString("IsTLDCall");
+                            String PrintDate_FS5 = CommonUtils.getTodaysDateInStringPrint(ServerDate_FS5);
+                            String Company_FS5 = jsonObjectRD.getString("Company");
+                            String CurrentString = jsonObjectRD.getString("Location");
+                            String Location_FS5 = SplitLocation(CurrentString);
+                            String PersonName_FS5 = jsonObjectRD.getString("PersonName");
+                            String PrinterMacAddress_FS5 = jsonObjectRD.getString("PrinterMacAddress");
+                            String PrinterName_FS5 = jsonObjectRD.getString("PrinterName");
+                            String EnablePrinter_FS5 = jsonObjectRD.getString("EnablePrinter");
+                            String OdoMeter_FS5 = jsonObjectRD.getString("OdoMeter");
+                            String Hours_FS5 = jsonObjectRD.getString("Hours");
+                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS5;
+                            AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS5;
+                            System.out.println("iiiiii" + IntervalToStopFuel_FS5);
+
+                            //For Print Recipt
+                            String VehicleSum_FS5 = jsonObjectRD.getString("VehicleSum");
+                            String DeptSum_FS5 = jsonObjectRD.getString("DeptSum");
+                            String VehPercentage_FS5 = jsonObjectRD.getString("VehPercentage");
+                            String DeptPercentage_FS5 = jsonObjectRD.getString("DeptPercentage");
+                            String SurchargeType_FS5 = jsonObjectRD.getString("SurchargeType");
+                            String ProductPrice_FS5 = jsonObjectRD.getString("ProductPrice");
+
+
+                            CommonUtils.SaveVehiFuelInPref_FS5(activity, TransactionId_FS5, VehicleId_FS5, PhoneNumber_FS5, PersonId_FS5, PulseRatio_FS5, MinLimit_FS5, FuelTypeId_FS5, ServerDate_FS5, IntervalToStopFuel_FS5, PrintDate_FS5, Company_FS5, Location_FS5, PersonName_FS5, PrinterMacAddress_FS5, PrinterName_FS5, vehicleNumber, accOther, VehicleSum_FS5, DeptSum_FS5, VehPercentage_FS5, DeptPercentage_FS5, SurchargeType_FS5, ProductPrice_FS5, IsTLDCall_FS5,EnablePrinter_FS5,OdoMeter_FS5,Hours_FS5,PumpOnTime_FS5);
+
+
+                            Intent intent = new Intent(activity, DisplayMeterActivity.class);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS5);
+                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS5);
+                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS5);
+                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS5);
+                            intent.putExtra(Constants.OTHERR, Constants.AccOther_FS5);
+                            intent.putExtra(Constants.HOURSS, Constants.AccHours_FS5);
+
+                            activity.startActivity(intent);
+
+                        } else if (Constants.CurrentSelectedHose.equals("FS6")) {
+
+                            String ResponceData = jsonObject.getString("ResponceData");
+
+                            JSONObject jsonObjectRD = new JSONObject(ResponceData);
+
+                            String TransactionId_FS6 = jsonObjectRD.getString("TransactionId");
+                            String VehicleId_FS6 = jsonObjectRD.getString("VehicleId");
+                            String PhoneNumber_FS6 = jsonObjectRD.getString("PhoneNumber");
+                            String PersonId_FS6 = jsonObjectRD.getString("PersonId");
+                            String PulseRatio_FS6 = jsonObjectRD.getString("PulseRatio");
+                            String MinLimit_FS6 = jsonObjectRD.getString("MinLimit");
+                            String FuelTypeId_FS6 = jsonObjectRD.getString("FuelTypeId");
+                            String ServerDate_FS6 = jsonObjectRD.getString("ServerDate");
+                            String IntervalToStopFuel_FS6 = jsonObjectRD.getString("PumpOffTime");
+                            String PumpOnTime_FS6 = jsonObjectRD.getString("PumpOnTime");
+                            String IsTLDCall_FS6 = jsonObjectRD.getString("IsTLDCall");
+                            String PrintDate_FS6 = CommonUtils.getTodaysDateInStringPrint(ServerDate_FS6);
+                            String Company_FS6 = jsonObjectRD.getString("Company");
+                            String CurrentString = jsonObjectRD.getString("Location");
+                            String Location_FS6 = SplitLocation(CurrentString);
+                            String PersonName_FS6 = jsonObjectRD.getString("PersonName");
+                            String PrinterMacAddress_FS6 = jsonObjectRD.getString("PrinterMacAddress");
+                            String PrinterName_FS6 = jsonObjectRD.getString("PrinterName");
+                            String EnablePrinter_FS6 = jsonObjectRD.getString("EnablePrinter");
+                            String OdoMeter_FS6 = jsonObjectRD.getString("OdoMeter");
+                            String Hours_FS6 = jsonObjectRD.getString("Hours");
+                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS6;
+                            AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS6;
+                            System.out.println("iiiiii" + IntervalToStopFuel_FS6);
+
+                            //For Print Recipt
+                            String VehicleSum_FS6 = jsonObjectRD.getString("VehicleSum");
+                            String DeptSum_FS6 = jsonObjectRD.getString("DeptSum");
+                            String VehPercentage_FS6 = jsonObjectRD.getString("VehPercentage");
+                            String DeptPercentage_FS6 = jsonObjectRD.getString("DeptPercentage");
+                            String SurchargeType_FS6 = jsonObjectRD.getString("SurchargeType");
+                            String ProductPrice_FS6 = jsonObjectRD.getString("ProductPrice");
+
+
+                            CommonUtils.SaveVehiFuelInPref_FS6(activity, TransactionId_FS6, VehicleId_FS6, PhoneNumber_FS6, PersonId_FS6, PulseRatio_FS6, MinLimit_FS6, FuelTypeId_FS6, ServerDate_FS6, IntervalToStopFuel_FS6, PrintDate_FS6, Company_FS6, Location_FS6, PersonName_FS6, PrinterMacAddress_FS6, PrinterName_FS6, vehicleNumber, accOther, VehicleSum_FS6, DeptSum_FS6, VehPercentage_FS6, DeptPercentage_FS6, SurchargeType_FS6, ProductPrice_FS6, IsTLDCall_FS6,EnablePrinter_FS6,OdoMeter_FS6,Hours_FS6,PumpOnTime_FS6);
+
+
+                            Intent intent = new Intent(activity, DisplayMeterActivity.class);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS6);
+                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS6);
+                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS6);
+                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS6);
+                            intent.putExtra(Constants.OTHERR, Constants.AccOther_FS6);
+                            intent.putExtra(Constants.HOURSS, Constants.AccHours_FS6);
+
+                            activity.startActivity(intent);
+
                         }
 
                     } else if (ResponceMessage.equalsIgnoreCase("fail")) {
@@ -555,6 +682,7 @@ public class AcceptServiceCall {
 
                         AppConstants.AUTH_CALL_SUCCESS = false;
 
+                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " ServerCall ValidationFailFor " + ValidationFailFor + " ResponceText:" + ResponceText);
                         AppConstants.colorToastBigFont(activity, ResponceText, Color.RED);
 
                         if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
@@ -565,10 +693,9 @@ public class AcceptServiceCall {
                             ActivityHandler.removeActivity(4);
                             ActivityHandler.removeActivity(5);
 
-
-                            //Intent intent = new Intent(activity, AcceptVehicleActivity.class);
-                            //intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber);
-                            //activity.startActivity(intent);
+                            Intent intent = new Intent(activity, WelcomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            activity.startActivity(intent);
 
 
                         } else if (ValidationFailFor.equalsIgnoreCase("Odo")) {
@@ -591,19 +718,30 @@ public class AcceptServiceCall {
 
                 } else {
 
-                    AppConstants.NETWORK_STRENGTH = false;
-                    Log.i(TAG,"ServerCall Server Response Empty!");
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "ServerCall  Server Response Empty!");
-                    Intent i = new Intent(activity, DisplayMeterActivity.class);
-                    activity.startActivity(i);
+                    if(OfflineConstants.isOfflineAccess(activity)) {
+                        AppConstants.NETWORK_STRENGTH = false;
+                        Log.i(TAG, "ServerCall Server Response Empty!");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "ServerCall  Server Response Empty!");
+                        Intent i = new Intent(activity, DisplayMeterActivity.class);
+                        activity.startActivity(i);
+                    }else{
+
+                        if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "ServerCall  Server Response Empty");
+                        AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
+                        Intent intent = new Intent(activity, WelcomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        activity.startActivity(intent);
+                    }
+
                     }
 
                 pd.dismiss();
 
             }catch (Exception e){
+                AppConstants.serverCallInProgress =  false;
                 e.printStackTrace();
-                AppConstants.NETWORK_STRENGTH = false;
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " NETWORK_STRENGTH set to false.");
+                if(OfflineConstants.isOfflineAccess(activity)){AppConstants.NETWORK_STRENGTH = false;}
 
             }
 
@@ -796,6 +934,8 @@ public class AcceptServiceCall {
                         authEntityClass.TransactionFrom = "A";
                         authEntityClass.IsFuelingStop = IsFuelingStop;
                         authEntityClass.IsLastTransaction = IsLastTransaction;
+                        //authEntityClass.OverrideQuantity = "0";
+                        //authEntityClass.OverridePulse = "0";
 
                         Gson gson = new Gson();
                         String jsonData = gson.toJson(authEntityClass);
@@ -876,6 +1016,7 @@ public class AcceptServiceCall {
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -967,6 +1108,7 @@ public class AcceptServiceCall {
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -1029,6 +1171,7 @@ public class AcceptServiceCall {
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 RequestBody body = RequestBody.create(JSON, param[1]);
 

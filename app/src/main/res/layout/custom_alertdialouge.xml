@@ -13,7 +13,7 @@
         android:text="Welcome to Fluid secure"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="24sp" />
+        android:textSize="26sp" />
 
     <Button
         android:id="@+id/btnAllow"
@@ -22,6 +22,7 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:text="@string/ok"
+        android:textSize="22sp"
         android:textColor="#000000" />
 
 

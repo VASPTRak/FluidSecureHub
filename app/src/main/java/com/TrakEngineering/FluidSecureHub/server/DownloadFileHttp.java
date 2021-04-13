@@ -56,8 +56,8 @@ public class DownloadFileHttp extends NanoHTTPD {
                 fis = new FileInputStream(file);
 
             } else{
-                Log.d("FOF :", "File Not exists:");
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  FOF File Not exists:");
+                Log.d("FOF :", "File Not exists:Path>>/www" + filenamefromUrl);
+                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  FOF File Not exists:Path>>/www" + filenamefromUrl);
             }
 
         } catch (FileNotFoundException e) {

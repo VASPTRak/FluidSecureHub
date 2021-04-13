@@ -13,6 +13,18 @@
         android:title="DebugWindow"
         app:showAsAction="never" />
 
+    <item android:id="@+id/mcamera_front"
+        android:orderInCategory="104"
+        android:icon="@drawable/camera_front"
+        android:title="Camera"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/mcamera_back"
+        android:orderInCategory="104"
+        android:icon="@drawable/camera_rear"
+        android:title="Camera"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/mofline"
         android:orderInCategory="104"
         android:icon="@drawable/img_offline"
@@ -46,6 +58,12 @@
         android:id="@+id/mreboot_reader"
         android:orderInCategory="100"
         android:title="Reboot reader"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/mrestartapp"
+        android:orderInCategory="100"
+        android:title="Restart App"
         app:showAsAction="never" />
 
 </menu>

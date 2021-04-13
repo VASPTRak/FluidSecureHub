@@ -35,13 +35,14 @@ public class ScreenReceiver extends BroadcastReceiver {
             int diff = getDate(ScreenOnTime);
             if (getDate(ScreenOnTime) > 10){
 
+                /*
                 Log.i(TAG,"Screen off time Exceded Restart app:");
                 Intent mStartActivity = new Intent(context, SplashActivity.class);
                 int mPendingIntentId = 123456;
                 PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                 AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-                System.exit(0);
+                System.exit(0);*/
 
             }
 

@@ -13,8 +13,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Html;
 import android.text.InputType;
 import android.util.DisplayMetrics;
@@ -78,6 +78,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         super.onResume();
 
         AppConstants.APDU_FOB_KEY = "";
+
 
         if (Constants.CurrentSelectedHose.equals("FS1")) {
             editVehicleNumber.setText(Constants.AccVehicleNumber_FS1);

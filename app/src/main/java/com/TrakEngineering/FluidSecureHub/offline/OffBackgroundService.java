@@ -15,6 +15,7 @@ import com.TrakEngineering.FluidSecureHub.Aes_Encryption;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
+import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -123,13 +124,21 @@ public class OffBackgroundService extends Service {
                         AppConstants.WriteinFile(TAG + " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
                 }
             } else {
-                Log.i(TAG, " No previous offline data hence start offline data download.");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
 
-                deleteAllDownloadedFiles();
 
-                new GetAPIToken().execute();
+                if (!AppConstants.selectHosePressed) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
+
+                    deleteAllDownloadedFiles();
+
+                    new GetAPIToken().execute();
+                }else
+                {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " No previous offline data but select hose is pressed.");
+
+                }
             }
             stopSelf();
 
@@ -139,6 +148,17 @@ public class OffBackgroundService extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " onStartCommand Exception:"+e.toString());
             stopSelf();
+        }
+
+        try {
+            if (!OfflineConstants.isOfflineAccess(OffBackgroundService.this)) {
+                ThinDownloadManager downloadManager = new ThinDownloadManager();
+                if (AppConstants.offlineDownloadIds != null && AppConstants.offlineDownloadIds.size() > 0) {
+                    downloadManager.cancelAll();
+                    AppConstants.offlineDownloadIds.clear();
+                }
+            }
+        } catch (Exception e) {
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -321,12 +341,13 @@ public class OffBackgroundService extends Service {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " Offline data Link,Vehicle,Pin Start ");
 
-
                             new GetAPILinkDetails().execute();
 
                             new GetAPIVehicleDetails().execute();
 
                             new GetAPIPersonnelPinDetails().execute();
+
+
 
 
                             AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
@@ -427,9 +448,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(10, TimeUnit.SECONDS);
+                client.setReadTimeout(10, TimeUnit.SECONDS);
+                client.setWriteTimeout(10, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_LINK + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -559,9 +580,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(10, TimeUnit.SECONDS);
+                client.setReadTimeout(10, TimeUnit.SECONDS);
+                client.setWriteTimeout(10, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_VEHICLE + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -680,9 +701,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(10, TimeUnit.SECONDS);
+                client.setReadTimeout(10, TimeUnit.SECONDS);
+                client.setWriteTimeout(10, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_PERSONNEL + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -890,6 +911,11 @@ public class OffBackgroundService extends Service {
 
 
         int downloadId = downloadManager.add(downloadRequest);
+
+        try{AppConstants.offlineDownloadIds.add(downloadId+"");}
+        catch (Exception e){}
+
+
     }
 
     public void readEncryptedFileParseJsonInSqlite(String file_name) {

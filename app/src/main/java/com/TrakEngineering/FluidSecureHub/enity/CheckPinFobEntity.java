@@ -11,6 +11,7 @@ public class CheckPinFobEntity {
     public String PersonFOBNumber;
     public String FromNewFOBChange;
     public String MagneticCardNumber;
+    public String Barcode;
 
     public String HFVersion;
     public String LFVersion;

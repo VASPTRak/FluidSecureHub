@@ -326,7 +326,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public void deleteLastTransactionIfNotEmpty() {
         Log.d(LOGCAT, "delete");
         SQLiteDatabase database = this.getWritableDatabase();
-        String delete1 = "SELECT  id  FROM " + TBL_TRANSACTION + " where FuelQuantity == '' ORDER BY ID  DESC LIMIT 8";
+        String delete1 = "SELECT  id  FROM " + TBL_TRANSACTION + " where FuelQuantity == '' AND pulses == null ORDER BY ID  DESC LIMIT 8";
         String deleteQuery = "DELETE FROM  " + TBL_TRANSACTION + " where FuelQuantity == '' AND id  NOT IN (" + delete1 + ")";
         Log.d("query", deleteQuery);
         database.execSQL(deleteQuery);
@@ -526,60 +526,65 @@ public class OffDBController extends SQLiteOpenHelper {
     public String getTop10OfflineTransactionJSON(Context ctx) {
 
         String apiJSON = "";
+        try {
 
-        ArrayList<EntityOffTranz> allData = new ArrayList<>();
+            ArrayList<EntityOffTranz> allData = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + TBL_TRANSACTION;
+            String selectQuery = "SELECT * FROM " + TBL_TRANSACTION;
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        int counter = 0;
-        if (cursor.moveToFirst()) {
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            int counter = 0;
+            if (cursor.moveToFirst()) {
 
-            do {
-                EntityOffTranz hmObj = new EntityOffTranz();
-                hmObj.Id = isNULL(cursor.getString(0));
-                hmObj.HubId = isNULL(cursor.getString(1));
-                hmObj.SiteId = isNULL(cursor.getString(2));
-                hmObj.VehicleId = isNULL(cursor.getString(3));
-                hmObj.CurrentOdometer = isNULL(cursor.getString(4));
-                hmObj.CurrentHours = isNULL(cursor.getString(5));
-                hmObj.PersonId = isNULL(cursor.getString(6));
-                hmObj.PersonPin = isNULL(cursor.getString(7));
-                hmObj.FuelQuantity = isNULL(cursor.getString(8));
-                hmObj.Pulses = isNULL(cursor.getString(9));
-                hmObj.TransactionDateTime = isNULL(cursor.getString(10));
-                hmObj.TransactionFrom = "AP";
-                hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
-                hmObj.OnlineTransactionId = isNULL(cursor.getString(11));
+                do {
+                    EntityOffTranz hmObj = new EntityOffTranz();
+                    hmObj.Id = isNULL(cursor.getString(0));
+                    hmObj.HubId = isNULL(cursor.getString(1));
+                    hmObj.SiteId = isNULL(cursor.getString(2));
+                    hmObj.VehicleId = isNULL(cursor.getString(3));
+                    hmObj.CurrentOdometer = isNULL(cursor.getString(4));
+                    hmObj.CurrentHours = isNULL(cursor.getString(5));
+                    hmObj.PersonId = isNULL(cursor.getString(6));
+                    hmObj.PersonPin = isNULL(cursor.getString(7));
+                    hmObj.FuelQuantity = isNULL(cursor.getString(8));
+                    hmObj.Pulses = isNULL(cursor.getString(9));
+                    hmObj.TransactionDateTime = isNULL(cursor.getString(10));
+                    hmObj.TransactionFrom = "AP";
+                    hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
+                    hmObj.OnlineTransactionId = isNULL(cursor.getString(11));
 
-                String pu = isNULL(cursor.getString(9));
+                    String pu = isNULL(cursor.getString(9));
 
-                //To get only nonempty transactions
-                if (!pu.trim().isEmpty() && Integer.parseInt(pu) > 0) {
-                    counter++;
-                    allData.add(hmObj);
-                }
+                    //To get only nonempty transactions
+                    if (!pu.trim().isEmpty() && Integer.parseInt(pu) > 0) {
+                        counter++;
+                        allData.add(hmObj);
+                    }
 
-                System.out.println("Counter of azure queue msg-" + counter);
+                    System.out.println("Counter of azure queue msg-" + counter);
 
-                if (counter >= 10) {
-                    System.out.println("Size of azure queue msg-" + allData.size());
-                    break;
-                }
+                    if (counter >= 10) {
+                        System.out.println("Size of azure queue msg-" + allData.size());
+                        break;
+                    }
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
 
+            }
+
+
+            EnityTranzSync ets = new EnityTranzSync();
+            ets.TransactionsModelsObj = allData;
+            Gson gson = new Gson();
+            apiJSON = gson.toJson(ets);
+
+            System.out.println("OfflineJSON-" + apiJSON);
+
+        }catch (Exception e){
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile("getTop10OfflineTransactionJSON" + "SyncOffTrnx getTop10OfflineTransactionJSON Ex"+e.getMessage());
         }
-
-
-        EnityTranzSync ets = new EnityTranzSync();
-        ets.TransactionsModelsObj = allData;
-        Gson gson = new Gson();
-        apiJSON = gson.toJson(ets);
-
-        System.out.println("OfflineJSON-" + apiJSON);
-
         return apiJSON;
     }
 

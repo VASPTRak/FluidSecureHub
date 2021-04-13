@@ -7,6 +7,8 @@
                         support@trakeng.com
                         www.trakeng.com</string>
 
+    <string name="arrow">\u2B06</string>
+    <string name="arrow_uni_code">\u2191</string>
     <string name="start_fueling">Start Fueling</string>
     <string name="fuel_another">Fuel Another</string>
     <string name="stop_fueling">Stop Fueling</string>

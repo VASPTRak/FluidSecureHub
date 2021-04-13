@@ -18,7 +18,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.ParcelUuid;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -66,9 +66,6 @@ public class EddystoneScannerService extends Service {
     public String HTTP_URL = "", SelectedHose = "", SelectedHoseStp = "";
     String HTTP_URL_FS_1, URL_GET_PULSAR_FS1, URL_SET_PULSAR_FS1, URL_WIFI_FS1, URL_RELAY_FS1;
     String jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
-
-    String jsonPulsar = "{\"pulsar_request\":{\"counter_set\":1}}";
-    String jsonPulsarOff = "{\"pulsar_request\":{\"counter_set\":0}}";
 
     String PhoneNumber;
     String consoleString = "", outputQuantity = "0";
@@ -137,6 +134,8 @@ public class EddystoneScannerService extends Service {
 
     //Callback interface for the UI
     public interface OnBeaconEventListener {
+        void onCaptureDone(String pictureUrl, byte[] pictureData);
+
         void onBeaconIdentifier(String deviceAddress, int rssi, String instanceId);
 
         void onBeaconTelemetry(String deviceAddress, float battery, float temperature);
@@ -1478,7 +1477,6 @@ public class EddystoneScannerService extends Service {
     public void finalLastStep_fs1() {
         stopOnce = false;
 
-        new CommandsPOST_FS1().execute(URL_SET_PULSAR_FS1, jsonPulsarOff);
 
     }
 }

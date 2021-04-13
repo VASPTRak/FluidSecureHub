@@ -11,7 +11,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.SpannableString;
@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.TrakEngineering.FluidSecureHub.enity.DepartmentValidationEntity;
+import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -69,15 +70,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
         invalidateOptionsMenu();
         //Set/Reset EnterPin text
         etDeptNumber.setText("");
-        /*if (Constants.CurrentSelectedHose.equals("FS1")) {
-            etDeptNumber.setText(Constants.AccDepartmentNumber_FS1);
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            etDeptNumber.setText(Constants.AccDepartmentNumber);
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            etDeptNumber.setText(Constants.AccDepartmentNumber_FS3);
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            etDeptNumber.setText(Constants.AccDepartmentNumber_FS4);
-        }*/
+
 
         Istimeout_Sec = true;
         TimeoutDeptScreen();
@@ -137,10 +130,20 @@ public class AcceptDeptActivity extends AppCompatActivity {
             {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS3);
             }
-        }else{
+        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")){
             if(Constants.AccDepartmentNumber_FS4!=null)
             {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS4);
+            }
+        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")){
+            if(Constants.AccDepartmentNumber_FS5!=null)
+            {
+                etDeptNumber.setText(Constants.AccDepartmentNumber_FS5);
+            }
+        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")){
+            if(Constants.AccDepartmentNumber_FS6!=null)
+            {
+                etDeptNumber.setText(Constants.AccDepartmentNumber_FS6);
             }
         }
 
@@ -192,41 +195,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                     new CallSaveButtonValidation().execute();
 
-                    /*if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1"))
-                    {
-                        Constants.AccDepartmentNumber_FS1 =  etDeptNumber.getText().toString().trim();
-                    }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")){
-                        Constants.AccDepartmentNumber =  etDeptNumber.getText().toString().trim();
-                    }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")){
-                        Constants.AccDepartmentNumber_FS3 =  etDeptNumber.getText().toString().trim();
-                    }else{
-                        Constants.AccDepartmentNumber_FS4 =  etDeptNumber.getText().toString().trim();
-                    }*/
 
-
-
-                    /*if (IsOtherRequire.equalsIgnoreCase("True")) {
-
-                        Intent intent = new Intent(AcceptDeptActivity.this, AcceptOtherActivity.class);
-                        startActivity(intent);
-
-                    } else {
-
-                        AcceptServiceCall asc = new AcceptServiceCall();
-                        asc.activity = AcceptDeptActivity.this;
-                        asc.checkAllFields();
-                    }*/
-
-                    /*
-                   if (IsOtherRequire.equalsIgnoreCase("True")) {
-                        Intent intent = new Intent(AcceptDeptActivity.this, AcceptOtherActivity.class);
-                        startActivity(intent);
-                    } else {
-
-                        AcceptServiceCall asc = new AcceptServiceCall();
-                        asc.activity = AcceptDeptActivity.this;
-                        asc.checkAllFields();
-                    }*/
                 } else {
                     Istimeout_Sec = true;
                     ResetTimeoutDeptScreen();
@@ -281,6 +250,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
         menu.findItem(R.id.mconfigure_fsnp).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
+        menu.findItem(R.id.mcamera_back).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH){
 
@@ -313,6 +284,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
             public void run() {
 
                 //do something
+                invalidateOptionsMenu();
                 if (Istimeout_Sec) {
 
                     try {
@@ -423,9 +395,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
 
-            if (AppConstants.ServerCallLogs)Log.w(TAG,"SC_Log CallSaveButtonValidation onPreExecute ");
-            if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "SC_Log CallSaveButtonValidation onPreExecute ");
-
             String s= "Please wait...";
             SpannableString ss2=  new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
@@ -443,9 +412,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
             String pinNumber = "";
             try {
 
-                if (AppConstants.ServerCallLogs)Log.w(TAG,"SC_Log CallSaveButtonValidation doInBackground ");
-                if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "SC_Log CallSaveButtonValidation doInBackground ");
-
                 if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                     Constants.AccDepartmentNumber_FS1 = etDeptNumber.getText().toString().trim();
                     pinNumber = Constants.AccPersonnelPIN_FS1;
@@ -455,9 +421,15 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
                     Constants.AccDepartmentNumber_FS3 = etDeptNumber.getText().toString().trim();
                     pinNumber = Constants.AccPersonnelPIN_FS3;
-                } else {
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
                     Constants.AccDepartmentNumber_FS4 = etDeptNumber.getText().toString().trim();
                     pinNumber = Constants.AccPersonnelPIN_FS4;
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+                    Constants.AccDepartmentNumber_FS5 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.AccPersonnelPIN_FS5;
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+                    Constants.AccDepartmentNumber_FS6 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.AccPersonnelPIN_FS6;
                 }
 
                 DepartmentValidationEntity objEntityClass = new DepartmentValidationEntity();
@@ -495,9 +467,11 @@ public class AcceptDeptActivity extends AppCompatActivity {
             }catch (SocketTimeoutException e){
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " CallSaveButtonFunctionality  STE2 " + e);
+                if(OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)){AppConstants.NETWORK_STRENGTH = false;}
 
             }catch (Exception e) {
                 e.printStackTrace();
+                if(OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)){AppConstants.NETWORK_STRENGTH = false;}
             }
             return resp;
         }
@@ -506,10 +480,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
         protected void onPostExecute(String serverRes){
 
             pd.dismiss();
-
-            if (AppConstants.ServerCallLogs)Log.w(TAG,"SC_Log CallSaveButtonValidation onPostExecute ");
-            if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "SC_Log CallSaveButtonValidation onPostExecute ");
-
 
             if (serverRes != null) {
 
@@ -557,6 +527,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                     }
                 }catch (Exception e){
                     e.printStackTrace();
+                    if(OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)){AppConstants.NETWORK_STRENGTH = false;}
                 }
             }else{
                 Log.i(TAG,"CallSaveButtonValidation Server Response Empty!");

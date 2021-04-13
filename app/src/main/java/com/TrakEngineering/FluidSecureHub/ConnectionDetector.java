@@ -10,23 +10,25 @@ import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 
 public class ConnectionDetector {
 
-    private Context _context;
-    private static final String TAG = ConnectionDetector.class.getSimpleName();
-    public ConnectionDetector(Context context){
-        this._context = context;
-    }
+	private Context _context;
+	private static final String TAG = ConnectionDetector.class.getSimpleName();
+	public ConnectionDetector(Context context){
+		this._context = context;
+	}
 
-    //----------------------------------------------------------------------------------------------------
-    public boolean isConnectingToInternet(){
+	//----------------------------------------------------------------------------------------------------
+	public boolean isConnectingToInternet(){
 
-        if (OfflineConstants. isTotalOfflineEnabled(_context)){
-            return false;
-        }else if (isConnecting() && IsTypeStable() && Constants.IsSignalSrtengthOk ){ //&& !IsFlightModeOn()
-            return true;
-        }
-        //Constants.CurrentNetworkType = "Offline";
-        return false;
-    }
+		if (OfflineConstants. isTotalOfflineEnabled(_context)){
+			return false;
+		} else if (isConnecting() && !OfflineConstants.isOfflineAccess(_context)){
+			return true;
+		}else if (isConnecting() && IsTypeStable() && Constants.IsSignalSrtengthOk ){ //&& !IsFlightModeOn()
+			return true;
+		}
+		//Constants.CurrentNetworkType = "Offline";
+		return false;
+	}
 
 
     public boolean IsTypeStable() {

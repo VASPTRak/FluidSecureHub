@@ -111,6 +111,7 @@
     <!-- menu bar -->
     <include
         layout="@layout/activity_footer_keybord"
+        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FluidSecureHub.iml" filepath="$PROJECT_DIR$/FluidSecureHub.iml" />
-      <module fileurl="file://$PROJECT_DIR$/acsbt/acsbt.iml" filepath="$PROJECT_DIR$/acsbt/acsbt.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FluidSecureHub.iml" filepath="$PROJECT_DIR$/.idea/modules/FluidSecureHub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Barcode_app/FluidSecureHub.Barcode_app.iml" filepath="$PROJECT_DIR$/.idea/modules/Barcode_app/FluidSecureHub.Barcode_app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/acsbt/FluidSecureHub.acsbt.iml" filepath="$PROJECT_DIR$/.idea/modules/acsbt/FluidSecureHub.acsbt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/FluidSecureHub.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/FluidSecureHub.app.iml" />
     </modules>
   </component>
 </project>

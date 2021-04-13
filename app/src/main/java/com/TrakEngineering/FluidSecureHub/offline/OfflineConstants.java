@@ -9,6 +9,10 @@ import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -107,6 +111,7 @@ public class OfflineConstants {
     public static double getFuelLimit(Context ctx) {
 
         double calculatedFuelLimit = 0;
+        double FinalcalculatedFuelLimit = 0;
 
         SharedPreferences sharedPref = ctx.getSharedPreferences("storeFuelLimit", Context.MODE_PRIVATE);
 
@@ -120,6 +125,8 @@ public class OfflineConstants {
         efl.personFuelLimitPerDay = sharedPref.getString("personFuelLimitPerDay", "");
 
         double minVehicle = 0, minPerson = 0;
+        double mindaylimit = getFuelLimitPerDay(ctx);
+
         if (!efl.vehicleFuelLimitPerTxn.trim().isEmpty())
             minVehicle = Double.parseDouble(efl.vehicleFuelLimitPerTxn);
 
@@ -131,7 +138,79 @@ public class OfflineConstants {
         else
             calculatedFuelLimit = minVehicle;
 
-        return calculatedFuelLimit;
+
+        if (mindaylimit == -1){
+            FinalcalculatedFuelLimit = mindaylimit;
+        }else if (calculatedFuelLimit < mindaylimit){
+            FinalcalculatedFuelLimit = mindaylimit;
+        }else{
+            FinalcalculatedFuelLimit = calculatedFuelLimit;
+        }
+
+
+
+        return FinalcalculatedFuelLimit;
+    }
+
+    public static double getFuelLimitPerDay(Context ctx){
+
+        double FinalDayLimit =  0;
+
+        SharedPreferences sharedPref = ctx.getSharedPreferences("storeFuelLimit", Context.MODE_PRIVATE);
+        String vehicleId = sharedPref.getString("vehicleId", "");
+        String PersonId = sharedPref.getString("personId", "");
+        double InitVehicleFuelLimitPerDay = Double.parseDouble(sharedPref.getString("vehicleFuelLimitPerDay", "0"));
+        double InitPersonFuelLimitPerDay = Double.parseDouble(sharedPref.getString("personFuelLimitPerDay", "0"));
+        double vehicleFuelLimitPerDay = InitVehicleFuelLimitPerDay;
+        double personFuelLimitPerDay = InitPersonFuelLimitPerDay;
+
+        try {
+            //sync offline transactions
+            OffDBController offcontroller = new OffDBController(ctx);
+            String off_json = offcontroller.getAllOfflineTransactionJSON(ctx);
+            JSONObject jobj = new JSONObject(off_json);
+            String offtransactionArray = jobj.getString("TransactionsModelsObj");
+
+            JSONArray jarrsy = new JSONArray(offtransactionArray);
+            for (int i = 0; i < jarrsy.length(); i++) {
+                double Pulses = 0;
+                String TransactionDateTime = jarrsy.getJSONObject(i).getString("TransactionDateTime");
+                String VehicleId = jarrsy.getJSONObject(i).getString("VehicleId");
+                String personId = jarrsy.getJSONObject(i).getString("PersonId");
+                String pp = jarrsy.getJSONObject(i).getString("Pulses");
+                if (!pp.isEmpty())
+                Pulses = Double.parseDouble(pp);
+                String Tdate = AppConstants.currentDateFormat("yyyy-MM-dd");
+
+                //count for vehicleid fuel consumed
+                if (VehicleId.equalsIgnoreCase(vehicleId) && Pulses > 0 && TransactionDateTime.contains(Tdate) && InitVehicleFuelLimitPerDay > 0){
+                    vehicleFuelLimitPerDay = vehicleFuelLimitPerDay - Pulses;
+                }
+
+                //count for personid fuel consumed
+                if (PersonId.equalsIgnoreCase(personId) && Pulses > 0 && TransactionDateTime.contains(Tdate) && InitPersonFuelLimitPerDay > 0){
+                    personFuelLimitPerDay = personFuelLimitPerDay - Pulses;
+                }
+
+            }
+            Log.i("tes","tedf");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (vehicleFuelLimitPerDay < 0 || personFuelLimitPerDay < 0 ){
+            return FinalDayLimit = -1;
+        }else if(vehicleFuelLimitPerDay == 0 && personFuelLimitPerDay == 0){
+            return FinalDayLimit = 0;
+        }else if (vehicleFuelLimitPerDay < personFuelLimitPerDay){
+            return FinalDayLimit = personFuelLimitPerDay;
+        }else if (personFuelLimitPerDay < vehicleFuelLimitPerDay){
+            return FinalDayLimit = vehicleFuelLimitPerDay;
+        }else{
+            Log.i(TAG,"Something went wrong..");
+        }
+
+        return FinalDayLimit;
     }
 
 
@@ -139,8 +218,6 @@ public class OfflineConstants {
 
 
         Log.i(TAG, "Scheduled offline download: " + OFFLineDataDwnldFreq + ":(" + OfflineDataDownloadDay + ") HourOfDay:" + OfflineDataDownloadTimeInHrs + " Minute:" + OfflineDataDownloadTimeInMin);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Scheduled offline download: " + OFFLineDataDwnldFreq + ":(" + OfflineDataDownloadDay + ") HourOfDay:" + OfflineDataDownloadTimeInHrs + " Minute:" + OfflineDataDownloadTimeInMin);
 
         SharedPreferences pref = ctx.getSharedPreferences("storeOfflineAccess", 0);
         SharedPreferences.Editor editor = pref.edit();

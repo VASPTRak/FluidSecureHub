@@ -1,1 +1,1 @@
-include ':app', ':acsbt'
+include ':app', ':acsbt', ':Barcode_app'

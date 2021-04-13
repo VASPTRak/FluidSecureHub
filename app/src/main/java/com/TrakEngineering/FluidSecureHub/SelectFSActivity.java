@@ -13,7 +13,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -278,7 +278,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 
                 if (!statusOfGPS) {
-                    turnGPSOn();
+                    //turnGPSOn();
                 } else {
                     flagGo = true;
                 }
@@ -509,65 +509,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
     }
     */
 
-    public void turnGPSOn() {
 
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationRequest mLocationRequest1 = new LocationRequest();
-        mLocationRequest1.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest)
-                .addLocationRequest(mLocationRequest1);
-
-
-        LocationSettingsRequest mLocationSettingsRequest = builder.build();
-
-
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(
-                        mGoogleApiClient,
-                        mLocationSettingsRequest
-                );
-
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
-
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        Log.i("Splash", "All location settings are satisfied.");
-
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.i("Splash", "Location settings are not satisfied. Show the user a dialog to" +
-                                "upgrade location settings ");
-
-                        try {
-                            // Show the dialog by calling startResolutionForResult(), and check the result
-                            // in onActivityResult().
-                            status.startResolutionForResult(SelectFSActivity.this, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.i("Splash", "PendingIntent unable to execute request.");
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.i("Splash", "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                                "not created.");
-                        break;
-                }
-            }
-        });
-
-
-        //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        //startActivity(in);
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

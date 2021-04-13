@@ -10,7 +10,6 @@ import android.util.Log;
 public class WifiAPReceiver extends BroadcastReceiver {
 
     public static final String TAG = WifiAPReceiver.class.getSimpleName();
-    public static boolean enableHotspotManuallyWindow = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -18,16 +17,20 @@ public class WifiAPReceiver extends BroadcastReceiver {
             int apState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
             if (apState == 13) {
                 Log.i(TAG,"Hotspot AP is enabled");
-                enableHotspotManuallyWindow = true;
+                AppConstants.enableHotspotManuallyWindow = true;
             } else {
                 Log.i(TAG,"Hotspot AP is disabled/not ready");
 
-                //TODO Also check App not in Link Configuration process
-                if (!CommonUtils.isHotspotEnabled(context) && Build.VERSION.SDK_INT >= Constants.VERSION_CODES_NINE && enableHotspotManuallyWindow && Constants.hotspotstayOn){
-                    enableHotspotManuallyWindow = false;
-                    CommonUtils.enableMobileHotspotmanuallyStartTimer(context);
-                }
+               //code commented #1145 the APP look like get into a bad loop:
+                /*if (!CommonUtils.isHotspotEnabled(context) && Build.VERSION.SDK_INT >= Constants.VERSION_CODES_NINE && AppConstants.enableHotspotManuallyWindow && Constants.hotspotstayOn && !AppConstants.busyWithHotspotToggle){
+                    AppConstants.enableHotspotManuallyWindow = false;
 
+                    AppConstants.WriteinFile(TAG+" enableMobileHotspotmanuallyStartTimer2");
+
+
+                    CommonUtils.enableMobileHotspotmanuallyStartTimer(context);
+
+                }*/
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.TrakEngineering.FluidSecureHub.LFCardGAtt;
+package com.TrakEngineering.FluidSecureHub.QRCodeGAtt;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.BackgroundServiceDownloadFirmware;
@@ -20,34 +19,33 @@ import com.TrakEngineering.FluidSecureHub.Constants;
 
 import java.io.File;
 import java.util.Timer;
-import java.util.TimerTask;
 
-public class ServiceLFCard extends Service {
+public class ServiceQRCode extends Service {
 
-    private final static String TAG = ServiceLFCard.class.getSimpleName();
-    private LeServiceLFCard mBluetoothLeService;
+    private final static String TAG = ServiceQRCode.class.getSimpleName();
+    private LeServiceQRCode mBluetoothLeService;
     private boolean mConnected = false;
     private String mDeviceAddress = "", mDeviceName = "";
     //BLE Upgrade
     String BLEType;
     String BLEFileLocation;
     String BLEVersion;
-    String IsLFUpdate = "N";
+    String IsQRUpdate = "N";
     String FOLDER_PATH_BLE = null;
     private int bleVersionCallCount = 0;
-    Timer timerLF;
+    Timer timerQR;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        SharedPreferences sharedPre2 = ServiceLFCard.this.getSharedPreferences("storeBT_FOBDetails", Context.MODE_PRIVATE);
-        mDeviceName = sharedPre2.getString("LFBluetoothCardReader", "");
-        mDeviceAddress = sharedPre2.getString("LFBluetoothCardReaderMacAddress", "");
+        SharedPreferences sharedPre2 = ServiceQRCode.this.getSharedPreferences("storeBT_FOBDetails", Context.MODE_PRIVATE);
+        mDeviceName = sharedPre2.getString("QRCodeReaderForBarcode", ""); //
+        mDeviceAddress = sharedPre2.getString("QRCodeBluetoothMacAddressForBarcode", ""); //
 
-        CheckForFirmwareUpgrade();
+        //CheckForFirmwareUpgrade();
 
-        Intent gattServiceIntent = new Intent(this, LeServiceLFCard.class);
+        Intent gattServiceIntent = new Intent(this, LeServiceQRCode.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
@@ -59,7 +57,7 @@ public class ServiceLFCard extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
-        AppConstants.RebootHF_reader = false;
+        AppConstants.RebootQR_reader = false;
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -71,7 +69,6 @@ public class ServiceLFCard extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
 
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
@@ -85,7 +82,7 @@ public class ServiceLFCard extends Service {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((LeServiceLFCard.LocalBinder) service).getService();
+            mBluetoothLeService = ((LeServiceQRCode.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
                 Log.e(TAG, "Unable to initialize Bluetooth");
 
@@ -105,20 +102,22 @@ public class ServiceLFCard extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (LeServiceLFCard.ACTION_GATT_CONNECTED.equals(action)) {
+            if (LeServiceQRCode.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
-                Constants.LF_ReaderStatus = "LF Connected";
-                System.out.println("ACTION_GATT_LF_CONNECTED");
-                timerLF = new Timer();
+
+                Constants.QR_ReaderStatus = "QR Connected";
+                System.out.println("ACTION_GATT_QR_CONNECTED");
+
+                /*timerQR = new Timer();
 
                 TimerTask tt = new TimerTask() {
                     @Override
                     public void run() {
 
-                        //Execute below code only if LF reader is  connected
-                        if (Constants.LF_ReaderStatus.equalsIgnoreCase("LF Connected") || Constants.LF_ReaderStatus.equalsIgnoreCase("LF Discovered")) {
+                        //Execute below code only if QR reader is  connected
+                        if (Constants.QR_ReaderStatus.equalsIgnoreCase("QR Connected") || Constants.QR_ReaderStatus.equalsIgnoreCase("QR Discovered")) {
                             //BLE Upgrade
-                            if ((IsLFUpdate.trim().equalsIgnoreCase("Y")) && bleVersionCallCount == 0) {
+                            if ((IsQRUpdate.trim().equalsIgnoreCase("Y")) && bleVersionCallCount == 0) {
                                 try {
                                     Thread.sleep(1000);
                                 } catch (InterruptedException e) {
@@ -133,7 +132,7 @@ public class ServiceLFCard extends Service {
                             }
 
                             //Read Fob key
-                            if (IsLFUpdate.trim().equalsIgnoreCase("Y")) {
+                            if (IsQRUpdate.trim().equalsIgnoreCase("Y")) {
                                 if (bleVersionCallCount != 0) {
                                     readFobKey();
                                 }
@@ -146,33 +145,45 @@ public class ServiceLFCard extends Service {
 
                 };
 
-                timerLF.schedule(tt, 0, 1000);
+                timerQR.schedule(tt, 0, 1000);*/
 
-            } else if (LeServiceLFCard.ACTION_GATT_DISCONNECTED.equals(action)) {
+
+            } else if (LeServiceQRCode.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                Constants.LF_ReaderStatus = "LF Disconnected";
-                System.out.println("ACTION_GATT_LF_DISCONNECTED");
-            } else if (LeServiceLFCard.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                Constants.LF_ReaderStatus = "LF Discovered";
-                System.out.println("ACTION_GATT_LF_DISCOVERED");
+                Constants.QR_ReaderStatus = "QR Disconnected";
+                System.out.println("ACTION_GATT_QR_DISCONNECTED");
 
-            } else if (LeServiceLFCard.ACTION_DATA_AVAILABLE.equals(action)) {
-
-                System.out.println("ACTION_GATT_LF_DATA_AVAILABLE");
-                Constants.LF_ReaderStatus = "LF Connected";
-                displayData(intent.getStringExtra(LeServiceLFCard.EXTRA_DATA));
+            } else if (LeServiceQRCode.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                System.out.println("ACTION_GATT_QR_SERVICES_DISCOVERED");
+                Constants.QR_ReaderStatus = "QR Discovered";
+            } else if (LeServiceQRCode.ACTION_DATA_AVAILABLE.equals(action)) {
+                System.out.println("ACTION_GATT_QR_AVAILABLE");
+                System.out.println("ACTION_DATA_AVAILABLE");
+                Constants.QR_ReaderStatus = "QR Connected";
+                displayData(intent.getStringExtra(LeServiceQRCode.EXTRA_DATA));
             } else {
-                Constants.LF_ReaderStatus = "LF Disconnected";
+                Constants.QR_ReaderStatus = "QR Disconnected";
             }
         }
     };
 
+    public static String unHex(String arg) {
+
+        String str = "";
+        for(int i=0;i<arg.length();i+=2)
+        {
+            String s = arg.substring(i, (i + 2));
+            int decimal = Integer.parseInt(s, 16);
+            str = str + (char) decimal;
+        }
+        return str;
+    }
 
     private void displayData(String data) {
         if (data != null) {
-
-
             try {
+
+                Log.e("Qrcode data>>", data);
                 String[] Seperate = data.split("\n");
 
                 String last_val = "";
@@ -180,18 +191,19 @@ public class ServiceLFCard extends Service {
                     last_val = Seperate[Seperate.length - 1];
                 }
 
-                if (!last_val.equals("00 00 00 ") && !last_val.equalsIgnoreCase("00 00 00 00 00 00 00 00 00")) {
-                    sendLFDetailsToActivity(last_val);
+               String java_string_value = unHex(last_val.replace(" ","").trim());
+
+                if (!java_string_value.equals("00 00 00 ") && !java_string_value.equalsIgnoreCase("00 00 00 00 00 00 00 00 00") && !java_string_value.equalsIgnoreCase("...")) {
+                    sendQRDetailsToActivity(java_string_value);
                 }
 
-
-                SharedPreferences sharedPre = ServiceLFCard.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
-                String SRUdate = sharedPre.getString("bleLFUpdateSuccessFlag", "N");
+                /*SharedPreferences sharedPre = ServiceQRCode.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
+                String SRUdate = sharedPre.getString("bleQRUpdateSuccessFlag", "N");
                 if (SRUdate.equalsIgnoreCase("Y")) {
-                    mBluetoothLeService.writeCustomCharacteristic(0x01, "", true);
-                }
+                    mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);
+                }*/
 
-                mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);
+              //  mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);
 
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -207,8 +219,8 @@ public class ServiceLFCard extends Service {
         super.onDestroy();
         unbindService(mServiceConnection);
 
-        if (timerLF != null)
-            timerLF.cancel();
+        if (timerQR != null)
+            timerQR.cancel();
 
         unregisterReceiver(mGattUpdateReceiver);
 
@@ -217,21 +229,21 @@ public class ServiceLFCard extends Service {
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(LeServiceLFCard.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(LeServiceLFCard.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(LeServiceLFCard.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(LeServiceLFCard.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(LeServiceQRCode.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(LeServiceQRCode.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(LeServiceQRCode.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(LeServiceQRCode.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
 
 
-    private void sendLFDetailsToActivity(String newData) {
+    private void sendQRDetailsToActivity(String newData) {
+
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("ServiceToActivityMagCard");
-        broadcastIntent.putExtra("LFCardValue", newData);
-        broadcastIntent.putExtra("Action", "LFReader");
+        broadcastIntent.putExtra("QRCodeValue", newData);
+        broadcastIntent.putExtra("Action", "QRReader");
         sendBroadcast(broadcastIntent);
-
     }
 
     private void CheckForFirmwareUpgrade() {
@@ -240,21 +252,21 @@ public class ServiceLFCard extends Service {
         SharedPreferences myPrefslo = this.getSharedPreferences("BLEUpgradeInfo", 0);
         BLEType = myPrefslo.getString("BLEType", "");
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
+        IsQRUpdate = myPrefslo.getString("IsQRUpdate", "");
         BLEVersion = myPrefslo.getString("BLEVersion", "");
-        IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
         String CheckVersionFileLocation = FOLDER_PATH_BLE + BLEVersion + "_check.txt";
 
-        if (IsLFUpdate.trim().equalsIgnoreCase("Y")) {
+        if (IsQRUpdate.trim().equalsIgnoreCase("Y")) {
 
             DeleteOldVersionTxtFiles(FOLDER_PATH_BLE);
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader");
+            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader_" + BLEType);
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();
             }
             if (!success) {
-                AppConstants.AlertDialogBox(ServiceLFCard.this, "Please check File is present in FSCardReader_LF Folder in Internal(Device) Storage");
+                AppConstants.AlertDialogBox(ServiceQRCode.this, "Please check File is present in FSCardReader_QR Folder in Internal(Device) Storage");
             }
 
             if (BLEFileLocation != null) {
@@ -266,7 +278,7 @@ public class ServiceLFCard extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
                 } else {
-                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader.bin", "BLEUpdate");
+                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader_" + BLEType + ".bin", "BLEUpdate");
                 }
 
             } else {
@@ -279,6 +291,7 @@ public class ServiceLFCard extends Service {
         } else {
             SharedPreferences sharedPre = getSharedPreferences("BLEUpgradeFlag", 0);
             SharedPreferences.Editor editor = sharedPre.edit();
+            editor.putString("bleQRUpdateSuccessFlag", "N");
             editor.putString("bleLFUpdateSuccessFlag", "N");
             editor.commit();
         }
@@ -288,22 +301,21 @@ public class ServiceLFCard extends Service {
     private void readBLEVersion() {
 
         System.out.println("Inside readBLEVersion mBluetoothLeServiceVehicle");
-        mBluetoothLeService.readCustomCharacteristic(true);
+        mBluetoothLeService.readCustomCharacteristic(false);
         bleVersionCallCount++;
 
     }
 
     private void readFobKey() {
 
-        if (AppConstants.RebootHF_reader) {
-            System.out.println("ACTION_GATT_LF_Reboot cmd");
+        if (AppConstants.RebootQR_reader) {
+            System.out.println("ACTION_GATT_QR_Reboot cmd");
             mBluetoothLeService.writeRebootCharacteristic();
-            AppConstants.RebootHF_reader = false;
+            AppConstants.RebootQR_reader = false;
         } else {
-            AppConstants.RebootHF_reader = false;
+            AppConstants.RebootQR_reader = false;
             mBluetoothLeService.readCustomCharacteristic(false);
         }
-
     }
 
     private void DeleteOldVersionTxtFiles(String FOLDER_PATH_BLE) {
@@ -316,10 +328,9 @@ public class ServiceLFCard extends Service {
                 CommonUtils.getAllFilesInDir(folder);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 }
-
