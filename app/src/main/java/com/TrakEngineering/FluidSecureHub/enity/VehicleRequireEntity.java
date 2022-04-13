@@ -17,8 +17,13 @@ public class VehicleRequireEntity {
     public String IsVehicleNumberRequire;
     public String Barcode;
     public String MagneticCardNumber;
+    public String ReplaceAccessDevice ;
 
     public String HFVersion;
     public String LFVersion;
+
+    public String AcceptBlankPath;
+
+
 
 }

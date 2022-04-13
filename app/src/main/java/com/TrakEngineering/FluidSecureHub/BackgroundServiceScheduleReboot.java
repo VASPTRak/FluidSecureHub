@@ -32,7 +32,7 @@ public class BackgroundServiceScheduleReboot extends Service {
         try {
             super.onStart(intent, startId);
             Log.e(TAG, "~~~~~start into BackgroundServiceScheduleReboot~~~~~");
-            if (Constants.FS_1STATUS == "FREE" && Constants.FS_2STATUS == "FREE" && Constants.FS_3STATUS == "FREE" && Constants.FS_4STATUS == "FREE" ){
+            if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
                 new CallSureMDMRebootDevice(BackgroundServiceScheduleReboot.this).execute();
             }
             else{

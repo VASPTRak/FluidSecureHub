@@ -14,7 +14,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import static com.google.android.gms.internal.zzs.TAG;
+
 
 public class StopRunningTransactionBackgroundService extends Service {
 
@@ -104,7 +104,7 @@ public class StopRunningTransactionBackgroundService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  StopTxn" + e);
+                AppConstants.WriteinFile( "  StopTxn" + e);
         }
 
     }

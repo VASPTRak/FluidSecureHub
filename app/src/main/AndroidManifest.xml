@@ -1,155 +1,390 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.TrakEngineering.FluidSecureHub">
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" android:protectionLevel="signature"/>
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-    <!--
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.TrakEngineering.FluidSecureHub">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission
+        android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
+        android:protectionLevel="signature" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+    <!--
        <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
        <uses-permission android:name="android.permission.USE_CREDENTIALS" />
        <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
-   -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-    <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true" android:xlargeScreens="true"/>
-    <application android:name="android.support.multidex.MultiDexApplication" android:allowBackup="true" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:supportsRtl="true" android:theme="@style/AppTheme">
-        <service android:name=".LFCardGAtt.LeServiceLFCard" android:enabled="true" android:exported="true"/>
-        <service android:name=".LFCardGAtt.ServiceLFCard" android:enabled="true" android:exported="true"/>
-        <service android:name=".HFCardGAtt.ServiceHFCard" android:enabled="true" android:exported="true"/>
-        <service android:name=".HFCardGAtt.LeServiceHFCard" android:enabled="true" android:exported="true"/>
-        <service android:name=".MagCardGAtt.LeServiceMagCard" android:enabled="true" android:exported="true"/>
-        <service android:name=".MagCardGAtt.ServiceMagCard" android:enabled="true" android:exported="true"/>
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
-        <activity android:name=".WelcomeActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".AcceptVehicleActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:fitsSystemWindows="true" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".AcceptOdoActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:fitsSystemWindows="true" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".DisplayMeterActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".RegistrationActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"/>
-        <activity android:name=".SplashActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:windowSoftInputMode="stateHidden">
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <application
+        android:name="androidx.multidex.MultiDexApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ActivitySparehub"
+            android:exported="false" />
+        <activity
+            android:name=".ReadAccessDevice_Fob"
+            android:exported="false" />
+        <activity android:name=".AcceptVehicleActivity_FOB" />
+        <activity android:name=".AcceptPinActivity_FOB" />
+        <activity android:name=".FOBReaderActivity" /> <!-- android:testOnly="false" -->
+        <service
+            android:name=".BTSPP.BackgroundService_BTFour"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTSPP.BackgroundService_BTThree"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".PairDeviceActivity" />
+
+        <service
+            android:name=".BTSPP.BackgroundService_BTTwo"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTSPP.BackgroundService_BTOne"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".LFCardGAtt.LeServiceLFCard"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".LFCardGAtt.ServiceLFCard"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".HFCardGAtt.ServiceHFCard"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".HFCardGAtt.LeServiceHFCard"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".MagCardGAtt.LeServiceMagCard"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".MagCardGAtt.ServiceMagCard"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".QRCodeGAtt.ServiceQRCode"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".QRCodeGAtt.LeServiceQRCode"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".MagV2GAtt.ServiceMagV2"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".MagV2GAtt.LeServiceMagV2"
+            android:enabled="true"
+            android:exported="true" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".WelcomeActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".AcceptVehicleActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".AcceptOdoActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".DisplayMeterActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".RegistrationActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
+        <activity
+            android:name=".SplashActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".AcceptManualOdoActivityFA" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"/>
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".AcceptManualOdoActivityFA"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
         <!--
-
                     The API key for Google Maps-based APIs is defined as a string resource.
                     (See the file "res/values/google_maps_api.xml").
                     Note that the API key is linked to the encryption key used to sign the APK.
                     You need a different API key for each encryption key, including the release key that is used to
                     sign the APK for publishing.
                     You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
-       -->
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_maps_key"/>
-        <activity android:name=".Login" android:screenOrientation="portrait"/>
-        <activity android:name=".TestSocket"/>
-        <service android:name=".BackgroundService" android:enabled="true"/>
-        <service android:name=".BackgroundFOBReader" android:enabled="true"/>
-        <service android:name=".BackgroundService_AP" android:enabled="true"/>
-        <service android:name=".BackgroundService_AP_PIPE" android:enabled="true"/>
-        <service android:name=".BackgroundService_FS_UNIT_3" android:enabled="true"/>
-        <service android:name=".BackgroundService_FS_UNIT_4" android:enabled="true"/>
-        <service android:name=".BackgroundServiceHotspotCheck" android:enabled="true"/>
-        <service android:name=".BackgroundServiceFSNP" android:enabled="true"/>
-        <service android:name=".BackgroundServiceWriteTimestampToFile" android:enabled="true"/>
-        <service android:name=".BackgroundServiceUpgradeFirmware" android:enabled="true"/>
-        <service android:name=".BackgroundServiceBluetoothPrinter" android:enabled="true"/>
-        <service android:name=".BackgroundServiceKeepDataTransferAlive" android:enabled="true"/>
-        <service android:name=".wifihotspot.HotSpotIntentService" android:enabled="true" android:exported="true"/>
-        <receiver android:name=".wifihotspot.receiver.HotSpotIntentReceiver" android:enabled="true" android:exported="true">
+        <activity
+            android:name=".Login"
+            android:screenOrientation="portrait" />
+        <activity android:name=".TestSocket" />
+
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceMidNightTasks"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundFOBReader"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundService_AP"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundService_AP_PIPE"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundService_FS_UNIT_3"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundService_FS_UNIT_4"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundService_FS_UNIT_5"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundService_FS_UNIT_6"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceHotspotCheck"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceFSNP"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceWriteTimestampToFile"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceUpgradeFirmware"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceBluetoothPrinter"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceKeepDataTransferAlive"
+            android:enabled="true" />
+        <service
+            android:name=".wifihotspot.HotSpotIntentService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name=".wifihotspot.receiver.HotSpotIntentReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_ON"/>
-                <action android:name="com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_OFF"/>
+                <action android:name="com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_ON" />
+                <action android:name="com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_OFF" />
             </intent-filter>
         </receiver>
+
         <activity android:name=".wifihotspot.MagicActivity">
             <intent-filter>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="wifihotspot"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <data android:scheme="wifihotspot" />
             </intent-filter>
         </activity>
-        <receiver android:name=".DeviceAdministratorClass" android:permission="android.permission.BIND_DEVICE_ADMIN">
-            <meta-data android:name="android.app.device_admin" android:resource="@xml/admin"/>
+
+        <receiver
+            android:name=".DeviceAdministratorClass"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/admin" />
+
             <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
         <receiver android:name=".MobileDataReceiver">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
         <receiver android:name=".WifiReceiver">
             <intent-filter android:priority="100">
-                <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".WifiAPReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".OnBootReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <activity android:name=".AcceptPinActivity_new"/>
-        <service android:name=".LFBle_PIN.BluetoothLeService_Pin" android:enabled="true"/>
-        <activity android:name=".AcceptVehicleActivity_new"/>
-        <service android:name=".LFBle_vehicle.BluetoothLeService_vehicle" android:enabled="true"/>
-        <activity android:name=".AcceptFieldActivity"/>
-        <activity android:name=".AcceptPinActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:fitsSystemWindows="true" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".AcceptDeptActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:fitsSystemWindows="true" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".AcceptOtherActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:fitsSystemWindows="true" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".AcceptCheckAll"/>
-        <activity android:name=".AcceptHoursAcitvity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:fitsSystemWindows="true" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".SelectFSActivity"/>
-        <activity android:name=".Vision_scanner.BarcodeCaptureActivity" android:label="Read Barcode"/>
-        <service android:name=".EddystoneScanner.FStagScannerService" android:enabled="true" android:exported="false"/>
-        <service android:name=".BackgroundServiceNew.MyService_FSNP" android:enabled="true" android:exported="true"/>
-        <service android:name=".EddystoneScanner.EddystoneScannerService" android:exported="false"/>
-        <service android:name=".BatteryBackgroundService" android:enabled="true" android:exported="true"/>
-        <service android:name=".offline.OffBackgroundService" android:enabled="true" android:exported="true"/>
-        <service android:name=".offline.OffTranzSyncService" android:enabled="true" android:exported="true"/>
-        <service android:name=".TLD_GattServer.DeviceControlActivity_tld" android:enabled="true" android:exported="true"/>
-        <service android:name=".TLD_GattServer.BluetoothLeService_tld" android:enabled="true"/>
-        <service android:name=".offline.StopRunningTransactionBackgroundService" android:enabled="true" android:exported="true"/>
-        <service android:name=".BackgroundServiceClearOlderPictures" android:enabled="true" android:exported="true"/>
-        <service android:name=".BackgroundServiceScheduleReboot" android:enabled="true" android:exported="true"/>
-        <service android:name=".LFBle_vehicle.LeService_HF_TrakReader_vehicle" android:enabled="true" android:exported="true"/>
-        <service android:name=".LFBle_PIN.LeService_HF_TrakReader_pin" android:enabled="true" android:exported="true"/>
+
+        <activity android:name=".AcceptPinActivity_new" />
+
+        <service
+            android:name=".LFBle_PIN.BluetoothLeService_Pin"
+            android:enabled="true" />
+
+        <activity android:name=".AcceptVehicleActivity_new" />
+
+        <service
+            android:name=".LFBle_vehicle.BluetoothLeService_vehicle"
+            android:enabled="true" />
+
+        <activity android:name=".AcceptFieldActivity" />
+        <activity
+            android:name=".AcceptPinActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".AcceptDeptActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".AcceptOtherActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".AcceptCheckAll" />
+        <activity
+            android:name=".AcceptHoursAcitvity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:fitsSystemWindows="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".SelectFSActivity" />
+        <activity
+            android:name=".Vision_scanner.BarcodeCaptureActivity"
+            android:label="Read Barcode" />
+
+        <service android:name=".BTSPP.BTSPP_LinkOne.SerialServiceOne" />
+        <service android:name=".BTSPP.BTSPP_LinkTwo.SerialServiceTwo" />
+        <service android:name=".BTSPP.BTSPP_LinkThree.SerialServiceThree" />
+        <service android:name=".BTSPP.BTSPP_LinkFour.SerialServiceFour" />
+        <service
+            android:name=".EddystoneScanner.FStagScannerService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".BackgroundServiceNew.MyService_FSNP"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".EddystoneScanner.EddystoneScannerService"
+            android:exported="false" />
+        <service
+            android:name=".BatteryBackgroundService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".offline.OffBackgroundService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".offline.OffTranzSyncService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".TLD_GattServer.DeviceControlActivity_tld"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".TLD_GattServer.BluetoothLeService_tld"
+            android:enabled="true" />
+        <service
+            android:name=".offline.StopRunningTransactionBackgroundService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BackgroundServiceClearOlderPictures"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BackgroundServiceScheduleReboot"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".LFBle_vehicle.LeService_HF_TrakReader_vehicle"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".LFBle_PIN.LeService_HF_TrakReader_pin"
+            android:enabled="true"
+            android:exported="true" />
         <service
             android:name=".JobSchedulerService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <activity android:name=".AcceptVehicleOtherInfo"/>
+
+        <activity android:name=".AcceptVehicleOtherInfo" />
     </application>
+
 </manifest>

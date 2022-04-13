@@ -8,9 +8,10 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,9 +131,19 @@ public class RegistrationActivity extends AppCompatActivity {
                     String userMobile = etMobile.getText().toString().trim();
                     String userEmail = etEmail.getText().toString().trim();
                     String userCompany = etCompany.getText().toString().trim();
-                    String imeiNumber = AppConstants.getIMEI(RegistrationActivity.this);
+                    String imeiNumber;
+
+                    if (Build.VERSION.SDK_INT >= 29) {
+                        String uUUID = UUID.randomUUID().toString();
+                        imeiNumber = uUUID;
+                    } else {
+                        imeiNumber = AppConstants.getIMEIOnlyForBelowOS10(RegistrationActivity.this);
+                    }
+
+                    SplashActivity.writeIMEI_UUIDInFile(RegistrationActivity.this, imeiNumber); ;
 
                     new RegisterUser(userName, userMobile, userEmail, imeiNumber, AppConstants.DEVICE_TYPE, userCompany).execute();
+
 
                     //------------------------------------------------------------------------------
 
@@ -264,7 +276,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String ResponceMessage = jsonObj.getString(AppConstants.RES_MESSAGE);
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
-                    CommonUtils.SaveUserInPref(RegistrationActivity.this, userName, userMobile, userEmail, "","","","","", "", "","","", FluidSecureSiteName,ISVehicleHasFob, IsPersonHasFob,IsVehicleNumberRequire, Integer.parseInt(WifiChannelToUse));
+                    CommonUtils.SaveUserInPref(RegistrationActivity.this, userName, userMobile, userEmail, "","","","","", "", "","","", FluidSecureSiteName,ISVehicleHasFob, IsPersonHasFob,IsVehicleNumberRequire, Integer.parseInt(WifiChannelToUse),"","","","","","");
 
                     AlertDialogBox(RegistrationActivity.this, "Thank you for registering. \n\nYour request has been sent for the approval. You will be able to proceed with the application after your request has been approved by the administrator.");
                 } else if (ResponceMessage.equalsIgnoreCase("fail")) {

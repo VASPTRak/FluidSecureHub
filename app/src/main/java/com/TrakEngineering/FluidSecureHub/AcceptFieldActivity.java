@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -208,6 +208,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                         System.out.println("iiiiii" + IntervalToStopFuel_FS1);
                                         String vehicleNumber="";
                                         String accOther="";
+                                        String LimitReachedMessage_FS1="";
 
                                         //For Print Recipt
                                         String VehicleSum_FS1 = "";
@@ -223,7 +224,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                         String PumpOnTime_FS1 = "";
 
 
-                                        CommonUtils.SaveVehiFuelInPref_FS1(AcceptFieldActivity.this, TransactionId_FS1,VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1,PrintDate_FS1,Company_FS1,Location_FS1,PersonName_FS1,BluetoothCardReader_FS1,PrinterName_FS1,vehicleNumber,accOther,VehicleSum_FS1,DeptSum_FS1,VehPercentage_FS1,DeptPercentage_FS1,SurchargeType_FS1,ProductPrice_FS1,IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1);
+                                        CommonUtils.SaveVehiFuelInPref_FS1(AcceptFieldActivity.this, TransactionId_FS1,VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1,PrintDate_FS1,Company_FS1,Location_FS1,PersonName_FS1,BluetoothCardReader_FS1,PrinterName_FS1,vehicleNumber,accOther,VehicleSum_FS1,DeptSum_FS1,VehPercentage_FS1,DeptPercentage_FS1,SurchargeType_FS1,ProductPrice_FS1,IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1,LimitReachedMessage_FS1,"");
 
 
                                         Intent intent = new Intent(AcceptFieldActivity.this, DisplayMeterActivity.class);
@@ -274,8 +275,9 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                         String OdoMeter = "";
                                         String Hours = "";
                                         String PumpOnTime = "";
+                                        String LimitReachedMessage = "";
 
-                                        CommonUtils.SaveVehiFuelInPref(AcceptFieldActivity.this, TransactionId,VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel,PrintDate,Company,Location,PersonName,BluetoothCardReader,PrinterName,vehicleNumber,accOther,VehicleSum,DeptSum,VehPercentage,DeptPercentage,SurchargeType,ProductPrice,IsTLDCall,EnablePrinter,OdoMeter,Hours,PumpOnTime);
+                                        CommonUtils.SaveVehiFuelInPref(AcceptFieldActivity.this, TransactionId,VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel,PrintDate,Company,Location,PersonName,BluetoothCardReader,PrinterName,vehicleNumber,accOther,VehicleSum,DeptSum,VehPercentage,DeptPercentage,SurchargeType,ProductPrice,IsTLDCall,EnablePrinter,OdoMeter,Hours,PumpOnTime,LimitReachedMessage,"");
 
 
                                         Intent intent = new Intent(AcceptFieldActivity.this, DisplayMeterActivity.class);

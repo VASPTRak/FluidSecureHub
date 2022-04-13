@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -40,7 +40,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
     private ConnectionDetector cd = new ConnectionDetector(AcceptOdoActivity.this);
 
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "";
-    String PreviousOdo = "", OdoLimit = "", OdometerReasonabilityConditions = "", CheckOdometerReasonable = "";
+    String PreviousOdo = "", OdoLimit = "", OdometerReasonabilityConditions = "", CheckOdometerReasonable = "", LastTransactionFuelQuantity = "";
 
     String TimeOutinMinute, ScreenNameForOdometer = "odometer";
     boolean Istimeout_Sec = true;
@@ -62,49 +62,13 @@ public class AcceptOdoActivity extends AppCompatActivity {
         AppConstants.OdoErrorCode = "0";
 
         editOdoTenths.setText("");
-        /*if (Constants.CurrentSelectedHose.equals("FS1")) {
-            editOdoTenths.setText(ZR(String.valueOf(Constants.AccOdoMeter_FS1)));
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            editOdoTenths.setText(ZR(String.valueOf(Constants.AccOdoMeter)));
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            editOdoTenths.setText(ZR(String.valueOf(Constants.AccOdoMeter_FS3)));
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            editOdoTenths.setText(ZR(String.valueOf(Constants.AccOdoMeter_FS4)));
-        }*/
+
 
         Istimeout_Sec = true;
         TimeoutOdoScreen();
 
 
-        /*
-        //Set/Reset EnterOdometer text
-        if (Constants.CurrentSelectedHose.equals("FS1")) {
-            if (Constants.AccOdoMeter_FS1 != 0) {
-                editOdoTenths.setText(String.valueOf(Constants.AccOdoMeter_FS1));
-            } else {
-                editOdoTenths.setText(String.valueOf(""));
-            }
 
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            if (Constants.AccOdoMeter != 0) {
-                editOdoTenths.setText(String.valueOf(Constants.AccOdoMeter));
-            } else {
-                editOdoTenths.setText(String.valueOf(""));
-            }
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            if (Constants.AccOdoMeter_FS3 != 0) {
-                editOdoTenths.setText(String.valueOf(Constants.AccOdoMeter_FS3));
-            } else {
-                editOdoTenths.setText(String.valueOf(""));
-            }
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            if (Constants.AccOdoMeter_FS4 != 0) {
-                editOdoTenths.setText(String.valueOf(Constants.AccOdoMeter_FS4));
-            } else {
-                editOdoTenths.setText(String.valueOf(""));
-            }
-        }
-        */
     }
 
     @Override
@@ -114,9 +78,12 @@ public class AcceptOdoActivity extends AppCompatActivity {
         menu.findItem(R.id.mconfigure_tld).setVisible(false);
         menu.findItem(R.id.enable_debug_window).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
-        menu.findItem(R.id.mconfigure_fsnp).setVisible(false);
+        menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
+        menu.findItem(R.id.mcamera_back).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -199,9 +166,17 @@ public class AcceptOdoActivity extends AppCompatActivity {
                 editOdoTenths.setText(Constants.AccOdoMeter_FS3 + "");
             }
 
-        } else {
+        } else  if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
             if (Constants.AccOdoMeter_FS4 > 0) {
                 editOdoTenths.setText(Constants.AccOdoMeter_FS4 + "");
+            }
+        } else  if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+            if (Constants.AccOdoMeter_FS5 > 0) {
+                editOdoTenths.setText(Constants.AccOdoMeter_FS5 + "");
+            }
+        } else  if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+            if (Constants.AccOdoMeter_FS6 > 0) {
+                editOdoTenths.setText(Constants.AccOdoMeter_FS6 + "");
             }
         }
 
@@ -239,6 +214,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
     public void TimeoutOdoScreen() {
 
+        Log.i("TimeoutoDOScreen", "TimeOut_Start");
+        Log.i("TimeoutoDOScreen", String.valueOf(Istimeout_Sec));
         SharedPreferences sharedPrefODO = AcceptOdoActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
         IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
@@ -249,6 +226,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
         OdoLimit = sharedPrefODO.getString("OdoLimit", "");
         OdometerReasonabilityConditions = sharedPrefODO.getString("OdometerReasonabilityConditions", "");
         CheckOdometerReasonable = sharedPrefODO.getString("CheckOdometerReasonable", "");
+        LastTransactionFuelQuantity = sharedPrefODO.getString("LastTransactionFuelQuantity", "");
 
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
         //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
@@ -348,7 +326,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
             if (!editOdoTenths.getText().toString().trim().isEmpty()) {
 
-                int C_AccOdoMeter;
+                int C_AccOdoMeter=0;
                 if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                     Constants.AccOdoMeter_FS1 = Integer.parseInt(editOdoTenths.getText().toString().trim());
                     C_AccOdoMeter = Constants.AccOdoMeter_FS1;
@@ -358,13 +336,20 @@ public class AcceptOdoActivity extends AppCompatActivity {
                 } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
                     Constants.AccOdoMeter_FS3 = Integer.parseInt(editOdoTenths.getText().toString().trim());
                     C_AccOdoMeter = Constants.AccOdoMeter_FS3;
-                } else {
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4"))  {
                     Constants.AccOdoMeter_FS4 = Integer.parseInt(editOdoTenths.getText().toString().trim());
                     C_AccOdoMeter = Constants.AccOdoMeter_FS4;
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5"))  {
+                    Constants.AccOdoMeter_FS5 = Integer.parseInt(editOdoTenths.getText().toString().trim());
+                    C_AccOdoMeter = Constants.AccOdoMeter_FS5;
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6"))  {
+                    Constants.AccOdoMeter_FS6 = Integer.parseInt(editOdoTenths.getText().toString().trim());
+                    C_AccOdoMeter = Constants.AccOdoMeter_FS6;
                 }
 
 
                 OfflineConstants.storeCurrentTransaction(AcceptOdoActivity.this, "", "", "", editOdoTenths.getText().toString().trim(), "", "", "", "");
+
 
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptOdoActivity.this)) {
                     //skip all validation in permanent offline mode
@@ -376,7 +361,17 @@ public class AcceptOdoActivity extends AppCompatActivity {
                         int PO = Integer.parseInt(PreviousOdo.trim());
                         int OL = Integer.parseInt(OdoLimit.trim());
 
-                        if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
+                        double LastTxtnQuantity = Double.parseDouble(LastTransactionFuelQuantity.trim());
+
+                        if(LastTxtnQuantity > 10 && C_AccOdoMeter == PO) {
+                            // Must entered different reading
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Last Transaction Fuel Quantity: " + LastTxtnQuantity);
+                            Istimeout_Sec = true;
+                            ResetTimeoutOdoScreen();
+                            CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", getResources().getString(R.string.prevReading));
+
+                        } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                             if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
 
@@ -403,8 +398,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                             AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter + " is not within the reasonability");
 
                                         editOdoTenths.setText("");
-                                        CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "The odo entered is not within the reasonability your administrator has assigned, please contact your administrator.");
-                                        //AppConstants.colorToastBigFont(getApplicationContext(), "The odo entered is not within the reasonability your administrator has assigned, please contact your administrator.", Color.RED);//Bad odometer! Please try again.
+                                        CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + "  entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                         Istimeout_Sec = true;
                                         ResetTimeoutOdoScreen();
 
@@ -427,7 +421,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                     }
                                     Istimeout_Sec = true;
                                     ResetTimeoutOdoScreen();
-                                    CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "The odo entered is not within the reasonability your administrator has assigned, please contact your administrator.");
+                                    CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + "  entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     //AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not within the reasonability", Color.RED);
                                 }
                             }
@@ -507,7 +501,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                         } else {
                                             Istimeout_Sec = true;
                                             ResetTimeoutOdoScreen();
-                                            CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "Please enter Correct Odometer");
+                                            CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "Please enter Correct " + ScreenNameForOdometer);
                                             //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer",Color.RED);
                                         }
                                     }
@@ -525,7 +519,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                     } else {
                                         Istimeout_Sec = true;
                                         ResetTimeoutOdoScreen();
-                                        CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "Please enter Correct Odometer");
+                                        CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", "Please enter Correct " + ScreenNameForOdometer);
                                         //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer",Color.RED);
                                     }
 
@@ -547,7 +541,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
             } else {
                 Istimeout_Sec = true;
                 ResetTimeoutOdoScreen();
-                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", "Please enter odometer, and try again.");
+                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", "Please enter " + ScreenNameForOdometer + ", and try again.");
             }
 
 

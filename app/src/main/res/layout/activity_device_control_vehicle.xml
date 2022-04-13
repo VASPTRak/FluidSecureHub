@@ -7,9 +7,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentTop="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,20 +17,19 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/layout_reader_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_margin="10dp"
                 android:layout_gravity="center"
-                android:id="@+id/layout_reader_status"
-                >
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tv_reader_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
                     android:gravity="center"
                     android:text=""
                     android:textAllCaps="false"
@@ -42,8 +41,8 @@
                     android:id="@+id/tv_hf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
                     android:gravity="center"
                     android:text=""
                     android:textAllCaps="false"
@@ -55,8 +54,8 @@
                     android:id="@+id/tv_lf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
                     android:gravity="center"
                     android:text=""
                     android:textAllCaps="false"
@@ -68,8 +67,8 @@
                     android:id="@+id/tv_mag_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
                     android:gravity="center"
                     android:text=""
                     android:textAllCaps="false"
@@ -78,15 +77,14 @@
                     android:textSize="18dp" />
 
 
-
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:gravity="center"
                 android:layout_marginBottom="15dp"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <EditText
@@ -94,138 +92,138 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:visibility="gone"
                     android:hint="input command"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:visibility="gone" />
 
                 <TextView
+                    android:id="@+id/tv_fobkey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tv_fobkey"
-                    android:textColor="@color/black"
                     android:gravity="center"
                     android:text="@string/no_data"
                     android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/black"
                     android:textSize="14dp" />
 
                 <Button
                     android:id="@+id/btn_ReadFobAgain"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:background="@color/colorFluid"
                     android:text=" Click to read Access Device again "
                     android:textColor="@color/white"
-                    android:textSize="@dimen/go_button_text" />
+                    android:textSize="@dimen/go_button_text"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_title"
-                    android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textAllCaps="false"
+                    android:gravity="center"
                     android:text="VEHICLE IDENTIFICATION"
-                    android:textSize="@dimen/heading_text" />
+                    android:textAllCaps="false"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/heading_text"
+                    android:textStyle="bold" />
 
 
                 <TextView
                     android:id="@+id/tv_fob_Reader"
-                    android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textColor="@color/black"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textAllCaps="false"
+                    android:gravity="center"
                     android:text="Present your vehicle Access Device Below"
+                    android:textAllCaps="false"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/go_button_text" />
 
                 <TextView
                     android:id="@+id/tv_or"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/Red"
-                    android:textStyle="bold"
                     android:text="OR"
-                    android:textSize="40sp" />
+                    android:textColor="@color/Red"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
 
 
                 <TextView
+                    android:id="@+id/tv_dont_have_fob"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tv_dont_have_fob"
-                    android:textColor="@color/black"
                     android:gravity="center"
                     android:text="Enter your vehicle ID in the green box below"
                     android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/go_button_text" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/Linear_layout_vehicleNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="90dp"
                 android:layout_marginLeft="90dp"
-                android:id="@+id/Linear_layout_vehicleNumber"
+                android:layout_marginRight="90dp"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tv_enter_vehicle_no"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:id="@+id/tv_enter_vehicle_no"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center"
-                    android:textStyle="bold"
                     android:paddingLeft="80dp"
                     android:paddingRight="80dp"
-                    android:layout_marginBottom="20dp"
                     android:text="Please wait.."
-                    android:textColor="#808080"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textSize="35dp" />
+                    android:textColor="#808080"
+                    android:textSize="35dp"
+                    android:textStyle="bold" />
 
 
                 <TextView
+                    android:id="@+id/tv_vehicle_no_below"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tv_vehicle_no_below"
-                    android:gravity="left"
                     android:layout_marginLeft="20dp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
+                    android:gravity="center"
                     android:text="Vehicle Number:"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textSize="35dp" />
+                    android:textColor="@color/black"
+                    android:textSize="35dp"
+                    android:textStyle="bold" />
 
 
                 <TextView
+                    android:id="@+id/tv_fob_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:id="@+id/tv_fob_number"
                     android:gravity="left"
                     android:text="Access Device:"
-                    android:textSize="@dimen/date_text" />
-
+                    android:textSize="@dimen/date_text"
+                    android:visibility="gone" />
 
 
                 <EditText
                     android:id="@+id/editVehicleNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="55dp"
-                    android:layout_marginLeft="55dp"
-                    android:background="@color/colorFluid"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="55dp"
+                    android:layout_marginRight="55dp"
+                    android:background="@color/colorFluid"
+                    android:gravity="center"
                     android:imeOptions="actionDone"
                     android:inputType="number|text"
-                    android:gravity="center"
                     android:maxLength="20"
                     android:padding="5sp"
                     android:singleLine="true"
@@ -238,31 +236,31 @@
             </LinearLayout>
 
 
-
             <LinearLayout
+                android:id="@+id/Linear_layout_Save_back_buttons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:id="@+id/Linear_layout_Save_back_buttons"
+                android:layout_marginLeft="90dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="90dp"
-                android:layout_marginLeft="90dp"
                 android:layout_marginBottom="12dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="2">
 
 
                 <Button
                     android:id="@+id/btnCancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="25dp"
                     android:layout_gravity="center_horizontal"
-                    android:onClick="cancelAction"
+                    android:layout_marginRight="25dp"
                     android:layout_weight="1"
                     android:background="@color/backbtn"
-                    android:text="Back"
+                    android:onClick="cancelAction"
+                    android:text="Previous Screen"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/go_button_text" />
+                    android:textSize="@dimen/previous_button_text" />
 
                 <Button
                     android:id="@+id/btnSave"
@@ -281,11 +279,11 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="100dp"
-                android:layout_marginLeft="100dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="90dp"
+                android:layout_marginRight="90dp"
                 android:layout_marginBottom="90dp"
-                android:orientation="vertical"
-                android:layout_gravity="center">
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/btnFStag"
@@ -301,21 +299,19 @@
                     android:id="@+id/btn_barcode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:background="@color/colorFluid"
-                    android:text=" Use Barcode "
+                    android:text=" Tap to use On-Screen barcode "
                     android:textColor="@color/white"
-                    android:textSize="@dimen/go_button_text" />
+                    android:textSize="@dimen/go_button_text"
+                    android:visibility="gone" />
 
 
             </LinearLayout>
 
 
-
-
         </LinearLayout>
-
 
 
     </ScrollView>
@@ -323,9 +319,9 @@
     <!-- menu bar -->
     <include
         layout="@layout/activity_footer_keybord"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentBottom="true" />
 
 
 

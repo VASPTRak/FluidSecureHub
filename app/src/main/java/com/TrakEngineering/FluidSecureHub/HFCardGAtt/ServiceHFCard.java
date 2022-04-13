@@ -106,7 +106,7 @@ public class ServiceHFCard extends Service {
             final String action = intent.getAction();
             if (LeServiceHFCard.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
-
+                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Connected");
                 Constants.HF_ReaderStatus = "HF Connected";
                 System.out.println("ACTION_GATT_HF_CONNECTED");
 
@@ -154,7 +154,7 @@ public class ServiceHFCard extends Service {
                 mConnected = false;
                 Constants.HF_ReaderStatus = "HF Disconnected";
                 System.out.println("ACTION_GATT_HF_DISCONNECTED");
-
+                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Disconnected");
 
             } else if (LeServiceHFCard.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 System.out.println("ACTION_GATT_HF_SERVICES_DISCOVERED");
@@ -172,6 +172,7 @@ public class ServiceHFCard extends Service {
 
 
     private void displayData(String data) {
+
         if (data != null) {
 
             try {
@@ -182,17 +183,27 @@ public class ServiceHFCard extends Service {
                     last_val = Seperate[Seperate.length - 1];
                 }
 
-                if (!last_val.equals("00 00 00 ")) {
+
+                last_val = last_val.replace("\\n", "");
+
+                last_val = last_val.replace(" ","").trim();
+
+                if (!last_val.equals("00 00 00 ") && !last_val.equalsIgnoreCase("00 00 00 00 00 00 00 00 00") && CommonUtils.ValidateFobkey(last_val)) {
+
+                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Display Data 1:");
                     sendHFDetailsToActivity(last_val);
+
+                    SharedPreferences sharedPre = ServiceHFCard.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
+                    String SRUdate = sharedPre.getString("bleHFUpdateSuccessFlag", "N");
+                    if (SRUdate.equalsIgnoreCase("Y")) {
+                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Display Data 2:");
+                        mBluetoothLeService.writeCustomCharacteristic(0x01, "", true);
+                    }
+                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Display Data 3:");
+                    mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);  //Temp commented for issue #1667
                 }
 
-                SharedPreferences sharedPre = ServiceHFCard.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
-                String SRUdate = sharedPre.getString("bleHFUpdateSuccessFlag", "N");
-                if (SRUdate.equalsIgnoreCase("Y")) {
-                    mBluetoothLeService.writeCustomCharacteristic(0x01, "", true);
-                }
 
-                mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);
 
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -242,13 +253,13 @@ public class ServiceHFCard extends Service {
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
         IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
         BLEVersion = myPrefslo.getString("BLEVersion", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
+        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
         String CheckVersionFileLocation = FOLDER_PATH_BLE + BLEVersion + "_check.txt";
 
         if (IsHFUpdate.trim().equalsIgnoreCase("Y")) {
 
             DeleteOldVersionTxtFiles(FOLDER_PATH_BLE);
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader_" + BLEType);
+            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader");
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();
@@ -266,7 +277,7 @@ public class ServiceHFCard extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
                 } else {
-                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader_" + BLEType + ".bin", "BLEUpdate");
+                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader.bin", "BLEUpdate");
                 }
 
             } else {

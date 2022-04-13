@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:padding="@dimen/main_outer_padding"
-    tools:context="com.TrakEngineering.FluidSecureHubTest.AcceptManualOdoActivityFA">
+    tools:context="com.TrakEngineering.FluidSecureHub.AcceptManualOdoActivityFA">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -74,9 +74,9 @@
                     android:layout_marginTop="10sp"
                     android:layout_weight="1"
                     android:background="@color/backbtn"
-                    android:text="Back"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/go_button_text" />
+                    android:text="Previous Screen"
+                    android:textSize="@dimen/previous_button_text"
+                    android:textColor="@color/black"/>
 
                 <Button
                     android:id="@+id/btnSave"

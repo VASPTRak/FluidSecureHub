@@ -157,9 +157,9 @@
                 android:layout_weight="1"
                 android:layout_marginRight="25dp"
                 android:background="@color/backbtn"
-                android:text="Back"
-                android:textColor="@color/black"
-                android:textSize="@dimen/go_button_text" />
+                android:text="Previous Screen"
+                android:textSize="@dimen/previous_button_text"
+                android:textColor="@color/black"/>
 
             <Button
                 android:id="@+id/btnSave"

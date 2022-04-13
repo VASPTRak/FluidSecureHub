@@ -61,15 +61,15 @@ public class LeServiceMagCard extends Service {
 
 
     public final static String ACTION_GATT_CONNECTED =
-            "com.TrakEngineering.FluidSecureHubTest.HFBle_vehicle.ACTION_GATT_CONNECTED";
+            "com.TrakEngineering.FluidSecureHub.HFBle_vehicle.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
-            "com.TrakEngineering.FluidSecureHubTest.HFBle_vehicle.ACTION_GATT_DISCONNECTED";
+            "com.TrakEngineering.FluidSecureHub.HFBle_vehicle.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.TrakEngineering.FluidSecureHubTest.HFBle_vehicle.ACTION_GATT_SERVICES_DISCOVERED";
+            "com.TrakEngineering.FluidSecureHub.HFBle_vehicle.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
-            "com.TrakEngineering.FluidSecureHubTest.HFBle_vehicle.ACTION_DATA_AVAILABLE";
+            "com.TrakEngineering.FluidSecureHub.HFBle_vehicle.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
-            "com.TrakEngineering.FluidSecureHubTest.HFBle_vehicle.EXTRA_DATA";
+            "com.TrakEngineering.FluidSecureHub.HFBle_vehicle.EXTRA_DATA";
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.

@@ -4,12 +4,10 @@ import android.app.ActivityManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class JobSchedulerService extends JobService {
     private static final String TAG = "JobSchedulerService";
@@ -18,8 +16,9 @@ public class JobSchedulerService extends JobService {
     public boolean onStartJob(JobParameters params) {
         System.out.println("JobService onStartJob:");
 
-
+ /*
         try {
+
 
             boolean foregroud = new ForegroundCheckTask().execute(getApplicationContext()).get();
             System.out.println("JobService foregroud"+foregroud);
@@ -42,26 +41,7 @@ public class JobSchedulerService extends JobService {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-        /*try {
-            WifiManager wifi = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-            if (!wifi.isWifiEnabled()) {
-
-                if (AppConstants.isMobileDataAvailable(JobSchedulerService.this)) {
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        //start foreground service is at welcome activity oncreate
-                        this.startForegroundService(new Intent(this, BackgroundService.class));
-                    } else {
-                        startService(new Intent(this, BackgroundService.class));
-                    }
-
-                }
-
-            }
-        } catch (Exception e) {
-            System.out.println("JobSchedulerService Exception" + e);
-        }*/
+ */
 
 
         return false;
@@ -74,6 +54,7 @@ public class JobSchedulerService extends JobService {
         return false;
     }
 
+    /*
     class ForegroundCheckTask extends AsyncTask<Context, Void, Boolean> {
 
         @Override
@@ -96,6 +77,6 @@ public class JobSchedulerService extends JobService {
             }
             return false;
         }
-    }
+    }*/
 
 }

@@ -7,13 +7,16 @@
                         support@trakeng.com
                         www.trakeng.com</string>
 
+    <string name="arrow">\u2B06</string>
+    <string name="arrow_uni_code">\u2191</string>
     <string name="start_fueling">Start Fueling</string>
     <string name="fuel_another">Fuel Another</string>
     <string name="stop_fueling">Stop Fueling</string>
     <string name="fuel_history">Fuel History</string>
     <string name="regi">Registration</string>
-    <string name="support_line"><u>For 24/7 Support or Assistance:</u></string>
-    <string name="no_internet">Make sure that you are connected to the Internet</string>
+    <string name="support_line"><u>For 24/7 Support</u></string>
+    <string name="no_internet">The system has detected that you do not have cellular service and offline options are not enabled. Please contact your Manger.</string>
+    <string name="server_connection_problem">The system has detected that you do not have cellular service and offline options are not enabled. Please contact your Manger.</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_fob_reader">FobReader</string>
 
@@ -153,6 +156,8 @@
     <string name="version">Version</string>
     <string name="unknown_version">Unknown version</string>
     <string name="ok">Ok</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
 
     <!-- Activity -->
     <string name="apdu_command">APDU command</string>
@@ -246,5 +251,24 @@
     <string name="actions_note">Send an (Implicit )Intent with an actions below in bold. Note that in OREO this is no longer as trivial as it used to be. <a href="http://www.floatingintheclouds.com/app-wifi-hot-spot-on-oreo/">More info here</a>.</string>
     <string name="instructions"><a href="http://www.floatingintheclouds.com/app-wifi-hot-spot-on-oreo/">INSTRUCTIONS</a></string>
 
+
+    <string name="Name">Name</string>
+    <string name="Mobile">Mobile</string>
+    <string name="Email">Email</string>
+
+    <string name="BtnScanBarcode">Scan barcode</string>
+    <string name="BtnReadAccessDevice">Please Hold Access Device to Reader</string>
+    <string name="BtnReadAccessDeviceV">Please Hold Vehicle FOB to reader</string>
+    <string name="BtnReadAccessDeviceP">Please Hold Personnel FOB to reader</string>
+    <string name="FobAssignButtonVehicle">Tap here to start Vehicle\n access device assignment</string>
+    <string name="FobAssignButtonPer">Tap here to start personnel\n access device assignment</string>
+    <string name="FobRead">Read Access Device</string>
+
+    <string name="BTLinkPageMsg">The LINK you have selected is not configured. Please select the link from the following list.
+If the link is not in the list please click the button "Pair new LINK"  which will advance to the Bluetooth page.  Once you see the LINK name which you are attempting to select, select it on the next page and then click pair. If you do not see this LINK in the next page, reset power and try again. If after resetting power, you still do not see this LINK name, please call into Support.</string>
+    <string name="BTLinkNotInPairList">The LINK you have selected is not currently paired. We are advancing to the BlueTooth page. Once you see the LINK name which you are attempting to select, select it on the next page and then click pair. If you do not see this LINK in the next page, reset power and try again. If after resetting power, you still do not see this LINK name, please call into Support</string>
+    <string name="askreplacehub">"HUB Name is entered that already has an existing device assigned. Would you like to replace your existing device with this one. By pressing proceed here you will be replacing this HUB's exisitng device with this unit. This Action must be performed by someone who has Access to the Cloud. If you are someone with a CustomerAdmin profile in the Cloud, please enter the email and password you use to log into the Cloud below. Would you like to proceed?" </string>
+
+    <string name="prevReading">You have entered a reading that was previously entered. Please check and try again. If the issue persists, please contact your Manager.</string>
 
 </resources>

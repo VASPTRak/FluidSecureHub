@@ -87,9 +87,9 @@
                     android:layout_weight="1"
                     android:background="@color/backbtn"
                     android:onClick="cancelAction"
-                    android:text="Back"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/go_button_text" />
+                    android:text="Previous Screen"
+                    android:textSize="@dimen/previous_button_text"
+                    android:textColor="@color/black" />
 
                 <Button
                     android:id="@+id/btnSave"
@@ -111,6 +111,7 @@
     <!-- menu bar -->
     <include
         layout="@layout/activity_footer_keybord"
+        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

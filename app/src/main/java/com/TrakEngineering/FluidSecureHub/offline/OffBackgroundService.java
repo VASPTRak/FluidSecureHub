@@ -7,14 +7,20 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
 
+import com.TrakEngineering.FluidSecureHub.AcceptVehicleActivity_new;
 import com.TrakEngineering.FluidSecureHub.Aes_Encryption;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
+import com.TrakEngineering.FluidSecureHub.Constants;
+import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
+import com.TrakEngineering.FluidSecureHub.enity.VehicleRequireEntity;
+import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -40,6 +46,8 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
+import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 
 public class OffBackgroundService extends Service {
 
@@ -67,6 +75,7 @@ public class OffBackgroundService extends Service {
 
         try {
 
+            if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
             Log.i(TAG, " onStartCommand -------------- _templog");
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " onStartCommand ------------------- _templog");
@@ -123,13 +132,27 @@ public class OffBackgroundService extends Service {
                         AppConstants.WriteinFile(TAG + " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
                 }
             } else {
-                Log.i(TAG, " No previous offline data hence start offline data download.");
+
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
+                    AppConstants.WriteinFile(TAG + " No previous offline data.");
 
-                deleteAllDownloadedFiles();
+                /*if (!AppConstants.selectHosePressed) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
 
-                new GetAPIToken().execute();
+                    deleteAllDownloadedFiles();
+
+                    new GetAPIToken().execute();
+                }else
+                {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " No previous offline data but select hose is pressed.");
+
+                    }*/
+                }
+            } else {
+                Log.i(TAG, " onStartCommand -------------- One of the hose is busy, Skip offline data download");
+                cancelThinDownloadManager();
             }
             stopSelf();
 
@@ -139,6 +162,15 @@ public class OffBackgroundService extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " onStartCommand Exception:"+e.toString());
             stopSelf();
+        }
+
+        try {
+            if (OfflineConstants.isOfflineAccess(OffBackgroundService.this)) {
+                ThinDownloadManager downloadManager = new ThinDownloadManager();
+                downloadManager.cancelAll();
+                AppConstants.offlineDownloadIds.clear();
+            }
+        } catch (Exception e) {
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -251,7 +283,7 @@ public class OffBackgroundService extends Service {
                 OkHttpClient client = new OkHttpClient();
 
                 Request request = new Request.Builder()
-                        .url(AppConstants.API_URL_HUB + "?Email=" + Email + "&IMEI=" + IMEI)
+                        .url(AppConstants.API_URL_HUB + "?Email=" + Email + "&IMEI=" + IMEI +"&AcceptBlankPath=y")
                         .addHeader("Authorization", "bearer " + api_token)
                         .build();
 
@@ -267,7 +299,6 @@ public class OffBackgroundService extends Service {
                     AppConstants.WriteinFile(TAG + " GetAPIHubDetails InBackG Ex:" + e.getMessage());
 
             }
-
 
             return resp;
         }
@@ -288,7 +319,6 @@ public class OffBackgroundService extends Service {
                     System.out.println("ResponceMessage:" + ResponceMessage);
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
-
 
                         JSONObject HubDataObj = jsonObject.getJSONObject("HubDataObj");
 
@@ -321,17 +351,23 @@ public class OffBackgroundService extends Service {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " Offline data Link,Vehicle,Pin Start ");
 
+                                /*new GetAPILinkDetails().execute();
 
-                            new GetAPILinkDetails().execute();
+                                new GetAPIVehicleDetails().execute();
 
-                            new GetAPIVehicleDetails().execute();
+                                new GetAPIPersonnelPinDetails().execute();*/
 
-                            new GetAPIPersonnelPinDetails().execute();
+                                new GenerateFilesAPI().execute();
 
 
-                            AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
+                                    startDownloadTimerTask();
+                                }
+                            }, 60000 * 3);
 
-                            startDownloadTimerTask();
 
                         } else {
                             if (AppConstants.GenerateLogs)
@@ -359,56 +395,67 @@ public class OffBackgroundService extends Service {
 
     public void startDownloadTimerTask() {
 
-        EntityHub obj = controller.getOfflineHubDetails(OffBackgroundService.this);
+        try {
 
-        String VehicleDataFilePath = obj.VehicleDataFilePath;
-        String PersonnelDataFilePath = obj.PersonnelDataFilePath;
-        String LinkDataFilePath = obj.LinkDataFilePath;
+            EntityHub obj = controller.getOfflineHubDetails(OffBackgroundService.this);
 
-
-        repeatedTask = new TimerTask() {
-            public void run() {
-
-                System.out.println("startDownloadTimerTask**********");
-
-                String status_v = getDownloadFileStatus("Vehicle");
-
-                if (status_v.isEmpty() || status_v.equalsIgnoreCase("2"))
-                    downloadLibrary(VehicleDataFilePath, "Vehicle");
+            String VehicleDataFilePath = obj.VehicleDataFilePath;
+            String PersonnelDataFilePath = obj.PersonnelDataFilePath;
+            String LinkDataFilePath = obj.LinkDataFilePath;
 
 
-                String status_p = getDownloadFileStatus("Personnel");
+            repeatedTask = new TimerTask() {
+                public void run() {
 
-                if (status_p.isEmpty() || status_p.equalsIgnoreCase("2"))
-                    downloadLibrary(PersonnelDataFilePath, "Personnel");
+                    System.out.println("startDownloadTimerTask**********");
+
+                    String status_v = getDownloadFileStatus("Vehicle");
+
+                    if (status_v.isEmpty() || status_v.equalsIgnoreCase("2")) {
+                        if (!VehicleDataFilePath.equalsIgnoreCase(""))
+                            downloadLibrary(VehicleDataFilePath, "Vehicle");
+                    }
 
 
-                String status_l = getDownloadFileStatus("Link");
+                    String status_p = getDownloadFileStatus("Personnel");
 
-                if (status_l.isEmpty() || status_l.equalsIgnoreCase("2"))
-                    downloadLibrary(LinkDataFilePath, "Link");
+                    if (status_p.isEmpty() || status_p.equalsIgnoreCase("2")) {
+                        if (!PersonnelDataFilePath.equalsIgnoreCase(""))
+                            downloadLibrary(PersonnelDataFilePath, "Personnel");
+                    }
 
 
-                if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1")) {
+                    String status_l = getDownloadFileStatus("Link");
 
-                    setSharedPrefOfflineData(getApplicationContext());
+                    if (status_l.isEmpty() || status_l.equalsIgnoreCase("2")) {
+                        if (!LinkDataFilePath.equalsIgnoreCase(""))
+                            downloadLibrary(LinkDataFilePath, "Link");
+                    }
 
-                    if (timer != null)
-                        timer.cancel();
 
-                    AppConstants.WriteinFile("All 3 files downloaded successfully.");
+                    if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1")) {
 
+                        setSharedPrefOfflineData(getApplicationContext());
+
+                        if (timer != null)
+                            timer.cancel();
+
+                        AppConstants.WriteinFile("All 3 files downloaded successfully.");
+
+                    }
                 }
+            };
 
+            long delay = 5000L;
+            long period = 60000L;
+            timer = new Timer("TimerOffDownload");
 
-            }
-        };
+            timer.scheduleAtFixedRate(repeatedTask, delay, period);
 
-        long delay = 5000L;
-        long period = 60000L;
-        timer = new Timer("TimerOffDownload");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-        timer.scheduleAtFixedRate(repeatedTask, delay, period);
 
     }
 
@@ -427,9 +474,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(10, TimeUnit.SECONDS);
+                client.setReadTimeout(10, TimeUnit.SECONDS);
+                client.setWriteTimeout(10, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_LINK + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -497,6 +544,9 @@ public class OffBackgroundService extends Service {
                             String Pulserratio = jsonObj.getString("Pulserratio");
                             String MacAddress = jsonObj.getString("MacAddress");
                             String IsTLDCall = jsonObj.getString("IsTLDCall");
+                            String LinkCommunicationType = jsonObj.getString("HubLinkCommunication");//LinkCommunicationType
+                            String APMacAddress = jsonObj.getString("APMacAddress");
+                            String BTMacAddress = jsonObj.getString("BluetoothMacAddress");
 
                             JSONArray FuelingTimesObj = jsonObj.getJSONArray("FuelingTimesObj");
 
@@ -517,7 +567,7 @@ public class OffBackgroundService extends Service {
                                 }
                             }
 
-                            InsetLD = controller.insertLinkDetails(SiteId, WifiSSId, PumpOnTime, PumpOffTime, AuthorizedFuelingDays, Pulserratio, MacAddress, IsTLDCall);
+                            InsetLD = controller.insertLinkDetails(SiteId, WifiSSId, PumpOnTime, PumpOffTime, AuthorizedFuelingDays, Pulserratio, MacAddress, IsTLDCall,LinkCommunicationType,APMacAddress,BTMacAddress);
 
                             if (InsetLD == -1)
                                 if (AppConstants.GenerateLogs)
@@ -559,9 +609,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(10, TimeUnit.SECONDS);
+                client.setReadTimeout(10, TimeUnit.SECONDS);
+                client.setWriteTimeout(10, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_VEHICLE + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -680,9 +730,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(10, TimeUnit.SECONDS);
+                client.setReadTimeout(10, TimeUnit.SECONDS);
+                client.setWriteTimeout(10, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_PERSONNEL + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -844,7 +894,6 @@ public class OffBackgroundService extends Service {
 
         ThinDownloadManager downloadManager = new ThinDownloadManager();
 
-
         Uri downloadUri = Uri.parse(downloadUrl);
         Uri destinationUri = Uri.parse(Environment.getExternalStorageDirectory() + "/FSdata/" + fileName + ".txt");
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
@@ -860,8 +909,8 @@ public class OffBackgroundService extends Service {
 
                         insertDownloadFileStatus(fileName, "1");
 
-                        readEncryptedFileParseJsonInSqlite(fileName);
-
+                        if (!AppConstants.selectHosePressed)
+                            readEncryptedFileParseJsonInSqlite(fileName);
 
                     }
 
@@ -882,7 +931,6 @@ public class OffBackgroundService extends Service {
                     @Override
                     public void onProgress(int id, long totalBytes, long downlaodedBytes, int progress) {
 
-
                         insertDownloadFileStatus(fileName, "3");
                         //AppConstants.WriteinFile("download-onProgress--" + fileName + " " + totalBytes + " " + downlaodedBytes + " " + progress);
                     }
@@ -890,6 +938,13 @@ public class OffBackgroundService extends Service {
 
 
         int downloadId = downloadManager.add(downloadRequest);
+
+        try {
+            AppConstants.offlineDownloadIds.add(downloadId + "");
+        } catch (Exception e) {
+        }
+
+
     }
 
     public void readEncryptedFileParseJsonInSqlite(String file_name) {
@@ -962,6 +1017,115 @@ public class OffBackgroundService extends Service {
             }
         } catch (Exception e) {
             AppConstants.WriteinFile("deleteAllDownloadedFiles-" + e.getMessage());
+        }
+    }
+
+    public void cancelThinDownloadManager() {
+        try {
+            ThinDownloadManager downloadManager = new ThinDownloadManager();
+            downloadManager.cancelAll();
+            AppConstants.offlineDownloadIds.clear();
+            deleteIncompleteOfflineDataFiles();
+            AppConstants.WriteinFile("WelAct- cancel offline Download...");
+
+        } catch (Exception e) {
+        }
+    }
+
+    public void deleteIncompleteOfflineDataFiles() {
+        File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                System.out.println("Deleted file...." + children[i]);
+                new File(dir, children[i]).delete();
+            }
+        }
+    }
+
+    public class GenerateFilesAPI extends AsyncTask<String, Void, String> {
+
+
+        protected String doInBackground(String... param) {
+            String resp = "";
+
+            try {
+
+                String api_token = controller.getOfflineToken(OffBackgroundService.this);
+                String Email = CommonUtils.getCustomerDetailsCC(OffBackgroundService.this).PersonEmail;
+                String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
+
+                OkHttpClient client = new OkHttpClient();
+
+                Request request = new Request.Builder()
+                        .url(AppConstants.API_URL_GENERATEFILES + "?Email=" + Email + "&IMEI=" + IMEI)
+                        .addHeader("Authorization", "bearer " + api_token)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+
+                //------------------------------
+
+            } catch (Exception e) {
+
+                System.out.println("Ex" + e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " GenerateFilesAPI InBackG Ex:" + e.getMessage());
+
+            }
+
+            return resp;
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            if (result != null && !result.isEmpty()) {
+
+
+                try {
+
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    String ResponceMessage = jsonObject.getString("ResponceMessage");
+
+                    System.out.println("ResponceMessage:" + ResponceMessage);
+
+                    if (ResponceMessage.equalsIgnoreCase("success")) {
+
+
+                        if (cd.isConnecting()) {
+
+                            /*if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Offline data Link,Vehicle,Pin Start ");
+
+                            AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
+
+                            startDownloadTimerTask();*/
+
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost NoInternet");
+                        }
+
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost Response fail" + result);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost Ex:" + e.getMessage());
+                }
+
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost Response err:" + result);
+            }
+
         }
     }
 

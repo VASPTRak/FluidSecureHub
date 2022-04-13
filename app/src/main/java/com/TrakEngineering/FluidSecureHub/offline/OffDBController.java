@@ -28,14 +28,14 @@ public class OffDBController extends SQLiteOpenHelper {
     public static String TBL_OFF_TLD = "tbl_off_tld";
 
     public OffDBController(Context applicationcontext) {
-        super(applicationcontext, "FSHubOffline.db", null, 2);
+        super(applicationcontext, "FSHubOffline.db", null, 3);
         Log.d(LOGCAT, "Created");
     }
 
     @Override
     public void onCreate(SQLiteDatabase database) {
 
-        String query2 = "CREATE TABLE " + TBL_LINK + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, WifiSSId TEXT, PumpOnTime TEXT, PumpOffTime TEXT, AuthorizedFuelingDays TEXT, Pulserratio TEXT, MacAddress TEXT, IsTLDCall TEXT)";
+        String query2 = "CREATE TABLE " + TBL_LINK + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, WifiSSId TEXT, PumpOnTime TEXT, PumpOffTime TEXT, AuthorizedFuelingDays TEXT, Pulserratio TEXT, MacAddress TEXT, IsTLDCall TEXT,LinkCommunicationType TEXT,APMacAddress TEXT,BTMacAddress TEXT)";
         database.execSQL(query2);
 
         String query21 = "CREATE TABLE " + TBL_FUEL_TIMING + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, PersonId INTEGER, FromTime TEXT, ToTime TEXT)";
@@ -179,7 +179,7 @@ public class OffDBController extends SQLiteOpenHelper {
         return insertedID;
     }
 
-    public long insertLinkDetails(String SiteId, String WifiSSId, String PumpOnTime, String PumpOffTime, String AuthorizedFuelingDays, String Pulserratio, String MacAddress, String IsTLDCall) {
+    public long insertLinkDetails(String SiteId, String WifiSSId, String PumpOnTime, String PumpOffTime, String AuthorizedFuelingDays, String Pulserratio, String MacAddress, String IsTLDCall,String LinkCommunicationType,String APMacAddress,String BTMacAddress) {
 
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -191,6 +191,9 @@ public class OffDBController extends SQLiteOpenHelper {
         values.put("Pulserratio", Pulserratio);
         values.put("MacAddress", MacAddress);
         values.put("IsTLDCall", IsTLDCall);
+        values.put("LinkCommunicationType", LinkCommunicationType);
+        values.put("APMacAddress", APMacAddress);
+        values.put("BTMacAddress", BTMacAddress);
 
         long insertedID = database.insert(TBL_LINK, null, values);
         database.close();
@@ -326,7 +329,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public void deleteLastTransactionIfNotEmpty() {
         Log.d(LOGCAT, "delete");
         SQLiteDatabase database = this.getWritableDatabase();
-        String delete1 = "SELECT  id  FROM " + TBL_TRANSACTION + " where FuelQuantity == '' ORDER BY ID  DESC LIMIT 8";
+        String delete1 = "SELECT  id  FROM " + TBL_TRANSACTION + " where FuelQuantity == '' AND pulses == null ORDER BY ID  DESC LIMIT 8";
         String deleteQuery = "DELETE FROM  " + TBL_TRANSACTION + " where FuelQuantity == '' AND id  NOT IN (" + delete1 + ")";
         Log.d("query", deleteQuery);
         database.execSQL(deleteQuery);
@@ -382,6 +385,9 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("Pulserratio", cursor.getString(6));
                 map.put("MacAddress", cursor.getString(7));
                 map.put("IsTLDCall", cursor.getString(8));
+                map.put("LinkCommunicationType", cursor.getString(9));
+                map.put("APMacAddress", cursor.getString(10));
+                map.put("BTMacAddress", cursor.getString(11));
 
                 System.out.println("***" + cursor.getString(2));
 
@@ -526,60 +532,65 @@ public class OffDBController extends SQLiteOpenHelper {
     public String getTop10OfflineTransactionJSON(Context ctx) {
 
         String apiJSON = "";
+        try {
 
-        ArrayList<EntityOffTranz> allData = new ArrayList<>();
+            ArrayList<EntityOffTranz> allData = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + TBL_TRANSACTION;
+            String selectQuery = "SELECT * FROM " + TBL_TRANSACTION;
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        int counter = 0;
-        if (cursor.moveToFirst()) {
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            int counter = 0;
+            if (cursor.moveToFirst()) {
 
-            do {
-                EntityOffTranz hmObj = new EntityOffTranz();
-                hmObj.Id = isNULL(cursor.getString(0));
-                hmObj.HubId = isNULL(cursor.getString(1));
-                hmObj.SiteId = isNULL(cursor.getString(2));
-                hmObj.VehicleId = isNULL(cursor.getString(3));
-                hmObj.CurrentOdometer = isNULL(cursor.getString(4));
-                hmObj.CurrentHours = isNULL(cursor.getString(5));
-                hmObj.PersonId = isNULL(cursor.getString(6));
-                hmObj.PersonPin = isNULL(cursor.getString(7));
-                hmObj.FuelQuantity = isNULL(cursor.getString(8));
-                hmObj.Pulses = isNULL(cursor.getString(9));
-                hmObj.TransactionDateTime = isNULL(cursor.getString(10));
-                hmObj.TransactionFrom = "AP";
-                hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
-                hmObj.OnlineTransactionId = isNULL(cursor.getString(11));
+                do {
+                    EntityOffTranz hmObj = new EntityOffTranz();
+                    hmObj.Id = isNULL(cursor.getString(0));
+                    hmObj.HubId = isNULL(cursor.getString(1));
+                    hmObj.SiteId = isNULL(cursor.getString(2));
+                    hmObj.VehicleId = isNULL(cursor.getString(3));
+                    hmObj.CurrentOdometer = isNULL(cursor.getString(4));
+                    hmObj.CurrentHours = isNULL(cursor.getString(5));
+                    hmObj.PersonId = isNULL(cursor.getString(6));
+                    hmObj.PersonPin = isNULL(cursor.getString(7));
+                    hmObj.FuelQuantity = isNULL(cursor.getString(8));
+                    hmObj.Pulses = isNULL(cursor.getString(9));
+                    hmObj.TransactionDateTime = isNULL(cursor.getString(10));
+                    hmObj.TransactionFrom = "AP";
+                    hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
+                    hmObj.OnlineTransactionId = isNULL(cursor.getString(11));
 
-                String pu = isNULL(cursor.getString(9));
+                    String pu = isNULL(cursor.getString(9));
 
-                //To get only nonempty transactions
-                if (!pu.trim().isEmpty() && Integer.parseInt(pu) > 0) {
-                    counter++;
-                    allData.add(hmObj);
-                }
+                    //To get only nonempty transactions
+                    if (!pu.trim().isEmpty() && Integer.parseInt(pu) > 0) {
+                        counter++;
+                        allData.add(hmObj);
+                    }
 
-                System.out.println("Counter of azure queue msg-" + counter);
+                    System.out.println("Counter of azure queue msg-" + counter);
 
-                if (counter >= 10) {
-                    System.out.println("Size of azure queue msg-" + allData.size());
-                    break;
-                }
+                    if (counter >= 10) {
+                        System.out.println("Size of azure queue msg-" + allData.size());
+                        break;
+                    }
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
 
+            }
+
+
+            EnityTranzSync ets = new EnityTranzSync();
+            ets.TransactionsModelsObj = allData;
+            Gson gson = new Gson();
+            apiJSON = gson.toJson(ets);
+
+            System.out.println("OfflineJSON-" + apiJSON);
+
+        }catch (Exception e){
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile("getTop10OfflineTransactionJSON" + "SyncOffTrnx getTop10OfflineTransactionJSON Ex"+e.getMessage());
         }
-
-
-        EnityTranzSync ets = new EnityTranzSync();
-        ets.TransactionsModelsObj = allData;
-        Gson gson = new Gson();
-        apiJSON = gson.toJson(ets);
-
-        System.out.println("OfflineJSON-" + apiJSON);
-
         return apiJSON;
     }
 

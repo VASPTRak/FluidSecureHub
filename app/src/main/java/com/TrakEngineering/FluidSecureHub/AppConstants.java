@@ -10,14 +10,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AlertDialog;
+
+import androidx.core.app.NotificationCompat;
+import androidx.appcompat.app.AlertDialog;
+
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -50,18 +54,25 @@ import static com.TrakEngineering.FluidSecureHub.CommonUtils.GetDateString;
  */
 public class AppConstants {
 
+    public static String AddVehicle = "", AddPin = "",AddFobKey = "", AddMagCard_FobKey = "", AddBarcode_val = ""; //Additional value
+
+    public static boolean selectHosePressed;
+    public static ArrayList<String> offlineDownloadIds = new ArrayList<>();
     public static int CONNECTION_TIMEOUT_SEC = 2;
     public static int READ_TIMEOUT_SEC = 2;
     public static int WRITE_TIMEOUT_SEC = 2;
 
-
+    public static int ScreenResolutionYOffSet = 0;
     public static int COUNT_HOTSPOT_MAIL;
     public static String sharedPref_AzureQueueDetails = "AzureQueueDetails";
     public static String sharedPref_KeyboardType = "KeyboardType";
     public static String sharedPref_HotSpotEmail = "HotSpotEmail";
     public static String sharedPref_OfflineAzureSync = "OfflineAzureSync";
+    public static String IsFirstTimeUse = "false";
     public static boolean enableHotspotManuallyWindow = false;
     public static boolean busyWithHotspotToggle = false;
+    public static boolean showReaderStatus = false;
+    public static boolean IsBTLinkSelectedCurrently = false;
 
     public static final String DEVICE_TYPE = "A";
     public static final String USER_NAME = "userName";
@@ -74,6 +85,9 @@ public class AppConstants {
     public static final String FluidSecureSiteName = "FluidSecureSiteName";
     public static final String ISVehicleHasFob = "ISVehicleHasFob";
     public static final String IsPersonHasFob = "IsPersonHasFob";
+    public static final String IsPersonPinAndFOBRequire = "IsPersonPinAndFOBRequire";
+    public static final String AllowAccessDeviceORManualEntry = "AllowAccessDeviceORManualEntry";
+    public static final String AllowAccessDeviceORManualEntryForVehicle = "AllowAccessDeviceORManualEntryForVehicle";
     public static final String IsOtherRequire = "IsOtherRequire";
     public static final String IsHoursRequire = "IsHoursRequire";
     public static final String ExtraOtherLabel = "ExtraOtherLabel";
@@ -81,8 +95,13 @@ public class AppConstants {
     public static final String OtherLabel = "OtherLabel";
     public static final String TimeOut = "TimeOut";
     public static final String HubId = "HubId";
+    public static final String HubType = "HubType";
+    public static final String IsNonValidateVehicle = "IsNonValidateVehicle";
+    public static final String IsNonValidatePerson = "IsNonValidatePerson";
     public static final String IsVehicleNumberRequire = "IsVehicleNumberRequire";
     public static final String WifiChannelToUse = "0";
+
+    public static final String LinkConnectionIssuePref = "LinkConnectionIssuePref";
 
     public static final String IsGateHub = "IsGateHub";
     public static final String IsStayOpenGate = "IsStayOpenGate";
@@ -97,6 +116,8 @@ public class AppConstants {
     public static final String IsEnableServerForTLD = "IsEnableServerForTLD";
     public static final String FAData = "FAData";
     public static final String UseBarcode = "UseBarcode";
+    public static final String UseBarcodeForPersonnel = "UseBarcodeForPersonnel";
+    public static final String CAMERA_FACING = "CAMERA_FACING";
 
     public static final String LogRequiredFlag = "LogRequiredFlag";
     public static final String CompanyBrandName = "CompanyBrandName";
@@ -104,17 +125,22 @@ public class AppConstants {
     public static final String SupportEmail = "SupportEmail";
     public static final String SupportPhonenumber = "SupportPhonenumber";
     public static String BrandName = "FluidSecure";
+    public static String LANG_PARAM;
 
-    public static final String PACKAGE_BACKGROUND_SERVICE = "com.TrakEngineering.FluidSecureHubTest.BackgroundService";
+    public static final String PACKAGE_BACKGROUND_SERVICE = "com.TrakEngineering.FluidSecureHub.BackgroundService";
 
     public static ArrayList<HashMap<String, String>> temp_serverSSIDList;
 
-    public static String webIP = "https://www.fluidsecure.net/"; // = "http://103.8.126.241:89/";//test
+   // public static String webIP = "http://sierravistatest.cloudapp.net/";
+    public static String webIP = "https://www.fluidsecure.net/";
+
+
     public static String webURL = webIP + "HandlerTrak.ashx";
     public static String LoginURL = webIP + "LoginHandler.ashx";
 
     public static String API_URL_TOKEN = webIP + "token";
     public static String API_URL_HUB = webIP + "api/Offline/GetHub";
+    public static String API_URL_GENERATEFILES = webIP + "api/Offline/GenerateFiles";
     public static String API_URL_LINK = webIP + "api/Offline/GetLinks";
     public static String API_URL_VEHICLE = webIP + "api/Offline/GetVehicles";
     public static String API_URL_PERSONNEL = webIP + "api/Offline/GetPersonnel";
@@ -140,15 +166,19 @@ public class AppConstants {
     public static boolean EnableFA;
     public static boolean EnableServerForTLD;
     public static boolean RebootHF_reader = false;
+    public static boolean RebootQR_reader = false;
 
     public static String OFF1 = "Please check your Internet Data";
+    public static String error_msg = "Something went wrong. Please try again.";
 
+    public static boolean excption_caught = false;
     public static boolean NETWORK_STRENGTH;
     public static boolean IS_MOBILE_ON;
     public static boolean IS_MOBILE_MSG;
     public static boolean PRE_STATE_MOBILEDATA;
     public static boolean CURRENT_STATE_MOBILEDATA;
-    public static boolean AUTH_CALL_SUCCESS;
+    public static boolean AUTH_CALL_SUCCESS = false;
+    public static boolean serverCallInProgress;
 
     public static String LOG_FluidSecure_Auto = "";
     public static String Server_mesage = "Server Not Connected..!!!";
@@ -157,12 +187,17 @@ public class AppConstants {
     public static String Header_data;
     public static String OdoErrorCode = "0";
 
+    public static boolean RefreshSingleHose = false;
+    public static boolean DisplayToastmaxlimit = false;
+    public static String MaxlimitMessage = "";
+
 
     public static boolean FlickeringScreenOff;
     public static String NoSleepRespTime = "";
     public static String NoSleepCurrentTime = "";
 
     public static String APDU_FOB_KEY = "";
+    public static String NonValidateVehicle_FOB_KEY = "";
     public static String VehicleLocal_FOB_KEY = "";
     public static String PinLocal_FOB_KEY = "";
     public static String FS_selected;
@@ -179,10 +214,24 @@ public class AppConstants {
     public static boolean UP_Upgrade_fs2;
     public static boolean UP_Upgrade_fs3;
     public static boolean UP_Upgrade_fs4;
+    public static boolean UP_Upgrade_fs5;
+    public static boolean UP_Upgrade_fs6;
+
+
     public static String UP_HoseId_fs1;
     public static String UP_HoseId_fs2;
     public static String UP_HoseId_fs3;
     public static String UP_HoseId_fs4;
+    public static String UP_HoseId_fs5;
+    public static String UP_HoseId_fs6;
+
+
+    public static String UP_SiteId_fs1;
+    public static String UP_SiteId_fs2;
+    public static String UP_SiteId_fs3;
+    public static String UP_SiteId_fs4;
+    public static String UP_SiteId_fs5;
+    public static String UP_SiteId_fs6;
 
 
     public static String Title = "";
@@ -198,7 +247,9 @@ public class AppConstants {
     public static String RES_DATA = "ResponceData";
     public static String RES_DATA_SSID = "SSIDDataObj";
     public static String RES_DATA_USER = "objUserData";
+    public static String RES_TANK_DATA = "tanksForLinksObj";
     public static String RES_TEXT = "ResponceText";
+    public static String VALIDATION_FOR_TEXT = "ValidationFailFor";
 
     public static String FOB_KEY_PERSON = "";
     public static String FOB_KEY_VEHICLE = "";
@@ -209,18 +260,24 @@ public class AppConstants {
     public static String FS2_CONNECTED_SSID;
     public static String FS3_CONNECTED_SSID;
     public static String FS4_CONNECTED_SSID;
+    public static String FS5_CONNECTED_SSID;
+    public static String FS6_CONNECTED_SSID;
 
     public static String REPLACEBLE_WIFI_NAME_FS_ON_UPDATE_MAC;
     public static String REPLACEBLE_WIFI_NAME_FS1;
     public static String REPLACEBLE_WIFI_NAME_FS2;
     public static String REPLACEBLE_WIFI_NAME_FS3;
     public static String REPLACEBLE_WIFI_NAME_FS4;
+    public static String REPLACEBLE_WIFI_NAME_FS5;
+    public static String REPLACEBLE_WIFI_NAME_FS6;
 
     public static boolean NeedToRenameFS_ON_UPDATE_MAC;
     public static boolean NeedToRenameFS1;
     public static boolean NeedToRenameFS2;
     public static boolean NeedToRenameFS3;
     public static boolean NeedToRenameFS4;
+    public static boolean NeedToRenameFS5;
+    public static boolean NeedToRenameFS6;
 
     public static String DownloadFileHttpServer = "";
     public static boolean ManuallReconfigure;
@@ -282,24 +339,20 @@ public class AppConstants {
 
     public static String getIMEI(Context ctx) {
 
-        TelephonyManager telephonyManager = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-        return telephonyManager.getDeviceId();
-    }
-
-    public static boolean isMobileDataAvailable(Context ctx) {
-
-        boolean mobileDataEnabled = false;
-        ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        String storedUUIDIMEI = "";
         try {
-            Class cmClass = Class.forName(cm.getClass().getName());
-            Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
-            method.setAccessible(true);
-            // get the setting for "mobile data"
-            mobileDataEnabled = (Boolean) method.invoke(cm);
+
+            String encryptedIMEI = SplashActivity.readIMEIMobileNumFromFile(ctx).trim();
+            storedUUIDIMEI = AES.decrypt(encryptedIMEI, AES.credential);
+            if (storedUUIDIMEI == null || storedUUIDIMEI.isEmpty() || storedUUIDIMEI.equalsIgnoreCase("null")) {
+                storedUUIDIMEI = "";
+            }
+
         } catch (Exception e) {
 
         }
-        return mobileDataEnabled;
+
+        return storedUUIDIMEI;
     }
 
     public static void disconnectWiFi(Context ctx) {
@@ -365,6 +418,28 @@ public class AppConstants {
 
 
     public static void AlertDialogBox(final Context ctx, String message) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
+        alertDialogBuilder.setMessage(message);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+
+
+                    }
+                }
+
+
+        );
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+        TextView textView = (TextView) alertDialog.findViewById(android.R.id.message);
+        textView.setTextSize(35);
+    }
+
+    public static void AlertDialogBoxCanecl(final Context ctx, int message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setMessage(message);
 
@@ -507,16 +582,35 @@ public class AppConstants {
 
     }
 
-        public static void colorToastHotspotOn(Context ctx, String msg, int colr) {
-            Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_LONG);
-            toast.getView().setBackgroundColor(colr);
-            toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 280);
-            ViewGroup group = (ViewGroup) toast.getView();
-            TextView messageTextView = (TextView) group.getChildAt(0);
-            messageTextView.setTextSize(40);
-            toast.show();
+    public static void colorToastHotspotOn(Context ctx, String msg, int colr) {
 
+        Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_SHORT);
+        toast.getView().setBackgroundColor(colr);
+        toast.setGravity(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK | Gravity.TOP, 0, AppConstants.ScreenResolutionYOffSet);
+        ViewGroup group = (ViewGroup) toast.getView();
+        TextView messageTextView = (TextView) group.getChildAt(0);
+        messageTextView.setShadowLayer(1, 1, 1, colr);
+        messageTextView.setTextColor(Color.BLUE);
+        messageTextView.setTextSize(40);
+        toast.show();
     }
+
+
+    public static int GetYOffsetFromScreenResolution(final Activity ctx) {
+
+        try {
+
+            Rect r = new Rect();
+            ctx.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(r);
+            int screenHeight = r.bottom - r.top;
+            return screenHeight / 6;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 
     public static void notificationAlert(Context context) {
 
@@ -764,6 +858,7 @@ public class AppConstants {
 
         if (IsPersonnelPINRequire.equalsIgnoreCase("True")) {
             if (actctx instanceof AcceptPinActivity) {
+
                 AcceptServiceCall asc = new AcceptServiceCall();
                 asc.activity = actctx;
                 asc.checkAllFields();
@@ -820,4 +915,21 @@ public class AppConstants {
         String dateString = sdf.format(new Date());
         return dateString;
     }
+
+    public static String getIMEIOnlyForBelowOS10(Context ctx) {
+
+        String storedIMEI = "";
+        try {
+
+            TelephonyManager telephonyManager = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
+            storedIMEI = telephonyManager.getDeviceId();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return storedIMEI;
+    }
+
 }

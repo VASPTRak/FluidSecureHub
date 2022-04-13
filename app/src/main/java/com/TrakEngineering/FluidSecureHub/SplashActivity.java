@@ -2,6 +2,7 @@ package com.TrakEngineering.FluidSecureHub;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
@@ -24,14 +25,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.GPSTracker;
@@ -54,9 +57,15 @@ import com.squareup.okhttp.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
-
 
 
 public class SplashActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -78,7 +87,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private DevicePolicyManager mDevicePolicyManager;
     private ComponentName mComponentName;
     private ConnectionDetector cd = new ConnectionDetector(SplashActivity.this);
-
+    public static String imei_mob_folder_name = "FSHUBUUID",HubType = "";
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
 
@@ -91,7 +100,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        getSupportActionBar().setTitle("Hub Application");
+        getSupportActionBar().setTitle("HUB Application");
 
 
         CommonUtils.LogMessage(TAG, "SplashActivity", null);
@@ -132,25 +141,40 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 if (checkPermissionTask.isValue) {
 
-                    startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
-                    finish();
+                    SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                    HubType = sharedPrefODO.getString("HubType", "");
+                    if (HubType.equalsIgnoreCase("F")){
+                        //Directly to fob app
+                        startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
+                        finish();
+                    }else if (HubType.equalsIgnoreCase("S")){
+
+                        startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
+                        finish();
+                    }else{
+                        startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
+                        finish();
+                    }
 
                 }
             } catch (Exception ex) {
                 Log.e(TAG, ex.getMessage());
             }
 
-        }else {
+        } else {
 
             //Enable hotspot
             wifiApManager.setWifiApEnabled(null, true);
 
             //Enable bluetooth
-            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            mBluetoothAdapter.enable();
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (!bluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
+            }
 
 
-            LocationManager locationManager = (LocationManager) SplashActivity.this.getSystemService(Context.LOCATION_SERVICE);
+            /*LocationManager locationManager = (LocationManager) SplashActivity.this.getSystemService(Context.LOCATION_SERVICE);
             boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
 
@@ -158,7 +182,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 turnGPSOn();
 
-            } else {
+            } else {}*/
 
                 try {
                     checkPermissionTask checkPermissionTask = new checkPermissionTask();
@@ -167,7 +191,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                     if (checkPermissionTask.isValue) {
 
-                        Log.i(TAG ,"SplashActivity executeTask OnCreate");
+                        Log.i(TAG, "SplashActivity executeTask OnCreate");
                         AppConstants.WriteinFile(TAG + "SplashActivity executeTask OnCreate");
 
                         executeTask();
@@ -175,72 +199,76 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 } catch (Exception ex) {
                     Log.e(TAG, ex.getMessage());
                 }
-            }
+
         }
     }
 
     public void turnGPSOn() {
 
+try {
+    AppConstants.WriteinFile(TAG + "SplashActivity In turnGPSOn");
+    @SuppressLint("RestrictedApi") LocationRequest mLocationRequest = new LocationRequest();
+    //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationRequest mLocationRequest1 = new LocationRequest();
-        mLocationRequest1.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest)
-                .addLocationRequest(mLocationRequest1);
+    @SuppressLint("RestrictedApi") LocationRequest mLocationRequest1 = new LocationRequest();
+    //mLocationRequest1.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
 
-        LocationSettingsRequest mLocationSettingsRequest = builder.build();
+    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+            .addLocationRequest(mLocationRequest)
+            .addLocationRequest(mLocationRequest1);
 
 
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(
-                        mGoogleApiClient,
-                        mLocationSettingsRequest
-                );
+    LocationSettingsRequest mLocationSettingsRequest = builder.build();
 
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
 
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        Log.i("Splash", "All location settings are satisfied.");
+    PendingResult<LocationSettingsResult> result =
+            LocationServices.SettingsApi.checkLocationSettings(
+                    mGoogleApiClient,
+                    mLocationSettingsRequest
+            );
 
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.i("Splash", "Location settings are not satisfied. Show the user a dialog to" +
-                                "upgrade location settings ");
+    result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+        @Override
+        public void onResult(LocationSettingsResult result) {
+            final Status status = result.getStatus();
 
-                        try {
-                            // Show the dialog by calling startResolutionForResult(), and check the result
-                            // in onActivityResult().
-                            status.startResolutionForResult(SplashActivity.this, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.i("Splash", "PendingIntent unable to execute request.");
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.i("Splash", "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                                "not created.");
-                        break;
-                }
+            switch (status.getStatusCode()) {
+                case LocationSettingsStatusCodes.SUCCESS:
+                    Log.i("Splash", "All location settings are satisfied.");
+
+                    break;
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    Log.i("Splash", "Location settings are not satisfied. Show the user a dialog to" +
+                            "upgrade location settings ");
+
+                    try {
+                        // Show the dialog by calling startResolutionForResult(), and check the result
+                        // in onActivityResult().
+                        status.startResolutionForResult(SplashActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.i("Splash", "PendingIntent unable to execute request.");
+                    }
+                    break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                    Log.i("Splash", "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                            "not created.");
+                    break;
             }
-        });
+        }
+    });
 
 
-        //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        //startActivity(in);
-
+    //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+    //startActivity(in);
+}catch (Exception e){
+    e.printStackTrace();
+}
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
@@ -263,7 +291,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                             if (checkPermissionTask.isValue) {
 
-                                Log.i(TAG ,"SplashActivity executeTask L1");
+                                Log.i(TAG, "SplashActivity executeTask L1");
                                 AppConstants.WriteinFile(TAG + "SplashActivity executeTask L1");
 
                                 executeTask();
@@ -276,7 +304,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     case Activity.RESULT_CANCELED:
                         Log.i("Splash", "User chose not to make required location settings changes.");
 
-
                         latitude = 0;
                         longitude = 0;
 
@@ -287,7 +314,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                             if (checkPermissionTask.isValue) {
 
-                                Log.i(TAG ,"SplashActivity executeTask L2");
+                                Log.i(TAG, "SplashActivity executeTask L2");
                                 AppConstants.WriteinFile(TAG + "SplashActivity executeTask L2");
 
                                 executeTask();
@@ -384,25 +411,37 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void run() {
 
-                 if (cd.isConnecting()) {
-
+                if (cd.isConnecting()) {
                     try {
 
                         // new CallAppTxt().execute();
                         //setUrlFromSharedPref(SplashActivity.this);
-                        new CheckApproved().execute();
+                        otherServerCall();
 
                     } catch (Exception e) {
                         System.out.println(e);
                     }
 
 
-                } else if (!cd.isConnectingToInternet() && OfflineConstants.isOfflineAccess(SplashActivity.this)){
+                } else if (!cd.isConnectingToInternet() && OfflineConstants.isOfflineAccess(SplashActivity.this)) {
 
+                    SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                    HubType = sharedPrefODO.getString("HubType", "");
+
+                    if (HubType.equalsIgnoreCase("F")){
+                        //Directly to fob app
+                        startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
+                        finish();
+                    }else if (HubType.equalsIgnoreCase("S")){
+
+                        startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
+                        finish();
+                    }else{
                         startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
                         finish();
+                    }
 
-                } else{
+                } else {
                     CommonUtils.showNoInternetDialog(SplashActivity.this);
                 }
             }
@@ -481,6 +520,8 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     String IMEI_UDID = jsonObject.getString("IMEI_UDID");
                     String AccessCode = jsonObject.getString("AccessCode");
                     String DisableAllReboots = jsonObject.getString("DisableAllReboots");
+                    String IsNonValidateVehicle = jsonObject.getString("IsNonValidateVehicle");
+                    String IsNonValidatePerson = jsonObject.getString("IsNonValidatePerson");
 
                     AppConstants.AccessCode = AccessCode;
                     String IsLoginRequire = jsonObject.getString("IsLoginRequire");
@@ -490,10 +531,14 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     String OtherLabel = jsonObject.getString("OtherLabel");
                     String TimeOut = jsonObject.getString("TimeOut");
                     String HubId = jsonObject.getString("PersonId");
+                    String HubType = jsonObject.getString("HubType");
                     String IsPersonnelPINRequireForHub = jsonObject.getString("IsPersonnelPINRequireForHub");
                     String FluidSecureSiteName = jsonObject.getString("FluidSecureSiteName");
                     String IsVehicleHasFob = jsonObject.getString("IsVehicleHasFob");
                     String IsPersonHasFob = jsonObject.getString("IsPersonHasFob");
+                    String IsPersonPinAndFOBRequire = jsonObject.getString("IsPersonPinAndFOBRequire");
+                    String AllowAccessDeviceORManualEntryForVehicle = jsonObject.getString("AllowAccessDeviceORManualEntryForVehicle");
+                    String AllowAccessDeviceORManualEntry = jsonObject.getString("AllowAccessDeviceORManualEntry");
                     String LFBluetoothCardReader = jsonObject.getString("LFBluetoothCardReader");
                     String LFBluetoothCardReaderMacAddress = jsonObject.getString("LFBluetoothCardReaderMacAddress");
                     String IsLogging = jsonObject.getString("IsLogging");
@@ -506,11 +551,12 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     String SupportPhonenumber = jsonObject.getString("SupportPhonenumber");
                     int WifiChannelToUse = jsonObject.getInt("WifiChannelToUse");
                     boolean UseBarcode = Boolean.parseBoolean(jsonObject.getString("UseBarcode"));
+                    boolean UseBarcodeForPersonnel = Boolean.parseBoolean(jsonObject.getString("UseBarcodeForPersonnel"));
                     boolean fa_data = Boolean.parseBoolean(jsonObject.getString("EnbDisHubForFA"));
                     boolean EnableServerForTLD = Boolean.parseBoolean(jsonObject.getString("IsEnableServerForTLD"));
                     //boolean IsRefreshHotspot = Boolean.parseBoolean(jsonObject.getString("IsRefreshHotspot"));
                     //int RefreshHotspotTime = jsonObject.getInt("RefreshHotspotTime");
-                    String KeyboardTypeVehicle = "",KeyboardTypePerson = "",KeyboardTypeDepartment = "",KeyboardTypeOther = "";
+                    String KeyboardTypeVehicle = "", KeyboardTypePerson = "", KeyboardTypeDepartment = "", KeyboardTypeOther = "";
 
                     String ScreenNameForVehicle = jsonObject.getString("ScreenNameForVehicle");
                     String ScreenNameForPersonnel = jsonObject.getString("ScreenNameForPersonnel");
@@ -521,18 +567,18 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     String StrKeyboardType = jsonObject.getString("KeyboardTypeObj");
                     JSONArray jsonArray = new JSONArray(StrKeyboardType);
 
-                    for (int i=0; i<jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject actor = jsonArray.getJSONObject(i);
                         String KeyboardName = actor.getString("KeyboardName");
                         String KeyboardValue = actor.getString("KeyboardValue");
 
-                        if (KeyboardName.equalsIgnoreCase("Vehicle")){
+                        if (KeyboardName.equalsIgnoreCase("Vehicle")) {
                             KeyboardTypeVehicle = KeyboardValue;
-                        }else if (KeyboardName.equalsIgnoreCase("Person")){
+                        } else if (KeyboardName.equalsIgnoreCase("Person")) {
                             KeyboardTypePerson = KeyboardValue;
-                        } else if (KeyboardName.equalsIgnoreCase("Department")){
+                        } else if (KeyboardName.equalsIgnoreCase("Department")) {
                             KeyboardTypeDepartment = KeyboardValue;
-                        }else if (KeyboardName.equalsIgnoreCase("Other")){
+                        } else if (KeyboardName.equalsIgnoreCase("Other")) {
                             KeyboardTypeOther = KeyboardValue;
                         }
                     }
@@ -557,14 +603,16 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     String HFTrakCardReaderMacAddress = jsonObject.getString("BluetoothCardReaderMacAddress"); //"80:7D:3A:A2:3B:0E"; //
                     String MagneticCardReader = jsonObject.getString("MagneticCardReader");//"TRAK_LF_READER";//
                     String MagneticCardReaderMacAddress = jsonObject.getString("MagneticCardReaderMacAddress");//"30:AE:A4:24:D1:4E";
+                    String QRCodeReaderForBarcode = jsonObject.getString("QRCodeReaderForBarcode");//"30:AE:A4:24:D1:4E";
+                    String QRCodeBluetoothMacAddressForBarcode = jsonObject.getString("QRCodeBluetoothMacAddressForBarcode");//"30:AE:A4:24:D1:4E";
                     boolean ColloectServerLog = jsonObject.getBoolean("ColloectServerLog");
                     AppConstants.ServerCallLogs = ColloectServerLog;
                     boolean ACS_Reader;
 
-                    if (BluetoothCardReader != null && BluetoothCardReader.startsWith("ACR") && (DisableFOBReadingForPin.equalsIgnoreCase("N") || DisableFOBReadingForVehicle.equalsIgnoreCase("N"))){
-                         ACS_Reader = true;
-                    }else{
-                         ACS_Reader = false;
+                    if (BluetoothCardReader != null && BluetoothCardReader.startsWith("ACR") && (DisableFOBReadingForPin.equalsIgnoreCase("N") || DisableFOBReadingForVehicle.equalsIgnoreCase("N"))) {
+                        ACS_Reader = true;
+                    } else {
+                        ACS_Reader = false;
                     }
 
 
@@ -579,8 +627,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     editor.putString("QueueConnectionStringValue", QueueConnectionStringValue);
                     editor.commit();
 
-
-
                     AppConstants.ACS_READER = ACS_Reader;
                     String IsOfflineAllow = jsonObject.getString("IsOfflineAllow");
                     String IsTotalOffline = jsonObject.getString("IsPermanentOffline");
@@ -588,18 +634,18 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     int OfflineDataDownloadDay = jsonObject.getInt("OfflineDataDownloadDay");
                     int OfflineDataDownloadTimeInHrs = jsonObject.getInt("OfflineDataDownloadTimeInHrs");
                     int OfflineDataDownloadTimeInMin = jsonObject.getInt("OfflineDataDownloadTimeInMin");
-                    OfflineConstants.storeOfflineAccess(SplashActivity.this, IsTotalOffline,IsOfflineAllow,OFFLineDataDwnldFreq,OfflineDataDownloadDay,OfflineDataDownloadTimeInHrs,OfflineDataDownloadTimeInMin);
+                    OfflineConstants.storeOfflineAccess(SplashActivity.this, IsTotalOffline, IsOfflineAllow, OFFLineDataDwnldFreq, OfflineDataDownloadDay, OfflineDataDownloadTimeInHrs, OfflineDataDownloadTimeInMin);
 
-                    CommonUtils.SaveLogFlagInPref(SplashActivity.this,IsLogging,CompanyBrandName,CompanyBrandLogoLink,SupportEmail,SupportPhonenumber);//Save logging to preferances
-                    CommonUtils.FA_FlagSavePref(SplashActivity.this,fa_data,UseBarcode,EnableServerForTLD);
-                    storeBT_FOBDetails(BluetoothCardReader, BluetoothCardReaderMacAddress,LFBluetoothCardReader,LFBluetoothCardReaderMacAddress,HFTrakCardReader,HFTrakCardReaderMacAddress,ACS_Reader,MagneticCardReader,MagneticCardReaderMacAddress,DisableFOBReadingForPin,DisableFOBReadingForVehicle,DisableAllReboots);
+                    CommonUtils.SaveLogFlagInPref(SplashActivity.this, IsLogging, CompanyBrandName, CompanyBrandLogoLink, SupportEmail, SupportPhonenumber);//Save logging to preferances
+                    CommonUtils.FA_FlagSavePref(SplashActivity.this, fa_data, UseBarcode, EnableServerForTLD, UseBarcodeForPersonnel);
+                    storeBT_FOBDetails(BluetoothCardReader, BluetoothCardReaderMacAddress, LFBluetoothCardReader, LFBluetoothCardReaderMacAddress, HFTrakCardReader, HFTrakCardReaderMacAddress, ACS_Reader, MagneticCardReader, MagneticCardReaderMacAddress, DisableFOBReadingForPin, DisableFOBReadingForVehicle, DisableAllReboots,QRCodeReaderForBarcode,QRCodeBluetoothMacAddressForBarcode);
 
-                    CommonUtils.SaveDataInPrefForGatehub (SplashActivity.this, IsGateHub, IsStayOpenGate);
+                    CommonUtils.SaveDataInPrefForGatehub(SplashActivity.this, IsGateHub, IsStayOpenGate);
 
                     System.out.println("BluetoothCardReader--" + response);
 
                     if (IsApproved.equalsIgnoreCase("True")) {
-                        CommonUtils.SaveUserInPref(SplashActivity.this, userName, userMobile, userEmail, "", IsDepartmentRequire, IsPersonnelPINRequire, IsOtherRequire, "", OtherLabel, TimeOut, HubId, IsPersonnelPINRequireForHub, FluidSecureSiteName,IsVehicleHasFob,IsPersonHasFob,IsVehicleNumberRequire,WifiChannelToUse);
+                        CommonUtils.SaveUserInPref(SplashActivity.this, userName, userMobile, userEmail, "", IsDepartmentRequire, IsPersonnelPINRequire, IsOtherRequire, "", OtherLabel, TimeOut, HubId, IsPersonnelPINRequireForHub, FluidSecureSiteName, IsVehicleHasFob, IsPersonHasFob, IsVehicleNumberRequire, WifiChannelToUse,HubType, IsNonValidateVehicle,IsNonValidatePerson,IsPersonPinAndFOBRequire,AllowAccessDeviceORManualEntry,AllowAccessDeviceORManualEntryForVehicle);
 
                         if (IsLoginRequire.trim().equalsIgnoreCase("True")) {
                             AppConstants.Login_Email = userEmail;
@@ -608,7 +654,19 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                             finish();
                         } else {
 
-                            if (BluetoothCardReader != null && BluetoothCardReaderMacAddress.equals("") && !BluetoothCardReader.isEmpty()) {
+
+                            SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                            HubType = sharedPrefODO.getString("HubType", "");
+
+                            if (HubType.equalsIgnoreCase("F")){
+                                //Directly to fob app
+                                startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
+                                finish();
+                            }else if (HubType.equalsIgnoreCase("S")){
+
+                                startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
+                                finish();
+                            }else if (BluetoothCardReader != null && BluetoothCardReaderMacAddress.equals("") && !BluetoothCardReader.isEmpty()) {
                                 AppConstants.colorToastBigFont(SplashActivity.this, " Provide Bluetooth MAC address in 'Items->FluidSecure Hub' on server.", Color.RED);
                                 startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
                                 finish();
@@ -629,7 +687,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
 
                 } catch (Exception ex) {
-                    AppConstants.WriteinFile(TAG + " Handle user Data: "+ex);
                     CommonUtils.LogMessage(TAG, "Handle user Data", ex);
                 }
 
@@ -650,14 +707,14 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 } else if (ResponceText.equalsIgnoreCase("IMEI not exists")) {
 
                     //CommonUtils.showMessageDilaog(SplashActivity.this, "Error Message", ResponceText);
-                    AppConstants.AlertDialogFinish(SplashActivity.this,  ResponceText);
+                    AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
 
                 } else if (ResponceText.equalsIgnoreCase("No data found")) {
 
-                    AppConstants.AlertDialogFinish(SplashActivity.this,  ResponceText);
+                    AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
 
                 } else {
-                    AppConstants.AlertDialogFinish(SplashActivity.this,  ResponceText);
+                    AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
                 }
 
             } else {
@@ -671,27 +728,26 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     }
 
 
-    public class CheckApproved extends AsyncTask<Void, Void, String> {
+    public class CheckApproved extends AsyncTask<String, Void, String> {
 
         public String resp = "";
 
-        protected String doInBackground(Void... arg0) {
+        protected String doInBackground(String... param) {
 
             try {
-
                 MediaType TEXT = MediaType.parse("application/x-www-form-urlencoded");
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(20, TimeUnit.SECONDS);
+                client.setReadTimeout(20, TimeUnit.SECONDS);
+                client.setWriteTimeout(20, TimeUnit.SECONDS);
 
                 String imieNumber = AppConstants.getIMEI(SplashActivity.this);
                 RequestBody body = RequestBody.create(TEXT, "Authenticate:A");
                 Request request = new Request.Builder()
                         .url(AppConstants.webURL)
                         .post(body)
-                        .addHeader("Authorization", "Basic " + AppConstants.convertStingToBase64(imieNumber + ":abc:Other"))
+                        .addHeader("Authorization", "Basic " + AppConstants.convertStingToBase64(param[0] + ":abc:Other"))
                         .build();
 
                 Response response = client.newCall(request).execute();
@@ -699,36 +755,43 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
             } catch (SocketTimeoutException e) {
                 e.printStackTrace();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String response) {
 
-
-            if (response != null && response.startsWith("{"))
-            {
+            if (response != null && response.startsWith("{")) {
                 actionOnResult(response);
-            }else{
+            } else {
 
                 if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
-                    AppConstants.NETWORK_STRENGTH = false;
-                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "  Server response null ~Switching to offline mode!!");
-                    startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
-                    finish();
-                }else{
+                    if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
+                        AppConstants.NETWORK_STRENGTH = false;
+                    }
+                    AppConstants.WriteinFile(TAG + "  Server response null ~Switching to offline mode!!");
+                    SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                    HubType = sharedPrefODO.getString("HubType", "");
 
-                    if (!CommonUtils.isHotspotEnabled(SplashActivity.this) && Constants.hotspotstayOn){
-                        CommonUtils.enableMobileHotspotmanuallyStartTimer(SplashActivity.this);
+                    if (HubType.equalsIgnoreCase("F")){
+                        //Directly to fob app
+                        startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
+                        finish();
+                    }else if (HubType.equalsIgnoreCase("S")){
+
+                        startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
+                        finish();
                     }else{
-                        RetryAlertDialogButtonClicked("Server connection problem...Please try it again");
+                        startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
+                        finish();
                     }
 
+                } else {
+                    RetryAlertDialogButtonClicked("Server connection problem...Please try it again");
                 }
 
             }
@@ -929,7 +992,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     }*/
 
 
-    public void storeBT_FOBDetails(String BluetoothCardReader, String BTMacAddress,String LFBluetoothCardReader, String LFBluetoothCardReaderMacAddress,String HFTrakCardReader,String HFTrakCardReaderMacAddress,boolean ACS_Reader,String MagneticCardReader,String MagneticCardReaderMacAddress,String DisableFOBReadingForPin,String DisableFOBReadingForVehicle,String DisableAllReboots) {
+    public void storeBT_FOBDetails(String BluetoothCardReader, String BTMacAddress, String LFBluetoothCardReader, String LFBluetoothCardReaderMacAddress, String HFTrakCardReader, String HFTrakCardReaderMacAddress, boolean ACS_Reader, String MagneticCardReader, String MagneticCardReaderMacAddress, String DisableFOBReadingForPin, String DisableFOBReadingForVehicle, String DisableAllReboots,String QRCodeReaderForBarcode,String QRCodeBluetoothMacAddressForBarcode) {
         SharedPreferences pref;
 
         SharedPreferences.Editor editor;
@@ -943,87 +1006,19 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         editor.putString("LFBluetoothCardReaderMacAddress", LFBluetoothCardReaderMacAddress);
         editor.putString("HFTrakCardReader", HFTrakCardReader);
         editor.putString("HFTrakCardReaderMacAddress", HFTrakCardReaderMacAddress);
-        editor.putBoolean("ACS_Reader",ACS_Reader);
-        editor.putString("MagneticCardReader",MagneticCardReader);
-        editor.putString("MagneticCardReaderMacAddress",MagneticCardReaderMacAddress);
-        editor.putString("DisableFOBReadingForPin",DisableFOBReadingForPin);
-        editor.putString("DisableFOBReadingForVehicle",DisableFOBReadingForVehicle);
-        editor.putString("DisableAllReboots",DisableAllReboots);
+        editor.putBoolean("ACS_Reader", ACS_Reader);
+        editor.putString("MagneticCardReader", MagneticCardReader);
+        editor.putString("MagneticCardReaderMacAddress", MagneticCardReaderMacAddress);
+        editor.putString("DisableFOBReadingForPin", DisableFOBReadingForPin);
+        editor.putString("DisableFOBReadingForVehicle", DisableFOBReadingForVehicle);
+        editor.putString("DisableAllReboots", DisableAllReboots);
+        editor.putString("QRCodeReaderForBarcode", QRCodeReaderForBarcode.toUpperCase());
+        editor.putString("QRCodeBluetoothMacAddressForBarcode", QRCodeBluetoothMacAddressForBarcode.toUpperCase());
 
         // commit changes
         editor.commit();
     }
 
-
-    public class CallAppTxt extends AsyncTask<Void, Void, String> {
-
-        public String resp = "";
-
-        protected String doInBackground(Void... arg0) {
-
-
-            try {
-
-
-                OkHttpClient client = new OkHttpClient();
-
-                Request request = new Request.Builder()
-                        .url("http://www.trakeng.com/app.txt")
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                resp = response.body().string();
-
-            } catch (Exception e) {
-                Log.d("Ex", e.getMessage());
-            }
-
-
-            return resp;
-        }
-
-        @Override
-        protected void onPostExecute(String response) {
-
-            System.out.println("app txt--" + response);
-
-            try {
-
-                if (response.contains("FluidSecure")) {
-                    JSONObject jobj = new JSONObject(response);
-                    JSONArray jArry = jobj.getJSONArray("App");
-
-                    for (int i = 0; i < jArry.length(); i++) {
-                        JSONObject oj = (JSONObject) jArry.get(i);
-                        String appName = oj.getString("appName");
-                        String appLink = oj.getString("appLink");
-
-
-                        if (appName.trim().equalsIgnoreCase("FluidSecure")) {
-
-                            //store url from app txt file
-                            SharedPreferences sharedPref = SplashActivity.this.getSharedPreferences("storeAppTxtURL", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString("appLink", appLink);
-                            editor.apply();
-
-                            setUrlFromSharedPref(SplashActivity.this);
-
-                            new CheckApproved().execute();
-
-                            break;
-                        }
-                    }
-
-                }
-
-            } catch (Exception e) {
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  App.txt-" + e.getMessage());
-            }
-
-
-        }
-    }
 
     public static void setUrlFromSharedPref(Context ctx) {
 
@@ -1038,5 +1033,109 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
+    public void otherServerCall() {
+        try {
+
+            String imeiNumber = AppConstants.getIMEI(SplashActivity.this);
+
+            System.out.println("imeiNumber" + imeiNumber);
+
+            if (imeiNumber != null && !imeiNumber.trim().isEmpty() && !imeiNumber.trim().equalsIgnoreCase("null")) {
+
+                new CheckApproved().execute(imeiNumber);
+
+            } else {
+
+                if (Build.VERSION.SDK_INT >= 29) {
+                    // go to registration page
+                    startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
+                    finish();
+                } else {
+                    String _imei = AppConstants.getIMEIOnlyForBelowOS10(SplashActivity.this);
+
+                    writeIMEI_UUIDInFile(SplashActivity.this, _imei);// imei will store here
+
+                    new CheckApproved().execute(_imei);
+                }
+
+            }
+
+
+        } catch (Exception e) {
+
+            System.out.println(e);
+
+        }
+    }
+
+    public static void writeIMEI_UUIDInFile(Context ctx, String simple_string) {
+        try {
+
+            String encryptedString = AES.encrypt(simple_string, AES.credential);
+
+            File file = new File(Environment.getExternalStorageDirectory() + "/" + imei_mob_folder_name);
+
+            if (!file.exists()) {
+                if (file.mkdirs()) {
+                    //System.out.println("Create FS_TestApp Folder");
+                } else {
+                    // System.out.println("Fail to create FS_TestApp folder");
+                }
+            }
+
+            File gpxfile = new File(file + "/" + "encrypt.txt");
+            if (gpxfile.exists()) {
+                gpxfile.delete();
+            }
+
+
+            if (!gpxfile.exists()) {
+                gpxfile.createNewFile();
+            }
+
+
+            FileWriter fileWritter = new FileWriter(gpxfile, false);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+            bufferWritter.write(encryptedString);
+            bufferWritter.close();
+
+
+        } catch (Exception e) {
+            AppConstants.WriteinFile("writeIMEI_UUIDInFile- " + e.getMessage());
+        }
+    }
+
+    public static String readIMEIMobileNumFromFile(Context ctx) {
+        String file_content = "";
+        try {
+
+            File gpxfile = new File(Environment.getExternalStorageDirectory() + "/" + imei_mob_folder_name + "/" + "encrypt.txt");
+            if (!gpxfile.exists()) {
+                return "";
+            }
+
+
+            FileOutputStream os = null;
+            StringBuilder text = new StringBuilder();
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(gpxfile));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    text.append(line);
+                    text.append('\n');
+                }
+                br.close();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+            file_content = text.toString();
+
+
+        } catch (Exception e) {
+            AppConstants.WriteinFile( "readIMEIMobileNumFile- " + e.getMessage());
+        }
+
+        return file_content;
+    }
 }
 

@@ -49,15 +49,15 @@ public class LeServiceHFCard extends Service {
 
 
     public final static String ACTION_GATT_CONNECTED =
-            "com.TrakEngineering.FluidSecureHubTest.HFLe.ACTION_GATT_CONNECTED";
+            "com.TrakEngineering.FluidSecureHub.HFLe.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
-            "com.TrakEngineering.FluidSecureHubTest.HFLe.ACTION_GATT_DISCONNECTED";
+            "com.TrakEngineering.FluidSecureHub.HFLe.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.TrakEngineering.FluidSecureHubTest.HFLe.ACTION_GATT_SERVICES_DISCOVERED";
+            "com.TrakEngineering.FluidSecureHub.HFLe.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
-            "com.TrakEngineering.FluidSecureHubTest.HFLe.ACTION_DATA_AVAILABLE";
+            "com.TrakEngineering.FluidSecureHub.HFLe.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
-            "com.TrakEngineering.FluidSecureHubTest.HFLe.EXTRA_DATA";
+            "com.TrakEngineering.FluidSecureHub.HFLe.EXTRA_DATA";
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -351,15 +351,18 @@ public class LeServiceHFCard extends Service {
             }
             /*get the read characteristic from the service*/
             BluetoothGattCharacteristic mReadCharacteristic = null;
-            if (!bleLFUpdateFlag)
+           /* if (!bleLFUpdateFlag)
                 mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(bolong_UUID_char));
             else
-                mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BLE_char));
+                mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BLE_char));*/
+
+            mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(bolong_UUID_char));
+
+
             if (mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false) {
                 Log.w(TAG, "Failed to read characteristic");
                 //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
                 // Toast.makeText(getApplicationContext(),"Failed to Read Characteristics: ", Toast.LENGTH_LONG).show();
-
 
             } else {
                 Log.w(TAG, "Read Characteristics successfully");

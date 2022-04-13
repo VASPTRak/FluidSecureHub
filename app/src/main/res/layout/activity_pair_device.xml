@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:orientation="vertical"
+    tools:context="com.TrakEngineering.FluidSecureHub.PairDeviceActivity">
+
+    <Button
+        android:id="@+id/btn_pair_new_device"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:textSize="22dp"
+        android:textColor="#FFF"
+        android:textAllCaps="false"
+        android:text="Pair New BT Device" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recyclerv_view">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>

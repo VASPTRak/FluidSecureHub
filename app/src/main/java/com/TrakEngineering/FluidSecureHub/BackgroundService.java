@@ -6,9 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.enity.TransactionStatus;
@@ -59,9 +60,9 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i(TAG, "BackgroundService is on....");
-       // Log.e("Totaloffline_check","Online data BackgroundService");
+        //Log.e("Totaloffline_check","Online data BackgroundService");
         //If all hoses are free cleare
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
             AppConstants.ListOfRunningTransactiins.clear();
         }
 
@@ -108,11 +109,13 @@ public class BackgroundService extends Service {
                         if (AppConstants.ListOfRunningTransactiins.contains(txn)) {
                             //transaction running
                             Log.i(TAG, "Transaction is in progress" + txn);
+                            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "TempLog  Transaction is in progress: " + txn);
 
                         } else {
                             //transaction completed
                             //new UploadTask().execute(Id, jsonData, authString);
                             UploadTaskRetroFit(Id, jsonData, authString);
+                            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "TempLog  Transaction UploadTask Id:" + Id + " jsonData:" + jsonData);
                         }
 
                     } else {
@@ -120,7 +123,6 @@ public class BackgroundService extends Service {
                         controller.deleteTransactions(Id);
                         System.out.println("deleteTransactions..." + Id);
                         Log.i(TAG, " Empty json Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
-                        AppConstants.WriteinFile(TAG + "  Empty json Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
 
                     }
 
@@ -138,45 +140,109 @@ public class BackgroundService extends Service {
 
         }
 
-
-        SharedPreferences myPrefslo = this.getSharedPreferences("storeIsRenameFlag", 0);
-        boolean pflag = myPrefslo.getBoolean("flag", false);
-        String jsonData = myPrefslo.getString("jsonData", "");
-        String authString = myPrefslo.getString("authString", "");
-
-        if (pflag && !jsonData.trim().isEmpty() && !authString.trim().isEmpty()) {
-
-            System.out.println("sent to rename...............");
-
-            new SetHoseNameReplacedFlag().execute(jsonData, authString);
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+            ReplaceHoseNameFlagSynToServer();
         }
-
 //        uploadLast10Transaction("storeCmtxtnid_10_record0"); //link0 last 10 trxn
 //        uploadLast10Transaction("storeCmtxtnid_10_record1"); //link1 last 10 trxn
 //        uploadLast10Transaction("storeCmtxtnid_10_record2"); //link2 last 10 trxn
 //        uploadLast10Transaction("storeCmtxtnid_10_record3"); //link3 last 10 trxn
 
-        // uploadLast10TransactionOnce("storeCmtxtnid_10_record"); // last 10 trxn
+        //uploadLast20TransactionOnce(); // last 20 trxn
 
-        stopSelf();
+        uploadConnectionissueLogtoserver();// upload connection issue log.
+
+        //Clear shared preferance regarding Last 20 trxn
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                AppConstants.clearSharedPrefByName(BackgroundService.this,"storeCmtxtnid_20_record");
+                AppConstants.clearSharedPrefByName(BackgroundService.this,AppConstants.LinkConnectionIssuePref);
+                stopSelf();
+            }
+        },10000);
+
 
         return super.onStartCommand(intent, flags, startId);
     }
 
+   void ReplaceHoseNameFlagSynToServer(){
+
+        //For Hose One......1
+       SharedPreferences FS1Pref = this.getSharedPreferences("storeIsRenameFlagFS1", 0);
+       boolean pflag1 = FS1Pref.getBoolean("flag", false);
+       String jsonData1 = FS1Pref.getString("jsonData", "");
+       String authString1 = FS1Pref.getString("authString", "");
+
+       if (pflag1 && !jsonData1.trim().isEmpty() && !authString1.trim().isEmpty()) {
+          Log.i("SharedPreferences_check1 ",pflag1+">>"+jsonData1);
+           new SetHoseNameReplacedFlag().execute(jsonData1, authString1,"storeIsRenameFlagFS1");
+       }
+
+       //For Hose Two....2
+       SharedPreferences FS2Pref = this.getSharedPreferences("storeIsRenameFlagFS2", 0);
+       boolean pflag2 = FS2Pref.getBoolean("flag", false);
+       String jsonData2 = FS2Pref.getString("jsonData", "");
+       String authString2 = FS2Pref.getString("authString", "");
+
+       if (pflag2 && !jsonData2.trim().isEmpty() && !authString2.trim().isEmpty()) {
+           Log.i("SharedPreferences_check2 ",pflag2+">>"+jsonData2);
+           new SetHoseNameReplacedFlag().execute(jsonData2, authString2,"storeIsRenameFlagFS2");
+       }
+
+       //For Hose Three..3
+       SharedPreferences FS3Pref = this.getSharedPreferences("storeIsRenameFlagFS3", 0);
+       boolean pflag3 = FS3Pref.getBoolean("flag", false);
+       String jsonData3 = FS3Pref.getString("jsonData", "");
+       String authString3 = FS3Pref.getString("authString", "");
+
+       if (pflag3 && !jsonData3.trim().isEmpty() && !authString3.trim().isEmpty()) {
+           Log.i("SharedPreferences_check3 ",pflag3+">>"+jsonData3);
+           new SetHoseNameReplacedFlag().execute(jsonData3, authString3,"storeIsRenameFlagFS3");
+       }
+
+
+       //For Hose 4
+       SharedPreferences FS4Pref = this.getSharedPreferences("storeIsRenameFlagFS4", 0);
+       boolean pflag4 = FS4Pref.getBoolean("flag", false);
+       String jsonData4 = FS4Pref.getString("jsonData", "");
+       String authString4 = FS4Pref.getString("authString", "");
+
+       if (pflag4 && !jsonData4.trim().isEmpty() && !authString4.trim().isEmpty()) {
+           Log.i("SharedPreferences_check4 ",pflag4+">>"+jsonData4);
+           new SetHoseNameReplacedFlag().execute(jsonData4, authString4,"storeIsRenameFlagFS4");
+       }
+
+
+       //For Hose 5
+       SharedPreferences FS5Pref = this.getSharedPreferences("storeIsRenameFlagFS5", 0);
+       boolean pflag5 = FS5Pref.getBoolean("flag", false);
+       String jsonData5 = FS5Pref.getString("jsonData", "");
+       String authString5 = FS5Pref.getString("authString", "");
+
+       if (pflag5 && !jsonData5.trim().isEmpty() && !authString5.trim().isEmpty()) {
+           new SetHoseNameReplacedFlag().execute(jsonData5, authString5,"storeIsRenameFlagFS5");
+       }
+
+       //For Hose 6
+       SharedPreferences FS6Pref = this.getSharedPreferences("storeIsRenameFlagFS6", 0);
+       boolean pflag6 = FS6Pref.getBoolean("flag", false);
+       String jsonData6 = FS6Pref.getString("jsonData", "");
+       String authString6 = FS6Pref.getString("authString", "");
+
+       if (pflag6 && !jsonData6.trim().isEmpty() && !authString6.trim().isEmpty()) {
+           new SetHoseNameReplacedFlag().execute(jsonData6, authString6,"storeIsRenameFlagFS6");
+       }
+
+    }
 
 
     public class SetHoseNameReplacedFlag extends AsyncTask<String, Void, String> {
 
-
-        @Override
-        protected void onPreExecute() {
-
-
-        }
-
+        String PrefName = "";
         protected String doInBackground(String... param) {
             String resp = "";
-
+            PrefName = param[2];
 
             try {
                 OkHttpClient client = new OkHttpClient();
@@ -205,9 +271,9 @@ public class BackgroundService extends Service {
             try {
 
                 System.out.println("Wifi renamed on server---" + result);
-
-                if (result.contains("success")) {
-                    SharedPreferences preferences = getSharedPreferences("storeIsRenameFlag", Context.MODE_PRIVATE);
+                Log.i("SharedPreferences_check R ",PrefName+">>"+result);
+                if (result.contains("success") && !PrefName.isEmpty()) {
+                    SharedPreferences preferences = getSharedPreferences(PrefName, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.clear();
                     editor.commit();
@@ -223,58 +289,39 @@ public class BackgroundService extends Service {
         }
     }
 
-    private void uploadLast10TransactionOnce(String shrPrefName) {
+    private void uploadLast20TransactionOnce() {
 
-        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
 
-        for (int j=0;j <=3 ; j++){
-            String jsonData0 = "";
-            SharedPreferences sharedPref = BackgroundService.this.getSharedPreferences(shrPrefName+j, Context.MODE_PRIVATE);
-            if (sharedPref != null){
-                jsonData0 = sharedPref.getString("json", "");
-
-                if (jsonData0 != null && !jsonData0.equalsIgnoreCase("")) {
-
-                    try {
-                        JSONObject jsonObject = new JSONObject(jsonData0);
-                        JSONArray Requests = jsonObject.getJSONArray("cmtxtnid_10_record");
-
-                        for (int i = 0; i < Requests.length(); i++) {
-                            JSONObject c = Requests.getJSONObject(i);
-
-                            String FuelQuantity = c.getString("FuelQuantity");
-                            String Pulses = c.getString("Pulses");
-                            String TransactionId = c.getString("TransactionId");
-
-                            HashMap<String, String> map = new HashMap<>();
-                            map.put("FuelQuantity", FuelQuantity);
-                            map.put("Pulses", Pulses);
-                            map.put("TransactionId", TransactionId);
-                            arrayList.add(map);
-
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+        SharedPreferences sharedPref = BackgroundService.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
+        for (int i = 1; i < 7 ; i++) {
+            String linkJsonData = sharedPref.getString("LINK"+i, "");
+            if (!linkJsonData.equals("")){
+                SaveMultipleTransactionsRetroFit(linkJsonData);
             }
         }
 
 
-        if (arrayList != null && !arrayList.isEmpty()){
+        /*//Below code is to merge all links data.
+        Gson gson = new Gson();
+        String json = gson.toJson(arrayList);
 
-            Gson gson = new Gson();
-            String json = gson.toJson(arrayList);
-
-            String Merged_jsonData = "{\"cmtxtnid_10_record\":"+json+"}";
-            Log.i(TAG,"Merged_json"+Merged_jsonData);
-
-            SaveMultipleTransactionsRetroFit(Merged_jsonData);
+        String Merged_jsonData = "{\"cmtxtnid_20_record\":"+json+"}";
+        Log.i(TAG,"Merged_json"+Merged_jsonData);*/
 
 
+    }
+
+    private void uploadConnectionissueLogtoserver(){
+
+        SharedPreferences sharedPref = BackgroundService.this.getSharedPreferences(AppConstants.LinkConnectionIssuePref, Context.MODE_PRIVATE);
+        for (int i = 1; i < 7 ; i++) {
+            String linkJsonData = sharedPref.getString("NLINK"+i, "");
+            if (!linkJsonData.equals("")){
+                Log.i(TAG," uploadConnectionissueLogtoserver: "+linkJsonData);
+                new LINKDisconnectionErrorLog().execute(linkJsonData);
+            }
         }
+
     }
 
     public class EntityCmd10Txn {
@@ -335,7 +382,7 @@ public class BackgroundService extends Service {
 
                         }else if (ResponceMessage.equalsIgnoreCase("fail") && ResponceText.equalsIgnoreCase("TransactionId not found.")){
 
-                            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " TransactionId not found. deleted from Sqlite -json:"+jsonData);
+                            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " TransactionId not found. deleted from Sqlite -json:"+jsonData);
                             controller.deleteTransactions(Id);
 
                         }
@@ -364,7 +411,62 @@ public class BackgroundService extends Service {
 
     }
 
-    public void SaveMultipleTransactionsRetroFit(String Merged_jsonData) {
+    public class LINKDisconnectionErrorLog extends AsyncTask<String, Void, String> {
+
+
+        public String response = null;
+
+        @Override
+        protected String doInBackground(String... param) {
+
+            try {
+                ServerHandler serverHandler = new ServerHandler();
+                String jsonData = param[0];
+                String userEmail = CommonUtils.getCustomerDetailsCC(BackgroundService.this).PersonEmail;
+
+                //----------------------------------------------------------------------------------
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "LINKDisconnectionErrorLog");
+                response = serverHandler.PostTextData(BackgroundService.this, AppConstants.webURL, jsonData, authString);
+                //----------------------------------------------------------------------------------
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String serverRes) {
+
+            try {
+                if (serverRes != null) {
+
+                    JSONObject jsonObject1 = new JSONObject(serverRes);
+
+                    String ResponseMessage = jsonObject1.getString("ResponseMessage");
+
+
+                    if (ResponseMessage.equalsIgnoreCase("success")) {
+
+                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "success LINKDisconnectionErrorLog");
+
+                    } else if (ResponseMessage.equalsIgnoreCase("fail")) {
+
+                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Fail LINKDisconnectionErrorLog");
+
+                    }
+
+                }
+
+            } catch (Exception e) {
+
+                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LINKDisconnectionErrorLog onPostExecute--Exception " + e);
+
+            }
+        }
+    }
+
+    public void SaveMultipleTransactionsRetroFit(String linkJsonData) {
 
         //Here a logging interceptor is created
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -387,7 +489,7 @@ public class BackgroundService extends Service {
         String userEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
         String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "SaveMultipleTransactions");
 
-        Call<ServerResponse> call = service.postttt(authString, Merged_jsonData);
+        Call<ServerResponse> call = service.postttt(authString, linkJsonData);
 
         call.enqueue(new Callback<ServerResponse>() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -401,11 +503,7 @@ public class BackgroundService extends Service {
                 Log.i(TAG, "SaveMultipleTransactionsRetroFit ResponceMessage:"+ResponceMessage+ " ResponceText:"+ResponceText);
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
-
-                    AppConstants.clearSharedPrefByName(BackgroundService.this,"storeCmtxtnid_10_record0");
-                    AppConstants.clearSharedPrefByName(BackgroundService.this,"storeCmtxtnid_10_record1");
-                    AppConstants.clearSharedPrefByName(BackgroundService.this,"storeCmtxtnid_10_record2");
-                    AppConstants.clearSharedPrefByName(BackgroundService.this,"storeCmtxtnid_10_record3");
+                    Log.i(TAG, "SaveMultipleTransactionsRetroFit ResponceMessage:"+ResponceMessage+ " ResponceText:"+ResponceText);
                 }
 
             }

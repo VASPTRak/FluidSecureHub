@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class Constants {
 
+    public static final String PREF_TransactionDetails = "SaveTransactionInSharedPreff";
+
     public static boolean hotspotstayOn = true;
 
     public static final String MAC_ADDR_RECONFIGURE = "saveLinkMacAddressForReconfigure";
@@ -24,18 +26,20 @@ public class Constants {
 
     public static double Latitude=0;
     public static double Longitude=0;
-
+    public static int PORT = 80;
 
     final public static String DATE_FORMAT="MMM dd, yyyy"; // May 24, 2016
     final public static String TIME_FORMAT="hh:mm aa";
     public static final int CONNECTION_CODE = 111;
 
     public static String CurrFsPass;
+    public final static int REQUEST_ENABLE_BT = 1;
 
     public static String ManualOdoScreenFree = "Yes";
     public static String FA_OdometerRequired = "Yes";
     public static boolean ON_FA_MANUAL_SCREEN;
 
+    public static String QR_ReaderStatus = "QR Waiting..";
     public static String HF_ReaderStatus = "HF Waiting..";
     public static String LF_ReaderStatus = "LF Waiting..";
     public static String Mag_ReaderStatus = "Mag Waiting..";
@@ -44,6 +48,8 @@ public class Constants {
     public static String FS_2OdoScreen = "FREE";
     public static String FS_3OdoScreen = "FREE";
     public static String FS_4OdoScreen = "FREE";
+    public static String FS_5OdoScreen = "FREE";
+    public static String FS_6OdoScreen = "FREE";
 
     public static String FA_Message = "";
 
@@ -52,14 +58,23 @@ public class Constants {
     public static String FS_2STATUS = "FREE";
     public static String FS_3STATUS = "FREE";
     public static String FS_4STATUS = "FREE";
+    public static String FS_5STATUS = "FREE";
+    public static String FS_6STATUS = "FREE";
+
     public static String FS_1Gallons = "";
     public static String FS_2Gallons = "";
     public static String FS_3Gallons = "";
     public static String FS_4Gallons = "";
+    public static String FS_5Gallons = "";
+    public static String FS_6Gallons = "";
+
+
     public static String FS_1Pulse = "";
     public static String FS_2Pulse = "";
     public static String FS_3Pulse = "";
     public static String FS_4Pulse = "";
+    public static String FS_5Pulse = "";
+    public static String FS_6Pulse = "";
 
     public static final String SHARED_PREF_NAME = "UserInfo";
     public static final String PREF_COLUMN_USER = "UserData";
@@ -72,6 +87,7 @@ public class Constants {
     public static final String PREF_VehiFuel = "SaveVehiFuelInPref";
     public static final String PREF_TldDetails = "SaveTldDetailsInPref";
     public static final String PREF_FS_UPGRADE = "SaveFSUpgrade";
+    public static final String PREF_LINK_pumpofftime = "SaveLinkPumpOffTime";
 
     public static final int VERSION_CODES_NINE = 28;
 
@@ -117,6 +133,24 @@ public class Constants {
     public static String AccVehicleOther_FS4;
     public static int AccOdoMeter_FS4=0;
     public static int AccHours_FS4;
+
+    //ForFs number 5
+    public static String AccPersonnelPIN_FS5;
+    public static String AccVehicleNumber_FS5;
+    public static String AccDepartmentNumber_FS5;
+    public static String AccOther_FS5;
+    public static String AccVehicleOther_FS5;
+    public static int AccOdoMeter_FS5=0;
+    public static int AccHours_FS5;
+
+    //ForFs number 6
+    public static String AccPersonnelPIN_FS6;
+    public static String AccVehicleNumber_FS6;
+    public static String AccDepartmentNumber_FS6;
+    public static String AccOther_FS6;
+    public static String AccVehicleOther_FS6;
+    public static int AccOdoMeter_FS6=0;
+    public static int AccHours_FS6;
 
     static List<String> BusyVehicleNumberList = new ArrayList<String>();
 

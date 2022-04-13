@@ -15,14 +15,16 @@ import android.net.NetworkRequest;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
+import com.TrakEngineering.FluidSecureHub.enity.SocketErrorEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.TankMonitorEntity;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
 import com.TrakEngineering.FluidSecureHub.enity.UpdateTransactionStatusClass;
@@ -54,12 +56,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,10 +70,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.android.gms.internal.zzid.runOnUiThread;
+import static com.TrakEngineering.FluidSecureHub.CommonUtils.GetDateString;
 
 
 /**
@@ -85,7 +87,7 @@ public class BackgroundService_AP_PIPE extends Service {
     ConnectionDetector cd = new ConnectionDetector(BackgroundService_AP_PIPE.this);
     private int AttemptCount = 0;
     private int RelayAttemptCount = 0;
-    private String CurrTxnMode = "online",OffLastTXNid = "0";
+    private String CurrTxnMode = "online", OffLastTXNid = "0";
 
     //String HTTP_URL = "http://192.168.43.140:80/";//for pipe
     //String HTTP_URL = "http://192.168.43.5:80/";//Other FS
@@ -114,8 +116,6 @@ public class BackgroundService_AP_PIPE extends Service {
     String jsonRelayOn = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":1}}";
     String jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
 
-    String jsonPulsar = "{\"pulsar_request\":{\"counter_set\":1}}";
-    String jsonPulsarOff = "{\"pulsar_request\":{\"counter_set\":0}}";
 
     String URL_UPGRADE_START = HTTP_URL + "upgrade?command=start";
 
@@ -128,7 +128,7 @@ public class BackgroundService_AP_PIPE extends Service {
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     private String vehicleNumber, odometerTenths = "0", dNumber = "", pNumber = "", oText = "", hNumber = "";
-    String LinkName = "", OtherName, IsOtherRequire, OtherLabel, VehicleNumber, PrintDate, CompanyName, Location, PersonName, PrinterMacAddress, PrinterName, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, IsTLDCall, EnablePrinter,_OdoMeter,_Hours,PumpOnTime;
+    String LinkName = "", OtherName, IsOtherRequire, OtherLabel, VehicleNumber, PrintDate, CompanyName, Location, PersonName, PrinterMacAddress, PrinterName, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, IsTLDCall, EnablePrinter, _OdoMeter, _Hours, PumpOnTime,LimitReachedMessage,SiteId;
 
     int timeFirst = 60;
     Timer tFirst;
@@ -173,11 +173,13 @@ public class BackgroundService_AP_PIPE extends Service {
                 try {
                     LinkName = AppConstants.DetailsServerSSIDList.get(0).get("WifiSSId");
                 } catch (Exception e) {
-                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ "Something went wrong please check Link name Ex:"+e.toString());
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Something went wrong please check Link name Ex:" + e.toString());
                     e.printStackTrace();
                 }
-            }else {
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ "Please check Link name:"+LinkName);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Please check Link name:" + LinkName);
             }
 
             Bundle extras = intent.getExtras();
@@ -229,27 +231,24 @@ public class BackgroundService_AP_PIPE extends Service {
                 jsonRelayOn = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":1}}";
                 jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
 
-                jsonPulsar = "{\"pulsar_request\":{\"counter_set\":1}}";
-                jsonPulsarOff = "{\"pulsar_request\":{\"counter_set\":0}}";
 
-                jsonRename = "{\"Request\":{\"SoftAP\":{\"Connect_SoftAP\":{\"authmode\":\"WPAPSK/WPA2PSK\",\"channel\":6,\"ssid\":\"" + AppConstants.REPLACEBLE_WIFI_NAME_FS1 + "\",\"password\":\"123456789\"}}}}";
+                jsonRename = "{\"Request\":{\"Softap\":{\"Connect_Softap\":{\"authmode\":\"WPAPSK/WPA2PSK\",\"channel\":6,\"ssid\":\"" + AppConstants.REPLACEBLE_WIFI_NAME_FS1 + "\",\"password\":\"123456789\"}}}}";
 
                 System.out.println("BackgroundService is on. AP_FS_PIPE" + HTTP_URL);
                 Constants.FS_1STATUS = "BUSY";
                 Constants.BusyVehicleNumberList.add(Constants.AccVehicleNumber_FS1);
 
-                if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS ){
+                if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS) {
                     CurrTxnMode = "online";
-                }else{
+                } else {
 
-                    if (AppConstants.AUTH_CALL_SUCCESS){
+                    if (AppConstants.AUTH_CALL_SUCCESS) {
                         SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
                         TransactionId = sharedPref.getString("TransactionId_FS1", "");
                         OffLastTXNid = TransactionId;//Set transaction id to offline
                     }
                     CurrTxnMode = "offline";
                 }
-
 
 
                 SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
@@ -265,12 +264,12 @@ public class BackgroundService_AP_PIPE extends Service {
                 IsTLDCall = sharedPref.getString("IsTLDCall_FS1", "False");
                 EnablePrinter = sharedPref.getString("EnablePrinter_FS1", "False");
                 PumpOnTime = sharedPref.getString("PumpOnTime_FS1", "0");
-
+                LimitReachedMessage = sharedPref.getString("LimitReachedMessage_FS1", "");
+                SiteId = sharedPref.getString("SiteId_FS1", "");
 
                 if (cd.isConnectingToInternet() && CurrTxnMode.equalsIgnoreCase("online")) {
 
-                    listOfConnectedIP_AP_PIPE.clear();
-                    ListConnectedHotspotIP_AP_PIPEAsyncCall();
+                    getipOverOSVersion();
 
 
                     //settransactionID to FSUNIT
@@ -295,38 +294,8 @@ public class BackgroundService_AP_PIPE extends Service {
                     CommonUtils.AddRemovecurrentTransactionList(true, TransactionId);//Add transaction Id to list
                     //////////////////////////////////////////////////////////////
 
-                    //=====================UpgradeTransaction Status ==1================
-                    /*cd = new ConnectionDetector(BackgroundService_AP_PIPE.this);
-                    if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-                        try {
-                            *//*UpdateTransactionStatusClass authEntity = new UpdateTransactionStatusClass();
-                            authEntity.TransactionId = TransactionId;
-                            authEntity.Status = "1";
-                            authEntity.IMEIUDID = AppConstants.getIMEI(BackgroundService_AP_PIPE.this);*//*
-err FS Link not connected
-                            //---------------------------------------------------
-                            if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId,"1",BackgroundService_AP_PIPE.this);
-                            //---------------------------------------------------
-
-                            *//*BackgroundService_AP_PIPE.UpdateAsynTask authTestAsynTask = new BackgroundService_AP_PIPE.UpdateAsynTask(authEntity);
-                            authTestAsynTask.execute();
-                            authTestAsynTask.get();
-
-                            String serverRes = authTestAsynTask.response;
-
-                            if (serverRes != null) {
-                            }
-*//*
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ " UpgradeTransactionStatusToSqlite Ex:"+e.toString());
-                        }
-
-                    }*/
-
-                    //=========================UpgradeTransactionStatus Ends===============
+                    //UpgradeTransaction Status initial in background service
+                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_AP_PIPE.this);
 
                     minFuelLimit = Double.parseDouble(MinLimit);
 
@@ -335,7 +304,7 @@ err FS Link not connected
                     stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
                     if (AppConstants.EnableFA) {
-                        stopAutoFuelSeconds=stopAutoFuelSeconds*3;
+                        stopAutoFuelSeconds = stopAutoFuelSeconds * 3;
                     }
 
 
@@ -362,58 +331,40 @@ err FS Link not connected
         }
 
 
-        //GetLatLng();
-        //Commented cmd for gatehub -->jsonPulsarOff,jsonPulsar,URL_RELAY
-        /*new CommandsPOST().execute(URL_SET_PULSAR, jsonPulsarOff);
+        if (numPulseRatio <= 0) {
+            ExitServicePulsarRationZero();
+        } else {
+            //Pulsar On
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
 
-        //Relay On cmd
-        new CommandsPOST().execute(URL_SET_PULSAR, jsonPulsar);//pulsar on swipe
+                    //Call Relay On Function
+                    String IsRelayOnCheck = RelayOnThreeAttempts();
+                    if (IsRelayOnCheck != null && !IsRelayOnCheck.equalsIgnoreCase("")) {
 
+                        try {
 
-        new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                            JSONObject jsonObject = new JSONObject(IsRelayOnCheck);
+                            String relay_status1 = null;
+                            relay_status1 = jsonObject.getString("relay_response");
+                            if (relay_status1.equalsIgnoreCase("{\"status\":1}")) {
+                                startQuantityInterval();
+                            } else {
+                                ExitBackgroundService();
+                            }
 
-
-                        new CommandsGET().execute(URL_RELAY);//Not required
-
-                        // new CommandsPOST().execute(URL_SET_PULSAR, jsonPulsarOff);
-
-                    }
-                }, 1000);*/
-
-
-        //Pulsar On
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                //Call Relay On Function
-                String IsRelayOnCheck = RelayOnThreeAttempts();
-                if (IsRelayOnCheck != null && !IsRelayOnCheck.equalsIgnoreCase("")) {
-
-                    try {
-
-                        JSONObject jsonObject = new JSONObject(IsRelayOnCheck);
-                        String relay_status1 = null;
-                        relay_status1 = jsonObject.getString("relay_response");
-                        if (relay_status1.equalsIgnoreCase("{\"status\":1}")) {
-                            startQuantityInterval();
-                        } else {
-                            ExitBackgroundService();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    } else {
+                        ExitBackgroundService();
                     }
 
-                } else {
-                    ExitBackgroundService();
                 }
-
-            }
-        }, 1500);
-
+            }, 1500);
+        }
         // return super.onStartCommand(intent, flags, startId);
         return Service.START_NOT_STICKY;
     }
@@ -429,8 +380,16 @@ err FS Link not connected
             String relay_status1 = jsonObject.getString("relay_response");
 
             if (relay_status1.equalsIgnoreCase("{\"status\":1}")) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  Relay On attempt 1");
+
+                String resultinfo = new CommandsGET().execute(URL_INFO).get();
+                if (resultinfo.trim().startsWith("{") && resultinfo.trim().contains("Version")) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "  Relay_Info cmd success 1");
+                } else {
+                    IsRelayOn = "";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "  Relay_Info cmd fail 1");
+                }
 
             } else {
                 Thread.sleep(1000);
@@ -439,8 +398,15 @@ err FS Link not connected
                 JSONObject jsonObjectSite = new JSONObject(IsRelayOn);
                 String relay_status2 = jsonObjectSite.getString("relay_response");
                 if (relay_status2.equalsIgnoreCase("{\"status\":1}")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  Relay On attempt 2");
+                    String resultinfo = new CommandsGET().execute(URL_INFO).get();
+                    if (resultinfo.trim().startsWith("{") && resultinfo.trim().contains("Version")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "  Relay_Info cmd success 2");
+                    } else {
+                        IsRelayOn = "";
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "  Relay_Info cmd fail 2");
+                    }
                 } else {
                     Thread.sleep(1000);
                     new CommandsPOST().execute(URL_RELAY, jsonRelayOn).get();//Relay ON Third attempt
@@ -536,7 +502,11 @@ err FS Link not connected
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
 
-            } catch (Exception e) {
+            }catch (SocketException se){
+                StoreLinkDisconnectInfo(se);
+                Log.d("Ex",se.getMessage());
+                stopSelf();
+            }catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Execption " + e);
@@ -585,6 +555,10 @@ err FS Link not connected
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
 
+            }catch (SocketException se){
+                StoreLinkDisconnectInfo(se);
+                Log.d("Ex",se.getMessage());
+                stopSelf();
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  CommandsGET doInBackground Execption " + e);
@@ -622,13 +596,12 @@ err FS Link not connected
         protected String doInBackground(String... param) {
 
 
-
             // Log.e(TAG, "~~~~~TCP for strt~~~~~");
             //http://192.168.43.67:80/tld?level=info
             String Command = param[1];
-            String serverip1 = param[0].replace("http://","");
-            String SERVER_IP = serverip1.replace(":80/","").trim();
-            String strcmd = "GET /"+Command+" HTTP/1.1\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: \r\nHost: 192.168.4.1\r\nConnection: Keep-Alive\r\nAccept-Encoding: gzip\r\nUser-Agent: okhttp/3.6.0\r\n\r\n";
+            String serverip1 = param[0].replace("http://", "");
+            String SERVER_IP = serverip1.replace(":80/", "").trim();
+            String strcmd = "GET /" + Command + " HTTP/1.1\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: \r\nHost: 192.168.4.1\r\nConnection: Keep-Alive\r\nAccept-Encoding: gzip\r\nUser-Agent: okhttp/3.6.0\r\n\r\n";
 
 
             try {
@@ -646,7 +619,7 @@ err FS Link not connected
                 StringBuilder InfoRespo = new StringBuilder();
                 String next_record = null;
                 while ((next_record = reader.readLine()) != null) {
-                    System.out.println("next_record"+next_record);
+                    System.out.println("next_record" + next_record);
                     InfoRespo.append(next_record);
 
                 }
@@ -662,14 +635,13 @@ err FS Link not connected
         }
 
 
-
         @SuppressLint("LongLogTag")
         @Override
         protected void onPostExecute(String res) {
 
             //Log.e(TAG, "~~~~~TCP for end~~~~~");
             Log.i(TAG, "Socket response" + res);
-            if (!res.contains("Version")){
+            if (!res.contains("Version")) {
                 //new UDPClientTask().execute(SERVER_IP);
             }
 
@@ -686,13 +658,12 @@ err FS Link not connected
         protected String doInBackground(String... param) {
 
 
-
             // Log.e(TAG, "~~~~~TCP for strt~~~~~");
             //http://192.168.43.67:80/tld?level=info
             String Command = param[1];
-            String serverip1 = param[0].replace("http://","");
-            String SERVER_IP = serverip1.replace(":80/","").trim();
-            String strcmd = "POST /"+Command+" HTTP/1.1\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: \r\nHost: 192.168.4.1\r\nConnection: Keep-Alive\r\nAccept-Encoding: gzip\r\nUser-Agent: okhttp/3.6.0\r\n\r\n";
+            String serverip1 = param[0].replace("http://", "");
+            String SERVER_IP = serverip1.replace(":80/", "").trim();
+            String strcmd = "POST /" + Command + " HTTP/1.1\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: \r\nHost: 192.168.4.1\r\nConnection: Keep-Alive\r\nAccept-Encoding: gzip\r\nUser-Agent: okhttp/3.6.0\r\n\r\n";
 
 
             try {
@@ -710,7 +681,7 @@ err FS Link not connected
                 StringBuilder InfoRespo = new StringBuilder();
                 String next_record = null;
                 while ((next_record = reader.readLine()) != null) {
-                    System.out.println("next_record"+next_record);
+                    System.out.println("next_record" + next_record);
                     InfoRespo.append(next_record);
 
                 }
@@ -721,12 +692,12 @@ err FS Link not connected
                 ex.printStackTrace();
             } catch (IOException ex) {
                 ex.printStackTrace();
-            } catch (Exception ex){
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " TCPCommandsPOST DoInbackground"+ex.getMessage());
+            } catch (Exception ex) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " TCPCommandsPOST DoInbackground" + ex.getMessage());
             }
             return response;
         }
-
 
 
         @SuppressLint("LongLogTag")
@@ -775,8 +746,7 @@ err FS Link not connected
 
                             } else {
 
-                                listOfConnectedIP_AP_PIPE.clear();
-                                ListConnectedHotspotIP_AP_PIPEAsyncCall();
+                                getipOverOSVersion();
 
                                 Thread.sleep(2000);
                                 System.out.println("FS Link not connected ~~AttemptCount:" + AttemptCount);
@@ -890,11 +860,13 @@ err FS Link not connected
                 Log.e(TAG, "error in getting response using async okhttp call");
                 //Temp code..
                 CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " -Exception " + e.toString());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " -Exception " + e.toString());
                 stopTimer = false;
                 new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
                 Constants.FS_1STATUS = "FREE";
                 clearEditTextFields();
+                stopSelf();
             }
 
             @SuppressLint("LongLogTag")
@@ -941,7 +913,7 @@ err FS Link not connected
 
 
                 }
-
+                responseBody.close();
             }
 
         });
@@ -974,9 +946,6 @@ err FS Link not connected
                         }
 
                         IsFuelingStop = "1";
-                        System.out.println("APFS_PIPE Auto Stop! Pulsar disconnected");
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop! Pulsar disconnected");
-                        // AppConstants.colorToastBigFont(this, AppConstants.FS1_CONNECTED_SSID+" Auto Stop!\n\nPulsar disconnected", Color.BLUE);
                         stopButtonFunctionality(); //temp on #574 Server Update
                     }
                 }
@@ -985,10 +954,10 @@ err FS Link not connected
                 int CNT_current = Integer.parseInt(counts);
 
                 //in progress (transaction recently started, no new information): Transaction ongoing = 8  --non zero qty
-                if (CNT_current > 0 && ongoingStatusSend){
+                if (CNT_current > 0 && ongoingStatusSend) {
                     ongoingStatusSend = false;
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId,"8",BackgroundService_AP_PIPE.this);
+                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_AP_PIPE.this);
                 }
 
                 if (CNT_LAST <= CNT_current) {
@@ -1075,9 +1044,18 @@ err FS Link not connected
                             System.out.println("APFS_PIPE Auto Stop!You reached MAX fuel limit.");
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
-                            //AppConstants.colorToastBigFont(this, "Auto Stop!\n\nYou reached MAX fuel limit.", Color.BLUE);
+                            AppConstants.DisplayToastmaxlimit = true;
+                            AppConstants.MaxlimitMessage = LimitReachedMessage;
                             stopButtonFunctionality();
                         }
+                    }else if (minFuelLimit == -1){
+                        IsFuelingStop = "1";
+                        System.out.println("APFS_PIPE Auto Stop!You reached MAX fuel limit.");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
+                        AppConstants.DisplayToastmaxlimit = true;
+                        AppConstants.MaxlimitMessage = LimitReachedMessage;
+                        stopButtonFunctionality();
                     }
                 } catch (Exception e) {
                     if (AppConstants.GenerateLogs)
@@ -1106,12 +1084,14 @@ err FS Link not connected
         stopTimer = false;
 
 
-        new BackgroundService_AP_PIPE.CommandsPOST().execute(URL_RELAY, jsonRelayOff);
+        if (pulsarConnected) {
+            //#1145 - I see Link receive relay off commands twice for every TXTN.
+            new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
+        }
 
-        runOnUiThread(new Runnable() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -1186,10 +1166,6 @@ err FS Link not connected
 
     public void finalLastStep() {
 
-
-        new BackgroundService_AP_PIPE.CommandsPOST().execute(URL_SET_PULSAR, jsonPulsarOff);
-
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1221,7 +1197,8 @@ err FS Link not connected
 //                    String command = "upgrade?command=start";
 //                    new TCPCommandsPOST().execute(HTTP_URL, command);
 
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " URL_UPGRADE_START CMD");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " URL_UPGRADE_START CMD");
                     new CommandsPOST().execute(URL_UPGRADE_START, "");
 
                     //upgrade bin
@@ -1329,14 +1306,11 @@ err FS Link not connected
 
                     try {
                         int pont = Integer.parseInt(PumpOnTime);
-                        //temp log below
-                        Log.w(TAG, "Temp log PumpOnTime:"+PumpOnTime);
-                        if (AppConstants.ServerCallLogs)AppConstants.WriteinFile(TAG + "Temp log PumpOnTime:"+PumpOnTime);
 
                         if (seconds >= pont) {
                             //Timed out (Start was pressed, and pump on timer hit): Pump Time On limit reached* = 4
                             if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId,"4",BackgroundService_AP_PIPE.this);
+                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_AP_PIPE.this);
 
                             commonForAutoStopQtySameForSeconds();
                         }
@@ -1348,39 +1322,39 @@ err FS Link not connected
 
                 } else {
 
-                if (stopAutoFuelSeconds > 0) {
+                    if (stopAutoFuelSeconds > 0) {
 
-                    if (seconds >= stopAutoFuelSeconds) {
+                        if (seconds >= stopAutoFuelSeconds) {
 
-                        if (qtyFrequencyCount()) {
+                            if (qtyFrequencyCount()) {
 
-                            //qty is same for some time
-                            IsFuelingStop = "1";
-                            System.out.println("APFS_PIPE Auto Stop!Quantity is same for last");
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!Quantity is same for last");
-                            //AppConstants.colorToastBigFont(this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
-                            stopButtonFunctionality();
-                            stopTimer = false;
-                            this.stopSelf();
-                            Constants.FS_1STATUS = "FREE";
-                            clearEditTextFields();
-                            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
+                                //qty is same for some time
+                                IsFuelingStop = "1";
+                                System.out.println("APFS_PIPE Auto Stop!Quantity is same for last");
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!Quantity is same for last");
+                                //AppConstants.colorToastBigFont(this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
+                                stopButtonFunctionality();
+                                stopTimer = false;
+                                this.stopSelf();
+                                Constants.FS_1STATUS = "FREE";
+                                clearEditTextFields();
+                                if (!Constants.BusyVehicleNumberList.equals(null)) {
+                                    Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
+                                }
+
+
+                            } else {
+                                quantityRecords.remove(0);
+                                System.out.println("0 th pos deleted");
+                                System.out.println("seconds--" + seconds);
+
+                                commonForAutoStopQtySameForSeconds();
                             }
-
-
-                        } else {
-                            quantityRecords.remove(0);
-                            System.out.println("0 th pos deleted");
-                            System.out.println("seconds--" + seconds);
-
-                            commonForAutoStopQtySameForSeconds();
                         }
                     }
-                }
 
-            }
+                }
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
@@ -1400,9 +1374,9 @@ err FS Link not connected
             if (!Constants.BusyVehicleNumberList.equals(null)) {
                 Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
             }
-
+            //>>Added for tempory log to check #1536 (Eva)  Harrison County issue
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!Quantity is same for last");
+                AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
         } else {
             quantityRecords.remove(0);
 
@@ -1468,7 +1442,7 @@ err FS Link not connected
             String jsonData = gson.toJson(authEntityClass);
 
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " received Pulses:" + Integer.parseInt(counts) + " Qty:" + fillqty + " TxnID:" + TransactionId);
+                AppConstants.WriteinFile(TAG + "  Lnk:" + LinkName + " P:" + Integer.parseInt(counts) + " Q:" + fillqty + " ID:" + TransactionId);
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(BackgroundService_AP_PIPE.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_AP_PIPE.this) + ":" + userEmail + ":" + "TransactionComplete");
@@ -1486,8 +1460,8 @@ err FS Link not connected
                 int rowseffected = controller.updateTransactions(imap);
                 System.out.println("rowseffected-" + rowseffected);
                 if (rowseffected == 0) {
-
-                    controller.insertTransactions(imap);
+                    //CommonUtils.DebugLogTemp(TAG,"TempLog rowseffected:"+jsonData);
+                    sqliteID = controller.insertTransactions(imap);
                 }
 
             }
@@ -1495,12 +1469,12 @@ err FS Link not connected
         } else {
 
 
-
             if (fillqty > 0) {
-                offcontroller.updateOfflinePulsesQuantity(sqlite_id + "", counts, fillqty + "",OffLastTXNid);
+                offcontroller.updateOfflinePulsesQuantity(sqlite_id + "", counts, fillqty + "", OffLastTXNid);
             }
 
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile("Offline  Link:" + LinkName + "  Pulses:" + Integer.parseInt(counts) + " Qty:" + fillqty);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile("Off  Lnk:" + LinkName + "  P:" + Integer.parseInt(counts) + " Q:" + fillqty);
 
         }
     }
@@ -1566,7 +1540,7 @@ err FS Link not connected
         String IsTLDCallOffline = null;
         if (siteid != null && !siteid.equalsIgnoreCase("")) {
             HashMap<String, String> linkmap = offcontroller.getLinksDetailsBySiteId(siteid);
-             IsTLDCallOffline = linkmap.get("IsTLDCall");
+            IsTLDCallOffline = linkmap.get("IsTLDCall");
         }
 
 
@@ -1633,9 +1607,11 @@ err FS Link not connected
                 DecimalFormat precision_cost = new DecimalFormat("0.00");
                 String PrintCost = (precision_cost.format(Double.parseDouble(InitPrintCost)));
 
-                printReceipt = CommonUtils.GetPrintReciptNew(IsOtherRequire,CompanyName, PrintDate, LinkName, Location, VehicleNumber, PersonName, Qty, PrintCost,OtherLabel, OtherName,_OdoMeter,_Hours);
 
                 if (EnablePrinter.equalsIgnoreCase("True")) {
+
+                    printReceipt = CommonUtils.GetPrintReciptNew(IsOtherRequire, CompanyName, PrintDate, LinkName, Location, VehicleNumber, PersonName, Qty, PrintCost, OtherLabel, OtherName, _OdoMeter, _Hours);
+
                     //Start background Service to print recipt
                     Intent serviceIntent = new Intent(BackgroundService_AP_PIPE.this, BackgroundServiceBluetoothPrinter.class);
                     serviceIntent.putExtra("printReceipt", printReceipt);
@@ -1746,24 +1722,24 @@ err FS Link not connected
             //tvConsole.setText("");
 
 
-            if (AppConstants.NeedToRename) {
+            if (AppConstants.NeedToRenameFS1) {
                 String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(this).PersonEmail;
 
                 String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag");
 
                 RenameHose rhose = new RenameHose();
-                rhose.SiteId = AppConstants.R_SITE_ID;
-                rhose.HoseId = AppConstants.R_HOSE_ID;
+                rhose.SiteId = AppConstants.UP_SiteId_fs1;//AppConstants.R_SITE_ID;
+                rhose.HoseId = AppConstants.UP_HoseId_fs1;//AppConstants.R_HOSE_ID;
                 rhose.IsHoseNameReplaced = "Y";
 
                 Gson gson = new Gson();
                 String jsonData = gson.toJson(rhose);
 
-                storeIsRenameFlag(this, AppConstants.NeedToRename, jsonData, authString);
+                storeIsRenameFlag(this, AppConstants.NeedToRenameFS1, jsonData, authString);
 
             }
 
-            boolean BSRunning =  CommonUtils.checkServiceRunning(BackgroundService_AP_PIPE.this,AppConstants.PACKAGE_BACKGROUND_SERVICE);
+            boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_AP_PIPE.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
             if (!BSRunning) {
                 startService(new Intent(this, BackgroundService.class));
             }
@@ -1790,8 +1766,6 @@ err FS Link not connected
 
                 clearEditTextFields();
 
-                SyncOfflineData();
-
 
             } catch (Exception ex) {
 
@@ -1807,6 +1781,8 @@ err FS Link not connected
 
         AppConstants.BUSY_STATUS = true;
 
+        if (OfflineConstants.isOfflineAccess(BackgroundService_AP_PIPE.this))
+            SyncOfflineData();
 
     }
 
@@ -1830,7 +1806,6 @@ err FS Link not connected
 
             //Get TankMonitoring details from FluidSecure Link
             String response1 = new CommandsGET().execute(URL_TDL_info).get();
-
 
 
             if (response1.equalsIgnoreCase("")) {
@@ -1886,15 +1861,14 @@ err FS Link not connected
                 obj_entity.FromDirectTLD = "n";
 
 
-                if(cd.isConnectingToInternet()) {
+                if (cd.isConnectingToInternet()) {
                     SaveTankMonitorReadingy TestAsynTask = new SaveTankMonitorReadingy(obj_entity);
                     TestAsynTask.execute();
                     TestAsynTask.get();
 
-                }else {
-                    offcontroller.insertTLDReadings(mac_address,"",AppConstants.SITE_ID,"",AppConstants.getIMEI(BackgroundService_AP_PIPE.this),LSB,MSB,Tem_data,CurrentDeviceDate,Response_code,"n");
+                } else {
+                    offcontroller.insertTLDReadings(mac_address, "", AppConstants.SITE_ID, "", AppConstants.getIMEI(BackgroundService_AP_PIPE.this), LSB, MSB, Tem_data, CurrentDeviceDate, Response_code, "n");
                 }
-
 
 
             }
@@ -1912,7 +1886,7 @@ err FS Link not connected
         SharedPreferences pref;
 
         SharedPreferences.Editor editor;
-        pref = context.getSharedPreferences("storeIsRenameFlag", 0);
+        pref = context.getSharedPreferences("storeIsRenameFlagFS1", 0);
         editor = pref.edit();
 
 
@@ -1923,7 +1897,6 @@ err FS Link not connected
 
         // commit changes
         editor.commit();
-
 
     }
 
@@ -1965,6 +1938,7 @@ err FS Link not connected
 
     public void clearEditTextFields() {
 
+        CNT_LAST = 0;
         Constants.AccVehicleNumber_FS1 = "";
         Constants.AccOdoMeter_FS1 = 0;
         Constants.AccDepartmentNumber_FS1 = "";
@@ -2020,7 +1994,8 @@ err FS Link not connected
 
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " OkHttpFileUpload"+e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " OkHttpFileUpload" + e.getMessage());
             }
 
 
@@ -2042,8 +2017,9 @@ err FS Link not connected
 //                        String command = "upgrade?command=reset";
 //                        new TCPCommandsPOST().execute(HTTP_URL, command);
 
-                          if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " URL_RESET CMD");
-                          new CommandsPOST().execute(URL_RESET, "");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " URL_RESET CMD");
+                        new CommandsPOST().execute(URL_RESET, "");
 
                         System.out.println("AFTER SECONDS 5");
                     }
@@ -2106,7 +2082,8 @@ err FS Link not connected
 
             } catch (Exception e) {
                 System.out.println(e);
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " OkHttpFileUpload"+e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " OkHttpFileUpload" + e.getMessage());
             }
 
         }
@@ -2336,6 +2313,54 @@ err FS Link not connected
         return String.valueOf(Temp);
     }
 
+    public void getipOverOSVersion() {
+        listOfConnectedIP_AP_PIPE.clear();
+        if (Build.VERSION.SDK_INT >= 29) {
+            ListConnectedHotspotIPOS10_AP_PIPEAsyncCall();
+        } else {
+            ListConnectedHotspotIP_AP_PIPEAsyncCall();
+        }
+    }
+
+    public synchronized void ListConnectedHotspotIPOS10_AP_PIPEAsyncCall() {
+
+        try {
+            Runtime runtime = Runtime.getRuntime();
+            Process proc = runtime.exec("ip neigh show");
+            proc.waitFor();
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+
+                //System.out.println("****-"+line);
+
+                String[] splitted = line.split(" ");
+
+                if (splitted != null && splitted.length >= 4) {
+
+                    String ipAddress = splitted[0];
+                    String macAddress = splitted[4];
+
+                    if (ipAddress.contains(".") && macAddress.contains(":")) {
+                        System.out.println("***IPAddress" + ipAddress);
+                        System.out.println("***macAddress" + macAddress);
+
+                        listOfConnectedIP_AP_PIPE.add("http://" + ipAddress + ":80/");
+                        System.out.println("Details Of Connected HotspotIP" + listOfConnectedIP_AP_PIPE);
+                    } else {
+                        System.out.println("###IPAddress" + ipAddress);
+                        System.out.println("###macAddress" + macAddress);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public synchronized void ListConnectedHotspotIP_AP_PIPEAsyncCall() {
 
         Thread thread = new Thread(new Runnable() {
@@ -2362,12 +2387,7 @@ err FS Link not connected
                             String ipAddress = splitted[0];
                             String macAddress = splitted[3];
                             System.out.println("IPAddress" + ipAddress);
-                            boolean isReachable = InetAddress.getByName(
-                                    splitted[0]).isReachable(500);  // this is network call so we cant do that on UI thread, so i take background thread.
-                            if (isReachable) {
-                                Log.d("Device Information", ipAddress + " : "
-                                        + macAddress);
-                            }
+
 
                             if (ipAddress != null || macAddress != null) {
 
@@ -2402,8 +2422,22 @@ err FS Link not connected
 
     private void ExitBackgroundService() {
 
+        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_AP_PIPE.this);
         CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " Relay status error");
+        stopTimer = false;
+        new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
+        Constants.FS_1STATUS = "FREE";
+        clearEditTextFields();
+        stopSelf();
+    }
+
+    private void ExitServicePulsarRationZero() {
+
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " pulsar ration error>>" + numPulseRatio);
+        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_AP_PIPE.this);
+        CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         stopTimer = false;
         new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
         Constants.FS_1STATUS = "FREE";
@@ -2422,20 +2456,20 @@ err FS Link not connected
             //IsTLDCall = "0";
 
             //settransactionID to FSUNIT
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
 
 
-                String curr_date = AppConstants.currentDateFormat("hhmmss");//"yyyyMMdd hhmmss"
-                System.out.println("curr_date"+curr_date);
+                    String curr_date = AppConstants.currentDateFormat("hhmmss");//"yyyyMMdd hhmmss"
+                    System.out.println("curr_date" + curr_date);
 
-                OffLastTXNid = "99999999";//+sqlite_id+curr_date;
-                System.out.println("OfflineLastTransactionID_BackgroundService" + OffLastTXNid);
-                new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + OffLastTXNid + "}");
+                    OffLastTXNid = "99999999";//+sqlite_id+curr_date;
+                    System.out.println("OfflineLastTransactionID_BackgroundService" + OffLastTXNid);
+                    new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + OffLastTXNid + "}");
 
-            }
-        }, 1500);*/
+                }
+            }, 1500);
 
 
             EntityOffTranz tzc = offcontroller.getTransactionDetailsBySqliteId(sqlite_id);
@@ -2444,15 +2478,14 @@ err FS Link not connected
             PersonId = tzc.PersonId;
             String siteid = tzc.SiteId;
 
-        HashMap<String, String> linkmap = offcontroller.getLinksDetailsBySiteId(siteid);
-        PumpOnTime = linkmap.get("PumpOnTime");
-        IntervalToStopFuel = linkmap.get("PumpOffTime");
-        PulseRatio = linkmap.get("Pulserratio");
+            HashMap<String, String> linkmap = offcontroller.getLinksDetailsBySiteId(siteid);
+            PumpOnTime = linkmap.get("PumpOnTime");
+            IntervalToStopFuel = linkmap.get("PumpOffTime");
+            PulseRatio = linkmap.get("Pulserratio");
 
             EnablePrinter = offcontroller.getOfflineHubDetails(BackgroundService_AP_PIPE.this).EnablePrinter;
 
-            listOfConnectedIP_AP_PIPE.clear();
-            ListConnectedHotspotIP_AP_PIPEAsyncCall();
+            getipOverOSVersion();
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_AP_PIPE.this);
 
@@ -2462,18 +2495,17 @@ err FS Link not connected
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private void SyncOfflineData(){
+    private void SyncOfflineData() {
 
-        if (WelcomeActivity.OnWelcomeActivity && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
             if (cd.isConnecting()) {
-
 
                 try {
                     //sync offline transactions
@@ -2492,6 +2524,39 @@ err FS Link not connected
                     e.printStackTrace();
                 }
             }
+        }
+
+    }
+
+    private void StoreLinkDisconnectInfo(SocketException se){
+
+        try{
+
+            //log Date time
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String UseDate = dateFormat.format(cal.getTime());
+
+            String dt = GetDateString(System.currentTimeMillis());
+            String  errorfileame = "/Log_" + dt + ".txt";
+
+            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  SocketException " + se);
+            SocketErrorEntityClass soc_obj = new SocketErrorEntityClass();
+            soc_obj.SiteId =  SiteId;
+            soc_obj.LogDateTime = UseDate;
+            soc_obj.ErrorLogFileName = errorfileame;///"FSLog/Log_" + dt + ".txt"
+            soc_obj.TransactionId = TransactionId;
+
+            Gson gson = new Gson();
+            final String jsonData = gson.toJson(soc_obj);
+
+            SharedPreferences sharedPref = BackgroundService_AP_PIPE.this.getSharedPreferences(AppConstants.LinkConnectionIssuePref, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("NLINK1", jsonData);
+            editor.apply();
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }

@@ -180,18 +180,24 @@ public class ServiceLFCard extends Service {
                     last_val = Seperate[Seperate.length - 1];
                 }
 
-                if (!last_val.equals("00 00 00 ")) {
+                last_val = last_val.replace("\\n", "");
+
+                last_val = last_val.replace(" ","").trim();
+
+                if (!last_val.equals("00 00 00 ") && !last_val.equalsIgnoreCase("00 00 00 00 00 00 00 00 00") && CommonUtils.ValidateFobkey(last_val)) {
                     sendLFDetailsToActivity(last_val);
+
+                    SharedPreferences sharedPre = ServiceLFCard.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
+                    String SRUdate = sharedPre.getString("bleLFUpdateSuccessFlag", "N");
+                    if (SRUdate.equalsIgnoreCase("Y")) {
+                        mBluetoothLeService.writeCustomCharacteristic(0x01, "", true);
+                    }
+
+                    mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);
                 }
 
 
-                SharedPreferences sharedPre = ServiceLFCard.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
-                String SRUdate = sharedPre.getString("bleLFUpdateSuccessFlag", "N");
-                if (SRUdate.equalsIgnoreCase("Y")) {
-                    mBluetoothLeService.writeCustomCharacteristic(0x01, "", true);
-                }
 
-                mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);
 
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -242,13 +248,13 @@ public class ServiceLFCard extends Service {
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
         BLEVersion = myPrefslo.getString("BLEVersion", "");
         IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
+        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
         String CheckVersionFileLocation = FOLDER_PATH_BLE + BLEVersion + "_check.txt";
 
         if (IsLFUpdate.trim().equalsIgnoreCase("Y")) {
 
             DeleteOldVersionTxtFiles(FOLDER_PATH_BLE);
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader_" + BLEType);
+            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader");
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();
@@ -266,7 +272,7 @@ public class ServiceLFCard extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
                 } else {
-                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader_" + BLEType + ".bin", "BLEUpdate");
+                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader.bin", "BLEUpdate");
                 }
 
             } else {

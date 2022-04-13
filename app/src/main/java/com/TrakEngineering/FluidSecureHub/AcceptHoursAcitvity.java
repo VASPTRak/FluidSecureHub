@@ -6,7 +6,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -16,10 +15,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,41 +32,36 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
     OffDBController controller = new OffDBController(AcceptHoursAcitvity.this);
 
     private NetworkReceiver receiver = new NetworkReceiver();
-    private ConnectionDetector cd = new ConnectionDetector(AcceptHoursAcitvity.this);
+
     private static final String TAG = "AcceptHoursAcitvity :";
     private EditText etHours;
     private TextView tv_swipekeybord, tv_hours;
     private String vehicleNumber;
     private String odometerTenths, ScreenNameForHours = "Hour";
     private ProgressBar progressBar;
+    private ConnectionDetector cd = new ConnectionDetector(AcceptHoursAcitvity.this);
 
-    String OdometerReasonabilityConditions = "", CheckOdometerReasonable = "", PreviousHours = "", HoursLimit = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsHoursRequire = "";
+    String OdometerReasonabilityConditions = "", CheckOdometerReasonable = "", PreviousHours = "", HoursLimit = "", IsOdoMeterRequire = "", IsDepartmentRequire = "",
+            IsPersonnelPINRequire = "", IsOtherRequire = "", IsHoursRequire = "", LastTransactionFuelQuantity = "";
     String TimeOutinMinute;
     boolean Istimeout_Sec = true;
     public int cnt123 = 0;
     public int off_cnt123 = 0;
     Timer t, ScreenOutTime;
+    List<Timer> HrScreenTimerlist = new ArrayList<Timer>();
 
     @Override
     protected void onResume() {
         super.onResume();
+
         invalidateOptionsMenu();
-
-        etHours.setText("");
         //Set/Reset EnterPin text
-        /*if (Constants.CurrentSelectedHose.equals("FS1")) {
-            etHours.setText(ZR(String.valueOf(Constants.AccHours_FS1)));
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            etHours.setText(ZR(String.valueOf(Constants.AccHours)));
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            etHours.setText(ZR(String.valueOf(Constants.AccHours_FS3)));
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            etHours.setText(ZR(String.valueOf(Constants.AccHours_FS4)));
-        }*/
+        etHours.setText("");
 
-        if (ScreenOutTime == null) {
-            TimeoutHoursScreen();
-        }
+
+        Istimeout_Sec = true;
+        TimeoutHoursScreen();
+
     }
 
     @Override
@@ -73,9 +71,12 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
         menu.findItem(R.id.mconfigure_tld).setVisible(false);
         menu.findItem(R.id.enable_debug_window).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
-        menu.findItem(R.id.mconfigure_fsnp).setVisible(false);
+        menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
+        menu.findItem(R.id.mcamera_back).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -104,17 +105,18 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
         CheckOdometerReasonable = sharedPrefODO.getString("CheckOdometerReasonable", "");
         PreviousHours = sharedPrefODO.getString("PreviousHours", "");
         HoursLimit = sharedPrefODO.getString("HoursLimit", "");
+        LastTransactionFuelQuantity = sharedPrefODO.getString("LastTransactionFuelQuantity", "");
 
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
         //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
 
         ScreenOutTime = new Timer();
+        HrScreenTimerlist.add(ScreenOutTime);
         TimerTask ttt = new TimerTask() {
             @Override
             public void run() {
                 //do something
-                invalidateOptionsMenu();
                 if (Istimeout_Sec) {
 
                     try {
@@ -125,14 +127,13 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptHoursAcitvity.this);
 
-
                                 Intent i = new Intent(AcceptHoursAcitvity.this, WelcomeActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
                             }
                         });
 
-                        ScreenOutTime.cancel();
+                        CancelTimerScreenOut();
                     } catch (Exception e) {
 
                         System.out.println(e);
@@ -151,9 +152,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
     public void ResetTimeoutHoursScreen() {
 
-        if (ScreenOutTime != null)
-            ScreenOutTime.cancel();
-
+        CancelTimerScreenOut();
 
         try {
             Thread.sleep(500);
@@ -190,8 +189,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
         if (ScreenNameForHours.trim().isEmpty())
             ScreenNameForHours = "Hour";
 
-        tv_hours.setText("Enter the " + ScreenNameForHours);
-        etHours.setHint("Enter the " + ScreenNameForHours);
+        tv_hours.setText("Enter the " + ScreenNameForHours + " No Tenths");
+        etHours.setHint("Enter the " + ScreenNameForHours + " No Tenths");
 
         /*SharedPreferences sharedPrefODO = AcceptHoursAcitvity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
@@ -263,9 +262,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
     private void InItGUI() {
         try {
-
-            tv_hours = (TextView) findViewById(R.id.tv_hours);
             tv_swipekeybord = (TextView) findViewById(R.id.tv_swipekeybord);
+            tv_hours = (TextView) findViewById(R.id.tv_hours);
             etHours = (EditText) findViewById(R.id.etHours);
             progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -300,13 +298,13 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
             OdometerReasonabilityConditions = sharedPrefODO.getString("OdometerReasonabilityConditions", "");
             CheckOdometerReasonable = sharedPrefODO.getString("CheckOdometerReasonable", "");
+            LastTransactionFuelQuantity = sharedPrefODO.getString("LastTransactionFuelQuantity", "");
 
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Temp log CheckOdometerReasonable:" + CheckOdometerReasonable);
             Istimeout_Sec = false;
 
             if (!etHours.getText().toString().trim().isEmpty()) {
 
-                int C_AccHours;
+                int C_AccHours=0;
                 if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                     Constants.AccHours_FS1 = Integer.parseInt(etHours.getText().toString().trim());
                     C_AccHours = Constants.AccHours_FS1;
@@ -316,15 +314,21 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                 } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
                     Constants.AccHours_FS3 = Integer.parseInt(etHours.getText().toString().trim());
                     C_AccHours = Constants.AccHours_FS3;
-                } else { //(Constants.CurrentSelectedHose.equalsIgnoreCase("FS4"))
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
                     Constants.AccHours_FS4 = Integer.parseInt(etHours.getText().toString().trim());
                     C_AccHours = Constants.AccHours_FS4;
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+                    Constants.AccHours_FS5 = Integer.parseInt(etHours.getText().toString().trim());
+                    C_AccHours = Constants.AccHours_FS5;
+                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+                    Constants.AccHours_FS6 = Integer.parseInt(etHours.getText().toString().trim());
+                    C_AccHours = Constants.AccHours_FS6;
                 }
 
                 OfflineConstants.storeCurrentTransaction(AcceptHoursAcitvity.this, "", "", "", "", etHours.getText().toString().trim(), "", "", "");
 
+
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptHoursAcitvity.this)) {
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Temp log TotalOffline Enabled");
                     //skip all validation in permanent offline mode
                     allValid();
 
@@ -334,14 +338,19 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                         int PO = Integer.parseInt(PreviousHours.trim());
                         int OL = Integer.parseInt(HoursLimit.trim());
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Temp log InOnline: PreviousHours:"+PO+" HoursLimit:"+OL);
 
-                        if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
+                        double LastTxtnQuantity = Double.parseDouble(LastTransactionFuelQuantity.trim());
+
+                        if(LastTxtnQuantity > 10 && C_AccHours == PO) {
+                            CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", getResources().getString(R.string.prevReading));
+                            Istimeout_Sec = true;
+                            ResetTimeoutHoursScreen();
+                        } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                             if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
 
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Hours: Entered Step-1" + C_AccHours);
+                                    AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours);
                                 if (C_AccHours >= PO && C_AccHours <= OL) {
                                     //gooooo
                                     allValid();
@@ -350,16 +359,13 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                                     if (cnt123 > 3) {
                                         //gooooo
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Hours: Entered Step-2" + C_AccHours);
                                         allValid();
                                     } else {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Hours: Entered Step-3" + C_AccHours + " is not within the reasonability");
+                                            AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours + " is not within the reasonability");
                                         etHours.setText("");
-                                        //AppConstants.colorToastBigFont(getApplicationContext(), "The Hours entered is not within the reasonability your administrator has assigned, please contact your administrator.", Color.RED);//Bad odometer! Please try again.
-                                        CommonUtils.AlertDialogAutoClose(AcceptHoursAcitvity.this, "Message", "The Hours entered is not within the reasonability your administrator has assigned, please contact your administrator.");
+                                        CommonUtils.AlertDialogAutoClose(AcceptHoursAcitvity.this, "Message", "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                         Istimeout_Sec = true;
                                         ResetTimeoutHoursScreen();
                                     }
@@ -370,15 +376,14 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                                 if (C_AccHours >= PO && C_AccHours <= OL) {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Hours: Entered Step-4" + C_AccHours);
+                                        AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours);
                                     ///gooooo
                                     allValid();
                                 } else {
                                     etHours.setText("");
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Hours: Entered Step-5" + C_AccHours + " is not within the reasonability");
-                                    CommonUtils.AlertDialogAutoClose(AcceptHoursAcitvity.this, "Message", "The Hours entered is not within the reasonability your administrator has assigned, please contact your administrator.");
-                                    //AppConstants.colorToastBigFont(getApplicationContext(), "The Hours entered is not within the reasonability your administrator has assigned, please contact your administrator.", Color.RED);
+                                        AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours + " is not within the reasonability");
+                                    CommonUtils.AlertDialogAutoClose(AcceptHoursAcitvity.this, "Message", "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     Istimeout_Sec = true;
                                     ResetTimeoutHoursScreen();
                                 }
@@ -386,7 +391,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                         } else {
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Hours: Entered Step-6" + C_AccHours);
+                                AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours);
                             //comment By JB -it  must take ANY number they enter on the 4th try
                             allValid();
 
@@ -435,7 +440,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                                 if (AppConstants.OFF_ODO_Conditions != null && AppConstants.OFF_ODO_Conditions.trim().equalsIgnoreCase("1")) {
 
-                                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile("Offline Hours conditions : " + AppConstants.OFF_ODO_Conditions);
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile("Offline Hours conditions : " + AppConstants.OFF_ODO_Conditions);
 
                                     if (hrs_limit == 0) {
 
@@ -493,7 +499,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                     }
                 }
             } else {
-                CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", "Please enter Hours");
+                CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", "Please enter " + ScreenNameForHours);
                 Istimeout_Sec = true;
                 ResetTimeoutHoursScreen();
             }
@@ -513,7 +519,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
         String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
         String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
         String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
-
 
         if (IsExtraOther.equalsIgnoreCase("True")) {
 
@@ -536,7 +541,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             startActivity(intent);
 
         } else {
-
             AcceptServiceCall asc = new AcceptServiceCall();
             asc.activity = AcceptHoursAcitvity.this;
             asc.checkAllFields();
@@ -553,8 +557,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (AppConstants.GenerateLogs)AppConstants.WriteinFile("Offline Hours temp log: " + etHours.getText().toString().trim());
-
         EntityHub obj = controller.getOfflineHubDetails(AcceptHoursAcitvity.this);
         if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
             Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptPinActivity_new.class);//AcceptPinActivity
@@ -564,7 +566,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             startActivity(intent);
         }
     }
-
 
     @Override
     public void onBackPressed() {
@@ -577,8 +578,29 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        CancelTimerScreenOut();
         if (receiver != null) {
             this.unregisterReceiver(receiver);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CancelTimerScreenOut();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        CancelTimerScreenOut();
+    }
+
+    private void CancelTimerScreenOut() {
+
+        for (int i = 0; i < HrScreenTimerlist.size(); i++) {
+            HrScreenTimerlist.get(i).cancel();
+        }
+
     }
 }

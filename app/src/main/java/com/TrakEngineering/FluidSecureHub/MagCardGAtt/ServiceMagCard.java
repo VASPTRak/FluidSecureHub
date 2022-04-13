@@ -159,15 +159,14 @@ public class ServiceMagCard extends Service {
                     last_val = Seperate[Seperate.length - 1];
                 }
 
-                //String Sep1 = Seperate[0];
-                //String Sep2 = Seperate[1];
-                //last_val = "d36a4ca21c14ec10d67f20ffd36a4ca21c14ec10d67f20ffd36a4ca21c14ec10d67f20";
-                last_val = last_val.replace(" ", "");
+                last_val = last_val.replace("\\n", "");
+
+                last_val = last_val.replace(" ","").trim();
+
                 if (CommonUtils.ValidateFobkey(last_val)) {
                     sendHFDetailsToActivity(last_val);
+                    mBluetoothLeService.writeCustomCharacteristic(0x01, "");
                 }
-
-                mBluetoothLeService.writeCustomCharacteristic(0x01, "");
 
             } catch (Exception ex) {
                 System.out.println(ex);

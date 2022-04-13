@@ -16,7 +16,7 @@
 package com.TrakEngineering.FluidSecureHub.Vision_scanner;
 
 import android.content.Context;
-import android.support.annotation.UiThread;
+import androidx.annotation.UiThread;
 
 import com.TrakEngineering.FluidSecureHub.Vision_scanner.camera.GraphicOverlay;
 import com.google.android.gms.vision.Detector;

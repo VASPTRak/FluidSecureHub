@@ -4,9 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -21,16 +20,18 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 
 public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
-    TextView tv_otherlabel,tv_return, tv_swipekeybord;
+    TextView tv_otherlabel, tv_return, tv_swipekeybord;
     EditText etOther;
     Button btnSave, btnCancel;//AppConstants.OtherLabel
     RelativeLayout footer_keybord;
-    String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "",OtherLabelVehoicle = "";
+    String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", OtherLabelVehoicle = "";
     String TimeOutinMinute;
-    boolean Istimeout_Sec=true;
+    boolean Istimeout_Sec = true;
     private ConnectionDetector cd = new ConnectionDetector(AcceptVehicleOtherInfo.this);
     private static final String TAG = AcceptOtherActivity.class.getSimpleName();
 
@@ -42,16 +43,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         invalidateOptionsMenu();
 
         etOther.setText("");
-        //Set/Reset EnterOther text
-        /*if (Constants.CurrentSelectedHose.equals("FS1")) {
-            etOther.setText(Constants.AccVehicleOther_FS1);
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            etOther.setText(Constants.AccVehicleOther);
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            etOther.setText(Constants.AccVehicleOther_FS3);
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            etOther.setText(Constants.AccVehicleOther_FS4);
-        }*/
+
     }
 
     @Override
@@ -61,13 +53,15 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         menu.findItem(R.id.mconfigure_tld).setVisible(false);
         menu.findItem(R.id.enable_debug_window).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
+        menu.findItem(R.id.mcamera_back).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(false);
 
-        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH){
+        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
             menu.findItem(R.id.monline).setVisible(true);
             menu.findItem(R.id.mofline).setVisible(false);
 
-        }else{
+        } else {
             menu.findItem(R.id.monline).setVisible(false);
             menu.findItem(R.id.mofline).setVisible(true);
         }
@@ -101,20 +95,30 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                 etOther.setText(Constants.AccVehicleOther_FS1);
             }
 
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")){
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
 
             if (Constants.AccVehicleOther != null) {
                 etOther.setText(Constants.AccVehicleOther);
             }
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")){
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
 
             if (Constants.AccVehicleOther_FS3 != null) {
                 etOther.setText(Constants.AccVehicleOther_FS3);
             }
-        }else {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
 
             if (Constants.AccVehicleOther_FS4 != null) {
                 etOther.setText(Constants.AccVehicleOther_FS4);
+            }
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+
+            if (Constants.AccVehicleOther_FS5 != null) {
+                etOther.setText(Constants.AccVehicleOther_FS5);
+            }
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+
+            if (Constants.AccVehicleOther_FS6 != null) {
+                etOther.setText(Constants.AccVehicleOther_FS6);
             }
         }
 
@@ -129,12 +133,11 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
 
 
-        long screenTimeOut= Integer.parseInt(TimeOutinMinute) *60000;
+        long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (Istimeout_Sec)
-                {
+                if (Istimeout_Sec) {
                     Istimeout_Sec = false;
                     AppConstants.ClearEdittextFielsOnBack(AcceptVehicleOtherInfo.this);
 
@@ -154,8 +157,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
         try {
             etOther.setInputType(Integer.parseInt(KeyboardType));
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("keyboard exception");
             etOther.setInputType(InputType.TYPE_CLASS_TEXT);
         }
@@ -171,19 +173,28 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Istimeout_Sec=false;
+                Istimeout_Sec = false;
 
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
+                    boolean isascii = isAllASCII(etOther.getText().toString());
+
+                    if (!isascii) {
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleOtherInfo.this, "Message", "Please enter Valid String.");
+                    } else {
                     if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
 
                         Constants.AccVehicleOther_FS1 = etOther.getText().toString().trim();
-                    }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")){
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
                         Constants.AccVehicleOther = etOther.getText().toString().trim();
-                    }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")){
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
                         Constants.AccVehicleOther_FS3 = etOther.getText().toString().trim();
-                    }else{
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
                         Constants.AccVehicleOther_FS4 = etOther.getText().toString().trim();
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+                        Constants.AccVehicleOther_FS5 = etOther.getText().toString().trim();
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+                        Constants.AccVehicleOther_FS6 = etOther.getText().toString().trim();
                     }
 
                     SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -216,7 +227,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                         asc.activity = AcceptVehicleOtherInfo.this;
                         asc.checkAllFields();
                     }
-
+                }
                 } else {
                     CommonUtils.showMessageDilaog(AcceptVehicleOtherInfo.this, "Error Message", "Please enter Other, and try again.");
                 }
@@ -278,7 +289,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
     public void onBackPressed() {
 
         // ActivityHandler.removeActivity(6);
-        Istimeout_Sec=false;
+        Istimeout_Sec = false;
         finish();
     }
 
@@ -311,5 +322,16 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+    private static boolean isAllASCII(String input) {
+        boolean isASCII = true;
+        for (int i = 0; i < input.length(); i++) {
+            int c = input.charAt(i);
+            if (c > 0x7F) {
+                isASCII = false;
+                break;
+            }
+        }
+        return isASCII;
     }
 }

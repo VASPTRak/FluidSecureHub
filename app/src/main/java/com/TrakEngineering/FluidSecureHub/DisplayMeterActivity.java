@@ -2,13 +2,13 @@ package com.TrakEngineering.FluidSecureHub;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
@@ -22,10 +22,10 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -38,7 +38,16 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTFour;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTOne;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTThree;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTTwo;
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
+import com.TrakEngineering.FluidSecureHub.enity.SocketErrorEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
 import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
@@ -48,14 +57,7 @@ import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -69,8 +71,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,8 +86,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import static android.os.Build.VERSION.SDK_INT;
 import static android.text.TextUtils.isEmpty;
+import static com.TrakEngineering.FluidSecureHub.CommonUtils.GetDateString;
 import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.wifiApManager;
 import static java.lang.String.format;
 
@@ -105,13 +108,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     LinearLayout linearFuelAnother;
     Integer Pulses = 0;
     String iot_version = "";
+    public int count_toggle = 0;
     public int count_InfoCmd = 0;
     public int count_relayCmd = 0;
     private ProgressDialog progressDialog;
     private static final int SERVER_PORT = 2901;
     private static final String SERVER_IP = "192.168.4.1";
     ArrayList<HashMap<String, String>> ListOfConnectedDevices = new ArrayList<>();
-
 
     Socket socketFS = new Socket();
     String consoleString = "", outputQuantity = "0";
@@ -131,9 +134,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     boolean isTransactionComp = false;
     ServerHandler serverHandler = new ServerHandler();
 
-    String EMPTY_Val = "", IsFuelingStop = "0", IsLastTransaction = "1";
+    String EMPTY_Val = "", IsFuelingStop = "0", IsLastTransaction = "1", OverrideQuantity = "0", OverridePulse = "0";
 
     public String HTTP_URL = "";
+    public String SERVERIP = "";
+    public String LinkCommunicationType = "";
     public String URL_GET_TXNID = "";
     public String URL_SET_TXNID = "";
     //String HTTP_URL = "http://192.168.4.1:80/";
@@ -159,8 +164,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     String jsonRelayOn = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":1}}";
     String jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
 
-    String jsonPulsar = "{\"pulsar_request\":{\"counter_set\":1}}";
-    String jsonPulsarOff = "{\"pulsar_request\":{\"counter_set\":0}}";
 
 
     public Network networkTransportWifi;
@@ -210,12 +213,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     long sqlite_id = 0;
 
-    Timer  ScreenOutTime;
+    Timer ScreenOutTime;
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
+
+        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.IsBTLinkSelectedCurrently) {
 
             btnStart.setText("Please wait..");
             btnStart.setEnabled(false);
@@ -239,24 +243,46 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     protected void onResume() {
         super.onResume();
 
-        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH){
+        //checkBusyhose();
+
+        invalidateOptionsMenu();
+        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
             AppConstants.CURRENT_STATE_MOBILEDATA = true;
-        }else{
+        } else {
             AppConstants.CURRENT_STATE_MOBILEDATA = false;
         }
 
         //Hide keyboard
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        if (AppConstants.DetailsListOfConnectedDevices.size() == 0) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            new GetConnectedDevicesIPOS10().execute();
+        } else {
             new GetConnectedDevicesIP().execute();
         }
-        //new TasksbeforeStartBtnAsyncTask().execute();//test
-        CompleteTasksbeforeStartbuttonClick();
+
+        //UDP Connection..!!
+        LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
+        SERVERIP = "";
+
+        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+            String SelectedMacAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+            if (AppConstants.SELECTED_MACADDRESS.equalsIgnoreCase(SelectedMacAddress)) {
+                String IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                HTTP_URL = "http://" + IpAddress + ":80/";
+                SERVERIP = IpAddress;
+            }
+        }
 
         Istimeout_Sec = true;
         TimeOutDisplayMeterScreen();
 
+        if (AppConstants.IsFirstTimeUse.equalsIgnoreCase("True")){
+            AppConstants.IsFirstTimeUse = "False";
+            firstTimeUseWarningDilaog(DisplayMeterActivity.this);
+        }else{
+            proseedToPostResume();
+        }
     }
 
     @Override
@@ -273,7 +299,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         InItGUI();
+
         tvWifiList = (TextView) findViewById(R.id.tvWifiList);
+
 
        /* for(int i=200;i<301;i++)
         {
@@ -296,14 +324,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }*/
 
         //offline-----------start
-        EntityOffTranz authEntityClass = OfflineConstants.getCurrentTransaction(DisplayMeterActivity.this);
-        authEntityClass.PersonPin = AppConstants.OFF_PERSON_PIN;
-        authEntityClass.OnlineTransactionId = "0";
+        if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
+            EntityOffTranz authEntityClass = OfflineConstants.getCurrentTransaction(DisplayMeterActivity.this);
+            authEntityClass.PersonPin = AppConstants.OFF_PERSON_PIN;
+            authEntityClass.OnlineTransactionId = "0";
 
-        sqlite_id = offcontroller.insertOfflineTransactions(authEntityClass);
+            sqlite_id = offcontroller.insertOfflineTransactions(authEntityClass);
 
-        AppConstants.clearSharedPrefByName(DisplayMeterActivity.this, "storeCurrentTransaction");
-
+            AppConstants.clearSharedPrefByName(DisplayMeterActivity.this, "storeCurrentTransaction");
+        }
         //offline-----------end
 
 
@@ -343,9 +372,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } else if (Constants.CurrentSelectedHose.equals("FS3")) {
             textOdometer.setText(Integer.toString(Constants.AccOdoMeter_FS3));
             txtVehicleNumber.setText(Constants.AccVehicleNumber_FS3);
-        } else {
+        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
             textOdometer.setText(Integer.toString(Constants.AccOdoMeter_FS4));
             txtVehicleNumber.setText(Constants.AccVehicleNumber_FS4);
+        } else if (Constants.CurrentSelectedHose.equals("FS5")) {
+            textOdometer.setText(Integer.toString(Constants.AccOdoMeter_FS5));
+            txtVehicleNumber.setText(Constants.AccVehicleNumber_FS5);
+        } else if (Constants.CurrentSelectedHose.equals("FS6")) {
+            textOdometer.setText(Integer.toString(Constants.AccOdoMeter_FS6));
+            txtVehicleNumber.setText(Constants.AccVehicleNumber_FS6);
         }
 
         /*
@@ -411,7 +446,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         String networkSSID;
         if (AppConstants.NeedToRename) {
-            jsonRename = "{\"Request\":{\"SoftAP\":{\"Connect_SoftAP\":{\"authmode\":\"OPEN\",\"channel\":6,\"ssid\":\"" + AppConstants.REPLACEBLE_WIFI_NAME + "\",\"password\":\"\"}}}}";
+            jsonRename = "{\"Request\":{\"Softap\":{\"Connect_Softap\":{\"authmode\":\"OPEN\",\"channel\":6,\"ssid\":\"" + AppConstants.REPLACEBLE_WIFI_NAME + "\",\"password\":\"\"}}}}";
         }
         networkSSID = AppConstants.LAST_CONNECTED_SSID;
 
@@ -425,7 +460,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         //--------------------------------------------------
 
+        //temp code
+        UpdateDiffStatusMessages("6");
+
         if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
+
             SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
             VehicleId = sharedPref.getString("VehicleId_FS1", "");
             PhoneNumber = sharedPref.getString("PhoneNumber_FS1", "");
@@ -462,7 +501,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             IntervalToStopFuel = sharedPref.getString("IntervalToStopFuel_FS3", "0");
 
 
-        } else {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
 
             SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
             VehicleId = sharedPref.getString("VehicleId_FS4", "");
@@ -473,6 +512,30 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             FuelTypeId = sharedPref.getString("FuelTypeId_FS4", "");
             ServerDate = sharedPref.getString("ServerDate_FS4", "");
             IntervalToStopFuel = sharedPref.getString("IntervalToStopFuel_FS4", "0");
+
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+
+            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+            VehicleId = sharedPref.getString("VehicleId_FS5", "");
+            PhoneNumber = sharedPref.getString("PhoneNumber_FS5", "");
+            PersonId = sharedPref.getString("PersonId_FS5", "");
+            PulseRatio = sharedPref.getString("PulseRatio_FS5", "1");
+            MinLimit = sharedPref.getString("MinLimit_FS5", "0");
+            FuelTypeId = sharedPref.getString("FuelTypeId_FS5", "");
+            ServerDate = sharedPref.getString("ServerDate_FS5", "");
+            IntervalToStopFuel = sharedPref.getString("IntervalToStopFuel_FS5", "0");
+
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+
+            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+            VehicleId = sharedPref.getString("VehicleId_FS6", "");
+            PhoneNumber = sharedPref.getString("PhoneNumber_FS6", "");
+            PersonId = sharedPref.getString("PersonId_FS6", "");
+            PulseRatio = sharedPref.getString("PulseRatio_FS6", "1");
+            MinLimit = sharedPref.getString("MinLimit_FS6", "0");
+            FuelTypeId = sharedPref.getString("FuelTypeId_FS6", "");
+            ServerDate = sharedPref.getString("ServerDate_FS6", "");
+            IntervalToStopFuel = sharedPref.getString("IntervalToStopFuel_FS6", "0");
 
         }
 
@@ -528,7 +591,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void run() {
 
-                                if (btnStart.isClickable()){
+                                if (btnStart.isClickable()) {
                                     //did not press start (start appeared, was never pressed):  User did not Press Start = 7
                                     UpdateDiffStatusMessages("7");
                                 }
@@ -558,7 +621,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void ResetTimeoutDisplayMeterScreen(){
+    public void ResetTimeoutDisplayMeterScreen() {
 
 
         CancelTimerScreenOut();
@@ -570,117 +633,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
 
         TimeOutDisplayMeterScreen();
-    }
-
-    public synchronized void getListOfConnectedDevice() {
-        Thread thread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                BufferedReader br = null;
-                boolean isFirstLine = true;
-
-                try {
-                    br = new BufferedReader(new FileReader("/proc/net/arp"));
-                    String line;
-
-                    while ((line = br.readLine()) != null) {
-                        if (isFirstLine) {
-                            isFirstLine = false;
-                            continue;
-                        }
-
-                        String[] splitted = line.split(" +");
-
-                        if (splitted != null && splitted.length >= 4) {
-
-                            String ipAddress = splitted[0];
-                            String macAddress = splitted[3];
-                            System.out.println("IPAddress" + ipAddress);
-                            boolean isReachable = InetAddress.getByName(
-                                    splitted[0]).isReachable(500);  // this is network call so we cant do that on UI thread, so i take background thread.
-                            if (isReachable) {
-                                Log.d("Device Information", ipAddress + " : "
-                                        + macAddress);
-                            }
-
-
-                        }
-
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        br.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        thread.start();
-    }
-
-    public void turnGPSOn() {
-
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationRequest mLocationRequest1 = new LocationRequest();
-        mLocationRequest1.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest)
-                .addLocationRequest(mLocationRequest1);
-
-
-        LocationSettingsRequest mLocationSettingsRequest = builder.build();
-
-
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(
-                        mGoogleApiClient,
-                        mLocationSettingsRequest
-                );
-
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
-
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        Log.i("Splash", "All location settings are satisfied.");
-
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.i("Splash", "Location settings are not satisfied. Show the user a dialog to" +
-                                "upgrade location settings ");
-
-                        try {
-                            // Show the dialog by calling startResolutionForResult(), and check the result
-                            // in onActivityResult().
-                            status.startResolutionForResult(DisplayMeterActivity.this, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.i("Splash", "PendingIntent unable to execute request.");
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.i("Splash", "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                                "not created.");
-                        break;
-                }
-            }
-        });
-
-
-        //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        //startActivity(in);
-
     }
 
 
@@ -871,14 +823,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     connection_manager.bindProcessToNetwork(network);
-
                 }
             }
         });
     }
 
     public void startWelcomeActityDiscWifi() {
-
 
         WelcomeActivity.SelectedItemPos = -1;
 
@@ -897,26 +847,29 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Istimeout_Sec = false;
                 btnStart.setClickable(false);
                 btnStart.setBackgroundColor(Color.parseColor("#F88800"));
-                boolean test = AppConstants.CURRENT_STATE_MOBILEDATA;
 
-                if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-                    StartbuttonFunctionality();
-                } else {
-                    if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
+                if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                    BTServiceSelectionFunction();
+                } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
+                    UDPServiceSelectionFunction();
+                } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+                    if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                         StartbuttonFunctionality();
                     } else {
-                        AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                        Istimeout_Sec = true;
-                        ResetTimeoutDisplayMeterScreen();
+                        if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
+                            StartbuttonFunctionality();
+                        } else {
+                            AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                            Istimeout_Sec = true;
+                            ResetTimeoutDisplayMeterScreen();
+                        }
                     }
                 }
-
-
                 break;
 
             case R.id.btnCancel:
 
-                if (btnStart.isClickable() && cd.isConnectingToInternet()){
+                if (btnStart.isClickable() && cd.isConnectingToInternet()) {
                     //did not press start (start appeared, was never pressed):  User did not Press Start = 7
                     UpdateDiffStatusMessages("7");
                 }
@@ -964,7 +917,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //btnCancel.setClickable(false);
 
         String macaddress = AppConstants.SELECTED_MACADDRESS;
-
+        int SeletedPosition = WelcomeActivity.SelectedItemPos;
+        SetOverrideQty(SeletedPosition);
 
         for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
             String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
@@ -990,13 +944,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //Check if Hose connected to hotspot or not
         try {
             //Info command commented
-            new CommandsGET_Info().execute(URL_INFO);
+            new CommandsGET_Info().execute(URL_INFO).get();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {
@@ -1069,15 +1021,14 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
-            SpannableString ss2=  new SpannableString(s);
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             pd = new ProgressDialog(DisplayMeterActivity.this);
             pd.setMessage(ss2);
             pd.setCancelable(false);
         }
-
 
         @Override
         protected String doInBackground(String... params) {
@@ -1141,16 +1092,29 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         else
                             AppConstants.UP_Upgrade_fs3 = false;
 
-                    } else {
+                    } else if (FS_selected.equalsIgnoreCase("3")) {
 
                         if (ResponceText.trim().equalsIgnoreCase("Y"))
                             AppConstants.UP_Upgrade_fs4 = true;
                         else
                             AppConstants.UP_Upgrade_fs4 = false;
 
+                    } else if (FS_selected.equalsIgnoreCase("4")) {
+
+                        if (ResponceText.trim().equalsIgnoreCase("Y"))
+                            AppConstants.UP_Upgrade_fs5 = true;
+                        else
+                            AppConstants.UP_Upgrade_fs5 = false;
+
+                    } else if (FS_selected.equalsIgnoreCase("5")) {
+
+                        if (ResponceText.trim().equalsIgnoreCase("Y"))
+                            AppConstants.UP_Upgrade_fs6 = true;
+                        else
+                            AppConstants.UP_Upgrade_fs6 = false;
+
                     }
                     //--------------------------------------------
-
 
                 } else {
 
@@ -1205,7 +1169,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             new CommandsGET_TxnId().execute(URL_GET_TXNID);
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LastTXNid Ex:" + e.getMessage() + " ");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "  LastTXNid Ex:" + e.getMessage() + " ");
         }
 
 
@@ -1250,7 +1215,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     public void finalLastStep() {
 
 
-        new CommandsPOST().execute(URL_SET_PULSAR, jsonPulsarOff);
+
 
 
         new Handler().postDelayed(new Runnable() {
@@ -1406,6 +1371,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             authEntityClass.PersonnelPIN = pNumber;
             authEntityClass.Other = oText;
             authEntityClass.Hours = hNumber;
+            //authEntityClass.OverrideQuantity = "0";
+            //authEntityClass.OverridePulse = "0";
 
             Gson gson = new Gson();
             String jsonData = gson.toJson(authEntityClass);
@@ -1537,6 +1504,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
+
                 Request request = new Request.Builder()
                         .url(param[0])
                         .build();
@@ -1589,6 +1558,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
+
                 Request request = new Request.Builder()
                         .url(param[0])
                         .build();
@@ -1770,6 +1741,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -1817,8 +1789,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
-            SpannableString ss2=  new SpannableString(s);
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             pd = new ProgressDialog(DisplayMeterActivity.this);
@@ -1837,6 +1809,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 RequestBody body = RequestBody.create(JSON, param[1]);
 
@@ -1862,9 +1835,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             pd.dismiss();
             try {
 
-                consoleString += "OUTPUT- " + result + "\n";
+                //consoleString += "OUTPUT- " + result + "\n";
 
-                tvConsole.setText(consoleString);
+                //tvConsole.setText(consoleString);
 
                 System.out.println(result);
 
@@ -2463,6 +2436,59 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
              return null;
          }
      }*/
+
+    public class GetConnectedDevicesIPOS10 extends AsyncTask<String, Void, String> {
+
+        protected String doInBackground(String... arg0) {
+
+            ListOfConnectedDevices.clear();
+            String resp = "";
+
+
+            try {
+                Runtime runtime = Runtime.getRuntime();
+                Process proc = runtime.exec("ip neigh show");
+                proc.waitFor();
+                BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                String line;
+
+                while ((line = br.readLine()) != null) {
+
+                    //System.out.println("****-"+line);
+
+                    String[] splitted = line.split(" ");
+
+                    if (splitted != null && splitted.length >= 4) {
+
+                        String ipAddress = splitted[0];
+                        String macAddress = splitted[4];
+
+                        if (ipAddress.contains(".") && macAddress.contains(":")) {
+                            System.out.println("***IPAddress" + ipAddress);
+                            System.out.println("***macAddress" + macAddress);
+
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put("ipAddress", ipAddress);
+                            map.put("macAddress", macAddress);
+
+                            ListOfConnectedDevices.add(map);
+                        } else {
+                            System.out.println("###IPAddress" + ipAddress);
+                            System.out.println("###macAddress" + macAddress);
+                        }
+                    }
+                }
+                System.out.println("Check");
+                AppConstants.DetailsListOfConnectedDevices = ListOfConnectedDevices;
+                System.out.println("DeviceConnected" + ListOfConnectedDevices);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return resp;
+        }
+    }
+
     public class GetConnectedDevicesIP extends AsyncTask<String, Void, String> {
         ProgressDialog dialog;
 
@@ -2507,12 +2533,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                                 String ipAddress = splitted[0];
                                 String macAddress = splitted[3];
                                 System.out.println("IPAddress" + ipAddress);
-                                boolean isReachable = InetAddress.getByName(
-                                        splitted[0]).isReachable(500);  // this is network call so we cant do that on UI thread, so i take background thread.
-                                if (isReachable) {
-                                    Log.d("Device Information", ipAddress + " : "
-                                            + macAddress);
-                                }
+
 
                                 if (ipAddress != null || macAddress != null) {
 
@@ -2529,6 +2550,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             }
 
                         }
+                        AppConstants.WriteinFile(TAG + " link Mac:" + AppConstants.SELECTED_MACADDRESS + " - HotspotList: " + ListOfConnectedDevices.toString());
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -2567,6 +2589,90 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+    public synchronized void getListOfConnectedDevice() {
+
+        if (Build.VERSION.SDK_INT >= 29) {
+            try {
+                Runtime runtime = Runtime.getRuntime();
+                Process proc = runtime.exec("ip neigh show");
+                proc.waitFor();
+                BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                String line;
+
+                while ((line = br.readLine()) != null) {
+
+                    //System.out.println("****-"+line);
+
+                    String[] splitted = line.split(" ");
+
+                    if (splitted != null && splitted.length >= 4) {
+
+                        String ipAddress = splitted[0];
+                        String macAddress = splitted[4];
+
+                        if (ipAddress.contains(".") && macAddress.contains(":")) {
+                            System.out.println("***IPAddress" + ipAddress);
+                            System.out.println("***macAddress" + macAddress);
+
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put("ipAddress", ipAddress);
+                            map.put("macAddress", macAddress);
+
+                        } else {
+                            System.out.println("###IPAddress" + ipAddress);
+                            System.out.println("###macAddress" + macAddress);
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    BufferedReader br = null;
+                    boolean isFirstLine = true;
+
+                    try {
+                        br = new BufferedReader(new FileReader("/proc/net/arp"));
+                        String line;
+
+                        while ((line = br.readLine()) != null) {
+                            if (isFirstLine) {
+                                isFirstLine = false;
+                                continue;
+                            }
+
+                            String[] splitted = line.split(" +");
+
+                            if (splitted != null && splitted.length >= 4) {
+
+                                String ipAddress = splitted[0];
+                                String macAddress = splitted[3];
+                                System.out.println("IPAddress" + ipAddress);
+
+                            }
+
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            br.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            thread.start();
+        }
+
+    }
+
     @SuppressLint("ResourceAsColor")
     public void BtnStartStateChange(boolean btnState) {
 
@@ -2575,6 +2681,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             btnStart.setClickable(true);
             btnStart.setBackgroundColor(Color.parseColor("#56AF47"));
             btnStart.setTextColor(Color.parseColor("#FFFFFF"));
+            btnStart.performClick();
         } else {
 
             btnStart.setClickable(false);
@@ -2590,8 +2697,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         try {
 
+            SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+
             if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
 
+                editor.putString("HttpLinkOne", HTTP_URL);
+                editor.apply();
 
                 Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_AP_PIPE.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
@@ -2605,6 +2717,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             } else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
 
+                editor.putString("HttpLinkTwo", HTTP_URL);
+                editor.apply();
 
                 Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_AP.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
@@ -2617,6 +2731,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             } else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
 
+                editor.putString("HttpLinkThree", HTTP_URL);
+                editor.apply();
 
                 Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_FS_UNIT_3.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
@@ -2629,8 +2745,32 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             } else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
 
+                editor.putString("HttpLinkFour", HTTP_URL);
+                editor.apply();
 
                 Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_FS_UNIT_4.class);//change background service to fsunite3
+                serviceIntent.putExtra("HTTP_URL", HTTP_URL);
+                serviceIntent.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent);
+
+                Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("4")) {
+
+
+                Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_FS_UNIT_5.class);
+                serviceIntent.putExtra("HTTP_URL", HTTP_URL);
+                serviceIntent.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent);
+
+                Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("5")) {
+
+
+                Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_FS_UNIT_6.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
@@ -2651,7 +2791,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void getCMDLast10Txn() {
         try {
-           new CommandsGET_CmdTxt10().execute(URL_GET_TXN_LAST10);
+            new CommandsGET_CmdTxt10().execute(URL_GET_TXN_LAST10);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -2659,7 +2799,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
 
-    public String getCMDLastSingleTXn(){
+    public String getCMDLastSingleTXn() {
 
         String txn1 = "";
 
@@ -2674,10 +2814,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 txn1 = cm.getString("1:TXTNINFO:");
             }
 
-            } catch(JSONException e){
-                e.printStackTrace();
-            } catch (Exception e){
-                e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return txn1;
     }
@@ -2730,14 +2870,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public class CommandsGET_Info extends AsyncTask<String, Void, String> {
 
-
         ProgressDialog pd;
+        String infourl = "", StatusCOde = "";
 
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
-            SpannableString ss2=  new SpannableString(s);
+            AppConstants.excption_caught = false;
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             pd = new ProgressDialog(DisplayMeterActivity.this);
@@ -2750,11 +2891,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         protected String doInBackground(String... param) {
 
             String resp = "";
+            infourl = param[0];
             try {
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(15, TimeUnit.SECONDS);
-                client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setConnectTimeout(4, TimeUnit.SECONDS);
+                client.setReadTimeout(4, TimeUnit.SECONDS);
+                client.setWriteTimeout(4, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -2764,25 +2907,38 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
+                response.body().close();
 
-            } catch (Exception e) {
+                StatusCOde = String.valueOf(response.code());
+
+            }catch (SocketException se){
+                StoreLinkDisconnectInfo(se);
+                Log.d("Ex",se.getMessage());
+            }catch (Exception e) {
+                AppConstants.excption_caught = true;
                 Log.d("Ex", e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " CommandsGET_Info Inbackground " + e.getMessage());
             }
-
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String FSStatus) {
 
-
             try {
                 pd.dismiss();
+                AppConstants.WriteinFile(TAG+" Info command response: "+FSStatus);
+                if ((AppConstants.excption_caught || FSStatus.equalsIgnoreCase("")) && count_toggle == 0 && !AppConstants.IsBTLinkSelectedCurrently) {
+                    count_toggle = 1;
+                    if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
-                System.out.println(FSStatus);
-
-                if (FSStatus.startsWith("{") && FSStatus.contains("Version")) {
+                        new ToggeleHPGET_Info().execute();
+                    }
+                    else {
+                        AppConstants.WriteinFile(TAG+" refreshing hotspot canceled, other hose is busy, info cmd fail");
+                    }
+                } else if (FSStatus.startsWith("{") && FSStatus.contains("Version")) {
 
                     try {
 
@@ -2800,26 +2956,27 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     }
 
                     //Skip in offline mode
-                    if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS && AppConstants.NETWORK_STRENGTH){
+                    if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS && AppConstants.NETWORK_STRENGTH) {
                         //Current transaction is online
                         //getCMDLast10Txn(); //temp comment
                         String resp_value = getCMDLastSingleTXn();
-                        if (resp_value == null || resp_value.isEmpty()){
+                        if (resp_value == null || resp_value.isEmpty()) {
                             GetLastTransaction();
-                        }else{
-                            System.out.println("resp_value"+resp_value);
+                        } else {
+                            System.out.println("resp_value" + resp_value);
                             String[] raw_string = resp_value.trim().split("-");
                             String txnid = raw_string[0];
                             String count = raw_string[1];
 
-                            if (!txnid.equals("-1") && !txnid.equals("99999999")){
-                                SaveLastTransactionToServer(txnid,count);
+                            if (!txnid.equals("-1") && !txnid.equals("99999999")) {
+                                SaveLastTransactionToServer(txnid, count);
                             }
                         }
 
-                    }else{
+                    } else {
                         //Current transaction is offline dont save
                     }
+
 
                     new CommandsGET_RelayResp().execute(URL_RELAY);
 
@@ -2827,13 +2984,14 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 } else {
 
                     count_InfoCmd = count_InfoCmd + 1;
-
+                    AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link Unavailable Refreshing network try again.." + count_InfoCmd, Color.RED);
                     if (count_InfoCmd > 1) {
 
                         //unable to start (start never appeared): Potential Wifi Connection Issue = 6
                         UpdateDiffStatusMessages("6");
 
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Link is unavailable infoCmd");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " Link is unavailable>> Info url:" + infourl + " >>info cmd response:" + FSStatus + " StatusCode:" + StatusCOde);
                         AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
@@ -2844,8 +3002,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                     } else {
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Link Unavailable infoCmd Retry attempt: " + count_InfoCmd);
+                        //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "  Link Unavailable infoCmd Retry attempt: " + count_InfoCmd);
                         AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link Unavailable Retry attempt" + count_InfoCmd, Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
@@ -2861,9 +3018,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 }
 
-
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " CommandsGET_Info post " +e);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " CommandsGET_Info post " + e);
                 System.out.println(e);
             }
 
@@ -2879,8 +3036,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
-            SpannableString ss2=  new SpannableString(s);
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             pd = new ProgressDialog(DisplayMeterActivity.this);
@@ -2899,6 +3056,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -2909,9 +3067,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
 
-            } catch (Exception e) {
+            } catch (SocketException se){
+                StoreLinkDisconnectInfo(se);
+                Log.d("Ex",se.getMessage());
+            }catch (Exception e) {
                 Log.d("Ex", e.getMessage());
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " CommandsGET_TxnId doInBackground " +e);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " CommandsGET_TxnId doInBackground " + e);
             }
 
 
@@ -2929,15 +3091,16 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("LastTXNid;;;" + LastTXNid);
                 System.out.println("OfflineLastTransactionID_DisplayMeterAct" + LastTXNid);
 
-                if (LastTXNid.equalsIgnoreCase("99999999")){
-                    System.out.println("Offline last transaction not saved in sqlite OffLastTXNid:"+LastTXNid);
-                }else{
+                if (LastTXNid.equalsIgnoreCase("99999999")) {
+                    System.out.println("Offline last transaction not saved in sqlite OffLastTXNid:" + LastTXNid);
+                } else {
                     new CommandsGET_Record10().execute(URL_RECORD10_PULSAR, LastTXNid);
                 }
 
 
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " CommandsGET_TxnId post " +e);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " CommandsGET_TxnId post " + e);
                 System.out.println(e);
             }
 
@@ -2954,8 +3117,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
-            SpannableString ss2=  new SpannableString(s);
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             pd = new ProgressDialog(DisplayMeterActivity.this);
@@ -2976,6 +3139,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -2986,7 +3150,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
 
-            } catch (Exception e) {
+            } catch (SocketException se){
+                StoreLinkDisconnectInfo(se);
+                Log.d("Ex",se.getMessage());
+            }catch (Exception e) {
                 Log.d("Ex", e.getMessage());
             }
 
@@ -3037,6 +3204,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             authEntityClass.TransactionFrom = "A";
                             authEntityClass.IsFuelingStop = IsFuelingStop;
                             authEntityClass.IsLastTransaction = IsLastTransaction;
+                            //authEntityClass.OverrideQuantity = OverrideQuantity;
+                            //authEntityClass.OverridePulse = OverridePulse;
 
                             Gson gson = new Gson();
                             String jsonData = gson.toJson(authEntityClass);
@@ -3106,8 +3275,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
-            SpannableString ss2=  new SpannableString(s);
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             pd = new ProgressDialog(DisplayMeterActivity.this);
@@ -3126,6 +3295,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -3167,7 +3337,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "  Relay_Status: " + status);
 
-                        //IF relay status zero go back to dashboard
+
                         if (status.equalsIgnoreCase("1")) {
 
                             //unable to start (start never appeared): Potential Wifi Connection Issue = 6
@@ -3183,83 +3353,18 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                         } else {
 
-                            //We use pumppff time insted pulseroff time
-                            long pulsar_off_time = (stopAutoFuelSeconds * 1000) + 3000;
-                            new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"pulsar_off_time\":" + pulsar_off_time + "}}");
-
-                            if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
-
-                                //Store Hose ID and Firmware version in sharedpreferance
-                                SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("hoseid_fs1", AppConstants.UP_HoseId_fs1);
-                                editor.putString("fsversion_fs1", iot_version);
-                                editor.commit();
-
-
-                                //IF upgrade firmware true check below
-                                if (AppConstants.UP_Upgrade) {
-                                    CheckForUpdateFirmware(AppConstants.UP_HoseId_fs1, iot_version, AppConstants.FS_selected);
-                                } else {
-                                    BtnStartStateChange(true);
-                                }
-
-
-                            } else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
-
-                                //Store Hose ID and Firmware version in sharedpreferance
-                                SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("hoseid_fs2", AppConstants.UP_HoseId_fs2);
-                                editor.putString("fsversion_fs2", iot_version);
-                                editor.commit();
-
-                                //IF upgrade firmware true check below
-                                if (AppConstants.UP_Upgrade) {
-                                    CheckForUpdateFirmware(AppConstants.UP_HoseId_fs2, iot_version, AppConstants.FS_selected);
-                                } else {
-                                    BtnStartStateChange(true);
-                                }
-
-                            } else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
-
-                                //Store Hose ID and Firmware version in sharedpreferance
-                                SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("hoseid_fs3", AppConstants.UP_HoseId_fs3);
-                                editor.putString("fsversion_fs3", iot_version);
-                                editor.commit();
-
-                                //IF upgrade firmware true check below
-                                if (AppConstants.UP_Upgrade) {
-                                    CheckForUpdateFirmware(AppConstants.UP_HoseId_fs3, iot_version, AppConstants.FS_selected);
-                                } else {
-                                    BtnStartStateChange(true);
-                                }
-                            } else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
-
-                                //Store Hose ID and Firmware version in sharedpreferance
-                                SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("hoseid_fs4", AppConstants.UP_HoseId_fs4);
-                                editor.putString("fsversion_fs4", iot_version);
-                                editor.commit();
-
-                                //IF upgrade firmware true check below
-                                if (AppConstants.UP_Upgrade) {
-                                    CheckForUpdateFirmware(AppConstants.UP_HoseId_fs4, iot_version, AppConstants.FS_selected);
-                                } else {
-                                    BtnStartStateChange(true);
-                                }
-
+                            if (status.equalsIgnoreCase("0")){
+                                //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
+                                new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}");
                             }
-
+                            checkFirmwareUpdateMain();
                         }
 
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " CommandsGET_RelayResp OnPost " +e);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " CommandsGET_RelayResp OnPost " + e);
                     }
 
                 } else {
@@ -3273,6 +3378,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
+
                         AppConstants.ClearEdittextFielsOnBack(DisplayMeterActivity.this); //Clear EditText on move to welcome activity.
                         BackgroundServiceKeepDataTransferAlive.IstoggleRequired_DA = true;
                         Intent intent = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
@@ -3325,6 +3431,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -3349,10 +3456,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                System.out.println("cmtxtnid10:"+result);
+                System.out.println("cmtxtnid10:" + result);
 
 
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  cmtxtnid10~ :" + resp);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "  cmtxtnid10~ :" + resp);
 
                 arrayList = new ArrayList<>();
 
@@ -3388,7 +3496,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                     String json10txn = gs.toJson(ety);
                     System.out.println("cmtxtnid_10_record----" + json10txn);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  txn json " + json10txn);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "  txn json " + json10txn);
 
 
                     System.out.println("storeCmtxtnid_10_record" + WelcomeActivity.SelectedItemPosFor10Txn);
@@ -3428,6 +3537,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -3464,76 +3574,77 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         connection_manager.bindProcessToNetwork(null);
 
-
     }
 
-    private void SaveLastTransactionToServer(String txnid, String counts){
+    private void SaveLastTransactionToServer(String txnid, String counts) {
 
         try {
 
-                Pulses = Integer.parseInt(counts);
-                double lastCnt = Double.parseDouble(counts);
-                double Lastqty = lastCnt / numPulseRatio; //convert to gallons
-                Lastqty = AppConstants.roundNumber(Lastqty, 2);
+            Pulses = Integer.parseInt(counts);
+            double lastCnt = Double.parseDouble(counts);
+            double Lastqty = lastCnt / numPulseRatio; //convert to gallons
+            Lastqty = AppConstants.roundNumber(Lastqty, 2);
 
-                //-----------------------------------------------
-                    TrazComp authEntityClass = new TrazComp();
-                    authEntityClass.TransactionId = txnid;
-                    authEntityClass.FuelQuantity = Lastqty;
-                    authEntityClass.Pulses = Pulses;
-                    authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE + " " + "--Last Transaction--";
-                    authEntityClass.TransactionFrom = "A";
-                    authEntityClass.IsFuelingStop = IsFuelingStop;
-                    authEntityClass.IsLastTransaction = IsLastTransaction;
+            //-----------------------------------------------
+            TrazComp authEntityClass = new TrazComp();
+            authEntityClass.TransactionId = txnid;
+            authEntityClass.FuelQuantity = Lastqty;
+            authEntityClass.Pulses = Pulses;
+            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE + " " + "--Last Transaction--";
+            authEntityClass.TransactionFrom = "A";
+            authEntityClass.IsFuelingStop = IsFuelingStop;
+            authEntityClass.IsLastTransaction = IsLastTransaction;
+            //authEntityClass.OverrideQuantity = OverrideQuantity;
+            //authEntityClass.OverridePulse = OverridePulse;
 
-                    Gson gson = new Gson();
-                    String jsonData = gson.toJson(authEntityClass);
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(authEntityClass);
 
-                    System.out.println("TrazComp......" + jsonData);
-                    String AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer LastTXNid:" + txnid + " Qty:" + Lastqty + " Pulses" + Pulses + " AppInfo" + AppInfo);
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LAST TRANS jsonData " + jsonData);
+            System.out.println("TrazComp......" + jsonData);
+            String AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer LastTXNid:" + txnid + " Qty:" + Lastqty + " Pulses" + Pulses + " AppInfo" + AppInfo);
+            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LAST TRANS jsonData " + jsonData);
 
-                    String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
+            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
 
-                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "TransactionComplete");
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "TransactionComplete");
 
-                    HashMap<String, String> imap = new HashMap<>();
-                    imap.put("jsonData", jsonData);
-                    imap.put("authString", authString);
+            HashMap<String, String> imap = new HashMap<>();
+            imap.put("jsonData", jsonData);
+            imap.put("authString", authString);
 
-                    boolean isInsert = true;
-                    ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
-                    if (alltranz != null && alltranz.size() > 0) {
+            boolean isInsert = true;
+            ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
+            if (alltranz != null && alltranz.size() > 0) {
 
-                        for (int i = 0; i < alltranz.size(); i++) {
+                for (int i = 0; i < alltranz.size(); i++) {
 
-                            if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
-                                isInsert = false;
-                                break;
-                            }
-                        }
+                    if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
+                        isInsert = false;
+                        break;
                     }
-
-
-                    if (isInsert && Lastqty > 0) {
-                        controller.insertTransactions(imap);
-
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  LAST TRANS SAVED in sqlite");
-                    }
-
-                } catch (Exception ex) {
-
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer  LAST TRANS Exception " + ex.getMessage());
                 }
-
-
             }
 
-    private void CancelTimerScreenOut(){
+
+            if (isInsert && Lastqty > 0) {
+                controller.insertTransactions(imap);
+
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "  LAST TRANS SAVED in sqlite");
+            }
+
+        } catch (Exception ex) {
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer  LAST TRANS Exception " + ex.getMessage());
+        }
+
+
+    }
+
+    private void CancelTimerScreenOut() {
 
         for (int i = 0; i < DisplayMScreeTimerlist.size(); i++) {
             DisplayMScreeTimerlist.get(i).cancel();
@@ -3553,34 +3664,548 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         CancelTimerScreenOut();
     }
 
-    private void UpdateDiffStatusMessages(String s){
+    private void UpdateDiffStatusMessages(String s) {
 
         try {
             String TransactionId_US = null;
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
-            if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
+            if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("0")) {
                 TransactionId_US = sharedPref.getString("TransactionId_FS1", "");
-            } else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("1")) {
                 TransactionId_US = sharedPref.getString("TransactionId", "");
-            } else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("2")) {
                 TransactionId_US = sharedPref.getString("TransactionId_FS3", "");
-            } else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("3")) {
                 TransactionId_US = sharedPref.getString("TransactionId_FS4", "");
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("4")) {
+                TransactionId_US = sharedPref.getString("TransactionId_FS5", "");
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("5")) {
+                TransactionId_US = sharedPref.getString("TransactionId_FS6", "");
             } else {
                 //Something went wrong in link selection
-                Log.i(TAG,"Something went wrong in link selection");
+                Log.i(TAG, "Something went wrong in link selection");
             }
 
             if (TransactionId_US != null && !TransactionId_US.isEmpty() && cd.isConnectingToInternet()) {
-                Log.i(TAG,"UpdateDiffStatusMessages sent: "+s+" TransactionId:"+TransactionId_US);
+                Log.i(TAG, "UpdateDiffStatusMessages sent: " + s + " TransactionId:" + TransactionId_US);
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId_US, s, this);
+                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId_US, s, this);
+            }else{
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Not sent: " + s + " TransactionId:" + TransactionId_US);
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Ex:" + e.toString());
+        }
+
+    }
+
+    public class ToggeleHPGET_Info extends AsyncTask<String, Void, String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+
+            String s = "Refreshing hotspot Please wait..";
+            SpannableString ss2 = new SpannableString(s);
+            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
+            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+            pd = new ProgressDialog(DisplayMeterActivity.this);
+            pd.setMessage(ss2);
+            pd.setCancelable(false);
+            pd.show();
+
+        }
+
+        protected String doInBackground(String... param) {
+
+            try {
+                AppConstants.excption_caught = false;
+                //Toggle hotspot programatically
+                wifiApManager.setWifiApEnabled(null, false);
+                //wifiApManager.setWifiApEnabled(null, true);
+                wifiApManager.setWifiApEnabled(null, true);
+                Thread.sleep(10000);
+                Log.i(TAG, "ToggleHotspot hotspot ON");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "ToggleHotspot hotspot Enabled");
+                Istimeout_Sec = true;
+                ResetTimeoutDisplayMeterScreen();
+                getListOfConnectedDevice();
+                CompleteTasksbeforeStartbuttonClick(); //retry
+
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String FSStatus) {
+
+
+            try {
+                pd.dismiss();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void checkBusyhose() {
+
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+            count_toggle = 0;
+        } else {
+            count_toggle = 1;
+        }
+    }
+
+    public void checkFirmwareUpdateMain()
+    {
+
+
+        //storing pumpOfftime for link
+        SharedPreferences sharedPrefpo = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_LINK_pumpofftime, Context.MODE_PRIVATE);
+        long storedOfftime = sharedPrefpo.getLong(AppConstants.FS_selected, 99);
+
+        if (storedOfftime != stopAutoFuelSeconds) {
+
+            long pulsar_off_time = (stopAutoFuelSeconds * 1000) + 3000;
+            new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"pulsar_off_time\":" + pulsar_off_time + "}}");
+
+            SharedPreferences.Editor editorpo = sharedPrefpo.edit();
+            editorpo.putLong(AppConstants.FS_selected, stopAutoFuelSeconds);
+            editorpo.commit();
+        }
+
+        if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
+
+            //Store Hose ID and Firmware version in sharedpreferance
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("hoseid_fs1", AppConstants.UP_HoseId_fs1);
+            editor.putString("fsversion_fs1", iot_version);
+            editor.commit();
+
+
+            //IF upgrade firmware true check below
+            if (AppConstants.UP_Upgrade) {
+                CheckForUpdateFirmware(AppConstants.UP_HoseId_fs1, iot_version, AppConstants.FS_selected);
+            } else {
+                BtnStartStateChange(true);
+            }
+
+
+        } else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
+
+            //Store Hose ID and Firmware version in sharedpreferance
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("hoseid_fs2", AppConstants.UP_HoseId_fs2);
+            editor.putString("fsversion_fs2", iot_version);
+            editor.commit();
+
+            //IF upgrade firmware true check below
+            if (AppConstants.UP_Upgrade) {
+                CheckForUpdateFirmware(AppConstants.UP_HoseId_fs2, iot_version, AppConstants.FS_selected);
+            } else {
+                BtnStartStateChange(true);
+            }
+
+        } else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
+
+            //Store Hose ID and Firmware version in sharedpreferance
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("hoseid_fs3", AppConstants.UP_HoseId_fs3);
+            editor.putString("fsversion_fs3", iot_version);
+            editor.commit();
+
+            //IF upgrade firmware true check below
+            if (AppConstants.UP_Upgrade) {
+                CheckForUpdateFirmware(AppConstants.UP_HoseId_fs3, iot_version, AppConstants.FS_selected);
+            } else {
+                BtnStartStateChange(true);
+            }
+        } else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
+
+            //Store Hose ID and Firmware version in sharedpreferance
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("hoseid_fs4", AppConstants.UP_HoseId_fs4);
+            editor.putString("fsversion_fs4", iot_version);
+            editor.commit();
+
+            //IF upgrade firmware true check below
+            if (AppConstants.UP_Upgrade) {
+                CheckForUpdateFirmware(AppConstants.UP_HoseId_fs4, iot_version, AppConstants.FS_selected);
+            } else {
+                BtnStartStateChange(true);
+            }
+
+        } else if (AppConstants.FS_selected.equalsIgnoreCase("4")) {
+
+            //Store Hose ID and Firmware version in sharedpreferance
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("hoseid_fs5", AppConstants.UP_HoseId_fs5);
+            editor.putString("fsversion_fs5", iot_version);
+            editor.commit();
+
+            //IF upgrade firmware true check below
+            if (AppConstants.UP_Upgrade) {
+                CheckForUpdateFirmware(AppConstants.UP_HoseId_fs5, iot_version, AppConstants.FS_selected);
+            } else {
+                BtnStartStateChange(true);
+            }
+
+        } else if (AppConstants.FS_selected.equalsIgnoreCase("5")) {
+
+            //Store Hose ID and Firmware version in sharedpreferance
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("hoseid_fs6", AppConstants.UP_HoseId_fs6);
+            editor.putString("fsversion_fs6", iot_version);
+            editor.commit();
+
+            //IF upgrade firmware true check below
+            if (AppConstants.UP_Upgrade) {
+                CheckForUpdateFirmware(AppConstants.UP_HoseId_fs6, iot_version, AppConstants.FS_selected);
+            } else {
+                BtnStartStateChange(true);
+            }
+
+        }
+
+    }
+
+
+    public void SetOverrideQty(int i) {
+
+        Pulses = 0;
+        fillqty = 0;
+        OverrideQuantity = "0";
+        OverridePulse = "0";
+
+        SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_TransactionDetails, Context.MODE_PRIVATE);
+
+        switch (i) {
+            case 0://Link 1
+
+                try {
+                    String Qty = sharedPref.getString("LinkSeq_one", "0");
+                    Pulses = Integer.parseInt(Qty);
+                    fillqty = Double.parseDouble(Qty);
+                    fillqty = fillqty / numPulseRatio;//convert to gallons
+                    fillqty = AppConstants.roundNumber(fillqty, 2);
+                    OverrideQuantity = String.valueOf(fillqty);
+                    OverridePulse = String.valueOf(Pulses);
+                    Log.i(TAG, "LinkSeq:1 final OverrideQuantity:" + OverrideQuantity + " OverridePulse:" + OverridePulse);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case 1://Link 2
+                try {
+                    String Qty = sharedPref.getString("LinkSeq_two", "0");
+                    Pulses = Integer.parseInt(Qty);
+                    fillqty = Double.parseDouble(Qty);
+                    fillqty = fillqty / numPulseRatio;//convert to gallons
+                    fillqty = AppConstants.roundNumber(fillqty, 2);
+                    OverrideQuantity = String.valueOf(fillqty);
+                    OverridePulse = String.valueOf(Pulses);
+                    Log.i(TAG, "LinkSeq:2 final OverrideQuantity:" + OverrideQuantity + " OverridePulse:" + OverridePulse);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 2://Link 3
+                try {
+                    String Qty = sharedPref.getString("LinkSeq_three", "0");
+                    Pulses = Integer.parseInt(Qty);
+                    fillqty = Double.parseDouble(Qty);
+                    fillqty = fillqty / numPulseRatio;//convert to gallons
+                    fillqty = AppConstants.roundNumber(fillqty, 2);
+                    OverrideQuantity = String.valueOf(fillqty);
+                    OverridePulse = String.valueOf(Pulses);
+                    Log.i(TAG, "LinkSeq:3 final OverrideQuantity:" + OverrideQuantity + " OverridePulse:" + OverridePulse);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 3://Link 4
+                try {
+                    String Qty = sharedPref.getString("LinkSeq_four", "0");
+                    Pulses = Integer.parseInt(Qty);
+                    fillqty = Double.parseDouble(Qty);
+                    fillqty = fillqty / numPulseRatio;//convert to gallons
+                    fillqty = AppConstants.roundNumber(fillqty, 2);
+                    OverrideQuantity = String.valueOf(fillqty);
+                    OverridePulse = String.valueOf(Pulses);
+                    Log.i(TAG, "LinkSeq:4 final OverrideQuantity:" + OverrideQuantity + " OverridePulse:" + OverridePulse);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+    private void BTServiceSelectionFunction() {
+
+        if (BTConstants.CurrentTransactionIsBT) {
+           // BtnStartStateChange(true);
+            Log.i(TAG, "BT Link ");
+            switch (BTConstants.CurrentSelectedLinkBT) {
+                case 1://Link 1
+
+                   // BtnStartStateChange(true);
+                    Log.i(TAG, "BTServiceSelected One>>");
+                   // BtnStartStateChange(false);
+                    Intent serviceIntent1 = new Intent(DisplayMeterActivity.this, BackgroundService_BTOne.class);
+                    serviceIntent1.putExtra("SERVER_IP", SERVERIP);
+                    serviceIntent1.putExtra("sqlite_id", sqlite_id);
+                    startService(serviceIntent1);
+
+                    BackToWelcomeActivity();
+                    break;
+                case 2://Link 2
+
+                   // BtnStartStateChange(true);
+                    Log.i(TAG, "BTServiceSelected Two>>");
+                   // BtnStartStateChange(false);
+                    Intent serviceIntent2 = new Intent(DisplayMeterActivity.this, BackgroundService_BTTwo.class);
+                    serviceIntent2.putExtra("SERVER_IP", SERVERIP);
+                    serviceIntent2.putExtra("sqlite_id", sqlite_id);
+                    startService(serviceIntent2);
+
+                    BackToWelcomeActivity();
+                    break;
+                case 3://Link 3
+                   // BtnStartStateChange(true);
+                    Log.i(TAG, "BTServiceSelected Three>>");
+                  //  BtnStartStateChange(false);
+                    Intent serviceIntent3 = new Intent(DisplayMeterActivity.this, BackgroundService_BTThree.class);
+                    serviceIntent3.putExtra("SERVER_IP", SERVERIP);
+                    serviceIntent3.putExtra("sqlite_id", sqlite_id);
+                    startService(serviceIntent3);
+
+                    BackToWelcomeActivity();
+                    break;
+                case 4://Link 4
+                   // BtnStartStateChange(true);
+                    Log.i(TAG, "BTServiceSelected Four>>");
+                   /// BtnStartStateChange(false);
+                    Intent serviceIntent4 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFour.class);
+                    serviceIntent4.putExtra("SERVER_IP", SERVERIP);
+                    serviceIntent4.putExtra("sqlite_id", sqlite_id);
+                    startService(serviceIntent4);
+
+                    BackToWelcomeActivity();
+                    break;
+                default://Something went wrong in link selection please try again.
+                    break;
+            }
+        }else{
+            //Something went wrong in selecting link please check
+        }
+    }
+
+    private void UDPServiceSelectionFunction() {
+
+        if (!SERVER_IP.isEmpty()) {
+            BtnStartStateChange(true);
+            Log.i(TAG, "UDP Link ");
+            switch (WelcomeActivity.SelectedItemPos) {
+                case 0://Link 1
+
+                    BtnStartStateChange(false);
+                    Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_BTOne.class);
+                    serviceIntent.putExtra("SERVER_IP", SERVERIP);
+                    serviceIntent.putExtra("sqlite_id", sqlite_id);
+                    startService(serviceIntent);
+
+                    BackToWelcomeActivity();
+                    break;
+                case 1://Link 2
+                    break;
+                case 2://Link 3
+                    break;
+                case 3://Link 4
+                    break;
+                default://Something went wrong in link selection please try again.
+                    break;
+            }
+        }
+    }
+
+    private void BackToWelcomeActivity() {
+        Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+    }
+
+    private void AttemptHotspotEnable() {
+        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
+
+            btnStart.setText("Please wait..");
+            btnStart.setEnabled(false);
+            wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
+            AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Connecting to hotspot, please wait", Color.RED);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    btnStart.setText("START");
+                    btnStart.setEnabled(true);
+                }
+            }, 10000);
+
+        }
+    }
+
+    private void proseedToPostResume(){
+
+        if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+
+            BtnStartStateChange(true);
+            Log.i(TAG, "BTLink CurrentTransactionIsBT: " + BTConstants.CurrentTransactionIsBT);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BTLink CurrentTransactionIsBT: " + BTConstants.CurrentTransactionIsBT);
+
+        } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
+            //cHECK UDP INFO COMMAND HERE
+        } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+            //new TasksbeforeStartBtnAsyncTask().execute();//test
+            CompleteTasksbeforeStartbuttonClick();
+        } else {
+            //Something went wrong in hose selection.
+        }
+
+    }
+
+    public void firstTimeUseWarningDilaog(final Activity context) {
+
+        //Declare timer
+        CountDownTimer cTimer = null;
+        final Dialog dialogBus = new Dialog(context);
+        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogBus.setCancelable(false);
+        dialogBus.setContentView(R.layout.custom_alertdialouge);
+        dialogBus.show();
+
+        String newString = "This is the first time you are using the system. Please be sure the quantity shown on the display matches the final quantity on the dispenser. If not, please be sure to call in to Support";
+
+        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
+        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
+        edt_message.setText(Html.fromHtml(newString));
+
+        cTimer = new CountDownTimer(10000, 10000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+
+                dialogBus.dismiss();
+                proseedToPostResume();
+
+            }
+        };
+        cTimer.start();
+
+        CountDownTimer finalCTimer = cTimer;
+        btnAllow.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+                if (finalCTimer != null) finalCTimer.cancel();
+                proseedToPostResume();
+            }
+
+        });
+
+    }
+
+    private void StoreLinkDisconnectInfo(SocketException se){
+
+        try{
+
+            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+            String TransactionId = "";
+            String SiteId = "";
+            int position = 0;
+
+            if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
+                TransactionId = sharedPref.getString("TransactionId_FS1", "");
+                SiteId = sharedPref.getString("SiteId_FS1", "");
+            }else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
+                TransactionId = sharedPref.getString("TransactionId", "");
+                SiteId = sharedPref.getString("SiteId", "");
+            }else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
+                TransactionId = sharedPref.getString("TransactionId_FS3", "");
+                SiteId = sharedPref.getString("SiteId_FS3", "");
+            }else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
+                TransactionId = sharedPref.getString("TransactionId_FS4", "");
+                SiteId = sharedPref.getString("SiteId_FS4", "");
+            }else if (AppConstants.FS_selected.equalsIgnoreCase("4")) {
+                TransactionId = sharedPref.getString("TransactionId_FS5", "");
+                SiteId = sharedPref.getString("SiteId_FS5", "");
+            }else if (AppConstants.FS_selected.equalsIgnoreCase("5")) {
+                TransactionId = sharedPref.getString("TransactionId_FS6", "");
+                SiteId = sharedPref.getString("SiteId_FS6", "");
+            }else{
+                //Something went wrong in hose selection.
+            }
+
+            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  SocketException " + se);
+
+            if (!TransactionId.equalsIgnoreCase("") && !SiteId.equalsIgnoreCase(""));
+            SaveInpreferance(TransactionId,SiteId,position);
 
         }catch (Exception e){
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Ex:"+e.toString());
+        }
+
+    }
+
+    private void SaveInpreferance(String transactionId, String siteId, int position){
+
+        try{
+
+            //log Date time
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            String UseDate = dateFormat.format(cal.getTime());
+
+            String dt = GetDateString(System.currentTimeMillis());
+            String  errorfileame = "/Log_" + dt + ".txt";
+
+            SocketErrorEntityClass soc_obj = new SocketErrorEntityClass();
+            soc_obj.SiteId =  siteId;
+            soc_obj.LogDateTime = UseDate;
+            soc_obj.ErrorLogFileName = errorfileame;///"FSLog/Log_" + dt + ".txt"
+            soc_obj.TransactionId = transactionId;
+
+            Gson gson = new Gson();
+            final String jsonData = gson.toJson(soc_obj);
+
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(AppConstants.LinkConnectionIssuePref, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("NLINK"+position, jsonData);
+            editor.apply();
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
+
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

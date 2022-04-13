@@ -27,7 +27,7 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.JSON;
 public class OffTranzSyncService extends Service {
 
     OffDBController controller = new OffDBController(OffTranzSyncService.this);
-
+    String TAG = "OffTranzSyncService";
     ConnectionDetector cd = new ConnectionDetector(OffTranzSyncService.this);
 
 
@@ -47,16 +47,18 @@ public class OffTranzSyncService extends Service {
 
             System.out.println("OffTranzSyncService started " + new Date());
             if (AppConstants.GenerateLogs)AppConstants.WriteinFile("OffTranzSyncService started " + new Date());
-
             //if (cd.isConnectingToInternet())
             //    new GetAPIToken().execute();
+
+            //delete empty transactions
+            controller.deleteLastTransactionIfNotEmpty();
 
             azureQueueLogic();
             tldQueueLogic();
 
         }else{
             System.out.println("OffTranzSyncService Transaction In Progress, Skip " + new Date());
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile("OffTranzSyncService Transaction In Progress, Skip" + new Date());
+            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("OffTranzSyncService Transaction In Progress, Skip" + new Date());
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -79,6 +81,9 @@ public class OffTranzSyncService extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else{
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "SyncOffTrnx Offline data Sync AzureCall no internert:"+cd.isConnecting());
         }
     }
 
@@ -133,6 +138,7 @@ public class OffTranzSyncService extends Service {
                 } else {
                     //get IDs from json
                     try {
+
                         JSONObject jobj = new JSONObject(sentJson);
                         String offtransactionArray = jobj.getString("TransactionsModelsObj");
                         JSONArray jarrsy = new JSONArray(offtransactionArray);

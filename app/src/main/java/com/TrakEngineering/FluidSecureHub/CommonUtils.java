@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -21,7 +22,8 @@ import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.Html;
 import android.text.format.Time;
@@ -87,8 +89,9 @@ import static com.TrakEngineering.FluidSecureHub.AppConstants.ISVehicleHasFob;
 import static com.TrakEngineering.FluidSecureHub.AppConstants.IsPersonHasFob;
 import static com.TrakEngineering.FluidSecureHub.Constants.PREF_COLUMN_SITE;
 import static com.TrakEngineering.FluidSecureHub.Constants.PREF_OFF_DB_SIZE;
+import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.wifiApManager;
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
-import static com.google.android.gms.internal.zzid.runOnUiThread;
+
 
 /**
  * Created by VASP-LAP on 08-09-2015.
@@ -219,6 +222,13 @@ public class CommonUtils {
         return (CurrantDate);
     }
 
+    public static String getTodaysDateInStringbt() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyMMddhhmm");
+        String CurrantDate = df.format(c.getTime());
+        return (CurrantDate);
+    }
+
     public static String getTodaysDateTemp() {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -343,6 +353,54 @@ public class CommonUtils {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void AutoCloseBTLinkMessage(final Activity context, String title, String message) {
+
+        //Declare timer
+        CountDownTimer cTimer = null;
+        final Dialog dialogBus = new Dialog(context);
+        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogBus.setCancelable(false);
+        dialogBus.setContentView(R.layout.custom_alertdialouge);
+        dialogBus.show();
+
+        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
+        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
+        edt_message.setText(Html.fromHtml(message));
+
+        cTimer = new CountDownTimer(20000, 20000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+
+                dialogBus.dismiss();
+                Intent intent = new Intent();
+                intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                context.startActivity(intent);
+
+            }
+        };
+        cTimer.start();
+
+        CountDownTimer finalCTimer = cTimer;
+        btnAllow.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+
+                if (finalCTimer != null) finalCTimer.cancel();
+                Intent intent = new Intent();
+                intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                context.startActivity(intent);
+
+            }
+
+        });
+
+    }
+
 
     public static void AlertDialogAutoClose(final Activity context, String title, String message) {
 
@@ -415,9 +473,7 @@ public class CommonUtils {
 
     public static void SimpleMessageDilaog(final Activity context, final String title, final String message) {
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+
 
                 new AlertDialog.Builder(context)
                         .setTitle(title)
@@ -429,9 +485,7 @@ public class CommonUtils {
                                 // Whatever...
                             }
                         }).show();
-            }
 
-        });
 
     }
 
@@ -579,13 +633,14 @@ public class CommonUtils {
 
     }
 
-    public static void FA_FlagSavePref(Activity activity, boolean data,boolean barcodedata,boolean IsEnableServerForTLD) {
+    public static void FA_FlagSavePref(Activity activity, boolean data,boolean barcodedata,boolean IsEnableServerForTLD,boolean UseBarcodeForPersonnel ) {
 
         SharedPreferences pref = activity.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(AppConstants.FAData, data);
         editor.putBoolean(AppConstants.IsEnableServerForTLD, IsEnableServerForTLD);
         editor.putBoolean(AppConstants.UseBarcode, barcodedata);
+        editor.putBoolean(AppConstants.UseBarcodeForPersonnel , UseBarcodeForPersonnel );
         editor.commit();
 
     }
@@ -616,7 +671,7 @@ public class CommonUtils {
     }
 
     public static void SaveUserInPref(Activity activity, String userName, String userMobile, String userEmail, String IsOdoMeterRequire,
-                                      String IsDepartmentRequire, String IsPersonnelPINRequire, String IsOtherRequire, String IsHoursRequire, String OtherLabel, String TimeOut, String HubId, String IsPersonnelPINRequireForHub, String fluidSecureSiteName, String IsVehicleHasFob, String isPersonHasFob,String IsVehicleNumberRequire,int WifiChannelToUse) {
+                                      String IsDepartmentRequire, String IsPersonnelPINRequire, String IsOtherRequire, String IsHoursRequire, String OtherLabel, String TimeOut, String HubId, String IsPersonnelPINRequireForHub, String fluidSecureSiteName, String IsVehicleHasFob, String isPersonHasFob,String IsVehicleNumberRequire,int WifiChannelToUse,String HubType,String IsNonValidateVehicle,String IsNonValidatePerson,String IsPersonPinAndFOBRequire,String AllowAccessDeviceORManualEntry,String AllowAccessDeviceORManualEntryForVehicle) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -635,9 +690,15 @@ public class CommonUtils {
         editor.putString(AppConstants.IsPersonnelPINRequireForHub, IsPersonnelPINRequireForHub);
         editor.putString(ISVehicleHasFob,  IsVehicleHasFob);
         editor.putString(IsPersonHasFob,  isPersonHasFob);
+        editor.putString(AppConstants.IsPersonPinAndFOBRequire,  IsPersonPinAndFOBRequire);
+        editor.putString(AppConstants.AllowAccessDeviceORManualEntry,  AllowAccessDeviceORManualEntry);
         editor.putString(FluidSecureSiteName,  fluidSecureSiteName);
         editor.putString(AppConstants.IsVehicleNumberRequire,  IsVehicleNumberRequire);
         editor.putInt(AppConstants.WifiChannelToUse,  WifiChannelToUse);
+        editor.putString(AppConstants.IsNonValidateVehicle,  IsNonValidateVehicle);
+        editor.putString(AppConstants.IsNonValidatePerson,  IsNonValidatePerson);
+        editor.putString(AppConstants.HubType,  HubType);
+        editor.putString(AppConstants.AllowAccessDeviceORManualEntryForVehicle,  AllowAccessDeviceORManualEntryForVehicle);
 
         editor.commit();
     }
@@ -657,7 +718,7 @@ public class CommonUtils {
     }
 
 
-    public static void SaveVehiFuelInPref_FS1(Context activity, String TransactionId_FS1, String VehicleId_FS1, String PhoneNumber_FS1, String PersonId_FS1, String PulseRatio_FS1, String MinLimit_FS1, String FuelTypeId_FS1, String ServerDate_FS1, String IntervalToStopFuel_FS1, String PrintDate_FS1, String Company_FS1, String Location_FS1, String PersonName_FS1, String PrinterMacAddress_FS1, String PrinterName_FS1, String vehicleNumber_FS1, String accOther_FS1, String VehicleSum_FS1, String DeptSum_FS1, String VehPercentage_FS1, String DeptPercentage_FS1, String SurchargeType_FS1, String ProductPrice_FS1, String IsTLDCall_FS1, String EnablePrinter_FS1, String OdoMeter_FS1, String Hours_FS1, String PumpOnTime_FS1) {
+    public static void SaveVehiFuelInPref_FS1(Context activity, String TransactionId_FS1, String VehicleId_FS1, String PhoneNumber_FS1, String PersonId_FS1, String PulseRatio_FS1, String MinLimit_FS1, String FuelTypeId_FS1, String ServerDate_FS1, String IntervalToStopFuel_FS1, String PrintDate_FS1, String Company_FS1, String Location_FS1, String PersonName_FS1, String PrinterMacAddress_FS1, String PrinterName_FS1, String vehicleNumber_FS1, String accOther_FS1, String VehicleSum_FS1, String DeptSum_FS1, String VehPercentage_FS1, String DeptPercentage_FS1, String SurchargeType_FS1, String ProductPrice_FS1, String IsTLDCall_FS1, String EnablePrinter_FS1, String OdoMeter_FS1, String Hours_FS1, String PumpOnTime_FS1,String LimitReachedMessage_FS1,String SiteId_FS1) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -691,12 +752,14 @@ public class CommonUtils {
         editor.putString("EnablePrinter_FS1", EnablePrinter_FS1);
         editor.putString("OdoMeter_FS1", OdoMeter_FS1);
         editor.putString("Hours_FS1", Hours_FS1);
+        editor.putString("LimitReachedMessage_FS1", LimitReachedMessage_FS1);
+        editor.putString("SiteId_FS1", SiteId_FS1);
 
 
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref(Context activity, String TransactionId, String VehicleId, String PhoneNumber, String PersonId, String PulseRatio, String MinLimit, String FuelTypeId, String ServerDate, String IntervalToStopFuel, String PrintDate, String Company, String Location, String PersonName, String PrinterMacAddress, String PrinterName, String vehicleNumber, String accOther, String VehicleSum, String DeptSum, String VehPercentage, String DeptPercentage, String SurchargeType, String ProductPrice, String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime) {
+    public static void SaveVehiFuelInPref(Context activity, String TransactionId, String VehicleId, String PhoneNumber, String PersonId, String PulseRatio, String MinLimit, String FuelTypeId, String ServerDate, String IntervalToStopFuel, String PrintDate, String Company, String Location, String PersonName, String PrinterMacAddress, String PrinterName, String vehicleNumber, String accOther, String VehicleSum, String DeptSum, String VehPercentage, String DeptPercentage, String SurchargeType, String ProductPrice, String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime,String LimitReachedMessage,String SiteId) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -729,12 +792,14 @@ public class CommonUtils {
         editor.putString("EnablePrinter", EnablePrinter);
         editor.putString("OdoMeter", OdoMeter);
         editor.putString("Hours", Hours);
+        editor.putString("LimitReachedMessage", LimitReachedMessage);
+        editor.putString("SiteId", SiteId);
 
 
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS3(Context activity, String TransactionId_FS3, String VehicleId_FS3, String PhoneNumber_FS3, String PersonId_FS3, String PulseRatio_FS3, String MinLimit_FS3, String FuelTypeId_FS3, String ServerDate_FS3, String IntervalToStopFuel_FS3, String PrintDate_FS3, String Company_FS3, String Location_FS3, String PersonName_FS3, String PrinterMacAddress_FS3, String PrinterName_FS3, String vehicleNumber_FS3, String accOther_FS3, String VehicleSum_FS3, String DeptSum_FS3, String VehPercentage_FS3, String DeptPercentage_FS3, String SurchargeType_FS3, String ProductPrice_FS3, String IsTLDCall_FS3, String EnablePrinter_FS3, String OdoMeter_FS3, String Hours_FS3, String PumpOnTime_FS3) {
+    public static void SaveVehiFuelInPref_FS3(Context activity, String TransactionId_FS3, String VehicleId_FS3, String PhoneNumber_FS3, String PersonId_FS3, String PulseRatio_FS3, String MinLimit_FS3, String FuelTypeId_FS3, String ServerDate_FS3, String IntervalToStopFuel_FS3, String PrintDate_FS3, String Company_FS3, String Location_FS3, String PersonName_FS3, String PrinterMacAddress_FS3, String PrinterName_FS3, String vehicleNumber_FS3, String accOther_FS3, String VehicleSum_FS3, String DeptSum_FS3, String VehPercentage_FS3, String DeptPercentage_FS3, String SurchargeType_FS3, String ProductPrice_FS3, String IsTLDCall_FS3, String EnablePrinter_FS3, String OdoMeter_FS3, String Hours_FS3, String PumpOnTime_FS3,String LimitReachedMessage_FS3,String SiteId_FS3) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -768,11 +833,13 @@ public class CommonUtils {
         editor.putString("EnablePrinter_FS3", EnablePrinter_FS3);
         editor.putString("OdoMeter_FS3", OdoMeter_FS3);
         editor.putString("Hours_FS3", Hours_FS3);
+        editor.putString("LimitReachedMessage_FS3", LimitReachedMessage_FS3);
+        editor.putString("SiteId_FS3", SiteId_FS3);
 
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS4(Context activity, String TransactionId_FS4, String VehicleId_FS4, String PhoneNumber_FS4, String PersonId_FS4, String PulseRatio_FS4, String MinLimit_FS4, String FuelTypeId_FS4, String ServerDate_FS4, String IntervalToStopFuel_FS4, String PrintDate_FS4, String Company_FS4, String Location_FS4, String PersonName_FS4, String PrinterMacAddress_FS4, String PrinterName_FS4, String vehicleNumber_FS4, String accOther_FS4, String VehicleSum_FS4, String DeptSum_FS4, String VehPercentage_FS4, String DeptPercentage_FS4, String SurchargeType_FS4, String ProductPrice_FS4, String IsTLDCall_FS4, String EnablePrinter_FS4, String OdoMeter_FS4, String Hours_FS4, String PumpOnTime_FS4) {
+    public static void SaveVehiFuelInPref_FS4(Context activity, String TransactionId_FS4, String VehicleId_FS4, String PhoneNumber_FS4, String PersonId_FS4, String PulseRatio_FS4, String MinLimit_FS4, String FuelTypeId_FS4, String ServerDate_FS4, String IntervalToStopFuel_FS4, String PrintDate_FS4, String Company_FS4, String Location_FS4, String PersonName_FS4, String PrinterMacAddress_FS4, String PrinterName_FS4, String vehicleNumber_FS4, String accOther_FS4, String VehicleSum_FS4, String DeptSum_FS4, String VehPercentage_FS4, String DeptPercentage_FS4, String SurchargeType_FS4, String ProductPrice_FS4, String IsTLDCall_FS4, String EnablePrinter_FS4, String OdoMeter_FS4, String Hours_FS4, String PumpOnTime_FS4,String LimitReachedMessage_FS4,String SiteId_FS4) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -806,6 +873,90 @@ public class CommonUtils {
         editor.putString("EnablePrinter_FS4", EnablePrinter_FS4);
         editor.putString("OdoMeter_FS4", OdoMeter_FS4);
         editor.putString("Hours_FS4", Hours_FS4);
+        editor.putString("LimitReachedMessage_FS4", LimitReachedMessage_FS4);
+        editor.putString("SiteId_FS4", SiteId_FS4);
+
+
+        editor.commit();
+    }
+
+    public static void SaveVehiFuelInPref_FS5(Context activity, String TransactionId_FS5, String VehicleId_FS5, String PhoneNumber_FS5, String PersonId_FS5, String PulseRatio_FS5, String MinLimit_FS5, String FuelTypeId_FS5, String ServerDate_FS5, String IntervalToStopFuel_FS5, String PrintDate_FS5, String Company_FS5, String Location_FS5, String PersonName_FS5, String PrinterMacAddress_FS5, String PrinterName_FS5, String vehicleNumber_FS5, String accOther_FS5, String VehicleSum_FS5, String DeptSum_FS5, String VehPercentage_FS5, String DeptPercentage_FS5, String SurchargeType_FS5, String ProductPrice_FS5, String IsTLDCall_FS5, String EnablePrinter_FS5, String OdoMeter_FS5, String Hours_FS5, String PumpOnTime_FS5,String LimitReachedMessage_FS5,String SiteId_FS5) {
+
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putString("TransactionId_FS5", TransactionId_FS5);
+        editor.putString("VehicleId_FS5", VehicleId_FS5);
+        editor.putString("VehicleId_FS5", VehicleId_FS5);
+        editor.putString("PhoneNumber_FS5", PhoneNumber_FS5);
+        editor.putString("PersonId_FS5", PersonId_FS5);
+        editor.putString("PulseRatio_FS5", PulseRatio_FS5);
+        editor.putString("MinLimit_FS5", MinLimit_FS5);
+        editor.putString("FuelTypeId_FS5", FuelTypeId_FS5);
+        editor.putString("ServerDate_FS5", ServerDate_FS5);
+        editor.putString("IntervalToStopFuel_FS5", IntervalToStopFuel_FS5);
+        editor.putString("PumpOnTime_FS5", PumpOnTime_FS5);
+        editor.putString("PrintDate_FS5", PrintDate_FS5);
+        editor.putString("Company_FS5", Company_FS5);
+        editor.putString("Location_FS5", Location_FS5);
+        editor.putString("PersonName_FS5", PersonName_FS5);
+        editor.putString("PrinterMacAddress_FS5", PrinterMacAddress_FS5);
+        editor.putString("PrinterName_FS5", PrinterName_FS5);
+        editor.putString("vehicleNumber_FS5", vehicleNumber_FS5);
+        editor.putString("accOther_FS5", accOther_FS5);
+        editor.putString("VehicleSum_FS5", VehicleSum_FS5);
+        editor.putString("DeptSum_FS5", DeptSum_FS5);
+        editor.putString("VehPercentage_FS5", VehPercentage_FS5);
+        editor.putString("DeptPercentage_FS5", DeptPercentage_FS5);
+        editor.putString("SurchargeType_FS5", SurchargeType_FS5);
+        editor.putString("ProductPrice_FS5", ProductPrice_FS5);
+        editor.putString("IsTLDCall_FS5", IsTLDCall_FS5);
+        editor.putString("EnablePrinter_FS5", EnablePrinter_FS5);
+        editor.putString("OdoMeter_FS5", OdoMeter_FS5);
+        editor.putString("Hours_FS5", Hours_FS5);
+        editor.putString("LimitReachedMessage_FS5", LimitReachedMessage_FS5);
+        editor.putString("SiteId_FS5", SiteId_FS5);
+
+
+        editor.commit();
+    }
+
+    public static void SaveVehiFuelInPref_FS6(Context activity, String TransactionId_FS6, String VehicleId_FS6, String PhoneNumber_FS6, String PersonId_FS6, String PulseRatio_FS6, String MinLimit_FS6, String FuelTypeId_FS6, String ServerDate_FS6, String IntervalToStopFuel_FS6, String PrintDate_FS6, String Company_FS6, String Location_FS6, String PersonName_FS6, String PrinterMacAddress_FS6, String PrinterName_FS6, String vehicleNumber_FS6, String accOther_FS6, String VehicleSum_FS6, String DeptSum_FS6, String VehPercentage_FS6, String DeptPercentage_FS6, String SurchargeType_FS6, String ProductPrice_FS6, String IsTLDCall_FS6, String EnablePrinter_FS6, String OdoMeter_FS6, String Hours_FS6, String PumpOnTime_FS6,String LimitReachedMessage_FS6,String SiteId_FS6) {
+
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putString("TransactionId_FS6", TransactionId_FS6);
+        editor.putString("VehicleId_FS6", VehicleId_FS6);
+        editor.putString("VehicleId_FS6", VehicleId_FS6);
+        editor.putString("PhoneNumber_FS6", PhoneNumber_FS6);
+        editor.putString("PersonId_FS6", PersonId_FS6);
+        editor.putString("PulseRatio_FS6", PulseRatio_FS6);
+        editor.putString("MinLimit_FS6", MinLimit_FS6);
+        editor.putString("FuelTypeId_FS6", FuelTypeId_FS6);
+        editor.putString("ServerDate_FS6", ServerDate_FS6);
+        editor.putString("IntervalToStopFuel_FS6", IntervalToStopFuel_FS6);
+        editor.putString("PumpOnTime_FS6", PumpOnTime_FS6);
+        editor.putString("PrintDate_FS6", PrintDate_FS6);
+        editor.putString("Company_FS6", Company_FS6);
+        editor.putString("Location_FS6", Location_FS6);
+        editor.putString("PersonName_FS6", PersonName_FS6);
+        editor.putString("PrinterMacAddress_FS6", PrinterMacAddress_FS6);
+        editor.putString("PrinterName_FS6", PrinterName_FS6);
+        editor.putString("vehicleNumber_FS6", vehicleNumber_FS6);
+        editor.putString("accOther_FS6", accOther_FS6);
+        editor.putString("VehicleSum_FS6", VehicleSum_FS6);
+        editor.putString("DeptSum_FS6", DeptSum_FS6);
+        editor.putString("VehPercentage_FS6", VehPercentage_FS6);
+        editor.putString("DeptPercentage_FS6", DeptPercentage_FS6);
+        editor.putString("SurchargeType_FS6", SurchargeType_FS6);
+        editor.putString("ProductPrice_FS6", ProductPrice_FS6);
+        editor.putString("IsTLDCall_FS6", IsTLDCall_FS6);
+        editor.putString("EnablePrinter_FS6", EnablePrinter_FS6);
+        editor.putString("OdoMeter_FS6", OdoMeter_FS6);
+        editor.putString("Hours_FS6", Hours_FS6);
+        editor.putString("LimitReachedMessage_FS6", LimitReachedMessage_FS6);
+        editor.putString("SiteId_FS6", SiteId_FS6);
 
 
         editor.commit();
@@ -1007,6 +1158,50 @@ public class CommonUtils {
     }
 
     public static UserInfoEntity getCustomerDetails_backgroundService_FS4(BackgroundService_FS_UNIT_4 activity) {
+
+        UserInfoEntity userInfoEntity = new UserInfoEntity();
+
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
+        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
+        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+
+
+        return userInfoEntity;
+    }
+
+    public static UserInfoEntity getCustomerDetails_backgroundServiceBT(Context ctx) {
+
+        UserInfoEntity userInfoEntity = new UserInfoEntity();
+        SharedPreferences sharedPref = ctx.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
+        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
+        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+
+
+        return userInfoEntity;
+    }
+
+    public static UserInfoEntity getCustomerDetails_backgroundService_FS5(BackgroundService_FS_UNIT_5 activity) {
+
+        UserInfoEntity userInfoEntity = new UserInfoEntity();
+
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
+        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
+        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+
+
+        return userInfoEntity;
+    }
+
+    public static UserInfoEntity getCustomerDetails_backgroundService_FS6(BackgroundService_FS_UNIT_6 activity) {
 
         UserInfoEntity userInfoEntity = new UserInfoEntity();
 
@@ -1351,29 +1546,33 @@ public class CommonUtils {
 
         String mDeviceName = sharedPre2.getString("LFBluetoothCardReader", "");
         String mDeviceAddress = sharedPre2.getString("LFBluetoothCardReaderMacAddress", "");
-        String HFDeviceName = sharedPre2.getString("BluetoothCardReader", "");
-        String HFDeviceAddress = sharedPre2.getString("BTMacAddress", "");
+        String ACSDeviceName = sharedPre2.getString("BluetoothCardReader", "");//ACR1255U-J1-006851
+        String ACSDeviceAddress = sharedPre2.getString("BTMacAddress", "");
         String mDeviceName_hf_trak = sharedPre2.getString("HFTrakCardReader", ""); //
         String mDeviceAddress_hf_trak = sharedPre2.getString("HFTrakCardReaderMacAddress", ""); //
         AppConstants.ACS_READER = sharedPre2.getBoolean("ACS_Reader", false);
         String mMagCardDeviceName = sharedPre2.getString("MagneticCardReader", ""); //
         String mMagCardDeviceAddress = sharedPre2.getString("MagneticCardReaderMacAddress", ""); //
+        String QRCodeReaderForBarcode = sharedPre2.getString("QRCodeReaderForBarcode", ""); //
+        String QRCodeBluetoothMacAddressForBarcode = sharedPre2.getString("QRCodeBluetoothMacAddressForBarcode", ""); //
 
-        //Temp log
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("-----------------");
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("BluetoothCardReader name: " + HFDeviceName + " BTMacAddress: " + HFDeviceAddress);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("LFBluetoothCardReader name: " + mDeviceName + " LFBluetoothCardReaderMacAddress: " + mDeviceAddress);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("HFTrakCardReader name: " + mDeviceName_hf_trak + " HFTrakCardReaderMacAddress: " + mDeviceAddress_hf_trak);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("MagCardDeviceName name: " + mMagCardDeviceName + " MagCardDeviceAddress: " + mMagCardDeviceAddress);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("ACS_READER STATUS: " + AppConstants.ACS_READER);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile("-----------------");
+
+        if (AppConstants.ACS_READER)
+        {
+            if (AppConstants.GenerateLogs && ACSDeviceAddress.contains(":"))AppConstants.WriteinFile("ACSReader Name:" + ACSDeviceName +" MacAddress:" + ACSDeviceAddress);
+        }else{
+            if (AppConstants.GenerateLogs && mDeviceAddress_hf_trak.contains(":")) AppConstants.WriteinFile("HFReader name:" + mDeviceName_hf_trak + " MacAddress: " + mDeviceAddress_hf_trak);
+        }
+
+        //LfReader
+        if (AppConstants.GenerateLogs && mDeviceAddress.contains(":"))
+            AppConstants.WriteinFile("LFReader Name:" + mDeviceName + " MacAddress: " + mDeviceAddress);
+
+        if (AppConstants.GenerateLogs && mMagCardDeviceAddress.contains(":"))
+            AppConstants.WriteinFile("MagneticReader Name:" + mMagCardDeviceName + " MacAddress: " + mMagCardDeviceAddress);
+
+        if (AppConstants.GenerateLogs && QRCodeBluetoothMacAddressForBarcode.contains(":"))
+            AppConstants.WriteinFile("QRCodeReader Name:" + QRCodeReaderForBarcode + " MacAddress: " + QRCodeBluetoothMacAddressForBarcode);
 
     }
 
@@ -1390,55 +1589,206 @@ public class CommonUtils {
 
     public static void enableMobileHotspotmanuallyStartTimer(final Context context) {
 
-        final boolean[] sendEmail = {true};
-        //AppConstants.colorToastHotspotOn(context, "Enable Mobile Hotspot Manually..", Color.RED);
-        Intent tetherSettings = new Intent();
-        tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
-        context.startActivity(tetherSettings);
+        wifiApManager.setWifiApEnabled(null, true); //one try for auto on
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        new CountDownTimer(15000, 1000) {
+        if (!isHotspotEnabled(context)){
+            if (Build.VERSION.SDK_INT > Constants.VERSION_CODES_NINE){
 
-            public void onTick(long millisUntilFinished) {
+                final int[] tick_count = {0};
+                final boolean[] sendEmail = {true};
+                TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
+                String operatorName = telephonyManager.getNetworkOperatorName();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG +" Network Operator Name:"+operatorName);
 
-                Log.i(TAG, "Waiting to connect hotspot remaining seconds: " + millisUntilFinished / 1000);
-                if (CommonUtils.isHotspotEnabled(context)) {
-                    Log.i(TAG, "Hotspot detected disable timer..");
-                    cancel();
-                    //BackTo Welcome Activity
-                    Intent i = new Intent(context, WelcomeActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    context.startActivity(i);
+                if (operatorName.contains("AT&T") && isAppInstalled(context,"com.smartcom")){
 
-                }else{
-                    if (millisUntilFinished / 1000 <= 13)
-                    AppConstants.colorToastHotspotOn(context, "Enable Mobile Hotspot Manually..\nWaiting seconds... " + millisUntilFinished / 1000, Color.RED);
-                }
-            }
+                    try {
+                        Intent intent = context.getPackageManager().getLaunchIntentForPackage("com.smartcom");
+                        context.startActivity(intent);
 
-            public void onFinish() {
-
-                if (CommonUtils.isHotspotEnabled(context)) {
-                    Log.i(TAG, "Hotspot detected disable timer..");
-
-                } else {
-                    Log.i(TAG, "Hotspot disable timer finish.. send email.");
-                    //Email functionality
-                    boolean check_mail = sendEmail[0];
-                    if (isConnecting(context) && check_mail) {
-                        sendEmail[0] = false;
-                        SendEmailMobileHotspotErrorEmail(context);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG +" AT&T AllAccess app launch Exception "+operatorName);
                     }
 
+                }else{
+
+                    //AppConstants.colorToastHotspotOn(context, "Enable Mobile Hotspot Manually..", Color.RED);
+                    Intent tetherSettings = new Intent();//com.smartcom
+                    tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+                    context.startActivity(tetherSettings);
+
                 }
 
-                //BackTo Welcome Activity
-                Intent i = new Intent(context, WelcomeActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                context.startActivity(i);
+                new CountDownTimer(60000 * 60, 20000) {
+
+                    public void onTick(long millisUntilFinished) {
+
+
+                        Log.i(TAG, "Waiting to connect hotspot remaining seconds: " + millisUntilFinished / 1000);
+                        if (CommonUtils.isHotspotEnabled(context)) {
+                            Log.i(TAG, "Hotspot detected disable timer..");
+                            cancel();
+                            //BackTo Welcome Activity
+                            Intent i = new Intent(context, WelcomeActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            context.startActivity(i);
+
+                        } else {
+                            //if (millisUntilFinished / 1000 <= 13)
+                            //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
+                            if (tick_count[0] > 2 && !WelcomeActivity.OnWelcomeActivity)
+                                AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotpot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE);
+                        }
+
+                        tick_count[0]++;
+                    }
+
+                    public void onFinish() {
+
+                        if (CommonUtils.isHotspotEnabled(context)) {
+                            Log.i(TAG, "Hotspot detected disable timer..");
+
+                        } else {
+                            Log.i(TAG, "Hotspot disable timer finish.. send email.");
+                            //Email functionality
+                            boolean check_mail = sendEmail[0];
+                            if (isConnecting(context) && check_mail) {
+                                sendEmail[0] = false;
+                                SendEmailMobileHotspotErrorEmail(context);
+                            }
+
+                        }
+
+                        //BackTo Welcome Activity
+                        Intent i = new Intent(context, WelcomeActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        context.startActivity(i);
+
+                    }
+
+                }.start();
+
+            }else{
+                //Android 8 and below...
+                wifiApManager.setWifiApEnabled(null, true);
+            }
+        }
+    }
+
+    //Below function to toggle hotspot to resolve Link unavailable issue
+    public static void ToggleHotspottoRefreshNetwork(final Context context, boolean enableManually) {
+
+        if (enableManually){
+
+            final int[] tick_count = {0};
+            final boolean[] sendEmail = {true};
+            TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
+            String operatorName = telephonyManager.getNetworkOperatorName();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG +" Network Operator Name:"+operatorName);
+
+            if (operatorName.contains("AT&T") && isAppInstalled(context,"com.smartcom")){
+
+                try {
+                    Intent intent = context.getPackageManager().getLaunchIntentForPackage("com.smartcom");
+                    context.startActivity(intent);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG +" AT&T AllAccess app launch Exception "+operatorName);
+                }
+
+            }else{
+
+                //AppConstants.colorToastHotspotOn(context, "Enable Mobile Hotspot Manually..", Color.RED);
+                Intent tetherSettings = new Intent();//com.smartcom
+                tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+                context.startActivity(tetherSettings);
 
             }
 
-        }.start();
+            new CountDownTimer(60000 * 60, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+
+
+                    Log.i(TAG, "Waiting to connect hotspot remaining seconds: " + millisUntilFinished / 1000);
+                    if (CommonUtils.isHotspotEnabled(context)) {
+                        Log.i(TAG, "Hotspot detected disable timer..");
+                        cancel();
+                        //BackTo Welcome Activity
+                        Intent i = new Intent(context, WelcomeActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        context.startActivity(i);
+
+                    } else {
+                        //if (millisUntilFinished / 1000 <= 13)
+                        //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
+                        if (tick_count[0] > 2 && WelcomeActivity.OnWelcomeActivity == false)
+                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotpot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE);
+                    }
+
+                    tick_count[0]++;
+                }
+
+                public void onFinish() {
+
+                    if (CommonUtils.isHotspotEnabled(context)) {
+                        Log.i(TAG, "Hotspot detected disable timer..");
+
+                    } else {
+                        Log.i(TAG, "Hotspot disable timer finish.. send email.");
+                    }
+
+                    //BackTo Welcome Activity
+                    Intent i = new Intent(context, WelcomeActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    context.startActivity(i);
+
+                }
+
+            }.start();
+
+        }else{
+
+            //Toggle hotspot programatically
+            Boolean toggle_success = true;
+            wifiApManager.setWifiApEnabled(null, false);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (isHotspotEnabled(context)){
+               // Log.i(TAG, "ToggleHotspot Failed to disable hotspot");
+            }else{
+                Log.i(TAG, "ToggleHotspot hotspot OFF");
+            }
+            wifiApManager.setWifiApEnabled(null, true);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (isHotspotEnabled(context)){
+                Log.i(TAG, "ToggleHotspot hotspot ON");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "ToggleHotspot hotspot Enabled");
+            }else{
+                Log.i(TAG, "ToggleHotspot failed to enable hotspot");
+            }
+
+        }
 
     }
 
@@ -1521,6 +1871,64 @@ public class CommonUtils {
             isConnected = activeNetwork != null &&	activeNetwork.isConnectedOrConnecting();
         }
         return isConnected;
+    }
+
+    public static boolean isAppInstalled(Context context, String packageName) {
+        try {
+            context.getPackageManager().getApplicationInfo(packageName, 0);
+            return true;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG +" It seems that AT&T AllAccess app not installed. please check.");
+            return false;
+        }
+    }
+
+
+
+    public static void SaveTransactionInSharedPreff(Context activity, String LinkSeq,String TransactonPulses) {
+
+        Log.i(TAG,"LinkSeq:"+LinkSeq+" TransactonPulses:"+TransactonPulses);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_TransactionDetails, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        if (LinkSeq.equals("1")){
+            editor.putString("LinkSeq_one", TransactonPulses);
+        }else if (LinkSeq.equals("2")){
+            editor.putString("LinkSeq_two", TransactonPulses);
+        }else if (LinkSeq.equals("3")){
+            editor.putString("LinkSeq_three", TransactonPulses);
+        }else if (LinkSeq.equals("4")){
+            editor.putString("LinkSeq_four", TransactonPulses);
+        }else if (LinkSeq.equals("5")){
+            editor.putString("LinkSeq_five", TransactonPulses);
+        }else if (LinkSeq.equals("6")){
+            editor.putString("LinkSeq_six", TransactonPulses);
+        }
+
+        editor.commit();
+    }
+
+    public static String getlinkName(int linkPoistion){
+
+        String LinkName = "";
+            try {
+                LinkName = AppConstants.DetailsServerSSIDList.get(linkPoistion).get("WifiSSId");
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ "Something went wrong please check Link name Ex:"+e.toString());
+                e.printStackTrace();
+            }
+        return LinkName;
+    }
+
+    public static void DebugLogTemp(String TAG, String Fun){
+
+        //This code is to check the issue with the duplicate sqlite insert Qty
+        //#1526  Winter Haven Time Issue
+        Log.i(TAG, Fun);
+        if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + Fun);
+
     }
 
 }

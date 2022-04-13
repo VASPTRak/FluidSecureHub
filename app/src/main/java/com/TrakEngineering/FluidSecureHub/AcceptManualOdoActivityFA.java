@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -229,6 +229,8 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
         Constants.FS_2OdoScreen = "FREE";
         Constants.FS_3OdoScreen = "FREE";
         Constants.FS_4OdoScreen = "FREE";
+        Constants.FS_5OdoScreen = "FREE";
+        Constants.FS_6OdoScreen = "FREE";
 
 
     }

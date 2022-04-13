@@ -24,23 +24,31 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 
+import com.TrakEngineering.FluidSecureHub.AcceptPinActivity_new;
+import com.TrakEngineering.FluidSecureHub.AcceptVehicleActivity_new;
+import com.TrakEngineering.FluidSecureHub.AppConstants;
+import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
+import com.TrakEngineering.FluidSecureHub.Constants;
 import com.TrakEngineering.FluidSecureHub.R;
 import com.TrakEngineering.FluidSecureHub.Vision_scanner.camera.CameraSource;
 import com.TrakEngineering.FluidSecureHub.Vision_scanner.camera.CameraSourcePreview;
@@ -51,8 +59,13 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -61,6 +74,10 @@ import java.io.IOException;
  */
 public final class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener {
     private static final String TAG = "Barcode-reader";
+    Timer ScreenOutTime;
+    List<Timer> ScreenTimerList = new ArrayList<Timer>();
+    String SelScreen = "";
+    boolean Istimeout_Sec = true;
 
     // intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
@@ -71,6 +88,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     // constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
     public static final String UseFlash = "UseFlash";
+    public static final String ForScreen = "ForScreen";
     public static final String BarcodeObject = "Barcode";
 
     private CameraSource mCameraSource;
@@ -80,6 +98,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
+    ConnectionDetector cd = new ConnectionDetector(BarcodeCaptureActivity.this);
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -93,8 +112,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
 
         // read parameters from the intent used to launch the activity.
-        boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
+        boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, true);
         boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
+        SelScreen = getIntent().getStringExtra(ForScreen);
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
@@ -112,6 +132,93 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         Snackbar.make(mGraphicOverlay, "Place Bare code infornt of camera",
                 Snackbar.LENGTH_LONG)
                 .show();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.reader, menu);
+
+        menu.findItem(R.id.mreboot_reader).setVisible(false);
+        menu.findItem(R.id.mconfigure_tld).setVisible(false);
+        menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
+        menu.findItem(R.id.mclose).setVisible(false);
+        menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(true);
+
+
+        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+
+            menu.findItem(R.id.monline).setVisible(true);
+            menu.findItem(R.id.mofline).setVisible(false);
+
+        } else {
+            menu.findItem(R.id.monline).setVisible(false);
+            menu.findItem(R.id.mofline).setVisible(true);
+        }
+
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+        boolean FAStatus = sharedPref.getBoolean(AppConstants.FAData, false);
+        boolean BarcodeStatus = sharedPref.getBoolean(AppConstants.UseBarcode, false);
+        int CameraFacing = sharedPref.getInt(AppConstants.CAMERA_FACING, 1);
+
+        if (!BarcodeStatus){
+            menu.findItem(R.id.mcamera_back).setVisible(false);
+            menu.findItem(R.id.mcamera_front).setVisible(false);
+        }else if (CameraFacing == 1){
+            menu.findItem(R.id.mcamera_back).setVisible(true);
+            menu.findItem(R.id.mcamera_front).setVisible(false);
+        }else{
+            menu.findItem(R.id.mcamera_back).setVisible(false);
+            menu.findItem(R.id.mcamera_front).setVisible(true);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_connect:
+                //connect readers code
+                return true;
+
+            case R.id.menu_disconnect:
+                //mBluetoothLeServiceVehicle.disconnect();
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.mcamera_front:
+                barcodeCameraSwitch();
+                return true;
+            case R.id.mcamera_back:
+                barcodeCameraSwitch();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void barcodeCameraSwitch(){
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+        int CameraFacing = pref.getInt(AppConstants.CAMERA_FACING, 1);
+
+        if (CameraFacing == 1){
+
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putInt(AppConstants.CAMERA_FACING, 0);
+            editor.commit();
+
+        }else{
+
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putInt(AppConstants.CAMERA_FACING, 1);
+            editor.commit();
+        }
+        this.recreate();
     }
 
     /**
@@ -183,17 +290,25 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 if (item.rawValue != null) {
 
                     vibratePhone(BarcodeCaptureActivity.this);
-
                     Intent data = new Intent();
                     data.putExtra(BarcodeObject, item.rawValue);
                     setResult(CommonStatusCodes.SUCCESS, data);
                     finish();
                 }
 
+                /*if (SelScreen.equalsIgnoreCase("Vehicle")){
+                    Intent intent = new Intent(BarcodeCaptureActivity.this, AcceptVehicleActivity_new.class);
+                    intent.putExtra("barcode", item.rawValue);
+                    startActivity(intent);
+                }else  if (SelScreen.equalsIgnoreCase("Pin")){
+                    Intent intent = new Intent(BarcodeCaptureActivity.this, AcceptPinActivity_new.class);
+                    intent.putExtra("barcode", item.rawValue);
+                    startActivity(intent);
+                }else{
+                    //Something went wrong..
+                }*/
 
-                /*Intent intent = new Intent(BarcodeCaptureActivity.this, AcceptVehicleActivity_new.class);
-                intent.putExtra("barcode", item.rawValue);
-                startActivity(intent);*/
+
             }
         });
 
@@ -227,8 +342,10 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         // Creates and starts the camera.  Note that this uses a higher resolution in comparison
         // to other detection examples to enable the barcode detector to detect small barcodes
         // at long distances.
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+        int camera_facing = sharedPref.getInt(AppConstants.CAMERA_FACING, 1);
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
-                .setFacing(CameraSource.CAMERA_FACING_FRONT)
+                .setFacing(camera_facing)
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(15.0f);
 
@@ -249,6 +366,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     @Override
     protected void onResume() {
         super.onResume();
+        TimeoutBarCodeScreen();
         startCameraSource();
     }
 
@@ -258,6 +376,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     @Override
     protected void onPause() {
         super.onPause();
+        ScreenTimer();
         if (mPreview != null) {
             mPreview.stop();
         }
@@ -270,6 +389,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ScreenTimer();
         if (mPreview != null) {
             mPreview.release();
         }
@@ -304,7 +424,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
-            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
+            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, true);
             boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
             createCameraSource(autoFocus, useFlash);
             return;
@@ -474,5 +594,53 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             }
         }catch (Exception e){}
 
+    }
+    public void TimeoutBarCodeScreen() {
+        Log.i("TimeoutPinScreen", "Start");
+        //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
+        long screenTimeOut = 30000;
+
+        ScreenOutTime = new Timer();
+        ScreenTimerList.add(ScreenOutTime);
+        TimerTask ttt = new TimerTask() {
+            @Override
+            public void run() {
+                Log.i("TimeoutPinScreen", "Running..");
+                if (Istimeout_Sec) {
+                    try {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Istimeout_Sec = false;
+                                if (SelScreen.equalsIgnoreCase("Vehicle")){
+                                    Intent i = new Intent(BarcodeCaptureActivity.this, AcceptVehicleActivity_new.class);
+                                    i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(i);
+                                }else  if (SelScreen.equalsIgnoreCase("Pin")){
+                                    Intent i = new Intent(BarcodeCaptureActivity.this, AcceptPinActivity_new.class);
+                                    i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(i);
+                                }else{
+                                    //Something went wrong..
+                                }
+                            }
+                        });
+                        ScreenTimer();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            ;
+        };
+        ScreenOutTime.schedule(ttt, screenTimeOut, 500);
+    }
+
+    private void ScreenTimer() {
+        for (int i = 0; i < ScreenTimerList.size(); i++) {
+            ScreenTimerList.get(i).cancel();
+        }
     }
 }

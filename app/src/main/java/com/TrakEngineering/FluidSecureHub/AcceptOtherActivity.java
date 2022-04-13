@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -21,17 +19,18 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class AcceptOtherActivity extends AppCompatActivity {
 
-    TextView tv_otherlabel,tv_return, tv_swipekeybord;
+    TextView tv_otherlabel, tv_return, tv_swipekeybord;
     EditText etOther;
     Button btnSave, btnCancel;//AppConstants.OtherLabel
     RelativeLayout footer_keybord;
-    String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "",OtherLabel = "";
+    String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", OtherLabel = "";
     String TimeOutinMinute;
-    boolean Istimeout_Sec=true;
+    boolean Istimeout_Sec = true;
     private ConnectionDetector cd = new ConnectionDetector(AcceptOtherActivity.this);
     private static final String TAG = AcceptOtherActivity.class.getSimpleName();
 
@@ -43,16 +42,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
         invalidateOptionsMenu();
 
         etOther.setText("");
-        //Set/Reset EnterOther text
-        /*if (Constants.CurrentSelectedHose.equals("FS1")) {
-            etOther.setText(Constants.AccOther_FS1);
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            etOther.setText(Constants.AccOther);
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            etOther.setText(Constants.AccOther_FS3);
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            etOther.setText(Constants.AccOther_FS4);
-        }*/
+
     }
 
     @Override
@@ -81,20 +71,30 @@ public class AcceptOtherActivity extends AppCompatActivity {
                 etOther.setText(Constants.AccOther_FS1);
             }
 
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")){
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
 
             if (Constants.AccOther != null) {
                 etOther.setText(Constants.AccOther);
             }
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")){
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
 
             if (Constants.AccOther_FS3 != null) {
                 etOther.setText(Constants.AccOther_FS3);
             }
-        }else {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
 
             if (Constants.AccOther_FS4 != null) {
                 etOther.setText(Constants.AccOther_FS4);
+            }
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+
+            if (Constants.AccOther_FS5 != null) {
+                etOther.setText(Constants.AccOther_FS5);
+            }
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+
+            if (Constants.AccOther_FS6 != null) {
+                etOther.setText(Constants.AccOther_FS6);
             }
         }
 
@@ -109,12 +109,11 @@ public class AcceptOtherActivity extends AppCompatActivity {
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
 
 
-        long screenTimeOut= Integer.parseInt(TimeOutinMinute) *60000;
+        long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (Istimeout_Sec)
-                {
+                if (Istimeout_Sec) {
                     Istimeout_Sec = false;
                     AppConstants.ClearEdittextFielsOnBack(AcceptOtherActivity.this);
 
@@ -133,8 +132,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
 
         try {
             etOther.setInputType(Integer.parseInt(KeyboardType));
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("keyboard exception");
             etOther.setInputType(InputType.TYPE_CLASS_TEXT);
         }
@@ -150,19 +148,23 @@ public class AcceptOtherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Istimeout_Sec=false;
+                Istimeout_Sec = false;
 
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
                     if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
 
                         Constants.AccOther_FS1 = etOther.getText().toString().trim();
-                    }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")){
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
                         Constants.AccOther = etOther.getText().toString().trim();
-                    }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")){
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
                         Constants.AccOther_FS3 = etOther.getText().toString().trim();
-                    }else{
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
                         Constants.AccOther_FS4 = etOther.getText().toString().trim();
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+                        Constants.AccOther_FS5 = etOther.getText().toString().trim();
+                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+                        Constants.AccOther_FS6 = etOther.getText().toString().trim();
                     }
 
                     AcceptServiceCall asc = new AcceptServiceCall();
@@ -230,7 +232,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         // ActivityHandler.removeActivity(6);
-        Istimeout_Sec=false;
+        Istimeout_Sec = false;
         finish();
     }
 

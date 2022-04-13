@@ -7,15 +7,22 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.TimeUnit;
 
 import static com.TrakEngineering.FluidSecureHub.server.MyServer.ctx;
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
@@ -30,6 +38,8 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
     private static String TAG = "BS_DFirmware";
+    String HTTP_URL = "";
+
     static ServerHandler serverHandler = new ServerHandler();
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -43,7 +53,6 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
         return Service.START_STICKY;
     }
-
 
     public static void FsvmDataAsyncCall(String jsonData, String authString) {
         RequestBody body = RequestBody.create(TEXT, jsonData);
@@ -256,7 +265,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 String IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
                 String IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
                 String BLEVersion = myPrefslo.getString("BLEVersion", "");
-                String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
+                String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
                 String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
 
                 URL url = new URL(f_url[0]);
@@ -322,6 +331,266 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
             return null;
         }
+
+    }
+
+    public static class ManualDownloadLinkAndReaderFirmware extends AsyncTask<String, String, String> {
+
+        String http_url = "";
+        @Override
+        protected String doInBackground(String... f_url) {
+            int count;
+            try {
+
+                http_url = f_url[3];
+
+                //BLE upgrade
+                SharedPreferences myPrefslo = ctx.getSharedPreferences("BLEUpgradeInfo", 0);
+                String BLEType = myPrefslo.getString("BLEType", "");
+                String BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
+                String IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
+                String IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
+                String BLEVersion = myPrefslo.getString("BLEVersion", "");
+                String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+                String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+
+                URL url = new URL(f_url[0]);
+                URLConnection conection = url.openConnection();
+                conection.connect();
+                // getting file length
+                int lenghtOfFile = conection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
+                // Output stream to write file
+                OutputStream output = null;
+                if (f_url[2].equals("UP_Upgrade"))
+                    output = new FileOutputStream(FOLDER_PATH + f_url[1]);
+                else if (f_url[2].equals("BLEUpdate"))
+                    output = new FileOutputStream(FOLDER_PATH_BLE + f_url[1]);
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+
+                //InCase of BLE file download create .txt file using version name
+                try {
+                    File root = new File(FOLDER_PATH_BLE);
+                    if (f_url[2].equals("BLEUpdate") && root.exists()) {
+                        String sBody = BLEVersion+"_check.txt";
+                        File gpxfile = new File(root, BLEVersion+"_check.txt");
+                        FileWriter writer = new FileWriter(gpxfile);
+                        writer.append(sBody);
+                        writer.flush();
+                        writer.close();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "ManualLinkUpgrade bin file downloaded:"+f_url[1]);
+
+                Thread.sleep(2000);
+                manualUpgradeStart(http_url);
+
+            } catch (Exception e) {
+                Log.e("Error in Firmware file download: ", e.getMessage());
+                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " Error in Manual Link Upgrade Firmware file download: "+e.getMessage());
+
+            }
+
+            return null;
+        }
+
+    }
+
+    public static void manualUpgradeStart(String http_url){
+
+        String URL_UPGRADE_START = http_url + "upgrade?command=start";
+
+                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " URL_UPGRADE_START CMD");
+                new CommandsPOST().execute(URL_UPGRADE_START, "");
+
+                //upgrade bin
+                String LocalPath = AppConstants.FOLDER_PATH + AppConstants.UP_Upgrade_File_name;
+                File f = new File(LocalPath);
+
+                if (f.exists()) {
+                    new OkHttpFileUpload().execute(LocalPath, "application/binary",http_url);
+                } else {
+                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "ManualLinkUpgrade Firmware File Not found. ");
+                }
+
+    }
+
+    public static class CommandsPOST extends AsyncTask<String, Void, String> {
+
+        public String resp = "";
+
+
+        protected String doInBackground(String... param) {
+
+            try {
+
+                MediaType JSON = MediaType.parse("application/json");
+
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
+                RequestBody body = RequestBody.create(JSON, param[1]);
+
+                Request request = new Request.Builder()
+                        .url(param[0])
+                        .header("Accept-Encoding", "identity")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Execption " + e);
+            }
+
+
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+            try {
+
+                System.out.println("APFS_PIPE OUTPUT" + result);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Execption " + e);
+            }
+
+        }
+    }
+
+    public static class OkHttpFileUpload extends AsyncTask<String, Void, String> {
+
+        public String resp = "";
+        private String URL_RESET = "";
+
+        protected String doInBackground(String... param) {
+
+
+            try {
+                String LocalPath = param[0];
+                String Localcontenttype = param[1];
+                String http_url = param[2];
+                URL_RESET = http_url + "upgrade?command=reset";
+
+                MediaType contentype = MediaType.parse(Localcontenttype);
+
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
+                RequestBody body = RequestBody.create(contentype, readBytesFromFile(LocalPath));
+                Request request = new Request.Builder()
+                        .url(http_url)//HTTP_URL  192.168.43.210
+                        .header("Accept-Encoding", "identity")
+                        .post(body)
+                        .build();
+
+
+                Response response = client.newCall(request).execute();
+                System.out.println("tesssss1" + response);
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                return response.body().string();
+
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " OkHttpFileUpload" + e.getMessage());
+            }
+
+
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            System.out.println(" resp......." + result);
+
+            try {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " URL_RESET CMD");
+                        new CommandsPOST().execute(URL_RESET, "");
+
+                        System.out.println("AFTER SECONDS 5");
+                    }
+                }, 5000);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " OkHttpFileUpload" + e.getMessage());
+            }
+
+        }
+    }
+
+    private static byte[] readBytesFromFile(String filePath) {
+
+        FileInputStream fileInputStream = null;
+        byte[] bytesArray = null;
+
+        try {
+
+            File file = new File(filePath);
+            bytesArray = new byte[(int) file.length()];
+
+            //read file into bytes[]
+            fileInputStream = new FileInputStream(file);
+            fileInputStream.read(bytesArray);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        return bytesArray;
 
     }
 

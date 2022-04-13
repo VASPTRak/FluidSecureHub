@@ -31,5 +31,8 @@ public class TrazComp {
     public String IsFuelingStop;
     public String IsLastTransaction;
 
+    public String OverrideQuantity;
+    public String OverridePulse;
+
 
 }

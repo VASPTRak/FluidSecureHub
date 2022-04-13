@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.display.DisplayManager;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -17,7 +18,9 @@ import android.view.Display;
 
 import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
+import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -26,6 +29,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,10 +47,14 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 public class BackgroundServiceHotspotCheck extends BackgroundService {
 
     private String TAG = "BS_HotspotCheck";
+    ConnectionDetector cd = new ConnectionDetector(BackgroundServiceHotspotCheck.this);
+    OffDBController offcontroller = new OffDBController(BackgroundServiceHotspotCheck.this);
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        ChangeWifiState();
 
         SharedPreferences sharedPrefOAS = BackgroundServiceHotspotCheck.this.getSharedPreferences(AppConstants.sharedPref_OfflineAzureSync, Context.MODE_PRIVATE);
         String datetimeOffline = sharedPrefOAS.getString("datetime", "");
@@ -75,14 +83,14 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
 
 
 
-                if(minutes>=5)
+                if(minutes>=15)
                 {
                     SharedPreferences pref = BackgroundServiceHotspotCheck.this.getSharedPreferences(AppConstants.sharedPref_OfflineAzureSync, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString("datetime", AppConstants.currentDateFormat(dtOfflineFormat));
                     editor.commit();
 
-                    startService(new Intent(this, OffTranzSyncService.class));
+                   // SyncSqliteData();
 
                 }
 
@@ -110,8 +118,7 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
                 {
                     AppConstants.COUNT_HOTSPOT_MAIL=0;
                     System.out.println("HOT SPOT--ENAbled");
-                }else
-                {
+                }else {
                     AppConstants.COUNT_HOTSPOT_MAIL++;
                     System.out.println("HOT SPOT--no enabled");
                 }
@@ -122,9 +129,10 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
                 {
                     AppConstants.COUNT_HOTSPOT_MAIL=0;
 
-                    if (!CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn){
-                        CommonUtils.enableMobileHotspotmanuallyStartTimer(this);
-                    }
+                    //AppConstants.WriteinFile(TAG+" enableMobileHotspotmanuallyStartTimer1");
+                    //if (!CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn && !AppConstants.IsBTLinkSelectedCurrently){
+                    //    CommonUtils.enableMobileHotspotmanuallyStartTimer(this);
+                }
 
 
                 }
@@ -138,16 +146,20 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
 
                 } else if (!screenOff && !CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn) {
 
-                    wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
-                    Log.i(TAG, "Connecting to hotspot, please wait....");
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Hotspot ON--1");
+                    if (!AppConstants.IsBTLinkSelectedCurrently) {
+                        wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
+                        Log.i(TAG, "Connecting to hotspot, please wait....");
+                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Hotspot ON--1");
+                    }
 
                 } else if (screenOff) {
 
                     if (isScreenOn(this) && !CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn) {
 
-                        wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
-                        Log.i(TAG, "Connecting to hotspot, please wait....");
+                        if (!AppConstants.IsBTLinkSelectedCurrently) {
+                            wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
+                            Log.i(TAG, "Connecting to hotspot, please wait....");
+                        }
 
                         //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Hotspot ON--2");
 
@@ -168,8 +180,6 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
 
                     }
                 }
-
-            }
 
         } catch (NullPointerException e) {
             System.out.println(e);
@@ -265,5 +275,43 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
             }
 
         });
+    }
+
+
+    public void SyncSqliteData() {
+
+        if (WelcomeActivity.OnWelcomeActivity && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+
+            if (cd.isConnecting()) {
+
+                try {
+                    //sync offline transactions
+                    String off_json = offcontroller.getAllOfflineTransactionJSON(BackgroundServiceHotspotCheck.this);
+                    JSONObject jobj = new JSONObject(off_json);
+                    String offtransactionArray = jobj.getString("TransactionsModelsObj");
+                    JSONArray jarrsy = new JSONArray(offtransactionArray);
+
+                    if (jarrsy.length() > 0 && OfflineConstants.isOfflineAccess(BackgroundServiceHotspotCheck.this)) {
+                          startService(new Intent(BackgroundServiceHotspotCheck.this, OffTranzSyncService.class));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void ChangeWifiState() {
+
+        WifiManager wifiManager = (WifiManager) BackgroundServiceHotspotCheck.this.getSystemService(WIFI_SERVICE);
+        if (wifiManager.isWifiEnabled() && Constants.hotspotstayOn) {
+            //Disable wifi
+            wifiManager.setWifiEnabled(false);
+            Log.i(TAG,"Disabling wifi..");
+        }
+
     }
 }
