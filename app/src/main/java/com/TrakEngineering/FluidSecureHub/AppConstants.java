@@ -109,6 +109,7 @@ public class AppConstants {
     public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
     public static String UP_Upgrade_File_name = "user1.2048.new.5.bin";
 
+    public static String OfflineDataFolderName = "FSdata";
 
     public static final String OfflineDataBaseSize = "OfflineDataBaseSize";
     public static final String DbUpdateTime = "DbUpdateTime";

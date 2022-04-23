@@ -112,6 +112,8 @@ public class BackgroundService_BTThree extends Service {
                 //Register Broadcast reciever
                 broadcastBlueLinkThreeData = new BackgroundService_BTThree.BroadcastBlueLinkThreeData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 3: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkThreeData, intentFilter);
 
                 LinkName = CommonUtils.getlinkName(2);
@@ -410,6 +412,8 @@ public class BackgroundService_BTThree extends Service {
 
         try {
             clearEditTextFields();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: Unregistering Receiver.>> is null >>" + (broadcastBlueLinkThreeData == null));
             unregisterReceiver(broadcastBlueLinkThreeData);
             stopTxtprocess = true;
             Constants.FS_3STATUS = "FREE";
@@ -779,10 +783,10 @@ public class BackgroundService_BTThree extends Service {
                 stopCount++;
                 int pumpOnpoint = Integer.parseInt(PumpOnTime);
                 if (stopCount >= pumpOnpoint) {
-                    stopCount = 0;
                     Log.i(TAG, "BTLink 3: No response from link>>" + stopCount);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 3: No response from link>>" + stopCount);
+                    stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransationCompleteFunction();
                     CloseTransaction(); //temp

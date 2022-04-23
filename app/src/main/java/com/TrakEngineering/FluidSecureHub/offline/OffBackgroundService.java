@@ -83,6 +83,8 @@ public class OffBackgroundService extends Service {
             OffDBController offcontroller = new OffDBController(this);
             HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();
 
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Offline link existing data count >> " + linkmap.size());
             if (linkmap.size() > 0) {
 
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
@@ -895,7 +897,8 @@ public class OffBackgroundService extends Service {
         ThinDownloadManager downloadManager = new ThinDownloadManager();
 
         Uri downloadUri = Uri.parse(downloadUrl);
-        Uri destinationUri = Uri.parse(Environment.getExternalStorageDirectory() + "/FSdata/" + fileName + ".txt");
+        //Uri destinationUri = Uri.parse(Environment.getExternalStorageDirectory() + "/FSdata/" + fileName + ".txt");
+        Uri destinationUri = Uri.parse(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName) + "/" + fileName + ".txt");
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
                 //.addCustomHeader("Auth-Token", "YourTokenApiKey")
                 .setRetryPolicy(new DefaultRetryPolicy())
@@ -949,7 +952,8 @@ public class OffBackgroundService extends Service {
 
     public void readEncryptedFileParseJsonInSqlite(String file_name) {
 
-        File file = new File(Environment.getExternalStorageDirectory() + "/FSdata/" + file_name + ".txt");
+        //File file = new File(Environment.getExternalStorageDirectory() + "/FSdata/" + file_name + ".txt");
+        File file = new File(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName) + "/" + file_name + ".txt");
 
         //File file = new File(file_pathrul);
 
@@ -1008,7 +1012,8 @@ public class OffBackgroundService extends Service {
 
     public void deleteAllDownloadedFiles() {
         try {
-            File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+            //File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+            File dir = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName)));
             if (dir.isDirectory()) {
                 String[] children = dir.list();
                 for (int i = 0; i < children.length; i++) {
@@ -1033,7 +1038,8 @@ public class OffBackgroundService extends Service {
     }
 
     public void deleteIncompleteOfflineDataFiles() {
-        File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+        //File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+        File dir = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName)));
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {

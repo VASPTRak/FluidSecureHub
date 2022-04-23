@@ -112,6 +112,8 @@ public class BackgroundService_BTFour extends Service {
                 //Register Broadcast reciever
                 broadcastBlueLinkFourData = new BackgroundService_BTFour.BroadcastBlueLinkFourData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkFourData");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 4: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkFourData, intentFilter);
 
                 LinkName = CommonUtils.getlinkName(3);
@@ -409,6 +411,8 @@ public class BackgroundService_BTFour extends Service {
 
         try {
             clearEditTextFields();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 4: Unregistering Receiver.>> is null >>" + (broadcastBlueLinkFourData == null));
             unregisterReceiver(broadcastBlueLinkFourData);
             stopTxtprocess = true;
             Constants.FS_4STATUS = "FREE";
@@ -778,10 +782,10 @@ public class BackgroundService_BTFour extends Service {
                 stopCount++;
                 int pumpOnpoint = Integer.parseInt(PumpOnTime);
                 if (stopCount >= pumpOnpoint) {
-                    stopCount = 0;
                     Log.i(TAG, "BTLink 4: No response from link>>" + stopCount);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 4: No response from link>>" + stopCount);
+                    stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransationCompleteFunction();
                     CloseTransaction(); //temp

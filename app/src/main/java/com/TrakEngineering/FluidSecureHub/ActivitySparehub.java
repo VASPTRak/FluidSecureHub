@@ -126,7 +126,7 @@ public class ActivitySparehub extends AppCompatActivity {
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(ActivitySparehub.this);
 
-        AppConstants.Title = "Hub name : " + userInfoEntity.PersonName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.Title = "HUB name : " + userInfoEntity.PersonName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         //AppConstants.HubName = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(R.id.textView);
         tvTitle.setText(AppConstants.Title);

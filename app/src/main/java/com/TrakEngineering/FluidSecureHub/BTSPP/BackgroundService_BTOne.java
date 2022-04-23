@@ -114,6 +114,8 @@ public class BackgroundService_BTOne extends Service {
                 //Register Broadcast reciever
                 broadcastBlueLinkOneData = new BroadcastBlueLinkOneData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkOneData, intentFilter);
 
                 LinkName = CommonUtils.getlinkName(0);
@@ -412,6 +414,8 @@ public class BackgroundService_BTOne extends Service {
 
         try {
             clearEditTextFields();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: Unregistering Receiver.>> is null >>" + (broadcastBlueLinkOneData == null));
             unregisterReceiver(broadcastBlueLinkOneData);
             stopTxtprocess = true;
             Constants.FS_1STATUS = "FREE";
@@ -784,12 +788,10 @@ public class BackgroundService_BTOne extends Service {
                 stopCount++;
                 int pumpOnpoint = Integer.parseInt(PumpOnTime);
                 if (stopCount >= pumpOnpoint) {
-                    stopCount = 0;
-
                     Log.i(TAG, "BTLink 1: No response from link>>" + stopCount);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 1: No response from link>>" + stopCount);
-
+                    stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransationCompleteFunction();
                     CloseTransaction(); //temp
