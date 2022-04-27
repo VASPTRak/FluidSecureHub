@@ -57,6 +57,7 @@ public class BackgroundService_BTFour extends Service {
     List<Timer> TimerList_ReadpulseBT4 = new ArrayList<Timer>();
     DBController controller = new DBController(BackgroundService_BTFour.this);
     Boolean IsThisBTTrnx;
+    Boolean isBroadcastReceiverRegistered = false;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -115,6 +116,7 @@ public class BackgroundService_BTFour extends Service {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink 4: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkFourData, intentFilter);
+                isBroadcastReceiverRegistered = true;
 
                 LinkName = CommonUtils.getlinkName(3);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -412,8 +414,13 @@ public class BackgroundService_BTFour extends Service {
         try {
             clearEditTextFields();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 4: Unregistering Receiver.>> is null >>" + (broadcastBlueLinkFourData == null));
-            unregisterReceiver(broadcastBlueLinkFourData);
+                AppConstants.WriteinFile(TAG + " BTLink 4: Receiver is Registered >> " + isBroadcastReceiverRegistered);
+            if (isBroadcastReceiverRegistered) {
+                unregisterReceiver(broadcastBlueLinkFourData);
+                isBroadcastReceiverRegistered = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 4: Receiver unregistered.");
+            }
             stopTxtprocess = true;
             Constants.FS_4STATUS = "FREE";
             Constants.FS_4Pulse = "00";
