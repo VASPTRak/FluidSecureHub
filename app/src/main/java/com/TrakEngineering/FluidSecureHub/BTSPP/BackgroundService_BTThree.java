@@ -414,15 +414,20 @@ public class BackgroundService_BTThree extends Service {
 
         try {
             clearEditTextFields();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 3: Receiver is Registered >> " + isBroadcastReceiverRegistered);
-            if (isBroadcastReceiverRegistered) {
-                unregisterReceiver(broadcastBlueLinkThreeData);
-                isBroadcastReceiverRegistered = false;
+            try {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 3: Receiver unregistered.");
+                    AppConstants.WriteinFile(TAG + " BTLink 3: Receiver is Registered >> " + isBroadcastReceiverRegistered);
+                if (isBroadcastReceiverRegistered) {
+                    unregisterReceiver(broadcastBlueLinkThreeData);
+                    isBroadcastReceiverRegistered = false;
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Receiver unregistered.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 3: Exception occurred while unregistering receiver:>>" + e.getMessage());
             }
-
             stopTxtprocess = true;
             Constants.FS_3STATUS = "FREE";
             Constants.FS_3Pulse = "00";

@@ -416,13 +416,19 @@ public class BackgroundService_BTOne extends Service {
 
         try {
             clearEditTextFields();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 1: Receiver is Registered >> " + isBroadcastReceiverRegistered);
-            if (isBroadcastReceiverRegistered) {
-                unregisterReceiver(broadcastBlueLinkOneData);
-                isBroadcastReceiverRegistered = false;
+            try {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: Receiver unregistered.");
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Receiver is Registered >> " + isBroadcastReceiverRegistered);
+                if (isBroadcastReceiverRegistered) {
+                    unregisterReceiver(broadcastBlueLinkOneData);
+                    isBroadcastReceiverRegistered = false;
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 1: Receiver unregistered.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage());
             }
             stopTxtprocess = true;
             Constants.FS_1STATUS = "FREE";

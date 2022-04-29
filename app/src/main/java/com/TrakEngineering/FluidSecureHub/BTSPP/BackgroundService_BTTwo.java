@@ -407,7 +407,7 @@ public class BackgroundService_BTTwo extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 2: relayOffCommand Exception:>>" + e.getMessage());
+            //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "BTLink 2: relayOffCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -415,13 +415,19 @@ public class BackgroundService_BTTwo extends Service {
 
         try {
             clearEditTextFields();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 2: Receiver is Registered >> " + isBroadcastReceiverRegistered);
-            if (isBroadcastReceiverRegistered) {
-                unregisterReceiver(broadcastBlueLinkTwoData);
-                isBroadcastReceiverRegistered = false;
+            try {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 2: Receiver unregistered.");
+                    AppConstants.WriteinFile(TAG + " BTLink 2: Receiver is Registered >> " + isBroadcastReceiverRegistered);
+                if (isBroadcastReceiverRegistered) {
+                    unregisterReceiver(broadcastBlueLinkTwoData);
+                    isBroadcastReceiverRegistered = false;
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 2: Receiver unregistered.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 2: Exception occurred while unregistering receiver:>>" + e.getMessage());
             }
             stopTxtprocess = true;
             Constants.FS_2STATUS = "FREE";

@@ -29,6 +29,7 @@ import com.squareup.okhttp.Response;
 import com.thin.downloadmanager.DefaultRetryPolicy;
 import com.thin.downloadmanager.DownloadRequest;
 import com.thin.downloadmanager.DownloadStatusListener;
+import com.thin.downloadmanager.DownloadStatusListenerV1;
 import com.thin.downloadmanager.ThinDownloadManager;
 
 import org.json.JSONArray;
@@ -39,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -60,6 +62,7 @@ public class OffBackgroundService extends Service {
 
     Timer timer;
     TimerTask repeatedTask;
+    SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
 
     public OffBackgroundService() {
     }
@@ -80,18 +83,17 @@ public class OffBackgroundService extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " onStartCommand ------------------- _templog");
 
-            OffDBController offcontroller = new OffDBController(this);
-            HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();
+                OffDBController offcontroller = new OffDBController(this);
+                //HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Offline link existing data count >> " + linkmap.size());
-            if (linkmap.size() > 0) {
+                //if (linkmap.size() > 0) {
 
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
                 String isOffline = sharedPref.getString("isOffline", "");
                 String OFFLineDataDwnldFreq = sharedPref.getString("OFFLineDataDwnldFreq", "Weekly");
                 int WeekDay = sharedPref.getInt("DayOfWeek", 2);
-                int HourOfDay = sharedPref.getInt("HourOfDay", 2);
+                int SavedOfflineHourOfDay = sharedPref.getInt("HourOfDay", 2);
+                int SavedOfflineMinuteOfHour = sharedPref.getInt("MinuteOfHour", 22);
 
                 Date date = new Date();   // given date
                 Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
@@ -99,8 +101,45 @@ public class OffBackgroundService extends Service {
                 int CurrentDay = calendar.get(Calendar.DAY_OF_WEEK);
                 int CurrentHour24 = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
                 int CurrentHour12 = calendar.get(Calendar.HOUR);
+                int CurrentMinutes = calendar.get(Calendar.MINUTE);
 
-                if (cd.isConnecting() && isOffline.equalsIgnoreCase("True") && checkSharedPrefOfflineData()) {
+                if (cd.isConnecting() && isOffline.equalsIgnoreCase("True")) {
+                    if (checkSharedPrefOfflineData()) {
+                        if (checkOfflineDataTime(CurrentHour24, CurrentMinutes, SavedOfflineHourOfDay, SavedOfflineMinuteOfHour)) {
+                            if (OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) {
+                                //Weekly logic
+                                Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                deleteAllDownloadedFiles();
+
+                                new GetAPIToken().execute();
+
+                            } else if (OFFLineDataDwnldFreq.equalsIgnoreCase("Daily")) {
+                                //Everyday logic
+                                Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                deleteAllDownloadedFiles();
+
+                                new GetAPIToken().execute();
+
+                            } else {
+                                //WeekDay did not match
+                                Log.i(TAG, " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
+                            }
+                        }
+                    }
+                } else {
+                    //NO internet connection 0r  Offline status False
+                    Log.i(TAG, " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
+                }
+
+                /*if (cd.isConnecting() && isOffline.equalsIgnoreCase("True") && checkSharedPrefOfflineData()) {
 
                     if (OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) {
                         //Weekly logic
@@ -132,26 +171,25 @@ public class OffBackgroundService extends Service {
                     Log.i(TAG, " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
-                }
-            } else {
+                }*/
+                //} else {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " No previous offline data.");
+                //    if (AppConstants.GenerateLogs)
+                //        AppConstants.WriteinFile(TAG + " No previous offline data.");
 
-                /*if (!AppConstants.selectHosePressed) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
+                    /*if (!AppConstants.selectHosePressed) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
 
-                    deleteAllDownloadedFiles();
+                        deleteAllDownloadedFiles();
 
-                    new GetAPIToken().execute();
-                }else
-                {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " No previous offline data but select hose is pressed.");
+                        new GetAPIToken().execute();
+                    }else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " No previous offline data but select hose is pressed.");
 
-                    }*/
-                }
+                        }*/
+                //}
             } else {
                 Log.i(TAG, " onStartCommand -------------- One of the hose is busy, Skip offline data download");
                 cancelThinDownloadManager();
@@ -848,6 +886,29 @@ public class OffBackgroundService extends Service {
         }
     }
 
+    public boolean checkOfflineDataTime(int CurrentHour, int CurrentMinutes, int HourOfDay, int MinuteOfHour) {
+
+        Date currentDate = parseDate(CurrentHour + ":" + CurrentMinutes);
+        Date savedOfflineDate = parseDate(HourOfDay + ":" + MinuteOfHour);
+        if (savedOfflineDate.before(currentDate)) { // checking offline access time is less than current time or not.
+            return true;
+        } else {
+            Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+            return false;
+        }
+    }
+
+    private Date parseDate(String date) {
+
+        try {
+            return timeParser.parse(date);
+        } catch (java.text.ParseException e) {
+            return new Date(0);
+        }
+    }
+
     public boolean checkSharedPrefOfflineData() {
 
         SharedPreferences sharedPrefODO = getApplicationContext().getSharedPreferences("OfflineData", Context.MODE_PRIVATE);
@@ -905,7 +966,37 @@ public class OffBackgroundService extends Service {
                 .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
                 .setDownloadResumable(true)
                 //.setDownloadContext(downloadContextObject)//Optional
-                .setDownloadListener(new DownloadStatusListener() {
+                .setStatusListener(new DownloadStatusListenerV1() {
+                    @Override
+                    public void onDownloadComplete(DownloadRequest downloadRequest) {
+                        AppConstants.WriteinFile("download-Complete--" + fileName);
+
+                        insertDownloadFileStatus(fileName, "1");
+
+                        if (!AppConstants.selectHosePressed)
+                            readEncryptedFileParseJsonInSqlite(fileName);
+                    }
+
+                    @Override
+                    public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
+                        AppConstants.WriteinFile("download-Failed--" + fileName + " " + errorCode + " " + errorMessage);
+
+                        insertDownloadFileStatus(fileName, "2");
+
+                        if (errorCode == 416) {
+                            insertDownloadFileStatus(fileName, "1");
+
+                            readEncryptedFileParseJsonInSqlite(fileName);
+                        }
+                    }
+
+                    @Override
+                    public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {
+                        insertDownloadFileStatus(fileName, "3");
+                        //AppConstants.WriteinFile("download-onProgress--" + fileName + " " + totalBytes + " " + downloadedBytes + " " + progress);
+                    }
+                });
+                /*.setDownloadListener(new DownloadStatusListener() {
                     @Override
                     public void onDownloadComplete(int id) {
                         AppConstants.WriteinFile("download-Complete--" + fileName);
@@ -937,7 +1028,7 @@ public class OffBackgroundService extends Service {
                         insertDownloadFileStatus(fileName, "3");
                         //AppConstants.WriteinFile("download-onProgress--" + fileName + " " + totalBytes + " " + downlaodedBytes + " " + progress);
                     }
-                });
+                });*/
 
 
         int downloadId = downloadManager.add(downloadRequest);
