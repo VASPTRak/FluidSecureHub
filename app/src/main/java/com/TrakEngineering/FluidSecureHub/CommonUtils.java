@@ -1931,4 +1931,35 @@ public class CommonUtils {
 
     }
 
+    public static String getHUBNumberByName(String hubName) {
+        String HUBNumber = "";
+        try {
+            String number = hubName.substring(hubName.length() - 8);    // "HUB12345678" to "12345678"
+            String strPattern = "^0+(?!$)";                             // Pattern to remove all leading zeros.
+            HUBNumber = number.replaceAll(strPattern, "");   // "HUB00000123" to "123"
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception occurred while getting HUB Number by Name.>>" + e.getMessage());
+            HUBNumber = hubName;
+        }
+        return HUBNumber.trim();
+    }
+
+    public static void sharedPrefTxtnInterrupted(Context activity, String txnId, boolean isInterrupted) {
+
+        SharedPreferences.Editor editor;
+        SharedPreferences pref = activity.getSharedPreferences(Constants.PREF_TXTN_INTERRUPTED, 0);
+        editor = pref.edit();
+
+        if (isInterrupted) {
+            //true for interrupted
+            editor.putBoolean(txnId, isInterrupted);
+        } else {
+            // false txn is normal
+            editor.remove(txnId);
+        }
+
+        editor.commit();
+    }
 }

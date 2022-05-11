@@ -326,7 +326,7 @@
                     android:background="@color/colorFluid"
                     android:gravity="left"
                     android:paddingLeft="20dp"
-                    android:text="HUB name"
+                    android:text="HUB Number"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="20sp" />

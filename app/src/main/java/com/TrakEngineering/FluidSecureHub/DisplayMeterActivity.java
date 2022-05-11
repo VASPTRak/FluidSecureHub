@@ -1803,7 +1803,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             System.out.println("url" + HTTP_URL);
             try {
 
-
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
@@ -4209,4 +4208,5 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
 
     }
+
 }

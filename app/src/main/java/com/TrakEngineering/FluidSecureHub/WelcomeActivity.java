@@ -808,16 +808,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(WelcomeActivity.this);
 
-        AppConstants.Title = "HUB name: " + userInfoEntity.PersonName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
-        AppConstants.SiteName = "Site name: " + userInfoEntity.FluidSecureSiteName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.Title = "HUB Name: " + userInfoEntity.PersonName;// For #1819 >> CommonUtils.getHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.SiteName = "Site Name: " + userInfoEntity.FluidSecureSiteName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         AppConstants.HubName = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(textView);
         tv_SiteName = (TextView) findViewById(R.id.tv_SiteName);
         Fa_log = (TextView) findViewById(R.id.Fa_log);
         tvTitle.setText(AppConstants.Title);
         tv_SiteName.setText(AppConstants.SiteName);
-        AppConstants.WriteinFile(TAG + " HUB name: " + userInfoEntity.PersonName);
-        AppConstants.WriteinFile(TAG + " Site name: " + userInfoEntity.FluidSecureSiteName);
+        AppConstants.WriteinFile(TAG + " HUB Name: " + userInfoEntity.PersonName);
+        AppConstants.WriteinFile(TAG + " Site Name: " + userInfoEntity.FluidSecureSiteName);
         AppConstants.WriteinFile(TAG + " App Version: " + CommonUtils.getVersionCode(WelcomeActivity.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ");
 
         wifiApManager = new WifiApManager(this);
@@ -4321,6 +4321,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public class CommandsPOST_FS1 extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String jsonParam = "";
 
         ProgressDialog pd;
 
@@ -4340,13 +4341,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             System.out.println("url" + HTTP_URL_FS_1);
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -4369,6 +4370,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             pd.dismiss();
             try {
+
+                RemoveTransactionFromInterruptedTxtnPref(jsonParam, result);
 
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
@@ -4505,6 +4508,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public class CommandsPOST_FS2 extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String jsonParam = "";
 
         ProgressDialog pd;
 
@@ -4524,13 +4528,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             System.out.println("url" + HTTP_URL_FS_2);
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -4553,6 +4557,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             pd.dismiss();
             try {
+
+                RemoveTransactionFromInterruptedTxtnPref(jsonParam, result);
 
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
@@ -4688,6 +4694,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public class CommandsPOST_FS3 extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String jsonParam = "";
 
         ProgressDialog pd;
 
@@ -4707,13 +4714,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             System.out.println("url" + HTTP_URL_FS_3);
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -4736,6 +4743,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             pd.dismiss();
             try {
+
+                RemoveTransactionFromInterruptedTxtnPref(jsonParam, result);
 
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
@@ -4871,6 +4880,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public class CommandsPOST_FS4 extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String jsonParam = "";
 
         ProgressDialog pd;
 
@@ -4890,13 +4900,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             System.out.println("url-" + HTTP_URL_FS_4);
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -4919,6 +4929,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             pd.dismiss();
             try {
+
+                RemoveTransactionFromInterruptedTxtnPref(jsonParam, result);
 
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
@@ -5054,6 +5066,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public class CommandsPOST_FS5 extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String jsonParam = "";
 
         ProgressDialog pd;
 
@@ -5073,13 +5086,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             System.out.println("url-" + HTTP_URL_FS_5);
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -5102,6 +5115,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             pd.dismiss();
             try {
+
+                RemoveTransactionFromInterruptedTxtnPref(jsonParam, result);
 
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
@@ -5238,6 +5253,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public class CommandsPOST_FS6 extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String jsonParam = "";
 
         ProgressDialog pd;
 
@@ -5257,13 +5273,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             System.out.println("url-" + HTTP_URL_FS_6);
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -5286,6 +5302,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             pd.dismiss();
             try {
+
+                RemoveTransactionFromInterruptedTxtnPref(jsonParam, result);
 
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
@@ -8631,7 +8649,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 pd.dismiss();
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocation onPostExecute --Exception " + e);
+                    AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocationOnResume onPostExecute --Exception " + e);
                 if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -9534,7 +9552,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocation onPostExecute --Exception " + e);
+                    AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocationGateHub onPostExecute --Exception " + e);
                 if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -12688,4 +12706,37 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             }
         }catch (Exception e){e.printStackTrace();}
     }
+
+    public String getTransactionId() {
+
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        String TransactionId = "";
+
+        if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
+            TransactionId = sharedPref.getString("TransactionId_FS1", "");
+        }else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
+            TransactionId = sharedPref.getString("TransactionId", "");
+        }else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
+            TransactionId = sharedPref.getString("TransactionId_FS3", "");
+        }else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
+            TransactionId = sharedPref.getString("TransactionId_FS4", "");
+        }else if (AppConstants.FS_selected.equalsIgnoreCase("4")) {
+            TransactionId = sharedPref.getString("TransactionId_FS5", "");
+        }else if (AppConstants.FS_selected.equalsIgnoreCase("5")) {
+            TransactionId = sharedPref.getString("TransactionId_FS6", "");
+        }else{
+            //Something went wrong in hose selection.
+        }
+        return TransactionId;
+    }
+
+    public void RemoveTransactionFromInterruptedTxtnPref(String jsonParam, String result) {
+
+        if (jsonParam.equalsIgnoreCase(jsonRelayOff) && result.contains("relay_response")) {
+            System.out.println(result);
+            String TransactionId = getTransactionId();
+            CommonUtils.sharedPrefTxtnInterrupted(WelcomeActivity.this, TransactionId, false);
+        }
+    }
+
 }

@@ -163,7 +163,7 @@ public class FOBReaderActivity extends AppCompatActivity {
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(FOBReaderActivity.this);
 
-        AppConstants.Title = "HUB name : " + userInfoEntity.PersonName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.Title = "HUB Name : " + userInfoEntity.PersonName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         //AppConstants.HubName = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(R.id.textView);
         tvTitle.setText(AppConstants.Title);

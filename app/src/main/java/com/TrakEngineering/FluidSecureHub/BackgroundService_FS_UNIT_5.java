@@ -64,6 +64,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -356,6 +357,8 @@ public class BackgroundService_FS_UNIT_5 extends Service {
             }, 1500);
         }
 
+        GetInterruptedTxtnId();
+
         // return super.onStartCommand(intent, flags, startId);
         return Service.START_NOT_STICKY;
     }
@@ -472,20 +475,20 @@ public class BackgroundService_FS_UNIT_5 extends Service {
     public class CommandsPOST extends AsyncTask<String, Void, String> {
 
         public String resp = "";
-
+        public String jsonParam = "";
 
         protected String doInBackground(String... param) {
 
 
             try {
-
+                jsonParam = param[1];
 
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
-                RequestBody body = RequestBody.create(JSON, param[1]);
+                RequestBody body = RequestBody.create(JSON, jsonParam);
 
                 Request request = new Request.Builder()
                         .url(param[0])
@@ -516,6 +519,10 @@ public class BackgroundService_FS_UNIT_5 extends Service {
 
 
             try {
+                if (jsonParam.equalsIgnoreCase(jsonRelayOff) && result.contains("relay_response")) {
+                    System.out.println(result);
+                    CommonUtils.sharedPrefTxtnInterrupted(BackgroundService_FS_UNIT_5.this, TransactionId, false);
+                }
 
                 System.out.println("APFS_5 OUTPUT" + result);
 
@@ -583,6 +590,7 @@ public class BackgroundService_FS_UNIT_5 extends Service {
 
     public void startQuantityInterval() {
 
+        CommonUtils.sharedPrefTxtnInterrupted(BackgroundService_FS_UNIT_5.this, TransactionId, true);
 
         new Timer().schedule(new TimerTask() {
             @Override
@@ -2285,5 +2293,98 @@ public class BackgroundService_FS_UNIT_5 extends Service {
             e.printStackTrace();
         }
 
+    }
+
+    public void GetInterruptedTxtnId() {
+        ArrayList<String> normalIds = new ArrayList<>();
+
+        String userEmail = CommonUtils.getCustomerDetailsCC(this).PersonEmail;
+        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "UpdateInterruptedTransactionFlag");
+
+        SharedPreferences pref = BackgroundService_FS_UNIT_5.this.getSharedPreferences(Constants.PREF_TXTN_INTERRUPTED, 0);
+        Map<String, ?> allEntries = pref.getAll();
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            String _txId = entry.getKey();
+            String _val = entry.getValue().toString();
+
+            if (_val.equalsIgnoreCase("false")) {
+                normalIds.add(_txId);
+                Log.d("map values false", _txId + ": " + _val);
+            } else if (_val.equalsIgnoreCase("true")) {
+                //interrupted txn id----
+                Log.d("map values true", _txId + ": " + _val);
+
+                InterruptedTransactions tf = new InterruptedTransactions();
+                tf.TransactionId = _txId;
+                Gson gson = new Gson();
+                String jsonData = gson.toJson(tf);
+
+                new UpdateInterruptedTransactionFlag().execute(_txId, authString, jsonData);
+            }
+        }
+
+        //delete normal ids
+        SharedPreferences.Editor editor = pref.edit();
+        if (normalIds != null && normalIds.size() > 0) {
+            for (int i = 0; i < normalIds.size(); i++) {
+                String _nId = normalIds.get(i);
+                editor.remove(_nId);
+            }
+        }
+        editor.commit();
+    }
+
+    public class InterruptedTransactions {
+        public String TransactionId;
+    }
+
+    public class UpdateInterruptedTransactionFlag extends AsyncTask<String, Void, String> {
+
+        public String response = "";
+        public String txnId = "";
+
+        @Override
+        protected String doInBackground(String... param) {
+
+            try {
+                ServerHandler serverHandler = new ServerHandler();
+
+                txnId = param[0];
+                String authString = param[1];
+                String jsonData = param[2];
+
+                response = serverHandler.PostTextData(BackgroundService_FS_UNIT_5.this, AppConstants.webURL, jsonData, authString);
+
+            } catch (Exception ex) {
+                CommonUtils.LogMessage(TAG, " UpdateInterruptedTransactionFlag>>doInBackground ", ex);
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            try {
+                System.out.println("mapValues " + txnId + res);
+
+                JSONObject jsonObject = new JSONObject(res);
+                String ResponseMessage = jsonObject.getString("ResponseMessage");
+                String ResponseText = jsonObject.getString("ResponseText");
+
+                if (ResponseMessage.equalsIgnoreCase("success")) {
+                    deleteInterruptedTxn(txnId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void deleteInterruptedTxn(String txnId)
+    {
+        SharedPreferences.Editor editor;
+        SharedPreferences pref = BackgroundService_FS_UNIT_5.this.getSharedPreferences(Constants.PREF_TXTN_INTERRUPTED, 0);
+        editor = pref.edit();
+        editor.remove(txnId);
+        editor.commit();
     }
 }
