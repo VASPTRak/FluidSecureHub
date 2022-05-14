@@ -669,7 +669,10 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     } else{
 
                         if (ResponceMessage.equalsIgnoreCase("fail")){
-                            String IsPINHavingAccessDevice  = jsonObject.getString("IsPINHavingAccessDevice");
+                            String IsPINHavingAccessDevice = "n";
+                            if(jsonObject.has("IsPINHavingAccessDevice")) {
+                                IsPINHavingAccessDevice = jsonObject.getString("IsPINHavingAccessDevice");
+                            }
                             if (IsPINHavingAccessDevice.equalsIgnoreCase("y")){
                                 String msg = "The "+ScreenNameForPersonnel+" you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
                                 CustomMessage2Input(AcceptPinActivity_FOB.this, "Message", msg);

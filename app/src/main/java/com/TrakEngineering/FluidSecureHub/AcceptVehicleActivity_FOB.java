@@ -666,9 +666,10 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         CommonUtils.showCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
                     } else {
-                        //AppConstants.colorToastBigFont(getApplicationContext(),ResponceText, Color.RED);
-                        //Toast.makeText(AcceptVehicleActivity_FOB.this, "failed!", Toast.LENGTH_SHORT).show();
-                        String IsVehicleNumberHavingAccessDevice = jsonObject.getString("IsVehicleNumberHavingAccessDevice");
+                        String IsVehicleNumberHavingAccessDevice = "n";
+                        if(jsonObject.has("IsVehicleNumberHavingAccessDevice")) {
+                            IsVehicleNumberHavingAccessDevice = jsonObject.getString("IsVehicleNumberHavingAccessDevice");
+                        }
                         if (IsVehicleNumberHavingAccessDevice.equalsIgnoreCase("y")){
                             String msg = "The "+ScreenNameForVehicle+" you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
                             CustomMessage2Input(AcceptVehicleActivity_FOB.this, "Message", msg);

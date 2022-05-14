@@ -667,7 +667,7 @@ try {
                                 startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
                                 finish();
                             }else if (BluetoothCardReader != null && BluetoothCardReaderMacAddress.equals("") && !BluetoothCardReader.isEmpty()) {
-                                AppConstants.colorToastBigFont(SplashActivity.this, " Provide Bluetooth MAC address in 'Items->FluidSecure Hub' on server.", Color.RED);
+                                AppConstants.colorToastBigFont(SplashActivity.this, " Provide Bluetooth MAC address in 'Items->HUB' on server.", Color.RED);
                                 startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
                                 finish();
 

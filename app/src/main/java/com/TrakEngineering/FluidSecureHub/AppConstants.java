@@ -73,6 +73,7 @@ public class AppConstants {
     public static boolean busyWithHotspotToggle = false;
     public static boolean showReaderStatus = false;
     public static boolean IsBTLinkSelectedCurrently = false;
+    public static boolean IsProblemWhileEnableHotspot = false;
 
     public static final String DEVICE_TYPE = "A";
     public static final String USER_NAME = "userName";

@@ -469,8 +469,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             } else {
                 new GetSSIDUsingLocationOnResume().execute();
             }
-
-
         } else {
 
             AppConstants.CURRENT_STATE_MOBILEDATA = false;
@@ -498,6 +496,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         ConnectAllAvailableBTLinks();
 
         DebugWindow();
+
+        if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && AppConstants.IsProblemWhileEnableHotspot) {
+            AppConstants.WriteinFile("Something issue occurred while enabling Hotspot.");
+            AppConstants.IsProblemWhileEnableHotspot = false;
+            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Error Message", "HotSpot is disabled, please contact customer support.");
+            stopService(new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class));
+            Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);
+            PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            pintent.cancel();
+            alarm.cancel(pintent);
+        }
+
     }
 
     @Override
@@ -12700,7 +12711,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     private void IsHotspotEnabled(){
 
         try{
-            if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently) {
+            if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && !AppConstants.IsProblemWhileEnableHotspot) {
                 wifiApManager = new com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager(this);
                 wifiApManager.setWifiApEnabled(null, true); //one try for auto on
             }
