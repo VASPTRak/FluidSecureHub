@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_vehicle.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_device_control_vehicle.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_display_meter.xml" value="0.25025641025641027" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_fobreader.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_read_access_device_fob.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_sparehub.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_welcome.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/custom_alertdialouge.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/menu/reader.xml" value="0.25025641025641027" />
-      </map>
-    </option>
-  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

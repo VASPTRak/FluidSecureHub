@@ -52,7 +52,7 @@ public class WifiApManager {
     public boolean setWifiApEnabled(WifiConfiguration wifiConfig, boolean enabled) {
         try {
 
-
+            AppConstants.IsProblemWhileEnableHotspot = false;
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                 if (enabled) {
@@ -61,38 +61,17 @@ public class WifiApManager {
                     Intent intent = new Intent("com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_ON");
                     sendImplicitBroadcast(context,intent);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!CommonUtils.isHotspotEnabled(context)) {
-                                AppConstants.IsProblemWhileEnableHotspot = true;
-                            }
-                        }
-                    }, 3000);
-
                 } else {
                     //off
                     //turnOffHotspot();
                     Intent intent = new Intent("com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_OFF");
                     sendImplicitBroadcast(context,intent);
-                    AppConstants.IsProblemWhileEnableHotspot = false;
                 }
 
                 return false;
             } else {
                 if (enabled) { // disable WiFi in any case
                     mWifiManager.setWifiEnabled(false);
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!CommonUtils.isHotspotEnabled(context)) {
-                                AppConstants.IsProblemWhileEnableHotspot = true;
-                            }
-                        }
-                    }, 3000);
-                } else {
-                    AppConstants.IsProblemWhileEnableHotspot = false;
                 }
                 Method method = mWifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
                 return (Boolean) method.invoke(mWifiManager, wifiConfig, enabled);
@@ -100,9 +79,7 @@ public class WifiApManager {
 
         } catch (Exception e) {
             AppConstants.WriteinFile(" setWifiApEnabled Exception: " + e);
-            if (enabled) {
-                AppConstants.IsProblemWhileEnableHotspot = true;
-            }
+            AppConstants.IsProblemWhileEnableHotspot = true;
             Log.e(this.getClass().toString(), "", e);
             return false;
         }

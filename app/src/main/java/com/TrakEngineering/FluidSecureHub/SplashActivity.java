@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
@@ -29,8 +30,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -667,9 +674,10 @@ try {
                                 startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
                                 finish();
                             }else if (BluetoothCardReader != null && BluetoothCardReaderMacAddress.equals("") && !BluetoothCardReader.isEmpty()) {
-                                AppConstants.colorToastBigFont(SplashActivity.this, " Provide Bluetooth MAC address in 'Items->HUB' on server.", Color.RED);
-                                startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
-                                finish();
+                                //AppConstants.colorToastBigFont(SplashActivity.this, " Device reader needs its MAC to be entered in the Cloud. Please call Customer Support for assistance.", Color.RED); // Changed message as per #1828
+                                showCustomMessageForMACDilaog(SplashActivity.this, "Message", "Device reader needs its MAC to be entered in the Cloud. Please call Customer Support for assistance.");
+                                //startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
+                                //finish();
 
                             } else {
 
@@ -1136,6 +1144,33 @@ try {
         }
 
         return file_content;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void showCustomMessageForMACDilaog(final Activity context, String title, String message) {
+
+        final Dialog dialogBus = new Dialog(context);
+        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogBus.setCancelable(false);
+        dialogBus.setContentView(R.layout.custom_alertdialouge);
+        dialogBus.show();
+
+        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
+        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
+        edt_message.setText(message);
+
+        btnAllow.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+                startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
+                finish();
+
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+        });
     }
 }
 

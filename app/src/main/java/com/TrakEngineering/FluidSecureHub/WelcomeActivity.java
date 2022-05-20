@@ -376,6 +376,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     String URL_SET_PULSAR = HTTP_URL + "config?command=pulsar";
     String iot_version = "";
     ServerHandler serverHandler = new ServerHandler();
+    public int HotspotEnableErrorCount = 0;
 
     //============ Bluetooth reader Gatt end==============
 
@@ -496,18 +497,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         ConnectAllAvailableBTLinks();
 
         DebugWindow();
-
-        if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && AppConstants.IsProblemWhileEnableHotspot) {
-            AppConstants.WriteinFile("Something issue occurred while enabling Hotspot.");
-            AppConstants.IsProblemWhileEnableHotspot = false;
-            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Error Message", "HotSpot is disabled, please contact customer support.");
-            stopService(new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class));
-            Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);
-            PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            pintent.cancel();
-            alarm.cancel(pintent);
-        }
 
     }
 
@@ -819,7 +808,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(WelcomeActivity.this);
 
-        AppConstants.Title = "HUB Name: " + userInfoEntity.PersonName;// For #1819 >> CommonUtils.getHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.Title = "HUB Number: " + CommonUtils.getHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         AppConstants.SiteName = "Site Name: " + userInfoEntity.FluidSecureSiteName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         AppConstants.HubName = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(textView);
@@ -2890,21 +2879,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !ReconfigureLink.equalsIgnoreCase("true")) {
 
                                 Log.i(TAG, "EMobileHotspotManually");
-                               // if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "EMobileHotspotManually");
-                               // CommonUtils.enableMobileHotspotmanuallyStartTimer(WelcomeActivity.this);
+                                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "EMobileHotspotManually");
+                                //CommonUtils.enableMobileHotspotmanuallyStartTimer(WelcomeActivity.this);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                           // if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "onItemClick Check hotspot manually Exception:" + e);
-                           // CommonUtils.enableMobileHotspotmanuallyStartTimer(WelcomeActivity.this);
+                            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "onItemClick Check hotspot manually Exception:" + e);
+                            //CommonUtils.enableMobileHotspotmanuallyStartTimer(WelcomeActivity.this);
                         }
 
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
                             IsDefective = "False";
-                   /* IpAddress = "";
-                    SelectedItemPos = position;
-                    SelectedItemPosFor10Txn = position;*/
+                            /* IpAddress = "";
+                            SelectedItemPos = position;
+                            SelectedItemPosFor10Txn = position;*/
 
                             //String selSSID = serverSSIDList.get(SelectedItemPos).get("WifiSSId");
                             String IsTLDCall = serverSSIDList.get(SelectedItemPos).get("IsTLDCall");
@@ -3027,7 +3016,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } else {
 
 
-                                    //Link ReConfigureation process start
+                                    //Link ReConfiguration process start
                                     if (ReconfigureLink != null && ReconfigureLink.equalsIgnoreCase("true")) {
                                         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
@@ -3685,7 +3674,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 ChangeWifiState(false);//turn wifi off
                 ssid_pass_success = "2";
-                resp = "exception";
+                //resp = "exception";
 
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
@@ -3706,6 +3695,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
 
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     //mj
                     Intent intent = new Intent(WelcomeActivity.this, WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -3721,7 +3715,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 System.out.println(result);
                 Log.i(TAG, " Set SSID and PASS to Link (Result" + result);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Set SSID and PASS to Link Result" + result);
+                    AppConstants.WriteinFile(TAG + " Set SSID and PASS to Link Result>>" + result);
 
             } catch (Exception e) {
 
@@ -3740,7 +3734,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
+            AppConstants.WriteinFile(TAG + " Started Reconfiguration process..");
             String s = "Started Reconfiguration process. Please wait..";
             SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
@@ -3787,8 +3781,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         setGlobalWifiConnection();
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Connected to wifi " + AppConstants.CURRENT_SELECTED_SSID);
                         AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wifi " + AppConstants.CURRENT_SELECTED_SSID, Color.parseColor("#4CAF50"));
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Connected to wifi " + AppConstants.CURRENT_SELECTED_SSID);
@@ -3807,7 +3799,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile("Reconfig-InfoCMD-" + ssid + "-" + result);
-
 
                                     if (result.contains("Version")) {
                                         JSONObject jsonObject = new JSONObject(result);
@@ -3831,7 +3822,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
 
                                         } else {
-
 
                                             //Set usernam and password to link
                                             new Handler().postDelayed(new Runnable() {
@@ -3862,7 +3852,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                         AppConstants.WriteinFile("CommandsPOST_ChangeHotspotSettings-" + e.getMessage());
                                                     }
 
-
                                                     btnRetryWifi.setVisibility(View.GONE);
 
                                                 }
@@ -3879,7 +3868,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                                     AppConstants.colorToastBigFont(WelcomeActivity.this, "Mac address " + AppConstants.UPDATE_MACADDRESS, Color.BLUE);
                                                     if (AppConstants.GenerateLogs)
-                                                        AppConstants.WriteinFile(TAG + "Mac address " + AppConstants.UPDATE_MACADDRESS);
+                                                        AppConstants.WriteinFile(TAG + " Mac address " + AppConstants.UPDATE_MACADDRESS);
 
                                                    /* WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
                                                     if (wifiManagerMM.isWifiEnabled()) {
@@ -9181,7 +9170,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         Constants.hotspotstayOn = false; //hotspot enable/disable flag
         wifiApManager.setWifiApEnabled(null, false);
 
-
         WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         wifiManagerMM.setWifiEnabled(true);
 
@@ -10965,9 +10953,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     public void run() {
 
                         wifiApManager.setWifiApEnabled(null, false); //one try for auto on
-                        Log.i(TAG, "Step1 Link ReConfigureation enable wifi manually.");
+                        Log.i(TAG, "Step1 Link ReConfiguration enable wifi manually.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Step1 Link ReConfigureation enable wifi manually.");
+                            AppConstants.WriteinFile(TAG + "Step1 Link ReConfiguration enable wifi manually.");
 
                         AppConstants.SELECTED_SSID_FOR_MANUALL = AppConstants.CURRENT_SELECTED_SSID;//ReconfigSSID;
                         AppConstants.colorToastBigFont(getApplicationContext(), "Enable Wifi Manually and Connect to " + AppConstants.SELECTED_SSID_FOR_MANUALL + " using wifi list", Color.RED);
@@ -10990,7 +10978,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + ssid + " =--= " + AppConstants.SELECTED_SSID_FOR_MANUALL); //+" IsWifi Connected: "+mWifi.isConnected()
-
 
                             }
 
@@ -11019,8 +11006,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                             LinkReConfigurationProcessStep2();
                                         }
                                     }, 1000);
-
-
+                                } else {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " Step1 onFinish SSID ==> " + ssid);
                                 }
                             }
 
@@ -11055,9 +11043,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             String result = new CommandsGET_INFO().execute(URL_INFO).get();
             String mac_address = "";
 
-            Log.i(TAG, "Step2 Link ReConfigureation INFO_Command result:" + result);
+            Log.i(TAG, "Step2 Link ReConfiguration INFO_Command result:" + result);
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Step2 Link ReConfigureation INFO_Command result:" + result);
+                AppConstants.WriteinFile(TAG + "Step2 Link ReConfiguration INFO_Command result:" + result);
 
             if (result.contains("Version")) {
                 JSONObject jsonObject = new JSONObject(result);
@@ -11126,6 +11114,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public void LinkReConfigurationProcessStep3(final Context context) {
 
         ChangeWifiState(false);//turn wifi off
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         wifiApManager.setWifiApEnabled(null, true); //one try for auto on
         try {
             Thread.sleep(6000);
@@ -11282,7 +11275,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Set SSID and PASS to Link (Link reset) -Exception " + e);
+                    AppConstants.WriteinFile(TAG + " Set SSID and PASS to Link (Link reset) doInBackground -Exception " + e);
                 if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                 }
             }
@@ -11300,7 +11293,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.colorToastBigFont(getApplicationContext(), "Step2 Failed while changing Hotspot Settings Please try again..", Color.RED);
                     Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
+                        AppConstants.WriteinFile(TAG + "Step2 Failed while changing Hotspot Settings aboveAndroid9. exception:" + result);
 
                     //mj
                     Intent intent = new Intent(WelcomeActivity.this, WelcomeActivity.class);
@@ -11325,7 +11318,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 ChangeWifiState(false);//turn wifi off
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Set SSID and PASS to Link (Link reset) -Exception " + e);
+                    AppConstants.WriteinFile(TAG + " Set SSID and PASS to Link (Link reset) onPostExecute -Exception " + e);
             }
 
         }
@@ -11429,9 +11422,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     @Override
                     public void run() {
 
-                        Log.i(TAG, "Step1 UDP Link ReConfigureation enable wifi manually.");
+                        Log.i(TAG, "Step1 UDP Link ReConfiguration enable wifi manually.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Step1 UDP Link ReConfigureation enable wifi manually.");
+                            AppConstants.WriteinFile(TAG + "Step1 UDP Link ReConfiguration enable wifi manually.");
 
                         AppConstants.SELECTED_SSID_FOR_MANUALL = AppConstants.CURRENT_SELECTED_SSID;//ReconfigSSID;
                         AppConstants.colorToastBigFont(getApplicationContext(), "Enable Wifi Manually and Connect to " + AppConstants.SELECTED_SSID_FOR_MANUALL + " using wifi list", Color.RED);
@@ -11529,9 +11522,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 Log.i(TAG, "BTLink 1: UDPInfoResult>>" + info_result);
 
-                Log.i(TAG, "Step2 Link UDP ReConfigureation INFO_Command result:" + info_result);
+                Log.i(TAG, "Step2 Link UDP ReConfiguration INFO_Command result:" + info_result);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Step2 Link UDP ReConfigureation INFO_Command result:" + info_result);
+                    AppConstants.WriteinFile(TAG + "Step2 Link UDP ReConfiguration INFO_Command result:" + info_result);
 
                 if (mac_address.equals("")) {
 
@@ -11583,7 +11576,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.colorToastBigFont(getApplicationContext(), "Step2 Failed while changing Hotspot Settings Please try again..", Color.RED);
                         Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + linkstation_response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + linkstation_response);
+                            AppConstants.WriteinFile(TAG + "Step2 Failed while changing Hotspot Settings UDPLink. exception:" + linkstation_response);
 
                         //mj
                         Intent intent = new Intent(WelcomeActivity.this, WelcomeActivity.class);
@@ -12709,13 +12702,36 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     private void IsHotspotEnabled(){
-
         try{
-            if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && !AppConstants.IsProblemWhileEnableHotspot) {
+            /*if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && Constants.hotspotstayOn) {
                 wifiApManager = new com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager(this);
                 wifiApManager.setWifiApEnabled(null, true); //one try for auto on
+            }*/
+            if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && Constants.hotspotstayOn) {
+                HotspotEnableErrorCount++;
+                //AppConstants.WriteinFile(TAG + " Hotspot is Disabled. HotspotEnableErrorCount >> " + HotspotEnableErrorCount);
+                if (HotspotEnableErrorCount > 9) {
+                    AppConstants.IsProblemWhileEnableHotspot = true;
+                }
             }
+            ShowHostpotDisabledErrorMessage();
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    private void ShowHostpotDisabledErrorMessage() {
+        if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && AppConstants.IsProblemWhileEnableHotspot && Constants.hotspotstayOn && !AppConstants.ManuallReconfigure) {
+
+            AppConstants.IsProblemWhileEnableHotspot = false;
+            HotspotEnableErrorCount = 0; // reset error Count
+            AppConstants.WriteinFile("Something issue occurred while enabling Hotspot.");
+            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Error Message", "HotSpot is disabled, please contact customer support.");
+            stopService(new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class));
+            Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);
+            PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            pintent.cancel();
+            alarm.cancel(pintent);
+        }
     }
 
     public String getTransactionId() {
