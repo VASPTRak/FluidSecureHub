@@ -118,6 +118,7 @@ public class BackgroundService_BTTwo extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 2: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkTwoData, intentFilter);
                 isBroadcastReceiverRegistered = true;
+                AppConstants.WriteinFile(TAG + " BTLink 2: Registered successfully. (" + broadcastBlueLinkTwoData + ")");
 
                 LinkName = CommonUtils.getlinkName(1);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -416,18 +417,19 @@ public class BackgroundService_BTTwo extends Service {
         try {
             clearEditTextFields();
             try {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 2: Receiver is Registered >> " + isBroadcastReceiverRegistered);
                 if (isBroadcastReceiverRegistered) {
                     unregisterReceiver(broadcastBlueLinkTwoData);
                     isBroadcastReceiverRegistered = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 2: Receiver unregistered.");
+                        AppConstants.WriteinFile(TAG + " BTLink 2: Receiver unregistered successfully. (" + broadcastBlueLinkTwoData + ")");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 2: Receiver is not registered. (" + broadcastBlueLinkTwoData + ")");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 2: Exception occurred while unregistering receiver:>>" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkTwoData + ")");
             }
             stopTxtprocess = true;
             Constants.FS_2STATUS = "FREE";

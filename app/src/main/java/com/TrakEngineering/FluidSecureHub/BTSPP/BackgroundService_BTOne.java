@@ -119,6 +119,7 @@ public class BackgroundService_BTOne extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 1: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkOneData, intentFilter);
                 isBroadcastReceiverRegistered = true;
+                AppConstants.WriteinFile(TAG + " BTLink 1: Registered successfully. (" + broadcastBlueLinkOneData + ")");
 
                 LinkName = CommonUtils.getlinkName(0);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -417,18 +418,19 @@ public class BackgroundService_BTOne extends Service {
         try {
             clearEditTextFields();
             try {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: Receiver is Registered >> " + isBroadcastReceiverRegistered);
                 if (isBroadcastReceiverRegistered) {
                     unregisterReceiver(broadcastBlueLinkOneData);
                     isBroadcastReceiverRegistered = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 1: Receiver unregistered.");
+                        AppConstants.WriteinFile(TAG + " BTLink 1: Receiver unregistered successfully. (" + broadcastBlueLinkOneData + ")");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 1: Receiver is not registered. (" + broadcastBlueLinkOneData + ")");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkOneData + ")");
             }
             stopTxtprocess = true;
             Constants.FS_1STATUS = "FREE";

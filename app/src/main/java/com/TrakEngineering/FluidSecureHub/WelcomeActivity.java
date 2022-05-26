@@ -2823,6 +2823,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.SELECTED_MACADDRESS = selMacAddress;
                     AppConstants.SITE_ID = selSiteId;
 
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Selected LINK: " + selSSID);
+
                     if (IsTankEmpty != null && IsTankEmpty.equalsIgnoreCase("True")) {
 
                         CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "Message", "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
@@ -6172,7 +6175,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         AppConstants.PulserTimingAdjust = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
         String IsLinkFlagged = serverSSIDList.get(SelectedItemPos).get("IsLinkFlagged");
         String LinkFlaggedMessage = serverSSIDList.get(SelectedItemPos).get("LinkFlaggedMessage");
-
+        String LinkCommunicationType = serverSSIDList.get(SelectedItemPos).get("LinkCommunicationType");
 
         //Rename SSID while mac address updation
         if (IsHoseNameReplaced.equalsIgnoreCase("Y")) {
@@ -6234,7 +6237,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 System.out.println(e);
             }
 
-            if (IpAddress.equals("")) {
+            if (IpAddress.equals("") && !LinkCommunicationType.equalsIgnoreCase("BT")) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " Issue #812 HNC-3(selMacAddress:" + selMacAddress + ")" + AppConstants.DetailsListOfConnectedDevices);
                 if (AppConstants.GenerateLogs)
@@ -7657,9 +7660,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     try {
                         String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                         String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
-                        String Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                         AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-
+                        String Chk_ip = "";
+                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
+                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                        else {
+                            getipOverOSVersion();
+                        }
 
                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
@@ -7671,11 +7678,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     SelectedItemPos = 0;
                                     tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
                                     OnHoseSelected_OnClick(Integer.toString(0));
-
                                     break;
                                 }
                             }
-
                         } else {
                             Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
                             if (AppConstants.GenerateLogs)
@@ -8927,8 +8932,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 try {
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
-                                    String Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
+                                    String Chk_ip = "";
+                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
+                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                    else {
+                                        getipOverOSVersion();
+                                    }
 
                                     OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", AppConstants.SITE_ID, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"));
 
@@ -8962,19 +8972,25 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 try {
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
-                                    String Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
                                     String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
                                     String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
                                     String selSSID = serverSSIDList.get(0).get("WifiSSId");
 
+                                    String Chk_ip = "";
+                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                    } else {
+                                        getipOverOSVersion();
+                                    }
+
                                     OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", AppConstants.SITE_ID, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"));
 
                                     //--------------------------------------------------
 
-                                    if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")){
+                                    if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")) {
 
-                                        //Auto Select BT link one!!!
+                                        /*//Auto Select BT link one!!!
                                         if (CommonFunctions.CheckIfPresentInPairedDeviceList(BTselMacAddress)) {
                                             AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
                                             SelectedItemPos = 0;
@@ -8984,25 +9000,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                             CommonUtils.AutoCloseBTLinkMessage(WelcomeActivity.this,"",getResources().getString(R.string.BTLinkNotInPairList));
                                             BTConstants.CurrentSelectedLinkBT = 0;
                                             RestrictHoseSelection("Please try again later"); //replace Tap here to select hose
-                                        }
-
-                                    }else if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
-
-                                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-
-                                            String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                            if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
-
-                                                tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
-                                                OnHoseSelected_OnClick(Integer.toString(0));
-                                                break;
-                                            }
-                                        }
+                                        }*/
+                                        tvSSIDName.setText("Tap here to select hose");
+                                        btnGo.setVisibility(View.VISIBLE);
 
                                     } else {
-                                        Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
+
+                                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+
+                                                String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+
+                                                    tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                                    OnHoseSelected_OnClick(Integer.toString(0));
+                                                    break;
+                                                }
+                                            }
+
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        }
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -9738,9 +9758,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 try {
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
-                                    String Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-
+                                    String Chk_ip = "";
+                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                    }
+                                    else {
+                                        getipOverOSVersion();
+                                    }
 
                                     if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
@@ -11942,8 +11967,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
-
-    private void CheckBTConnectionForSingleHose(int selectedItemPos, String selSSID, String selMacAddress) {
+    /*private void CheckBTConnectionForSingleHose(int selectedItemPos, String selSSID, String selMacAddress) {
 
                 //Link one
                 if (BTConstants.BTLinkOneStatus) {
@@ -12015,7 +12039,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                 }
 
-    }
+    }*/
 
     private void CheckUDPConnection(int selectedItemPos, String selSSID, String selMacAddress) {
 
@@ -12218,13 +12242,20 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
                     String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
                     String selSSID = serverSSIDList.get(0).get("WifiSSId");
-                    String Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
+                    String Chk_ip = "";
+                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                    }
+                    else {
+                        getipOverOSVersion();
+                    }
+
                     OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", AppConstants.SITE_ID, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"));
 
-                    if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")){
+                    if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")) {
 
-                        //Auto Select BT link one!!!
+                        /*//Auto Select BT link one!!!
                         if (CommonFunctions.CheckIfPresentInPairedDeviceList(BTselMacAddress)) {
                             AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
                             SelectedItemPos = 0;
@@ -12234,23 +12265,27 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             CommonUtils.AutoCloseBTLinkMessage(WelcomeActivity.this,"",getResources().getString(R.string.BTLinkNotInPairList));
                             BTConstants.CurrentSelectedLinkBT = 0;
                             RestrictHoseSelection("Please try again later"); //replace Tap here to select hose
-                        }
-
-                    }else if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
-
-                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                            String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                            if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
-                                tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
-                                OnHoseSelected_OnClick(Integer.toString(0));
-                                break;
-                            }
-                        }
+                        }*/
+                        tvSSIDName.setText("Tap here to select hose");
+                        btnGo.setVisibility(View.VISIBLE);
 
                     } else {
-                        //Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Auto select fail");
+                        if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
+
+                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+                                    tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                    OnHoseSelected_OnClick(Integer.toString(0));
+                                    break;
+                                }
+                            }
+
+                        } else {
+                            //Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Auto select fail");
+                        }
                     }
                     //...
                 }

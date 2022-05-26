@@ -341,10 +341,22 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                         double LastTxtnQuantity = Double.parseDouble(LastTransactionFuelQuantity.trim());
 
-                        if(LastTxtnQuantity > 10 && C_AccHours == PO) {
-                            CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", getResources().getString(R.string.prevReading));
+                        if (C_AccHours == 0) { // Must be greater than 0.
                             Istimeout_Sec = true;
                             ResetTimeoutHoursScreen();
+                            CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error", getResources().getString(R.string.peHour0).replace("hours", ScreenNameForHours.toLowerCase()));
+
+                        } else if (C_AccHours < PO) { // Must be greater than previous hours.
+                            Istimeout_Sec = true;
+                            ResetTimeoutHoursScreen();
+                            CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error", getResources().getString(R.string.lessThanPrevReadingMsg));
+
+                        } else if (LastTxtnQuantity > 10 && C_AccHours == PO) {
+                            // Must entered different reading if last transaction fuel quantity is greater than 10.
+                            Istimeout_Sec = true;
+                            ResetTimeoutHoursScreen();
+                            CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", getResources().getString(R.string.prevReading));
+
                         } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                             if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
@@ -432,8 +444,12 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                     AppConstants.WriteinFile("Hours saveButtonAction" + e.getMessage());
                             }
 
+                            if (entered_hrs == 0) { // Must be greater than 0.
+                                Istimeout_Sec = true;
+                                ResetTimeoutHoursScreen();
+                                CommonUtils.AlertDialogAutoClose(AcceptHoursAcitvity.this, "Message", getResources().getString(R.string.peHour0).replace("hours", ScreenNameForHours.toLowerCase()));
 
-                            if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
+                            } else if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile("Offline Hours Reasonability : " + AppConstants.OFF_ODO_Reasonable);

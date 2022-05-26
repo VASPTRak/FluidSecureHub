@@ -363,10 +363,18 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
                         double LastTxtnQuantity = Double.parseDouble(LastTransactionFuelQuantity.trim());
 
-                        if(LastTxtnQuantity > 10 && C_AccOdoMeter == PO) {
-                            // Must entered different reading
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Last Transaction Fuel Quantity: " + LastTxtnQuantity);
+                        if (C_AccOdoMeter == 0) { // Must be greater than 0.
+                            Istimeout_Sec = true;
+                            ResetTimeoutOdoScreen();
+                            CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error", getResources().getString(R.string.peOdo0).replace("odometer", ScreenNameForOdometer.toLowerCase()));
+
+                        } else if (C_AccOdoMeter < PO) { // Must be greater than previous odometer.
+                            Istimeout_Sec = true;
+                            ResetTimeoutOdoScreen();
+                            CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error", getResources().getString(R.string.lessThanPrevReadingMsg));
+
+                        } else if (LastTxtnQuantity > 10 && C_AccOdoMeter == PO) {
+                            // Must entered different reading if last transaction fuel quantity is greater than 10.
                             Istimeout_Sec = true;
                             ResetTimeoutOdoScreen();
                             CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", getResources().getString(R.string.prevReading));
@@ -471,8 +479,12 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                     AppConstants.WriteinFile("odo saveButtonAction" + e.getMessage());
                             }
 
+                            if (entered_odometer == 0) { // Must be greater than 0.
+                                Istimeout_Sec = true;
+                                ResetTimeoutOdoScreen();
+                                CommonUtils.AlertDialogAutoClose(AcceptOdoActivity.this, "Message", getResources().getString(R.string.peOdo0).replace("odometer", ScreenNameForOdometer.toLowerCase()));
 
-                            if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
+                            } else if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile("Offline Odometer Reasonability : " + AppConstants.OFF_ODO_Reasonable);

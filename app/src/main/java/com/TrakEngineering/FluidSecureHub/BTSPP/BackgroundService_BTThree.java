@@ -117,6 +117,7 @@ public class BackgroundService_BTThree extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 3: Registering Receiver.");
                 registerReceiver(broadcastBlueLinkThreeData, intentFilter);
                 isBroadcastReceiverRegistered = true;
+                AppConstants.WriteinFile(TAG + " BTLink 3: Registered successfully. (" + broadcastBlueLinkThreeData + ")");
 
                 LinkName = CommonUtils.getlinkName(2);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -415,18 +416,19 @@ public class BackgroundService_BTThree extends Service {
         try {
             clearEditTextFields();
             try {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 3: Receiver is Registered >> " + isBroadcastReceiverRegistered);
                 if (isBroadcastReceiverRegistered) {
                     unregisterReceiver(broadcastBlueLinkThreeData);
                     isBroadcastReceiverRegistered = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 3: Receiver unregistered.");
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Receiver unregistered successfully. (" + broadcastBlueLinkThreeData + ")");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Receiver is not registered. (" + broadcastBlueLinkThreeData + ")");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 3: Exception occurred while unregistering receiver:>>" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink 3: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkThreeData + ")");
             }
             stopTxtprocess = true;
             Constants.FS_3STATUS = "FREE";

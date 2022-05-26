@@ -270,5 +270,7 @@ If the link is not in the list please click the button "Pair new LINK"  which wi
     <string name="askreplacehub">"HUB Name is entered that already has an existing device assigned. Would you like to replace your existing device with this one. By pressing proceed here you will be replacing this HUB's exisitng device with this unit. This Action must be performed by someone who has Access to the Cloud. If you are someone with a CustomerAdmin profile in the Cloud, please enter the email and password you use to log into the Cloud below. Would you like to proceed?" </string>
 
     <string name="prevReading">You have entered a reading that was previously entered. Please check and try again. If the issue persists, please contact your Manager.</string>
-
+    <string name="peHour0">Please enter hours greater than 0.</string>
+    <string name="peOdo0">Please enter odometer greater than 0.</string>
+    <string name="lessThanPrevReadingMsg">You have entered a reading that is less than previously entered. Please check and try again.</string>
 </resources>
