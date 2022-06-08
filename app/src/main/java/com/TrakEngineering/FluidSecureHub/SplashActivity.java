@@ -569,7 +569,7 @@ try {
                     String ScreenNameForPersonnel = jsonObject.getString("ScreenNameForPersonnel");
                     String ScreenNameForOdometer = jsonObject.getString("ScreenNameForOdometer");
                     String ScreenNameForHours = jsonObject.getString("ScreenNameForHours");
-
+                    String ScreenNameForDepartment = jsonObject.getString("ScreenNameForDepartment");
 
                     String StrKeyboardType = jsonObject.getString("KeyboardTypeObj");
                     JSONArray jsonArray = new JSONArray(StrKeyboardType);
@@ -600,6 +600,7 @@ try {
                     editorkb.putString("ScreenNameForPersonnel", ScreenNameForPersonnel);
                     editorkb.putString("ScreenNameForOdometer", ScreenNameForOdometer);
                     editorkb.putString("ScreenNameForHours", ScreenNameForHours);
+                    editorkb.putString("ScreenNameForDepartment", ScreenNameForDepartment);
                     editorkb.commit();
 
                     String DisableFOBReadingForPin = jsonObject.getString("DisableFOBReading"); //DisableFOBReadingForPin

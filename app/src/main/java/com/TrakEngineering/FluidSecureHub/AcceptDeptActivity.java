@@ -51,9 +51,10 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 public class AcceptDeptActivity extends AppCompatActivity {
 
     EditText   etDeptNumber;
-    TextView tv_return, tv_swipekeybord;
+    TextView tv_return, tv_swipekeybord, tv_DeptNumberHeader;
     Button btnSave, btnCancel;
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "";
+    public String ScreenNameForDepartment = "Department";
     String TimeOutinMinute;
     boolean Istimeout_Sec=true;
     RelativeLayout footer_keybord;
@@ -85,6 +86,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
         // ActivityHandler.addActivities(4,AcceptDeptActivity.this);
 
         setContentView(R.layout.activity_accept_dept);
+        tv_DeptNumberHeader = (TextView) findViewById(R.id.tv_DeptNumberHeader);
         etDeptNumber = (EditText) findViewById(R.id.etDeptNumber);
         btnSave = (Button) findViewById(R.id.btnSave);
         btnCancel = (Button) findViewById(R.id.btnCancel);
@@ -97,6 +99,14 @@ public class AcceptDeptActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        SharedPreferences pref_ScreenName = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        ScreenNameForDepartment = pref_ScreenName.getString("ScreenNameForDepartment", "Department");
+
+        if (ScreenNameForDepartment.trim().isEmpty())
+            ScreenNameForDepartment = "Department";
+
+        tv_DeptNumberHeader.setText("Enter " + ScreenNameForDepartment + " Number");
+        etDeptNumber.setHint(" Enter " + ScreenNameForDepartment + " Number");
 
         etDeptNumber.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -199,7 +209,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 } else {
                     Istimeout_Sec = true;
                     ResetTimeoutDeptScreen();
-                    CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", "Please enter Department Number, and try again.");
+                    CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", "Please enter " + ScreenNameForDepartment + " Number, and try again.");
                 }
 
             }

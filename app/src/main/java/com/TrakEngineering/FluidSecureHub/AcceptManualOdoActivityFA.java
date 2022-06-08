@@ -118,7 +118,9 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                 if (!editOdoManually.getText().toString().trim().isEmpty()) {
 
                     int C_AccOdoMeter = Integer.parseInt(editOdoManually.getText().toString().trim());
-
+                    CommonUtils.LogMessage(TAG, TAG + "Odo Entered : " + C_AccOdoMeter, null);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile( TAG+" Odo Entered : " + C_AccOdoMeter);
 
                     //allValid();
 
@@ -129,7 +131,6 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
                         if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
 
-                            if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
                             if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
                                 //gooooo
                                 allValid();
@@ -151,7 +152,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
 
                             if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
-                                if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
+                                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
                                 ///gooooo
                                 allValid();
                             } else {
@@ -162,7 +163,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                         }
                     } else {
 
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
+                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
                         //comment By JB -it  must take ANY number they enter on the 4th try
                         allValid();
                     }

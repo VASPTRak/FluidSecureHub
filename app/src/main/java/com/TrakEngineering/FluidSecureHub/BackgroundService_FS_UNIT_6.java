@@ -61,6 +61,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -80,6 +81,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
     String EMPTY_Val = "";
     ConnectionDetector cd = new ConnectionDetector(BackgroundService_FS_UNIT_6.this);
     private int AttemptCount = 0;
+    private int GetPulsarAttemptFailCount = 0, FailureSeconds = 0;
     private String CurrTxnMode = "online", OffLastTXNid = "";
 
     //String HTTP_URL = "http://192.168.43.140:80/";//for pipe
@@ -729,16 +731,29 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             @SuppressLint("LongLogTag")
             @Override
             public void onFailure(Request request, IOException e) {
-                Log.e(TAG, "error in getting response using async okhttp call");
-                //Temp code..
-                CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " -Exception " + e.toString());
-                stopTimer = false;
-                new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
-                Constants.FS_6STATUS = "FREE";
-                clearEditTextFields();
-                stopSelf();
+                Date date = new Date();   // given date
+                Calendar calendar = GregorianCalendar.getInstance();
+                calendar.setTime(date);
+                int CurrentSeconds = calendar.get(Calendar.SECOND);
+
+                if (FailureSeconds != CurrentSeconds) {
+                    FailureSeconds = CurrentSeconds;
+
+                    Log.e(TAG, "error in getting response using async okhttp call");
+                    //Temp code..
+                    GetPulsarAttemptFailCount = GetPulsarAttemptFailCount + 1;
+                    CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " -Exception " + e.toString());
+                    //stopTimer = false;
+                    Constants.FS_6STATUS = "FREE";
+                    clearEditTextFields();
+                    stopSelf();
+                }
+                if (GetPulsarAttemptFailCount == 2) { // checked count 2 here, because this function calling once again even after stopTimer is set as false.
+                    stopTimer = false;
+                    new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
+                }
             }
 
             @SuppressLint("LongLogTag")
@@ -749,7 +764,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                 if (!response.isSuccessful()) {
                     throw new IOException("Error response " + response);
                 } else {
-
+                    GetPulsarAttemptFailCount = 0;
                     String result = responseBody.string();
                     System.out.println("Result" + result);
                     System.out.println("Get pulsar---------- FS PIPE ~~~onPostExecute~~~" + result);

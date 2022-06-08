@@ -40,7 +40,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
     private ConnectionDetector cd = new ConnectionDetector(AcceptOdoActivity.this);
 
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "";
-    String PreviousOdo = "", OdoLimit = "", OdometerReasonabilityConditions = "", CheckOdometerReasonable = "", LastTransactionFuelQuantity = "";
+    String PreviousOdo = "", OdoLimit = "", OdometerReasonabilityConditions = "", CheckOdometerReasonable = "", LastTransactionFuelQuantity = "0";
 
     String TimeOutinMinute, ScreenNameForOdometer = "odometer";
     boolean Istimeout_Sec = true;
@@ -226,7 +226,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
         OdoLimit = sharedPrefODO.getString("OdoLimit", "");
         OdometerReasonabilityConditions = sharedPrefODO.getString("OdometerReasonabilityConditions", "");
         CheckOdometerReasonable = sharedPrefODO.getString("CheckOdometerReasonable", "");
-        LastTransactionFuelQuantity = sharedPrefODO.getString("LastTransactionFuelQuantity", "");
+        LastTransactionFuelQuantity = sharedPrefODO.getString("LastTransactionFuelQuantity", "0");
 
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
         //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
@@ -325,6 +325,9 @@ public class AcceptOdoActivity extends AppCompatActivity {
             Istimeout_Sec = false;
 
             if (!editOdoTenths.getText().toString().trim().isEmpty()) {
+                CommonUtils.LogMessage(TAG, TAG + "Entered Odometer : " + editOdoTenths.getText().toString().trim(), null);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Entered Odometer : " + editOdoTenths.getText().toString().trim());
 
                 int C_AccOdoMeter=0;
                 if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
@@ -347,9 +350,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                     C_AccOdoMeter = Constants.AccOdoMeter_FS6;
                 }
 
-
                 OfflineConstants.storeCurrentTransaction(AcceptOdoActivity.this, "", "", "", editOdoTenths.getText().toString().trim(), "", "", "", "");
-
 
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptOdoActivity.this)) {
                     //skip all validation in permanent offline mode
@@ -361,7 +362,18 @@ public class AcceptOdoActivity extends AppCompatActivity {
                         int PO = Integer.parseInt(PreviousOdo.trim());
                         int OL = Integer.parseInt(OdoLimit.trim());
 
-                        double LastTxtnQuantity = Double.parseDouble(LastTransactionFuelQuantity.trim());
+                        double LastTxtnQuantity = 0;
+
+                        if (LastTransactionFuelQuantity.trim().isEmpty() || LastTransactionFuelQuantity.equalsIgnoreCase("null")) {
+                            LastTransactionFuelQuantity = "0";
+                        }
+
+                        try {
+                            LastTxtnQuantity = Double.parseDouble(LastTransactionFuelQuantity.trim());
+                        } catch (Exception e) {
+                            LastTxtnQuantity = 0;
+                            Log.e(TAG, e.getMessage());
+                        }
 
                         if (C_AccOdoMeter == 0) { // Must be greater than 0.
                             Istimeout_Sec = true;
@@ -383,8 +395,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
                             if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
 
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Odom Entered" + C_AccOdoMeter);
+                                /*if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Odom Entered" + C_AccOdoMeter);*/
                                 if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
                                     //gooooo
                                     allValid();
@@ -417,8 +429,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
 
                                 if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter);
+                                    /*if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter);*/
                                     ///gooooo
                                     allValid();
                                 } else {
@@ -435,8 +447,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                             }
                         } else {
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter);
+                            /*if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter);*/
                             //comment By JB -it  must take ANY number they enter on the 4th try
                             allValid();
 
@@ -446,7 +458,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                         //offline-------------------
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile("Offline current Odometer : " + editOdoTenths.getText().toString().trim());
+                            AppConstants.WriteinFile(TAG + "Offline Entered Odometer : " + editOdoTenths.getText().toString().trim());
 
                         if (OfflineConstants.isOfflineAccess(AcceptOdoActivity.this)) {
 
@@ -454,8 +466,6 @@ public class AcceptOdoActivity extends AppCompatActivity {
                             int entered_odometer = Integer.parseInt(editOdoTenths.getText().toString().trim());
 
                             try {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("Offline Entered Odometer : " + entered_odometer);
 
                                 if (AppConstants.OFF_CURRENT_ODO != null && !AppConstants.OFF_CURRENT_ODO.isEmpty()) {
 
@@ -558,6 +568,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
 
         } catch (Exception ex) {
+            AppConstants.WriteinFile(TAG + " Exception occurred in saveButtonAction" + ex.getMessage());
             Log.e(TAG, ex.getMessage());
         }
     }

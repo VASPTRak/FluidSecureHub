@@ -21,14 +21,15 @@
 
 
             <TextView
+                android:id="@+id/tv_DeptNumberHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="25dp"
                 android:gravity="left"
-                android:textStyle="bold"
                 android:text="Enter Department Number"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="@dimen/heading_text" />
+                android:textSize="@dimen/heading_text"
+                android:textStyle="bold" />
 
 
             <EditText
