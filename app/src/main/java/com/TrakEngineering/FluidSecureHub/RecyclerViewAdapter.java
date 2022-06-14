@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private static final String TAG = "RecyclerViewAdapter";
+    private static final String TAG = "RecyclerViewAdapter ";
 
     private ArrayList<String> mImageNames = new ArrayList<>();
     private ArrayList<String> mImageMac = new ArrayList<>();
@@ -157,9 +157,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Updated MacAddress successfully");
+                            AppConstants.WriteinFile(TAG + "Mac Address Updated successfully");
                         AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDR_RECONFIGURE);
-                        AppConstants.colorToastBigFont(mContext, "Updated MacAddress successfully", Color.BLUE);
+                        AppConstants.colorToastBigFont(mContext, "Mac Address Updated successfully", Color.BLUE);
                     }else if (ResponceMessage.equalsIgnoreCase("fail")){
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " "+ResponceText);

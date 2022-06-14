@@ -96,7 +96,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
 
     //WifiManager wifiManager;
-    private static final String TAG = "DisplayMAct";
+    private static final String TAG = "DisplayMAct ";
     private String vehicleNumber, odometerTenths = "0", dNumber = "", pNumber = "", oText = "", hNumber = "";
     private TextView textDateTime, tvCounts, tvGallons;
     private TextView textOdometer, txtVehicleNumber, tvConsole;
@@ -264,17 +264,29 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //UDP Connection..!!
         LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
         SERVERIP = "";
+        String IpAddress = "";
 
         for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-            String SelectedMacAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-            if (AppConstants.SELECTED_MACADDRESS.equalsIgnoreCase(SelectedMacAddress)) {
-                String IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                HTTP_URL = "http://" + IpAddress + ":80/";
-                SERVERIP = IpAddress;
+            String ConnectedMacAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+            if (AppConstants.SELECTED_MACADDRESS.equalsIgnoreCase(ConnectedMacAddress)) {
+                IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                break;
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, AppConstants.SELECTED_MACADDRESS, ConnectedMacAddress);
+                if (!IpAddress.trim().isEmpty()) {
+                    break;
+                }
             }
         }
+        if (!IpAddress.trim().isEmpty()) {
+            HTTP_URL = "http://" + IpAddress + ":80/";
+            SERVERIP = IpAddress;
+        }
 
-        Istimeout_Sec = true;
         TimeOutDisplayMeterScreen();
 
         if (AppConstants.IsFirstTimeUse.equalsIgnoreCase("True")){
@@ -919,14 +931,27 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         String macaddress = AppConstants.SELECTED_MACADDRESS;
         int SeletedPosition = WelcomeActivity.SelectedItemPos;
         SetOverrideQty(SeletedPosition);
+        String IpAddress = "";
 
         for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
             String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
             if (macaddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                String IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                HTTP_URL = "http://" + IpAddress + ":80/";
+                IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                break;
 
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, macaddress, MA_ConnectedDevices);
+                if (!IpAddress.trim().isEmpty()) {
+                    break;
+                }
             }
+        }
+        if (!IpAddress.trim().isEmpty()) {
+            HTTP_URL = "http://" + IpAddress + ":80/";
         }
 
         URL_GET_TXNID = HTTP_URL + "client?command=lasttxtnid";
@@ -4209,4 +4234,66 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+    public String GetAndCheckMacAddressFromInfoCommand(String connectedIp, String selMacAddress, String MA_ConnectedDevices) {
+        String validIpAddress = "";
+        try {
+            HTTP_URL = "http://" + connectedIp + ":80/";
+            URL_INFO = HTTP_URL + "client?command=info";
+            String result = "";
+            try {
+                result = new Command_GET_INFO().execute(URL_INFO).get();
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Error occurred while getting mac address from info command. >> " + e.getMessage());
+                result = "";
+                e.printStackTrace();
+            }
+
+            if (!result.trim().isEmpty()) {
+                validIpAddress = CommonUtils.CheckMacAddressFromInfoCommand(TAG, result, connectedIp, selMacAddress, MA_ConnectedDevices);
+            }
+
+        } catch (Exception e) {
+            validIpAddress = "";
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
+            Log.d("Ex", e.getMessage());
+        }
+        return validIpAddress;
+    }
+
+    public class Command_GET_INFO extends AsyncTask<String, Void, String> {
+
+        public String resp = "";
+
+        protected String doInBackground(String... param) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(5, TimeUnit.SECONDS);
+                client.setReadTimeout(5, TimeUnit.SECONDS);
+                Request request = new Request.Builder()
+                        .url(param[0])
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+            } catch (SocketException se) {
+                Log.d("Ex", se.getMessage());
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                System.out.println("APFS_PIPE OUTPUT" + result);
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "  CommandsGET onPostExecute Execption " + e);
+                System.out.println(e);
+            }
+        }
+    }
 }

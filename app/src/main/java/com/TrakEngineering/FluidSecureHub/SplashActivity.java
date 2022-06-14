@@ -529,6 +529,7 @@ try {
                     String DisableAllReboots = jsonObject.getString("DisableAllReboots");
                     String IsNonValidateVehicle = jsonObject.getString("IsNonValidateVehicle");
                     String IsNonValidatePerson = jsonObject.getString("IsNonValidatePerson");
+                    String CompanyName = jsonObject.getString("CompanyName");
 
                     AppConstants.AccessCode = AccessCode;
                     String IsLoginRequire = jsonObject.getString("IsLoginRequire");
@@ -653,7 +654,10 @@ try {
                     System.out.println("BluetoothCardReader--" + response);
 
                     if (IsApproved.equalsIgnoreCase("True")) {
-                        CommonUtils.SaveUserInPref(SplashActivity.this, userName, userMobile, userEmail, "", IsDepartmentRequire, IsPersonnelPINRequire, IsOtherRequire, "", OtherLabel, TimeOut, HubId, IsPersonnelPINRequireForHub, FluidSecureSiteName, IsVehicleHasFob, IsPersonHasFob, IsVehicleNumberRequire, WifiChannelToUse,HubType, IsNonValidateVehicle,IsNonValidatePerson,IsPersonPinAndFOBRequire,AllowAccessDeviceORManualEntry,AllowAccessDeviceORManualEntryForVehicle);
+                        CommonUtils.SaveUserInPref(SplashActivity.this, userName, userMobile, userEmail, "", IsDepartmentRequire, IsPersonnelPINRequire,
+                                IsOtherRequire, "", OtherLabel, TimeOut, HubId, IsPersonnelPINRequireForHub, FluidSecureSiteName, IsVehicleHasFob, IsPersonHasFob,
+                                IsVehicleNumberRequire, WifiChannelToUse,HubType, IsNonValidateVehicle,IsNonValidatePerson,IsPersonPinAndFOBRequire,AllowAccessDeviceORManualEntry,
+                                AllowAccessDeviceORManualEntryForVehicle, CompanyName);
 
                         if (IsLoginRequire.trim().equalsIgnoreCase("True")) {
                             AppConstants.Login_Email = userEmail;

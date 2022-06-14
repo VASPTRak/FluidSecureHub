@@ -257,12 +257,14 @@
     <string name="Email">Email</string>
 
     <string name="BtnScanBarcode">Scan barcode</string>
-    <string name="BtnReadAccessDevice">Please Hold Access Device to Reader</string>
-    <string name="BtnReadAccessDeviceV">Please Hold Vehicle FOB to reader</string>
-    <string name="BtnReadAccessDeviceP">Please Hold Personnel FOB to reader</string>
-    <string name="FobAssignButtonVehicle">Tap here to start Vehicle\n access device assignment</string>
-    <string name="FobAssignButtonPer">Tap here to start personnel\n access device assignment</string>
+    <string name="BtnReadAccessDevice">Present the access device to the reader</string>
+    <string name="BtnReadAccessDeviceV">Present the Vehicle access device to the reader</string>
+    <string name="BtnReadAccessDeviceP">Present the Personnel access device to the reader</string>
+    <string name="FobAssignButtonVehicle">Tap here to assign a device\n for Vehicle</string>
+    <string name="FobAssignButtonPer">Tap here to assign a device\n for Person</string>
     <string name="FobRead">Read Access Device</string>
+    <string name="AccessDeviceReadSuccess">Access Device Read Successfully</string>
+    <string name="AccessDeviceAssignedToVehicle">You have presented a device that is already assigned to Vehicle %1$s. Please scan another device.</string>
 
     <string name="BTLinkPageMsg">The LINK you have selected is not configured. Please select the link from the following list.
 If the link is not in the list please click the button "Pair new LINK"  which will advance to the Bluetooth page.  Once you see the LINK name which you are attempting to select, select it on the next page and then click pair. If you do not see this LINK in the next page, reset power and try again. If after resetting power, you still do not see this LINK name, please call into Support.</string>

@@ -185,7 +185,7 @@
                     android:gravity="center"
                     android:paddingLeft="80dp"
                     android:paddingRight="80dp"
-                    android:text="Access Device read successfully"
+                    android:text="@string/AccessDeviceReadSuccess"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/Red"
                     android:textSize="35dp"

@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -30,10 +32,10 @@ public class FOBReaderActivity extends AppCompatActivity {
 
 
     private String TAG = " FOBReaderActivity ";
-    private TextView textDateTime;
+    private TextView textDateTime, tvCompanyName;
     private TextView tvTitle, support_phone, support_email;
     private ImageView FSlogo_img;
-    public static String HubType = "";
+    public static String HubType = "", CompanyName = "", ScreenNameForPersonnel = "PERSON", ScreenNameForVehicle = "VEHICLE";
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
@@ -60,6 +62,11 @@ public class FOBReaderActivity extends AppCompatActivity {
 
         SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
         HubType = sharedPrefODO.getString("HubType", "");
+        CompanyName = sharedPrefODO.getString("CompanyName", "");
+
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
+        ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Person");
 
         // set User Information
         UserInfoEntity qaz = CommonUtils.getCustomerDetails(FOBReaderActivity.this);
@@ -79,6 +86,7 @@ public class FOBReaderActivity extends AppCompatActivity {
         Button btn_disconnect = (Button) findViewById(R.id.btn_disconnect);
         TextView tvVersionNum = (TextView) findViewById(R.id.tvVersionNum);
         tvVersionNum.setText("Version " + CommonUtils.getVersionCode(FOBReaderActivity.this));
+
         if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " UserInfo" +AppConstants.Title + "\n AppVersion " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
         InItGUI();
@@ -163,10 +171,28 @@ public class FOBReaderActivity extends AppCompatActivity {
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(FOBReaderActivity.this);
 
-        AppConstants.Title = "HUB Name : " + userInfoEntity.PersonName;//+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.Title = "HUB Name: " + CommonUtils.getSpareHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         //AppConstants.HubName = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(R.id.textView);
         tvTitle.setText(AppConstants.Title);
+
+        tvCompanyName = (TextView) findViewById(R.id.tvCompanyName);
+        tvCompanyName.setText("Company Name: " + CompanyName);
+
+        String btnGoText = getResources().getString(R.string.FobAssignButtonVehicle);
+        btnGoText = btnGoText.replaceAll("Vehicle", ScreenNameForVehicle);
+        btnGo.setText(btnGoText);
+        /*btnGoText = btnGoText.replace("\n", "<br>");
+        btnGoText = btnGoText.replaceAll("Vehicle", "<font color='#FFC0CB'>" + ScreenNameForVehicle + "</font>");
+        btnGo.setText(Html.fromHtml(btnGoText, Html.FROM_HTML_MODE_LEGACY));*/
+
+        String btnGoPerText = getResources().getString(R.string.FobAssignButtonPer);
+        btnGoPerText = btnGoPerText.replaceAll("Person", ScreenNameForPersonnel);
+        btnGoPer.setText(btnGoPerText);
+        /*btnGoPerText = btnGoPerText.replace("\n", "<br>");
+        btnGoPerText = btnGoPerText.replaceAll("Person", "<font color='#FFC0CB'>" + ScreenNameForPersonnel + "</font>");
+        btnGoPer.setText(Html.fromHtml(btnGoPerText, Html.FROM_HTML_MODE_LEGACY));*/
+
         FSlogo_img = (ImageView) findViewById(R.id.FSlogo_img);
         FSlogo_img = (ImageView) findViewById(R.id.FSlogo_img);
         support_phone = (TextView) findViewById(R.id.support_phone);

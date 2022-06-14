@@ -671,7 +671,11 @@ public class CommonUtils {
     }
 
     public static void SaveUserInPref(Activity activity, String userName, String userMobile, String userEmail, String IsOdoMeterRequire,
-                                      String IsDepartmentRequire, String IsPersonnelPINRequire, String IsOtherRequire, String IsHoursRequire, String OtherLabel, String TimeOut, String HubId, String IsPersonnelPINRequireForHub, String fluidSecureSiteName, String IsVehicleHasFob, String isPersonHasFob,String IsVehicleNumberRequire,int WifiChannelToUse,String HubType,String IsNonValidateVehicle,String IsNonValidatePerson,String IsPersonPinAndFOBRequire,String AllowAccessDeviceORManualEntry,String AllowAccessDeviceORManualEntryForVehicle) {
+                                      String IsDepartmentRequire, String IsPersonnelPINRequire, String IsOtherRequire, String IsHoursRequire,
+                                      String OtherLabel, String TimeOut, String HubId, String IsPersonnelPINRequireForHub, String fluidSecureSiteName,
+                                      String IsVehicleHasFob, String isPersonHasFob, String IsVehicleNumberRequire, int WifiChannelToUse, String HubType,
+                                      String IsNonValidateVehicle, String IsNonValidatePerson, String IsPersonPinAndFOBRequire, String AllowAccessDeviceORManualEntry,
+                                      String AllowAccessDeviceORManualEntryForVehicle, String CompanyName) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -699,6 +703,7 @@ public class CommonUtils {
         editor.putString(AppConstants.IsNonValidatePerson,  IsNonValidatePerson);
         editor.putString(AppConstants.HubType,  HubType);
         editor.putString(AppConstants.AllowAccessDeviceORManualEntryForVehicle,  AllowAccessDeviceORManualEntryForVehicle);
+        editor.putString("CompanyName", CompanyName);
 
         editor.commit();
     }
@@ -1734,7 +1739,7 @@ public class CommonUtils {
                         //if (millisUntilFinished / 1000 <= 13)
                         //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
                         if (tick_count[0] > 2 && WelcomeActivity.OnWelcomeActivity == false)
-                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotpot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE);
+                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE);
                     }
 
                     tick_count[0]++;
@@ -1946,6 +1951,22 @@ public class CommonUtils {
         return HUBNumber.trim();
     }
 
+    public static String getSpareHUBNumberByName(String hubName) {
+        String HUBNumber = "";
+        try {
+            String name = hubName.substring(0, hubName.length() - 8);    // "SPARE12345678" to "SPARE"
+            String number = hubName.substring(hubName.length() - 8);    // "SPARE12345678" to "12345678"
+            String strPattern = "^0+(?!$)";                             // Pattern to remove all leading zeros.
+            HUBNumber = name + number.replaceAll(strPattern, "");   // "SPARE00000123" to "SPARE123"
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception occurred while getting SPARE HUB Number by Name.>>" + e.getMessage());
+            HUBNumber = hubName;
+        }
+        return HUBNumber.trim();
+    }
+
     public static void sharedPrefTxtnInterrupted(Context activity, String txnId, boolean isInterrupted) {
 
         SharedPreferences.Editor editor;
@@ -1962,4 +1983,91 @@ public class CommonUtils {
 
         editor.commit();
     }
+
+    public static String CheckMacAddressFromInfoCommand(String TAG, String result, String ipAddress, String selMacAddress, String MA_ConnectedDevices) {
+        String validIpAddress = "";
+        try {
+
+            String mac_address = "";
+            String AP_mac_address = "";
+            if (result.startsWith("{") && result.contains("Version")) {
+                try {
+                    JSONObject jsonObj = new JSONObject(result);
+                    String userData = jsonObj.getString("Version");
+                    JSONObject jsonObject = new JSONObject(userData);
+
+                    mac_address = jsonObject.getString("mac_address");
+
+                    if (result.contains("AP_mac_address")) {
+                        AP_mac_address = jsonObject.getString("AP_mac_address");
+                    }
+                } catch (JSONException e) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Error occurred while parsing response of info command. >> " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            if (mac_address.equalsIgnoreCase(selMacAddress) || AP_mac_address.equalsIgnoreCase(selMacAddress)) { // compare with MAC saved in cloud.
+                if (mac_address.equalsIgnoreCase(MA_ConnectedDevices)) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "[STA Mac Address (from info command) ==> " + mac_address + "; Connected Device Mac Address ==> " + MA_ConnectedDevices + "]");
+                    validIpAddress = ipAddress;
+                } else {
+                    String staMacAddressFromLink = "";
+                    if (AP_mac_address.trim().isEmpty()) {
+                        staMacAddressFromLink = mac_address;
+                    } else {
+                        staMacAddressFromLink = AP_mac_address;
+                    }
+
+                    String APMacAddress = generateAPMacFromSTAMac(TAG, staMacAddressFromLink);
+                    if (APMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "\n[STA Mac Address (from info command) ==> " + staMacAddressFromLink + ";\n AP Mac Address ==> " + APMacAddress + ";\n Connected Device Mac Address ==> " + MA_ConnectedDevices + "]");
+                        validIpAddress = ipAddress;
+                    }
+                }
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "\n[Selected Mac Address ==> " + selMacAddress + ";\n Connected Device Mac Address ==> " + MA_ConnectedDevices + ";\n STA Mac Address (from info command) ==> " + mac_address + ";\n AP Mac Address (from info command) ==> " + AP_mac_address + "]");
+            }
+
+        } catch (Exception e) {
+            validIpAddress = "";
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
+            Log.d("Ex", e.getMessage());
+        }
+        return validIpAddress;
+    }
+
+    public static String generateAPMacFromSTAMac(String TAG, String selMacAddress) {
+        String apMacAddress = "";
+        try {
+            if (!selMacAddress.trim().isEmpty()) {
+                String staMacAddressInitials = selMacAddress.substring(0, 2); // 8e:aa:b5:04:e2:de ==> 8e
+                String staMacAddressRestPart = selMacAddress.substring(2);  // 8e:aa:b5:04:e2:de ==> :aa:b5:04:e2:de
+
+                long value = Long.parseLong(staMacAddressInitials, 16);
+                value = value - 2;
+                String valueInHex = Long.toHexString(value);  // 8e ==> 8c
+                if (valueInHex.length() > 1) {
+                    apMacAddress = valueInHex + staMacAddressRestPart;  // 8c ==> 8c:aa:b5:04:e2:de
+                } else {
+                    apMacAddress = selMacAddress;
+                }
+            }
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "(STA Mac Address: " + selMacAddress + "; AP Mac Address: " + apMacAddress + ")");
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception occurred in generateAPMacFromSTAMac: " + e.getMessage());
+            Log.e(TAG, "Exception occurred in generateAPMacFromSTAMac: " + e.getMessage());
+            apMacAddress = selMacAddress;
+        }
+        return apMacAddress;
+    }
+
 }

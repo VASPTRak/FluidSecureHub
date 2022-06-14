@@ -7,18 +7,18 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentTop="true">
 
         <LinearLayout
+            android:id="@+id/Linear_layout_Save_back_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:id="@+id/Linear_layout_Save_back_buttons"
+            android:layout_marginLeft="50dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="50dp"
-            android:layout_marginLeft="50dp"
             android:layout_marginBottom="12dp"
             android:orientation="vertical">
 
@@ -26,22 +26,22 @@
                 android:id="@+id/btnAccessDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/focused_start_multi_1"
+                android:layout_margin="10dp"
+                android:background="@android:color/transparent"
                 android:text="@string/BtnReadAccessDeviceV"
                 android:textColor="#000"
                 android:textSize="@dimen/go_button_text" />
 
             <TextView
+                android:id="@+id/tv_Display_msg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_Display_msg"
-                android:gravity="center"
                 android:layout_margin="10dp"
-                android:textColor="@color/Red"
+                android:gravity="center"
                 android:text="Success message"
                 android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/Red"
                 android:textSize="25dp" />
 
             <TextView
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:gravity="center"
-                android:text="Enter Vehicle:"
+                android:text="Enter Vehicle ID"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/black"
                 android:textSize="30dp"
@@ -60,12 +60,12 @@
                 android:id="@+id/editVehicleNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="10dp"
                 android:background="@color/colorFluid"
-                android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:imeOptions="actionDone"
                 android:inputType="number|textPassword"
-                android:gravity="center"
                 android:maxLength="20"
                 android:padding="5sp"
                 android:singleLine="true"
@@ -75,15 +75,13 @@
                 android:textSize="@dimen/edit_text" />
 
 
-
-
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/design_default_color_primary"
+                android:layout_margin="10dp"
+                android:background="@color/colorPrimary"
                 android:onClick="saveButtonAction"
                 android:text="Save"
                 android:textColor="@color/white"
@@ -93,22 +91,22 @@
                 android:id="@+id/btnScanForBarcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
                 android:background="@color/colorFluid"
                 android:text="@string/BtnScanBarcode"
                 android:textColor="#fff"
-                android:visibility="gone"
-                android:textSize="@dimen/go_button_text" />
+                android:textSize="@dimen/go_button_text"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_gravity="center_horizontal"
-                android:onClick="cancelAction"
+                android:layout_margin="10dp"
                 android:background="@color/backbtn"
+                android:onClick="cancelAction"
                 android:text="Previous Screen"
                 android:textColor="@color/black"
                 android:textSize="@dimen/go_button_text" />

@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +44,7 @@ public class AcceptServiceCall {
     private ConnectionDetector cd;
     public Activity activity;
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub = "";
-    private static final String TAG = "AcceptServiceCall";
+    private static final String TAG = "AcceptServiceCall ";
     long stopAutoFuelSecondstemp = 0;
     long sqlite_id = 0;
 
@@ -377,15 +378,26 @@ public class AcceptServiceCall {
                                 //System.out.println("Gate hub true skip display meter ancivity and start transiction ");
                                 String macaddress = AppConstants.SELECTED_MACADDRESS;
                                 //String HTTP_URL = "";
+                                String IpAddress = "";
 
                                 for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
                                     String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
                                     if (macaddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                                        String IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                                        HTTP_URL = "http://" + IpAddress + ":80/";
+                                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                        break;
+                                    } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
 
+                                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, macaddress, MA_ConnectedDevices);
+                                        if (!IpAddress.trim().isEmpty()) {
+                                            break;
+                                        }
                                     }
-
+                                }
+                                if (!IpAddress.trim().isEmpty()) {
+                                    HTTP_URL = "http://" + IpAddress + ":80/";
                                 }
                                 Log.e("GateSoftwareDelayIssue","   GateHubStartTransaction HTTP_URl");
                                 //GateHubStartTransaction(HTTP_URL);
@@ -1241,6 +1253,69 @@ public class AcceptServiceCall {
                 System.out.println(e);
             }
 
+        }
+    }
+
+    public String GetAndCheckMacAddressFromInfoCommand(String connectedIp, String selMacAddress, String MA_ConnectedDevices) {
+        String validIpAddress = "";
+        try {
+            HTTP_URL = "http://" + connectedIp + ":80/";
+            URL_INFO = HTTP_URL + "client?command=info";
+            String result = "";
+            try {
+                result = new Command_GET_INFO().execute(URL_INFO).get();
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Error occurred while getting mac address from info command. >> " + e.getMessage());
+                result = "";
+                e.printStackTrace();
+            }
+
+            if (!result.trim().isEmpty()) {
+                validIpAddress = CommonUtils.CheckMacAddressFromInfoCommand(TAG, result, connectedIp, selMacAddress, MA_ConnectedDevices);
+            }
+
+        } catch (Exception e) {
+            validIpAddress = "";
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
+            Log.d("Ex", e.getMessage());
+        }
+        return validIpAddress;
+    }
+
+    public class Command_GET_INFO extends AsyncTask<String, Void, String> {
+
+        public String resp = "";
+
+        protected String doInBackground(String... param) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(5, TimeUnit.SECONDS);
+                client.setReadTimeout(5, TimeUnit.SECONDS);
+                Request request = new Request.Builder()
+                        .url(param[0])
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+            } catch (SocketException se) {
+                Log.d("Ex", se.getMessage());
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                System.out.println("APFS_PIPE OUTPUT" + result);
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "  CommandsGET onPostExecute Execption " + e);
+                System.out.println(e);
+            }
         }
     }
 }

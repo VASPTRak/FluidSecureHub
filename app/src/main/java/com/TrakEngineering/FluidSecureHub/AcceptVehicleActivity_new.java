@@ -363,7 +363,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
         AppConstants.AUTH_CALL_SUCCESS = false;
         resetReaderStatus();//BLE reader status reset
-        RegisterBroadcastForReader();//BroadcastReciver for MagCard,HF and LF Readers
 
         if (AppConstants.EnableFA) {
 
@@ -391,6 +390,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         } else {
             Istimeout_Sec = true;
         }
+
+        RegisterBroadcastForReader();//BroadcastReciver for MagCard,HF and LF Readers
 
         TimeoutVehicleScreen();
         Log.i("TimeoutVehicleScreen", "TimeOut_Start");
@@ -786,7 +787,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     //AppConstants.APDU_FOB_KEY = MagCard_vehicle;
                     AppConstants.VehicleLocal_FOB_KEY = MagCard_vehicle;
                     //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Local_MagCard_KEY" + AppConstants.VehicleLocal_FOB_KEY);
-                    //On LF Fob read success
+                    //On Mag Card read success
                     Istimeout_Sec = false;
                     CancelTimerScreenOut();
 
@@ -2089,9 +2090,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
 
-       screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
-
-
+        screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         System.out.println("ScreenOutTimeVehicle" + screenTimeOut);
 
         ScreenOutTimeVehicle = new Timer();
@@ -2943,7 +2942,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile("Vehicle Number not found in offline db");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Invalid Number");
+                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Invalid " + ScreenNameForVehicle + " Number");
 
                 }
 
@@ -3079,8 +3078,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     @SuppressLint("ResourceAsColor")
     private void UpdateReaderStatusToUI() {
-
-
 
         runOnUiThread(new Runnable() {
 
@@ -3377,6 +3374,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
             }
         });
+
 
         // Hide after some seconds
         final Handler handler = new Handler();

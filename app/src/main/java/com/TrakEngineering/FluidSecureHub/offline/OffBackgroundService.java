@@ -79,9 +79,10 @@ public class OffBackgroundService extends Service {
         try {
 
             if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
-            Log.i(TAG, " onStartCommand -------------- _templog");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " onStartCommand ------------------- _templog");
+
+                Log.i(TAG, " onStartCommand -------------- _templog");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " onStartCommand ------------------- _templog");
 
                 OffDBController offcontroller = new OffDBController(this);
                 //HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();
@@ -184,11 +185,11 @@ public class OffBackgroundService extends Service {
                         deleteAllDownloadedFiles();
 
                         new GetAPIToken().execute();
-                    }else {
+                    } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " No previous offline data but select hose is pressed.");
 
-                        }*/
+                    }*/
                 //}
             } else {
                 Log.i(TAG, " onStartCommand -------------- One of the hose is busy, Skip offline data download");
@@ -196,19 +197,21 @@ public class OffBackgroundService extends Service {
             }
             stopSelf();
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            Log.i(TAG, " onStartCommand Exception:"+e.toString());
+            Log.i(TAG, " onStartCommand Exception:" + e.toString());
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " onStartCommand Exception:"+e.toString());
+                AppConstants.WriteinFile(TAG + " onStartCommand Exception:" + e.toString());
             stopSelf();
         }
 
         try {
-            if (OfflineConstants.isOfflineAccess(OffBackgroundService.this)) {
+            if (!OfflineConstants.isOfflineAccess(OffBackgroundService.this)) {
                 ThinDownloadManager downloadManager = new ThinDownloadManager();
-                downloadManager.cancelAll();
-                AppConstants.offlineDownloadIds.clear();
+                if (AppConstants.offlineDownloadIds != null && AppConstants.offlineDownloadIds.size() > 0) {
+                    downloadManager.cancelAll();
+                    AppConstants.offlineDownloadIds.clear();
+                }
             }
         } catch (Exception e) {
         }
@@ -284,7 +287,6 @@ public class OffBackgroundService extends Service {
                     if (cd.isConnecting()) {
                         Log.e("Totaloffline_check", "Offline data Download 2");
 
-
                         new GetAPIHubDetails().execute();
 
                     } else {
@@ -340,6 +342,7 @@ public class OffBackgroundService extends Service {
 
             }
 
+
             return resp;
         }
 
@@ -359,6 +362,7 @@ public class OffBackgroundService extends Service {
                     System.out.println("ResponceMessage:" + ResponceMessage);
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
+
 
                         JSONObject HubDataObj = jsonObject.getJSONObject("HubDataObj");
 
@@ -443,7 +447,6 @@ public class OffBackgroundService extends Service {
             String PersonnelDataFilePath = obj.PersonnelDataFilePath;
             String LinkDataFilePath = obj.LinkDataFilePath;
 
-
             repeatedTask = new TimerTask() {
                 public void run() {
 
@@ -492,13 +495,10 @@ public class OffBackgroundService extends Service {
 
             timer.scheduleAtFixedRate(repeatedTask, delay, period);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 
     public class GetAPILinkDetails extends AsyncTask<String, Void, String> {
 
@@ -514,9 +514,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(10, TimeUnit.SECONDS);
-                client.setReadTimeout(10, TimeUnit.SECONDS);
-                client.setWriteTimeout(10, TimeUnit.SECONDS);
+                client.setConnectTimeout(30, TimeUnit.SECONDS);
+                client.setReadTimeout(30, TimeUnit.SECONDS);
+                client.setWriteTimeout(30, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_LINK + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -586,7 +586,7 @@ public class OffBackgroundService extends Service {
                             String IsTLDCall = jsonObj.getString("IsTLDCall");
                             String LinkCommunicationType = jsonObj.getString("HubLinkCommunication");//LinkCommunicationType
                             String APMacAddress = jsonObj.getString("APMacAddress");
-                            String BTMacAddress = jsonObj.getString("BluetoothMacAddress");
+                            String BluetoothMacAddress = jsonObj.getString("BluetoothMacAddress");
 
                             JSONArray FuelingTimesObj = jsonObj.getJSONArray("FuelingTimesObj");
 
@@ -607,7 +607,7 @@ public class OffBackgroundService extends Service {
                                 }
                             }
 
-                            InsetLD = controller.insertLinkDetails(SiteId, WifiSSId, PumpOnTime, PumpOffTime, AuthorizedFuelingDays, Pulserratio, MacAddress, IsTLDCall,LinkCommunicationType,APMacAddress,BTMacAddress);
+                            InsetLD = controller.insertLinkDetails(SiteId, WifiSSId, PumpOnTime, PumpOffTime, AuthorizedFuelingDays, Pulserratio, MacAddress, IsTLDCall,LinkCommunicationType,APMacAddress,BluetoothMacAddress);
 
                             if (InsetLD == -1)
                                 if (AppConstants.GenerateLogs)
@@ -649,9 +649,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(10, TimeUnit.SECONDS);
-                client.setReadTimeout(10, TimeUnit.SECONDS);
-                client.setWriteTimeout(10, TimeUnit.SECONDS);
+                client.setConnectTimeout(30, TimeUnit.SECONDS);
+                client.setReadTimeout(30, TimeUnit.SECONDS);
+                client.setWriteTimeout(30, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_VEHICLE + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -770,9 +770,9 @@ public class OffBackgroundService extends Service {
                 String IMEI = AppConstants.getIMEI(OffBackgroundService.this);
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(10, TimeUnit.SECONDS);
-                client.setReadTimeout(10, TimeUnit.SECONDS);
-                client.setWriteTimeout(10, TimeUnit.SECONDS);
+                client.setConnectTimeout(30, TimeUnit.SECONDS);
+                client.setReadTimeout(30, TimeUnit.SECONDS);
+                client.setWriteTimeout(30, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(AppConstants.API_URL_PERSONNEL + "?Email=" + Email + "&IMEI=" + IMEI)
@@ -886,29 +886,6 @@ public class OffBackgroundService extends Service {
         }
     }
 
-    public boolean checkOfflineDataTime(int CurrentHour, int CurrentMinutes, int HourOfDay, int MinuteOfHour) {
-
-        Date currentDate = parseDate(CurrentHour + ":" + CurrentMinutes);
-        Date savedOfflineDate = parseDate(HourOfDay + ":" + MinuteOfHour);
-        if (savedOfflineDate.before(currentDate)) { // checking offline access time is less than current time or not.
-            return true;
-        } else {
-            Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
-            return false;
-        }
-    }
-
-    private Date parseDate(String date) {
-
-        try {
-            return timeParser.parse(date);
-        } catch (java.text.ParseException e) {
-            return new Date(0);
-        }
-    }
-
     public boolean checkSharedPrefOfflineData() {
 
         SharedPreferences sharedPrefODO = getApplicationContext().getSharedPreferences("OfflineData", Context.MODE_PRIVATE);
@@ -924,6 +901,29 @@ public class OffBackgroundService extends Service {
         } else
             return true;
 
+    }
+
+    public boolean checkOfflineDataTime(int CurrentHour, int CurrentMinutes, int HourOfDay, int MinuteOfHour) {
+
+        Date currentDate = parseTime(CurrentHour + ":" + CurrentMinutes);
+        Date savedOfflineDate = parseTime(HourOfDay + ":" + MinuteOfHour);
+        if (savedOfflineDate.before(currentDate)) { // checking offline access time is less than current time or not.
+            return true;
+        } else {
+            Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+            return false;
+        }
+    }
+
+    private Date parseTime(String date) {
+
+        try {
+            return timeParser.parse(date);
+        } catch (Exception e) {
+            return new Date(0);
+        }
     }
 
     private static void setSharedPrefOfflineData(Context myctx) {
@@ -1120,7 +1120,9 @@ public class OffBackgroundService extends Service {
         try {
             ThinDownloadManager downloadManager = new ThinDownloadManager();
             downloadManager.cancelAll();
-            AppConstants.offlineDownloadIds.clear();
+            if (AppConstants.offlineDownloadIds != null && AppConstants.offlineDownloadIds.size() > 0) {
+                AppConstants.offlineDownloadIds.clear();
+            }
             deleteIncompleteOfflineDataFiles();
             AppConstants.WriteinFile("WelAct- cancel offline Download...");
 
