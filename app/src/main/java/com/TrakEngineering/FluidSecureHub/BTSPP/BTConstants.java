@@ -1,5 +1,8 @@
 package com.TrakEngineering.FluidSecureHub.BTSPP;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class BTConstants {
 
     public static int SelectedLinkForPaireddevices = 0;
@@ -30,6 +33,11 @@ public class BTConstants {
     public static String fdcheckcommand = "LK_COMM=FD_check"; //BlueLink commands
     public static String namecommand = "LK_COMM=name:";
 
+    public static boolean isNewVersionLinkOne = false;
+    public static boolean isNewVersionLinkTwo = false;
+    public static boolean isNewVersionLinkThree = false;
+    public static boolean isNewVersionLinkFour = false;
+
     //Rename BT link one
     public static boolean BT1NeedRename;
     public static String BT1REPLACEBLE_WIFI_NAME;
@@ -54,4 +62,23 @@ public class BTConstants {
     public static String BT4HOSE_ID;
     public static String BT4SITE_ID;
 
+    //date formatters for Old and New version link
+    public static SimpleDateFormat dateFormatForOldVersion = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat dateFormatForNewVersion = new SimpleDateFormat("yyMMddHHmmss");
+
+    public static String parseDateForNewVersion(String dateString) {
+        try {
+            return dateFormatForNewVersion.format(dateFormatForOldVersion.parse(dateString));
+        } catch (Exception e) {
+            return dateString;
+        }
+    }
+
+    public static String parseDateForOldVersion(String dateString) {
+        try {
+            return dateFormatForOldVersion.format(dateFormatForNewVersion.parse(dateString));
+        } catch (Exception e) {
+            return dateString;
+        }
+    }
 }

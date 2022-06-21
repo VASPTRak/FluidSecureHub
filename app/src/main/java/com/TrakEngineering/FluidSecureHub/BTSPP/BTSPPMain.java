@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 
+import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialListenerFour;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialSocketFour;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkOne.SerialListenerOne;
@@ -53,7 +54,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     }
 
-    //Link One code begins..
+    //region Link One code
+    //Link One code begins....
     @Override
     public void onSerialConnectOne() {
         BTConstants.BTLinkOneStatus = true;
@@ -101,6 +103,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkOne = "";
             Log.i(TAG, "BTLink 1: Link not connected");
             //Toast.makeText(activity, "BTLink 1: Link not connected", Toast.LENGTH_SHORT).show();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BTLink 1: Link not connected");
             return;
         }
         try {
@@ -130,9 +134,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void receive1(byte[] data) {
         String Response = new String(data);
-        SpannableStringBuilder spn = new SpannableStringBuilder(new String(data) + '\n');
-        //Log.i(TAG, "BTLink 1: Request>>" + BTConstants.CurrentCommand_LinkOne);
-        //Log.i(TAG, "BTLink 1: Response>>" + spn.toString());
+        SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
+        Log.i(TAG, "BTLink 1: Request>>" + BTConstants.CurrentCommand_LinkOne);
+        Log.i(TAG, "BTLink 1: Response>>" + spn.toString());
 
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkOneData");
@@ -140,17 +144,16 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         broadcastIntent.putExtra("Response", spn.toString());
         broadcastIntent.putExtra("Action", "BlueLinkOne");
         activity.sendBroadcast(broadcastIntent);
-
-
     }
 
     public void status1(String str) {
         Log.i(TAG, "Status1:" + str);
         BTConstants.BTStatusStrOne = str;
     }
-
     //Link one code ends.......
+    //endregion
 
+    //region Link Two code
     //Link Two code begins..
     @Override
     public void onSerialConnectTwo() {
@@ -199,6 +202,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkTwo = "";
             Log.i(TAG, "BTLink 2: Link not connected");
             //Toast.makeText(activity, "BTLink 2: Link not connected", Toast.LENGTH_SHORT).show();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BTLink 2: Link not connected");
             return;
         }
         try {
@@ -214,7 +219,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void receive2(byte[] data) {
         String Response = new String(data);
-        SpannableStringBuilder spn = new SpannableStringBuilder(new String(data) + '\n');
+        SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 2: Request>>" + BTConstants.CurrentCommand_LinkTwo);
         Log.i(TAG, "BTLink 2: Response>>" + spn.toString());
 
@@ -224,15 +229,15 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         broadcastIntent.putExtra("Response", spn.toString());
         broadcastIntent.putExtra("Action", "BlueLinkTwo");
         activity.sendBroadcast(broadcastIntent);
-
-
     }
 
     public void status2(String str) {
         Log.i(TAG, "Status2:" + str);
         BTConstants.BTStatusStrTwo = str;
     }
+    //endregion
 
+    //region Link Three code
     //Link Three code begins..
     @Override
     public void onSerialConnectThree() {
@@ -280,7 +285,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         if (!BTConstants.BTLinkThreeStatus) {
             BTConstants.CurrentCommand_LinkThree = "";
             Log.i(TAG, "BTLink 3: Link not connected");
-            //Toast.makeText(activity, "BTLink 2: Link not connected", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(activity, "BTLink 3: Link not connected", Toast.LENGTH_SHORT).show();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BTLink 3: Link not connected");
             return;
         }
         try {
@@ -296,7 +303,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void receive3(byte[] data) {
         String Response = new String(data);
-        SpannableStringBuilder spn = new SpannableStringBuilder(new String(data) + '\n');
+        SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 3: Request>>" + BTConstants.CurrentCommand_LinkThree);
         Log.i(TAG, "BTLink 3: Response>>" + spn.toString());
 
@@ -306,19 +313,16 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         broadcastIntent.putExtra("Response", spn.toString());
         broadcastIntent.putExtra("Action", "BlueLinkThree");
         activity.sendBroadcast(broadcastIntent);
-
-
     }
 
     public void status3(String str) {
         Log.i(TAG, "Status3:" + str);
         BTConstants.BTStatusStrThree = str;
     }
+    //Link Three code ends...
+    //endregion
 
-    //Link Three code ends..
-
-
-
+    //region Link Four code
     //Link Four code begins..
     @Override
     public void onSerialConnectFour() {
@@ -366,7 +370,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         if (!BTConstants.BTLinkFourStatus) {
             BTConstants.CurrentCommand_LinkFour = "";
             Log.i(TAG, "BTLink 4: Link not connected");
-            //Toast.makeText(activity, "BTLink 2: Link not connected", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(activity, "BTLink 4: Link not connected", Toast.LENGTH_SHORT).show();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BTLink 4: Link not connected");
             return;
         }
         try {
@@ -382,7 +388,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void receive4(byte[] data) {
         String Response = new String(data);
-        SpannableStringBuilder spn = new SpannableStringBuilder(new String(data) + '\n');
+        SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 4: Request>>" + BTConstants.CurrentCommand_LinkFour);
         Log.i(TAG, "BTLink 4: Response>>" + spn.toString());
 
@@ -392,13 +398,11 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         broadcastIntent.putExtra("Response", spn.toString());
         broadcastIntent.putExtra("Action", "BlueLinkFour");
         activity.sendBroadcast(broadcastIntent);
-
-
     }
 
     public void status4(String str) {
         Log.i(TAG, "Status4:" + str);
         BTConstants.BTStatusStrFour = str;
     }
-
+    //endregion
 }

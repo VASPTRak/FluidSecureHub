@@ -9,23 +9,29 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.BackgroundService;
-import com.TrakEngineering.FluidSecureHub.BackgroundService_AP_PIPE;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
+import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 import com.TrakEngineering.FluidSecureHub.Constants;
 import com.TrakEngineering.FluidSecureHub.DBController;
 import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
+import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
+import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
+import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
+import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +40,16 @@ import java.util.TimerTask;
 
 import androidx.annotation.RequiresApi;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class BackgroundService_BTOne extends Service {
 
     private static final String TAG = BackgroundService_BTOne.class.getSimpleName();
     public long sqlite_id = 0;
-    String TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, IsTLDCall, EnablePrinter, PumpOnTime;
+    String TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, IsTLDCall, EnablePrinter, PumpOnTime,VehicleNumber,TransactionDateWithFormat;
     public BroadcastBlueLinkOneData broadcastBlueLinkOneData = null;
     String Request = "", Response = "";
     String FDRequest = "", FDResponse = "";
@@ -59,7 +69,10 @@ public class BackgroundService_BTOne extends Service {
     List<Timer> TimerList_ReadpulseBT1 = new ArrayList<Timer>();
     DBController controller = new DBController(BackgroundService_BTOne.this);
     Boolean IsThisBTTrnx;
-    Boolean isBroadcastReceiverRegistered = false;
+    boolean isBroadcastReceiverRegistered = false;
+    String OffLastTXNid = "0";
+    ConnectionDetector cd = new ConnectionDetector(BackgroundService_BTOne.this);
+    OffDBController offlineController = new OffDBController(BackgroundService_BTOne.this);
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -90,6 +103,7 @@ public class BackgroundService_BTOne extends Service {
 
                 SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
                 TransactionId = sharedPref.getString("TransactionId_FS1", "");
+                VehicleNumber = ""; //sharedPref.getString("VehicleNumber_FS1", "");
                 VehicleId = sharedPref.getString("VehicleId_FS1", "");
                 PhoneNumber = sharedPref.getString("PhoneNumber_FS1", "");
                 PersonId = sharedPref.getString("PersonId_FS1", "");
@@ -97,6 +111,7 @@ public class BackgroundService_BTOne extends Service {
                 MinLimit = sharedPref.getString("MinLimit_FS1", "0");
                 FuelTypeId = sharedPref.getString("FuelTypeId_FS1", "");
                 ServerDate = sharedPref.getString("ServerDate_FS1", "");
+                TransactionDateWithFormat = ""; //sharedPref.getString("TransactionDateWithFormat_FS1", "");
                 IntervalToStopFuel = sharedPref.getString("IntervalToStopFuel_FS1", "0");
                 IsTLDCall = sharedPref.getString("IsTLDCall_FS1", "False");
                 EnablePrinter = sharedPref.getString("EnablePrinter_FS1", "False");
@@ -112,6 +127,12 @@ public class BackgroundService_BTOne extends Service {
                     CurrentLinkMac = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
                 }
 
+                // Offline functionality
+                if (!cd.isConnectingToInternet()) {
+                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " BTLink 1:-Offline mode--");
+                    offlineLogicBT1();
+                }
+
                 //Register Broadcast reciever
                 broadcastBlueLinkOneData = new BroadcastBlueLinkOneData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
@@ -121,10 +142,22 @@ public class BackgroundService_BTOne extends Service {
                 isBroadcastReceiverRegistered = true;
                 AppConstants.WriteinFile(TAG + " BTLink 1: Registered successfully. (" + broadcastBlueLinkOneData + ")");
 
+                AppConstants.isRelayON_fs1 = false;
                 LinkName = CommonUtils.getlinkName(0);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
-                    infoCommand();
+
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")){
+                        infoCommand();
+                    }else{
+                        IsThisBTTrnx = false;
+                        CloseTransaction();
+                        Log.i(TAG, "BTLink 1: Link not connected. Please try again!");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "BTLink 1: Link not connected. Please try again!");
+                        this.stopSelf();
+                    }
+
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
                     IsThisBTTrnx = false;
                     infoCommand();
@@ -226,13 +259,15 @@ public class BackgroundService_BTOne extends Service {
             //Execute transactionId Command
             Request = "";
             Response = "";
+            String transaction_id_cmd = BTConstants.transaction_id_cmd;
+
             if (IsThisBTTrnx) {
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send1(BTConstants.transaction_id_cmd + transactionId);
+                btspp.send1(transaction_id_cmd + transactionId);
             } else {
-                new Thread(new ClientSendAndListenUDPOne(BTConstants.transaction_id_cmd + transactionId, SERVER_IP, this)).start();
+                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd + transactionId, SERVER_IP, this)).start();
             }
-            Log.i(TAG, "BTLink 1: In Request>>" + BTConstants.transaction_id_cmd + transactionId);
+            Log.i(TAG, "BTLink 1: In Request>>" + transaction_id_cmd + transactionId);
 
             new CountDownTimer(4000, 1000) {
 
@@ -268,8 +303,8 @@ public class BackgroundService_BTOne extends Service {
                         relayOnCommand(); //RelayOn
                     } else {
 
-                        //UpgradeTransaction Status Transaction command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6",BackgroundService_BTOne.this);
+                        //UpgradeTransaction Status Transactionid command fail.
+                        CommonUtils.UpgradeTransactionStatusToSqlite(transactionId, "6",BackgroundService_BTOne.this);
                         Log.i(TAG, "BTLink 1: Failed to get transactionId Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 1: Failed to get transactionId Command Response:>>" + Response);
@@ -327,7 +362,7 @@ public class BackgroundService_BTOne extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 1: relayOn Command Response success 2:>>" + Response);
                     } else {
 
-                        //UpgradeTransaction Status relay on command fail.
+                        //UpgradeTransaction Status RelayON command fail.
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6",BackgroundService_BTOne.this);
                         Log.i(TAG, "BTLink 1: Failed to get relayOn Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
@@ -464,9 +499,9 @@ public class BackgroundService_BTOne extends Service {
 
             if (IsThisBTTrnx) {
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send1(BTConstants.namecommand+BTConstants.BT1REPLACEBLE_WIFI_NAME);
-            } else{
-                new Thread(new ClientSendAndListenUDPOne(BTConstants.namecommand+BTConstants.BT1REPLACEBLE_WIFI_NAME, SERVER_IP, this)).start();
+                btspp.send1(BTConstants.namecommand + BTConstants.BT1REPLACEBLE_WIFI_NAME);
+            } else {
+                new Thread(new ClientSendAndListenUDPOne(BTConstants.namecommand + BTConstants.BT1REPLACEBLE_WIFI_NAME, SERVER_IP, this)).start();
             }
 
                 Log.i(TAG, "BTLink 1: rename Command>>");
@@ -544,9 +579,13 @@ public class BackgroundService_BTOne extends Service {
                 //CancelTimer(); cancel all once done.
 
                 Log.i(TAG, "BTLink 1: Timer count..");
-                FdCheckFunction();//Fdcheck
 
-                if (Response.contains("pulse:") && RelayStatus == true) {
+                String checkPulses;
+                checkPulses = "pulse:";
+
+                FdCheckFunction(checkPulses);//Fdcheck
+
+                if (Response.contains(checkPulses) && RelayStatus == true) {
                     pulseCount = 0;
                     pulseCount();
 
@@ -558,7 +597,7 @@ public class BackgroundService_BTOne extends Service {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 1: Execute FD Check..>>");
                         cancel();
-                        TransationCompleteFunction();
+                        TransactionCompleteFunction();
                         CloseTransaction();
 
                     } else {
@@ -578,9 +617,16 @@ public class BackgroundService_BTOne extends Service {
 
         try {
             pumpTimingsOnOffFunction();//PumpOn/PumpOff functionality
+            String outputQuantity;
 
             String[] items = Response.trim().split(":");
-            String outputQuantity = items[1].replaceAll("\"", "").trim();
+            if (items.length > 1) {
+                outputQuantity = items[1].replaceAll("\"", "").trim();
+            } else {
+                // response is "OFF" after relay_off_cmd
+                return;
+            }
+
             Pulses = Integer.parseInt(outputQuantity);
             fillqty = Double.parseDouble(outputQuantity);
             fillqty = fillqty / numPulseRatio;//convert to gallons
@@ -588,13 +634,23 @@ public class BackgroundService_BTOne extends Service {
             DecimalFormat precision = new DecimalFormat("0.00");
             Constants.FS_1Gallons = (precision.format(fillqty));
             Constants.FS_1Pulse = outputQuantity;
-            UpdatetransactionToSqlite(outputQuantity);
+
+            if (cd.isConnectingToInternet()) {
+                UpdatetransactionToSqlite(outputQuantity);
+            } else {
+                if (fillqty > 0) {
+                    offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
+                }
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(" Offline >> BTLink 1:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
+            }
+
 
             reachMaxLimit();
 
         } catch (Exception e) {
             e.printStackTrace();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 1: pulse count Exception>>" + e.toString());
+            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 1: pulse count Exception>>" + e.getMessage());
         }
     }
 
@@ -626,7 +682,9 @@ public class BackgroundService_BTOne extends Service {
                     if (Response.contains("OFF")) {
                         RelayStatus = false;
                     } else if (Response.contains("ON")) {
+                        AppConstants.WriteinFile(TAG + " BTLink 1: onReceive Response:" + Response.trim() + "; ReadPulse: " + redpulseloop_on);
                         RelayStatus = true;
+                        AppConstants.isRelayON_fs1 = true;
                         if (!redpulseloop_on)
                             ReadPulse();
                     }
@@ -673,7 +731,7 @@ public class BackgroundService_BTOne extends Service {
         String jsonData = gson.toJson(authEntityClass);
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTLink 1:" + LinkName + " Pulses:" + Integer.parseInt(outputQuantity) + " Qty:" + fillqty + " TxnID:" + TransactionId);
+            AppConstants.WriteinFile(TAG + " BTLink 1:" + LinkName + "; Pulses:" + Integer.parseInt(outputQuantity) + "; Qty:" + fillqty + "; TxnID:" + TransactionId);
 
         String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTOne.this).PersonEmail;
         String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTOne.this) + ":" + userEmail + ":" + "TransactionComplete");
@@ -688,7 +746,6 @@ public class BackgroundService_BTOne extends Service {
 
             //in progress (transaction recently started, no new information): Transaction ongoing = 8  --non zero qty
             CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_BTOne.this);
-            //CommonUtils.SaveTransactionInSharedPreff(BackgroundService_BTOne.this,"4",counts);
             int rowseffected = controller.updateTransactions(imap);
             System.out.println("rowseffected-" + rowseffected);
             if (rowseffected == 0) {
@@ -697,17 +754,23 @@ public class BackgroundService_BTOne extends Service {
         }
     }
 
-    private void TransationCompleteFunction() {
+    private void TransactionCompleteFunction() {
 
-        //BTLink Rename functionality
-        if (BTConstants.BT1NeedRename){
-            renameOnCommand();
+        if (cd.isConnectingToInternet()) {
+            //BTLink Rename functionality
+            if (BTConstants.BT1NeedRename){
+                renameOnCommand();
+            }
+
+            boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTOne.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
+            if (!BSRunning) {
+                startService(new Intent(this, BackgroundService.class));
+            }
         }
 
-        boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTOne.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
-        if (!BSRunning) {
-            startService(new Intent(this, BackgroundService.class));
-        }
+        // Offline transaction data sync
+        if (OfflineConstants.isOfflineAccess(BackgroundService_BTOne.this))
+            SyncOfflineData();
     }
 
     private void reachMaxLimit() {
@@ -718,7 +781,7 @@ public class BackgroundService_BTOne extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: Auto Stop Hit>> You reached MAX fuel limit.");
             relayOffCommand(); //RelayOff
-            TransationCompleteFunction();
+            TransactionCompleteFunction();
             CloseTransaction();
         }
 
@@ -739,7 +802,7 @@ public class BackgroundService_BTOne extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 1: PumpOnTime Hit>>" + stopCount);
                     relayOffCommand(); //RelayOff
-                    TransationCompleteFunction();
+                    TransactionCompleteFunction();
                     CloseTransaction();
                 }
             } else {//PumpOff Time logic
@@ -756,7 +819,7 @@ public class BackgroundService_BTOne extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 1: PumpOffTime Hit>>" + stopCount);
                     relayOffCommand(); //RelayOff
-                    TransationCompleteFunction();
+                    TransactionCompleteFunction();
                     CloseTransaction();
                 }
             }
@@ -766,10 +829,10 @@ public class BackgroundService_BTOne extends Service {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
-    private void FdCheckFunction() {
+    private void FdCheckFunction(String checkPulses) {
 
         try {
-            if (Response.contains("pulse:")) {
+            if (Response.contains(checkPulses)) {
                 try {
                     LinkResponseCount = 0;
                     if (sameRespCount < 4) {
@@ -792,7 +855,6 @@ public class BackgroundService_BTOne extends Service {
                         } else{
                             fdCheckCommand();
                         }
-
                     }
 
                 } catch (Exception e) {
@@ -808,7 +870,7 @@ public class BackgroundService_BTOne extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 1: No response from link>>" + stopCount);
                     stopCount = 0;
                     relayOffCommand(); //RelayOff
-                    TransationCompleteFunction();
+                    TransactionCompleteFunction();
                     CloseTransaction(); //temp
                 }
             }
@@ -819,15 +881,85 @@ public class BackgroundService_BTOne extends Service {
 
     private void fdCheckCommand() {
 
-        //Execute relayOff Command
+        //Execute FD_check Command
         Request = "";
         Response = "";
         if (IsThisBTTrnx) {
             BTSPPMain btspp = new BTSPPMain();
             btspp.send1(BTConstants.fdcheckcommand);
         } else {
-            new Thread(new ClientSendAndListenUDPOne(BTConstants.fdcheckcommand, SERVER_IP, this)).start();
+            //new Thread(new ClientSendAndListenUDPOne(BTConstants.fdcheckcommand, SERVER_IP, this)).start();
         }
     }
 
+    public void offlineLogicBT1() {
+
+        try {
+
+            TransactionId = "0";
+            PhoneNumber = "0";
+            FuelTypeId = "0";
+            ServerDate = "0";
+
+            //set transactionID
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    OffLastTXNid = "99999999";
+                }
+            }, 1500);
+
+            EntityOffTranz tzc = offlineController.getTransactionDetailsBySqliteId(sqlite_id);
+
+            VehicleId = tzc.VehicleId;
+            PersonId = tzc.PersonId;
+            String siteid = tzc.SiteId;
+
+            HashMap<String, String> linkmap = offlineController.getLinksDetailsBySiteId(siteid);
+            PumpOnTime = linkmap.get("PumpOnTime");
+            IntervalToStopFuel = linkmap.get("PumpOffTime");
+            PulseRatio = linkmap.get("Pulserratio");
+
+            EnablePrinter = offlineController.getOfflineHubDetails(BackgroundService_BTOne.this).EnablePrinter;
+
+            minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_BTOne.this);
+
+            numPulseRatio = Double.parseDouble(PulseRatio);
+
+            stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
+
+            Calendar calendar = Calendar.getInstance();
+            TransactionDateWithFormat = ""; //BTConstants.dateFormatForOldVersion.format(calendar.getTime());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void SyncOfflineData() {
+
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+
+            if (cd.isConnecting()) {
+
+                try {
+                    //sync offline transactions
+                    String off_json = offlineController.getAllOfflineTransactionJSON(BackgroundService_BTOne.this);
+                    JSONObject jsonObj = new JSONObject(off_json);
+                    String offTransactionArray = jsonObj.getString("TransactionsModelsObj");
+                    JSONArray jArray = new JSONArray(offTransactionArray);
+
+                    if (jArray.length() > 0) {
+                        startService(new Intent(BackgroundService_BTOne.this, OffTranzSyncService.class));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 }

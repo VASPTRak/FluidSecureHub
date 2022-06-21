@@ -18,9 +18,6 @@ import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 import com.TrakEngineering.FluidSecureHub.Constants;
-import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
-import com.TrakEngineering.FluidSecureHub.enity.VehicleRequireEntity;
-import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -48,8 +45,6 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
-import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 
 public class OffBackgroundService extends Service {
 
@@ -714,6 +709,7 @@ public class OffBackgroundService extends Service {
                             String FuelLimitPerTxn = jsonObj.getString("FuelLimitPerTxn");
                             String FuelLimitPerDay = jsonObj.getString("FuelLimitPerDay");
                             String FOBNumber = jsonObj.getString("FOBNumber");
+                            String MagneticCardReaderNumber = jsonObj.getString("MagneticCardReaderNumber");
                             String AllowedLinks = jsonObj.getString("AllowedLinks");
                             String Active = jsonObj.getString("Active");
 
@@ -727,7 +723,7 @@ public class OffBackgroundService extends Service {
 
 
                             InsertVD = controller.insertVehicleDetails(VehicleId, VehicleNumber, CurrentOdometer, CurrentHours, RequireOdometerEntry, RequireHours, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, AllowedLinks, Active,
-                                    CheckOdometerReasonable, OdometerReasonabilityConditions, OdoLimit, HoursLimit, BarcodeNumber, IsExtraOther, ExtraOtherLabel);
+                                    CheckOdometerReasonable, OdometerReasonabilityConditions, OdoLimit, HoursLimit, BarcodeNumber, IsExtraOther, ExtraOtherLabel,MagneticCardReaderNumber);
 
                             if (InsertVD == -1)
                                 if (AppConstants.GenerateLogs)
@@ -833,6 +829,8 @@ public class OffBackgroundService extends Service {
                             String FuelLimitPerTxn = jsonObj.getString("FuelLimitPerTxn");
                             String FuelLimitPerDay = jsonObj.getString("FuelLimitPerDay");
                             String FOBNumber = jsonObj.getString("FOBNumber");
+                            String MagneticCardReaderNumber = jsonObj.getString("MagneticCardReaderNumber");
+                            String Barcode = jsonObj.getString("Barcode");
                             String Authorizedlinks = jsonObj.getString("Authorizedlinks");
                             String AssignedVehicles = jsonObj.getString("AssignedVehicles");
 
@@ -850,7 +848,7 @@ public class OffBackgroundService extends Service {
                                 }
                             }
 
-                            InsertPD = controller.insertPersonnelPinDetails(PersonId, PinNumber, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, Authorizedlinks, AssignedVehicles);
+                            InsertPD = controller.insertPersonnelPinDetails(PersonId, PinNumber, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, Authorizedlinks, AssignedVehicles,MagneticCardReaderNumber,Barcode);
 
                             if (InsertPD == -1)
                                 if (AppConstants.GenerateLogs)

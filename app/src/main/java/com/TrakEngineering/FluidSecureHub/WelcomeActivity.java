@@ -101,6 +101,7 @@ import com.TrakEngineering.FluidSecureHub.enity.UpdateMacAddressClass;
 import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
+import com.TrakEngineering.FluidSecureHub.offline.OffBackgroundService;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
@@ -130,7 +131,6 @@ import com.thin.downloadmanager.ThinDownloadManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.DTDHandler;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -587,6 +587,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         SharedPreferences sharedPre2 = WelcomeActivity.this.getSharedPreferences("storeBT_FOBDetails", Context.MODE_PRIVATE);
 
@@ -990,8 +991,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             BatteryPercentageService();
         }
 
-        if (OfflineConstants.isOfflineAccess(WelcomeActivity.this))
-            OfflineConstants.setAlaramManagerToStartDownloadOfflineData(WelcomeActivity.this);
+        /*if (OfflineConstants.isOfflineAccess(WelcomeActivity.this))
+            OfflineConstants.setAlaramManagerToStartDownloadOfflineData(WelcomeActivity.this);*/
+
+        Intent i = new Intent(this, OffBackgroundService.class);
+        this.startService(i);
 
         // Registers BroadcastReceiver to track network connection changes.
         IntentFilter ifilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -5521,8 +5525,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            if (fs1Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_1Pulse) >= 1) {
-
+            if ((fs1Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_1Pulse) >= 1) && AppConstants.isRelayON_fs1) {
                 Fs1_beginFuel.setVisibility(View.GONE);
                 linear_fs_1.setVisibility(View.VISIBLE);
             } else {
@@ -5606,7 +5609,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            if (fs2Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_2Pulse) >= 1) {
+            if ((fs2Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_2Pulse) >= 1) && AppConstants.isRelayON_fs2) {
                 Fs2_beginFuel.setVisibility(View.GONE);
                 linear_fs_2.setVisibility(View.VISIBLE);
             } else {
@@ -5691,7 +5694,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            if (fs3Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_3Pulse) >= 1) {
+            if ((fs3Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_3Pulse) >= 1) && AppConstants.isRelayON_fs3) {
                 Fs3_beginFuel.setVisibility(View.GONE);
                 linear_fs_3.setVisibility(View.VISIBLE);
             } else {
@@ -5776,7 +5779,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            if (fs4Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_4Pulse) >= 1) {
+            if ((fs4Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_4Pulse) >= 1) && AppConstants.isRelayON_fs4) {
                 Fs4_beginFuel.setVisibility(View.GONE);
                 linear_fs_4.setVisibility(View.VISIBLE);
             } else {
@@ -5862,7 +5865,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            if (fs5Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_5Pulse) >= 1) {
+            if ((fs5Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_5Pulse) >= 1) && AppConstants.isRelayON_fs5) {
                 Fs5_beginFuel.setVisibility(View.GONE);
                 linear_fs_5.setVisibility(View.VISIBLE);
             } else {
@@ -5947,7 +5950,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            if (fs6Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_6Pulse) >= 1) {
+            if ((fs6Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_6Pulse) >= 1) && AppConstants.isRelayON_fs6) {
                 Fs6_beginFuel.setVisibility(View.GONE);
                 linear_fs_6.setVisibility(View.VISIBLE);
             } else {
@@ -7739,9 +7742,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                         AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
                         String Chk_ip = "";
-                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
+                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                             Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
-                        else {
+                        } else {
                             getipOverOSVersion();
                         }
 
@@ -9067,7 +9070,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
 
                             } else if (serverSSIDList != null && serverSSIDList.size() == 1 && Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
-
 
                                 cancelThinDownloadManager();
                                 try {

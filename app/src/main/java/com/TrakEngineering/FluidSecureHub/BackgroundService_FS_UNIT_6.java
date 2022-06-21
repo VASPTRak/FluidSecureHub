@@ -324,7 +324,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             this.stopSelf();
         }
 
-
+        AppConstants.isRelayON_fs6 = false;
         if (numPulseRatio <= 0) {
             ExitServicePulsarRationZero();
         } else {
@@ -343,6 +343,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                             String relay_status1 = null;
                             relay_status1 = jsonObject.getString("relay_response");
                             if (relay_status1.equalsIgnoreCase("{\"status\":1}")) {
+                                AppConstants.isRelayON_fs6 = true;
                                 startQuantityInterval();
                             } else {
                                 ExitBackgroundService();

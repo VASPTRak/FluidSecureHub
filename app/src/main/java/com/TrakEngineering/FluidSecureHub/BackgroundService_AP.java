@@ -322,7 +322,7 @@ public class BackgroundService_AP extends Service {
             this.stopSelf();
         }
 
-
+        AppConstants.isRelayON_fs2 = false;
         if (numPulseRatio <= 0) {
             ExitServicePulsarRationZero();
         } else {
@@ -341,6 +341,7 @@ public class BackgroundService_AP extends Service {
                             String relay_status1 = null;
                             relay_status1 = jsonObject.getString("relay_response");
                             if (relay_status1.equalsIgnoreCase("{\"status\":1}")) {
+                                AppConstants.isRelayON_fs2 = true;
                                 startQuantityInterval();
                             } else {
                                 ExitBackgroundService();

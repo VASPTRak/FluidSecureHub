@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -38,7 +37,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -101,6 +99,13 @@ public class AppConstants {
     public static final String IsNonValidatePerson = "IsNonValidatePerson";
     public static final String IsVehicleNumberRequire = "IsVehicleNumberRequire";
     public static final String WifiChannelToUse = "0";
+
+    public static boolean isRelayON_fs1 = false;
+    public static boolean isRelayON_fs2 = false;
+    public static boolean isRelayON_fs3 = false;
+    public static boolean isRelayON_fs4 = false;
+    public static boolean isRelayON_fs5 = false;
+    public static boolean isRelayON_fs6 = false;
 
     public static final String LinkConnectionIssuePref = "LinkConnectionIssuePref";
 
@@ -299,7 +304,6 @@ public class AppConstants {
 
 
     public static String WIFI_PASSWORD = "";
-
 
     public static boolean NeedToRename;
     public static boolean BUSY_STATUS;

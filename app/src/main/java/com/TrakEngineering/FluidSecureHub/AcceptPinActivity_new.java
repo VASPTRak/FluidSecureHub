@@ -69,13 +69,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.TrakEngineering.FluidSecureHub.CommonUtils.AutoCloseCustomMessageDilaog;
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
@@ -374,8 +379,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     AppConstants.AUTH_CALL_SUCCESS = false;
                     if (AppConstants.GenerateLogs) AppConstants.WriteinFile("Offline Pin : " + pin);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " if(OfflineConstants.isOfflineAccess(WelcomeActivity.this)){AppConstants.NETWORK_STRENGTH = false;}");
+                    //if (AppConstants.GenerateLogs)
+                    //    AppConstants.WriteinFile(TAG + " if(OfflineConstants.isOfflineAccess(WelcomeActivity.this)){AppConstants.NETWORK_STRENGTH = false;}");
 
                     if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                         //offline----------
@@ -935,6 +940,15 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 if (MagCard_personnel != null && !MagCard_personnel.isEmpty()) {
 
+                    String fob = MagCard_personnel.replace(":", "").trim();
+
+                    HashMap<String, String> hmap = getMagneticCardKey(MagCard_personnel.trim());
+                    hmapSwitchOfflinepin = hmap;
+                    offlinePersonInitialization(hmap);
+
+                    tv_fobkey.setText(fob);
+                    CommonUtils.PlayBeep(AcceptPinActivity_new.this);
+
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                         if (!isFinishing()) {
                             //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: MAG " + MagCard_personnel);
@@ -942,9 +956,16 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         }
                     } else {
                         //offline---------------
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile("Offline MagCard_personnel Not yet implemented");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Offline MagCard_personnel Not yet implemented");
+                        if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
+                            checkPINvalidation(hmap);
+                            String PinNumber = hmap.get("PinNumber");
+                            etPersonnelPin.setText(PinNumber);
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile("Please check your Offline Access");
+                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
+                            //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                        }
                     }
 
 
@@ -2348,7 +2369,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (Constants.LF_ReaderStatus.equals("LF Connected") || Constants.LF_ReaderStatus.equals("LF Discovered")) {
                         tv_lf_status.setText(Constants.LF_ReaderStatus);
                         tv_lf_status.setTextColor(Color.parseColor("#4CAF50"));
-                    }else{
+                    } else {
                         retryConnect();
                         tv_lf_status.setText(Constants.LF_ReaderStatus);
                         tv_lf_status.setTextColor(Color.parseColor("#ff0000"));
@@ -2365,7 +2386,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (Constants.HF_ReaderStatus.equals("HF Connected") || Constants.HF_ReaderStatus.equals("HF Discovered")) {
                         tv_hf_status.setText(Constants.HF_ReaderStatus);
                         tv_hf_status.setTextColor(Color.parseColor("#4CAF50"));
-                    }else{
+                    } else {
                         retryConnect();
                         tv_hf_status.setText(Constants.HF_ReaderStatus);
                         tv_hf_status.setTextColor(Color.parseColor("#ff0000"));
@@ -2381,7 +2402,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (Constants.Mag_ReaderStatus.equals("Mag Connected") || Constants.Mag_ReaderStatus.equals("Mag Discovered")) {
                         tv_mag_status.setText(Constants.Mag_ReaderStatus);
                         tv_mag_status.setTextColor(Color.parseColor("#4CAF50"));
-                    }else{
+                    } else {
                         retryConnect();
                         tv_mag_status.setText(Constants.Mag_ReaderStatus);
                         tv_mag_status.setTextColor(Color.parseColor("#ff0000"));
@@ -2393,8 +2414,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 if (ReaderStatusUI) {
                     tv_reader_status.setText("Reader status: ");
                     layout_reader_status.setVisibility(View.VISIBLE);
-
-                }else{
+                } else {
                     layout_reader_status.setVisibility(View.GONE);
                 }
 
@@ -2743,5 +2763,162 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             recreate();
             //new ReconnectBleReaders().execute();
         }
+    }
+
+    private HashMap<String, String> getMagneticCardKey(String RawString1){
+
+        //RawString1 = "d36a4ca21c14ec10d67f20ffd76a4ca21c14ec10d67f20ffd36a4ca21c14ec10d67f20";
+        HashMap<String, String> hmap = new HashMap<>();
+        try {
+            hmap = controller.getPersonnelDetailsByMagCardnumber(RawString1);
+            if (hmap.size() <= 0) {
+                hmap = controller.getPersonnelDetailsByMagCardnumber(GetStringNormalLogic(true, RawString1));
+                if (hmap.size() <= 0) {
+                    hmap = controller.getPersonnelDetailsByMagCardnumber(GetStringNormalLogic(false, RawString1));
+                    if (hmap.size() <= 0) {
+                        return hmap;
+                    }
+                } else {
+                    return hmap;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return hmap;
+    }
+
+    public String GetStringNormalLogic(boolean normal,String RawString1){
+
+        String Str_one = "";
+        boolean Isstart = false, Isend = false;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            RawString1  = RawString1.toUpperCase();
+            if (RawString1.contains("FF")){
+
+                String[] SplitedRawStr  = RawString1.split("FF");
+                if (SplitedRawStr.length > 1){
+
+                    String raw_str =  "";
+                    if (normal){
+                        raw_str = SplitedRawStr[1];
+                    }else{
+                        StringBuilder raw_reverse = new StringBuilder();
+                        raw_reverse.append(SplitedRawStr[1]);
+                        raw_reverse.reverse();
+                        raw_str = raw_reverse.toString();
+                    }
+
+                    // print reversed String
+                    System.out.println(raw_str);
+
+                    for (char ch: raw_str.toCharArray()) {
+                        String binlen = HexToBinary(String.valueOf(ch));
+                        int len = binlen.length();
+                        if (len == 4){
+                            sb.append(binlen);
+                        }else{
+                            binlen =  leftPad(binlen,4,"0");
+                            sb.append(binlen);
+                        }
+                    }
+
+                    Log.i(TAG,"Check binary data:"+sb);
+
+                    //1101011011010100100110010100010000111000001010011101100000100001101011001111111001000000
+                    String CardReaderNumberInHex = "";
+                    AtomicInteger splitCounter = new AtomicInteger(0);
+                    Collection<String> splittedStrings = sb.toString()
+                            .chars()
+                            .mapToObj(_char -> String.valueOf((char)_char))
+                            .collect(Collectors.groupingBy(stringChar -> splitCounter.getAndIncrement() / 5
+                                    ,Collectors.joining()))
+                            .values();
+
+                    for (String str:splittedStrings) {
+
+                        if (str.equals("11010")){
+                            Isstart = true;
+                            continue;
+                        }else if (str.equals("10110")){
+                            Isend = true;
+                            break;
+                        }
+
+                        if (Isstart){
+                            String temp = "";
+                            if (str.length() <= 4){
+                                temp =  leftPad(str,4,"0");
+                            }else{
+                                temp =  str.substring(0,4);
+                            }
+
+                            String reverse_temp = new StringBuilder(new String(temp)).reverse().toString();
+                            String hex =  binaryToHex(reverse_temp);
+                            if (hex.equalsIgnoreCase(""))
+                                hex = "0";
+                            CardReaderNumberInHex = CardReaderNumberInHex+hex;
+
+                        }
+
+                    }
+
+                    Str_one = CardReaderNumberInHex;
+
+                }{
+                    Log.i(TAG,"Incomplete Raw string");
+                }
+
+            }else{
+                Log.i(TAG,"Magnnetic  card  raw  strinng  dosenot conntain FF");
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Str_one;
+    }
+
+    String HexToBinary(String Hex) {
+        String bin =  new BigInteger(Hex, 16).toString(2);
+        int inb = Integer.parseInt(bin);
+        bin = String.format(Locale.getDefault(),"%08d", inb);
+        return bin;
+    }
+
+    private String binaryToHex(String binary) {
+        int decimalValue = 0;
+        int length = binary.length() - 1;
+        for (int i = 0; i < binary.length(); i++) {
+            decimalValue += Integer.parseInt(binary.charAt(i) + "") * Math.pow(2, length);
+            length--;
+        }
+        return decimalToHex(decimalValue);
+    }
+
+    private static String decimalToHex(int decimal){
+        String hex = "";
+        while (decimal != 0){
+            int hexValue = decimal % 16;
+            hex = toHexChar(hexValue) + hex;
+            decimal = decimal / 16;
+        }
+        return hex;
+    }
+
+    private static char toHexChar(int hexValue) {
+        if (hexValue <= 9 && hexValue >= 0)
+            return (char)(hexValue + '0');
+        else
+            return (char)(hexValue - 10 + 'A');
+    }
+
+    public static String leftPad(String input, int length, String fill){
+        String pad = String.format("%"+length+"s", "").replace(" ", fill) + input.trim();
+        return pad.substring(pad.length() - length, pad.length());
     }
 }

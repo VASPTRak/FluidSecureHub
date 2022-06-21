@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 public class OffDBController extends SQLiteOpenHelper {
     private static final String LOGCAT = null;
+    private static final String TAG = "OffDBController";
 
     public static String TBL_LINK = "tbl_off_link";
     public static String TBL_FUEL_TIMING = "tbl_off_fuel_timings";
@@ -35,16 +36,17 @@ public class OffDBController extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
 
+        Log.i(TAG,"InOnCreate.");
         String query2 = "CREATE TABLE " + TBL_LINK + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, WifiSSId TEXT, PumpOnTime TEXT, PumpOffTime TEXT, AuthorizedFuelingDays TEXT, Pulserratio TEXT, MacAddress TEXT, IsTLDCall TEXT,LinkCommunicationType TEXT,APMacAddress TEXT,BTMacAddress TEXT)";
         database.execSQL(query2);
 
         String query21 = "CREATE TABLE " + TBL_FUEL_TIMING + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, PersonId INTEGER, FromTime TEXT, ToTime TEXT)";
         database.execSQL(query21);
 
-        String query3 = "CREATE TABLE " + TBL_VEHICLE + " ( Id INTEGER PRIMARY KEY, VehicleId INTEGER, VehicleNumber TEXT,CurrentOdometer TEXT,CurrentHours TEXT,RequireOdometerEntry TEXT,RequireHours TEXT,FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,AllowedLinks TEXT,Active TEXT, CheckOdometerReasonable TEXT,OdometerReasonabilityConditions TEXT,OdoLimit TEXT,HoursLimit TEXT,BarcodeNumber TEXT,IsExtraOther TEXT,ExtraOtherLabel TEXT)";
+        String query3 = "CREATE TABLE " + TBL_VEHICLE + " ( Id INTEGER PRIMARY KEY, VehicleId INTEGER, VehicleNumber TEXT,CurrentOdometer TEXT,CurrentHours TEXT,RequireOdometerEntry TEXT,RequireHours TEXT,FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,AllowedLinks TEXT,Active TEXT, CheckOdometerReasonable TEXT,OdometerReasonabilityConditions TEXT,OdoLimit TEXT,HoursLimit TEXT,BarcodeNumber TEXT,IsExtraOther TEXT,ExtraOtherLabel TEXT,MagneticCardReaderNumber TEXT)";
         database.execSQL(query3);
 
-        String query4 = "CREATE TABLE " + TBL_PERSONNEL + " ( Id INTEGER PRIMARY KEY, PersonId INTEGER, PinNumber TEXT, FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,Authorizedlinks TEXT,AssignedVehicles TEXT)";
+        String query4 = "CREATE TABLE " + TBL_PERSONNEL + " ( Id INTEGER PRIMARY KEY, PersonId INTEGER, PinNumber TEXT, FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,Authorizedlinks TEXT,AssignedVehicles TEXT,MagneticCardReaderNumber TEXT,Barcode TEXT)";
         database.execSQL(query4);
 
         String query5 = "CREATE TABLE " + TBL_TRANSACTION + " ( Id INTEGER PRIMARY KEY, HubId TEXT, SiteId TEXT, VehicleId INTEGER, CurrentOdometer TEXT, CurrentHours TEXT, PersonId TEXT, PersonPin TEXT, FuelQuantity TEXT, Pulses TEXT,TransactionDateTime TEXT,OfflineFakeTransactionId TEXT)";
@@ -59,10 +61,14 @@ public class OffDBController extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, int version_old, int current_version) {
 
+        Log.i(TAG,"InonUpgrade.");
         // If you need to add a column
         if (current_version > version_old) {
-            database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN IsExtraOther TEXT");
-            database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN ExtraOtherLabel TEXT");
+            database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN MagneticCardReaderNumber TEXT");
+            database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN Barcode TEXT");
+
+            database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN MagneticCardReaderNumber TEXT");
+
 
             ////
             String query6 = "CREATE TABLE IF NOT EXISTS " + TBL_OFF_TLD + " ( Id INTEGER PRIMARY KEY, PROBEMacAddress TEXT, Level TEXT, selSiteId INTEGER, TLDFirmwareVersion TEXT, IMEI_UDID TEXT, LSB TEXT, MSB TEXT, TLDTemperature TEXT, ReadingDateTime TEXT, Response_code TEXT, FromDirectTLD TEXT)";
@@ -203,7 +209,7 @@ public class OffDBController extends SQLiteOpenHelper {
 
 
     public long insertVehicleDetails(String VehicleId, String VehicleNumber, String CurrentOdometer, String CurrentHours, String RequireOdometerEntry, String RequireHours, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String AllowedLinks, String Active,
-                                     String CheckOdometerReasonable, String OdometerReasonabilityConditions, String OdoLimit, String HoursLimit, String BarcodeNumber, String IsExtraOther, String ExtraOtherLabel) {
+                                     String CheckOdometerReasonable, String OdometerReasonabilityConditions, String OdoLimit, String HoursLimit, String BarcodeNumber, String IsExtraOther, String ExtraOtherLabel,String MagneticCardReaderNumber) {
 
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -223,6 +229,7 @@ public class OffDBController extends SQLiteOpenHelper {
         values.put("OdoLimit", OdoLimit);
         values.put("HoursLimit", HoursLimit);
         values.put("BarcodeNumber", BarcodeNumber);
+        values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
 
 
         long insertedID = database.insert(TBL_VEHICLE, null, values);
@@ -231,7 +238,7 @@ public class OffDBController extends SQLiteOpenHelper {
         return insertedID;
     }
 
-    public long insertPersonnelPinDetails(String PersonId, String PinNumber, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String Authorizedlinks, String AssignedVehicles) {
+    public long insertPersonnelPinDetails(String PersonId, String PinNumber, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String Authorizedlinks, String AssignedVehicles,String MagneticCardReaderNumber,String Barcode) {
 
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -242,6 +249,8 @@ public class OffDBController extends SQLiteOpenHelper {
         values.put("FOBNumber", FOBNumber);
         values.put("Authorizedlinks", Authorizedlinks);
         values.put("AssignedVehicles", AssignedVehicles);
+        values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
+        values.put("Barcode", Barcode);
 
 
         long insertedID = database.insert(TBL_PERSONNEL, null, values);
@@ -671,6 +680,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("OdoLimit", cursor.getString(14));
                 map.put("HoursLimit", cursor.getString(15));
                 map.put("BarcodeNumber", cursor.getString(16));
+                map.put("MagneticCardReaderNumber", cursor.getString(19));
 
                 System.out.println("***" + cursor.getString(1));
 
@@ -709,6 +719,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("OdometerReasonabilityConditions", cursor.getString(13));
                 map.put("OdoLimit", cursor.getString(14));
                 map.put("HoursLimit", cursor.getString(15));
+                map.put("MagneticCardReaderNumber", cursor.getString(19));
 
                 System.out.println("***" + cursor.getString(1));
 
@@ -756,6 +767,55 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("OdometerReasonabilityConditions", cursor.getString(13));
                 map.put("OdoLimit", cursor.getString(14));
                 map.put("HoursLimit", cursor.getString(15));
+                map.put("MagneticCardReaderNumber", cursor.getString(19));
+
+                System.out.println("***" + cursor.getString(1));
+
+                wordList = map;
+
+
+            } while (cursor.moveToNext());
+        }
+        return wordList;
+    }
+
+    public HashMap<String, String> getVehicleDetailsByMagNumber(String MagneticCardReaderNumber) {
+
+        HashMap<String, String> wordList = new HashMap<String, String>();
+
+        String dummyFOB = MagneticCardReaderNumber;
+        String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
+        if (asd.equalsIgnoreCase("9000")) {
+            dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+        }
+
+        String selectQuery = "SELECT * FROM tbl_off_vehicle WHERE MagneticCardReaderNumber <> ''  AND LOWER( " +
+                " case when substr(MagneticCardReaderNumber, length(MagneticCardReaderNumber)-3, length(MagneticCardReaderNumber)) = '9000' then substr(MagneticCardReaderNumber, 0, length(MagneticCardReaderNumber)-3) " +
+                " else MagneticCardReaderNumber end " +
+                ")='" + dummyFOB.toLowerCase() + "'";
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("Id", cursor.getString(0));
+                map.put("VehicleId", cursor.getString(1));
+                map.put("VehicleNumber", cursor.getString(2));
+                map.put("CurrentOdometer", cursor.getString(3));
+                map.put("CurrentHours", cursor.getString(4));
+                map.put("RequireOdometerEntry", cursor.getString(5));
+                map.put("RequireHours", cursor.getString(6));
+                map.put("FuelLimitPerTxn", cursor.getString(7));
+                map.put("FuelLimitPerDay", cursor.getString(8));
+                map.put("FOBNumber", cursor.getString(9));
+                map.put("AllowedLinks", cursor.getString(10));
+                map.put("Active", cursor.getString(11));
+                map.put("CheckOdometerReasonable", cursor.getString(12));
+                map.put("OdometerReasonabilityConditions", cursor.getString(13));
+                map.put("OdoLimit", cursor.getString(14));
+                map.put("HoursLimit", cursor.getString(15));
+                map.put("MagneticCardReaderNumber", cursor.getString(19));
 
 
                 System.out.println("***" + cursor.getString(1));
@@ -767,6 +827,7 @@ public class OffDBController extends SQLiteOpenHelper {
         }
         return wordList;
     }
+
 
 
     public HashMap<String, String> getPersonnelDetailsByPIN(String PIN) {
@@ -789,6 +850,8 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("FOBNumber", cursor.getString(5));
                 map.put("Authorizedlinks", cursor.getString(6));
                 map.put("AssignedVehicles", cursor.getString(7));
+                map.put("MagneticCardReaderNumber", cursor.getString(8));
+                map.put("Barcode", cursor.getString(9));
 
 
                 System.out.println("***" + cursor.getString(1));
@@ -830,12 +893,60 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("FOBNumber", cursor.getString(5));
                 map.put("Authorizedlinks", cursor.getString(6));
                 map.put("AssignedVehicles", cursor.getString(7));
+                map.put("MagneticCardReaderNumber", cursor.getString(8));
+                map.put("Barcode", cursor.getString(9));
 
                 System.out.println("***" + cursor.getString(1));
 
                 wordList = map;
 
             } while (cursor.moveToNext());
+        }
+        return wordList;
+    }
+
+    public HashMap<String, String> getPersonnelDetailsByMagCardnumber(String FOB) {
+
+        HashMap<String, String> wordList = new HashMap<String, String>();
+        try {
+
+            String dummyFOB = FOB;
+            String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
+            if (asd.equalsIgnoreCase("9000")) {
+                dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+            }
+
+            String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE MagneticCardReaderNumber <> ''  AND LOWER( " +
+                    " case when substr(MagneticCardReaderNumber, length(MagneticCardReaderNumber)-3, length(MagneticCardReaderNumber)) = '9000' then substr(MagneticCardReaderNumber, 0, length(MagneticCardReaderNumber)-3) " +
+                    " else FOBNumber end " +
+                    ")='" + dummyFOB.toLowerCase() + "'";
+
+
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("PersonId", cursor.getString(1));
+                    map.put("PinNumber", cursor.getString(2));
+                    map.put("FuelLimitPerTxn", cursor.getString(3));
+                    map.put("FuelLimitPerDay", cursor.getString(4));
+                    map.put("FOBNumber", cursor.getString(5));
+                    map.put("Authorizedlinks", cursor.getString(6));
+                    map.put("AssignedVehicles", cursor.getString(7));
+                    map.put("MagneticCardReaderNumber", cursor.getString(8));
+                    map.put("Barcode", cursor.getString(9));
+
+                    System.out.println("***" + cursor.getString(1));
+
+                    wordList = map;
+
+                } while (cursor.moveToNext());
+            }
+
+        }catch (Exception  e){
+            e.printStackTrace();
         }
         return wordList;
     }
@@ -859,6 +970,8 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("FOBNumber", cursor.getString(5));
                 map.put("Authorizedlinks", cursor.getString(6));
                 map.put("AssignedVehicles", cursor.getString(7));
+                map.put("MagneticCardReaderNumber", cursor.getString(8));
+                map.put("Barcode", cursor.getString(9));
 
 
                 System.out.println("***" + cursor.getString(1));
@@ -891,6 +1004,8 @@ public class OffDBController extends SQLiteOpenHelper {
                 map.put("RequireHours", cursor.getString(6));
                 map.put("Authorizedlinks", cursor.getString(7));
                 map.put("AssignedVehicles", cursor.getString(8));
+                map.put("MagneticCardReaderNumber", cursor.getString(9));
+                map.put("Barcode", cursor.getString(10));
 
 
                 System.out.println("***" + cursor.getString(1));

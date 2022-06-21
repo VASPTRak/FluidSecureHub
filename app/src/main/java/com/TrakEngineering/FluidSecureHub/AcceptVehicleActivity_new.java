@@ -77,13 +77,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 
@@ -857,15 +862,42 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
         if (MagCard_vehicle != null && !MagCard_vehicle.isEmpty()) {
 
+            String fob = MagCard_vehicle.replace(":", "");
+            tv_fobkey.setText(fob);
+            CommonUtils.PlayBeep(this);
+
+            HashMap<String, String> hmap = getMagneticCardKey(MagCard_vehicle.trim());
+
+            hmapSwitchOffline = hmap;
+            offlineVehicleInitialization(hmap);
+            AppConstants.NonValidateVehicle_FOB_KEY = fob;
+
              if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                 if (!isFinishing()) {
                     new GetVehicleNuOnFobKeyDetection().execute();
                 }
             } else {
-                //offline---------------
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("Offline MagCard_vehicle Not yet implemented");
-                CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Offline Magnetic Card not yet implemented");
+
+                //offline---------------Codehereorequest #1729 (Eva) New Boston Concrete.
+                 AppConstants.AUTH_CALL_SUCCESS = false;
+                 if (AppConstants.GenerateLogs)
+                     AppConstants.WriteinFile("Offline Vehicle FOB: " + MagCard_vehicle);
+
+                 editVehicleNumber.setText(hmap.get("VehicleNumber"));
+                 tv_vehicle_no_below.setText(ScreenNameForVehicle + " : " + hmap.get("VehicleNumber"));
+                 tv_fob_number.setText("Access Device No: " + MagCard_vehicle);
+                 tv_fob_number.setVisibility(View.GONE);//VISIBLE
+
+                 if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
+                     //checkVehicleOFFLINEvalidation(hmap);
+                     WaitAndRedirectToOFFLINEvalidation(hmap);
+
+                 } else {
+                     if (AppConstants.GenerateLogs)
+                         AppConstants.WriteinFile("Please check your Offline Access");
+                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                     //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                 }
             }
 
 
@@ -897,7 +929,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 tv_fob_number.setVisibility(View.GONE);//VISIBLE
 
                 if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
-                    checkVehicleOFFLINEvalidation(hmap);
+                    //checkVehicleOFFLINEvalidation(hmap);
+                    WaitAndRedirectToOFFLINEvalidation(hmap);
+
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile("Please check your Offline Access");
@@ -908,6 +942,24 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
         } else {
             AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.RED);
+        }
+    }
+
+    public void WaitAndRedirectToOFFLINEvalidation(HashMap<String, String> hmap) {
+        try {
+            btnSave.setEnabled(false);
+            btnCancel.setEnabled(false);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    btnSave.setEnabled(true);
+                    btnCancel.setEnabled(true);
+                    checkVehicleOFFLINEvalidation(hmap);
+                }
+            }, 3000);
+        } catch (Exception ex) {
+            CommonUtils.LogMessage(TAG, "", ex);
+            checkVehicleOFFLINEvalidation(hmap);
         }
     }
 
@@ -2967,6 +3019,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             String FuelLimitPerTxn = hmap.get("FuelLimitPerTxn");//: 0,
             String FuelLimitPerDay = hmap.get("FuelLimitPerDay");//: 0,
             String FOBNumber = hmap.get("FOBNumber");//: "",
+            String MagneticCardReaderNumber = hmap.get("MagneticCardReaderNumber");//: "",
             String AllowedLinks = hmap.get("AllowedLinks");//: "36,38,41",
             String Active = hmap.get("Active");//: "Y"
             String IsExtraOther = hmap.get("IsExtraOther");
@@ -3406,5 +3459,162 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             recreate();
             //new ReconnectBleReaders().execute();
         }
+    }
+
+    private HashMap<String, String> getMagneticCardKey(String RawString1){
+
+        //RawString1 = "d36a4ca21c14ec10d67f20ffd76a4ca21c14ec10d67f20ffd36a4ca21c14ec10d67f20";
+        HashMap<String, String> hmap = new HashMap<>();
+        try {
+            hmap = controller.getVehicleDetailsByMagNumber(RawString1);
+            if (hmap.size() <= 0) {
+                hmap = controller.getVehicleDetailsByMagNumber(GetStringNormalLogic(true, RawString1));
+                if (hmap.size() <= 0) {
+                    hmap = controller.getVehicleDetailsByMagNumber(GetStringNormalLogic(false, RawString1));
+                    if (hmap.size() <= 0) {
+                        return hmap;
+                    }
+                } else {
+                    return hmap;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return hmap;
+    }
+
+    public String GetStringNormalLogic(boolean normal,String RawString1){
+
+        String Str_one = "";
+        boolean Isstart = false, Isend = false;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            RawString1  = RawString1.toUpperCase();
+            if (RawString1.contains("FF")){
+
+                String[] SplitedRawStr  = RawString1.split("FF");
+                if (SplitedRawStr.length > 1){
+
+                    String raw_str =  "";
+                    if (normal){
+                        raw_str = SplitedRawStr[1];
+                    }else{
+                        StringBuilder raw_reverse = new StringBuilder();
+                        raw_reverse.append(SplitedRawStr[1]);
+                        raw_reverse.reverse();
+                        raw_str = raw_reverse.toString();
+                    }
+
+                    // print reversed String
+                    System.out.println(raw_str);
+
+                    for (char ch: raw_str.toCharArray()) {
+                        String binlen = HexToBinary(String.valueOf(ch));
+                        int len = binlen.length();
+                        if (len == 4){
+                            sb.append(binlen);
+                        }else{
+                            binlen =  leftPad(binlen,4,"0");
+                            sb.append(binlen);
+                        }
+                    }
+
+                    Log.i(TAG,"Check binary data:"+sb);
+
+                    //1101011011010100100110010100010000111000001010011101100000100001101011001111111001000000
+                    String CardReaderNumberInHex = "";
+                    AtomicInteger splitCounter = new AtomicInteger(0);
+                    Collection<String> splittedStrings = sb.toString()
+                            .chars()
+                            .mapToObj(_char -> String.valueOf((char)_char))
+                            .collect(Collectors.groupingBy(stringChar -> splitCounter.getAndIncrement() / 5
+                                    ,Collectors.joining()))
+                            .values();
+
+                    for (String str:splittedStrings) {
+
+                        if (str.equals("11010")){
+                            Isstart = true;
+                            continue;
+                        }else if (str.equals("10110")){
+                            Isend = true;
+                            break;
+                        }
+
+                        if (Isstart){
+                            String temp = "";
+                            if (str.length() <= 4){
+                                temp =  leftPad(str,4,"0");
+                            }else{
+                                temp =  str.substring(0,4);
+                            }
+
+                            String reverse_temp = new StringBuilder(new String(temp)).reverse().toString();
+                            String hex =  binaryToHex(reverse_temp);
+                            if (hex.equalsIgnoreCase(""))
+                                hex = "0";
+                            CardReaderNumberInHex = CardReaderNumberInHex+hex;
+
+                        }
+
+                    }
+
+                    Str_one = CardReaderNumberInHex;
+
+                }{
+                    Log.i(TAG,"Incomplete Raw string");
+                }
+
+            }else{
+                Log.i(TAG,"Magnnetic  card  raw  strinng  dosenot conntain FF");
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Str_one;
+    }
+
+    String HexToBinary(String Hex) {
+        String bin =  new BigInteger(Hex, 16).toString(2);
+        int inb = Integer.parseInt(bin);
+        bin = String.format(Locale.getDefault(),"%08d", inb);
+        return bin;
+    }
+
+    private String binaryToHex(String binary) {
+        int decimalValue = 0;
+        int length = binary.length() - 1;
+        for (int i = 0; i < binary.length(); i++) {
+            decimalValue += Integer.parseInt(binary.charAt(i) + "") * Math.pow(2, length);
+            length--;
+        }
+        return decimalToHex(decimalValue);
+    }
+
+    private static String decimalToHex(int decimal){
+        String hex = "";
+        while (decimal != 0){
+            int hexValue = decimal % 16;
+            hex = toHexChar(hexValue) + hex;
+            decimal = decimal / 16;
+        }
+        return hex;
+    }
+
+    private static char toHexChar(int hexValue) {
+        if (hexValue <= 9 && hexValue >= 0)
+            return (char)(hexValue + '0');
+        else
+            return (char)(hexValue - 10 + 'A');
+    }
+
+    public static String leftPad(String input, int length, String fill){
+        String pad = String.format("%"+length+"s", "").replace(" ", fill) + input.trim();
+        return pad.substring(pad.length() - length, pad.length());
     }
 }
