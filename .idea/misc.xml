@@ -3,13 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_check_all.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_dept.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_pin_fob.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_vehicle_fob.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_device_control_pin.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_device_control_vehicle.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_fobreader.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_read_access_device_fob.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_registration.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_sparehub.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/item_hose.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/layout_listitem.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/single_list.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/spinner_itemtemp.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/test.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/menu/reader.xml" value="0.25416666666666665" />
       </map>
     </option>

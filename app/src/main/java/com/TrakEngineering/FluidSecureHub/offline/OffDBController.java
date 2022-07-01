@@ -29,7 +29,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public static String TBL_OFF_TLD = "tbl_off_tld";
 
     public OffDBController(Context applicationcontext) {
-        super(applicationcontext, "FSHubOffline.db", null, 3);
+        super(applicationcontext, "FSHubOffline.db", null, 4);
         Log.d(LOGCAT, "Created");
     }
 
@@ -61,14 +61,25 @@ public class OffDBController extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, int version_old, int current_version) {
 
-        Log.i(TAG,"InonUpgrade.");
+        Log.i(TAG,"InOnUpgrade.");
+        AppConstants.WriteinFile(TAG + " onUpgrade called.");
         // If you need to add a column
         if (current_version > version_old) {
-            database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN MagneticCardReaderNumber TEXT");
-            database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN Barcode TEXT");
-
-            database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN MagneticCardReaderNumber TEXT");
-
+            try {
+                database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN MagneticCardReaderNumber TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_PERSONNEL + ": " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN Barcode TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_PERSONNEL + ": " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN MagneticCardReaderNumber TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_VEHICLE + ": " + ex.getMessage());
+            }
 
             ////
             String query6 = "CREATE TABLE IF NOT EXISTS " + TBL_OFF_TLD + " ( Id INTEGER PRIMARY KEY, PROBEMacAddress TEXT, Level TEXT, selSiteId INTEGER, TLDFirmwareVersion TEXT, IMEI_UDID TEXT, LSB TEXT, MSB TEXT, TLDTemperature TEXT, ReadingDateTime TEXT, Response_code TEXT, FromDirectTLD TEXT)";
@@ -693,40 +704,45 @@ public class OffDBController extends SQLiteOpenHelper {
     }
 
     public HashMap<String, String> getVehicleDetailsByVehicleNumber(String VehicleNumber) {
-
         HashMap<String, String> wordList = new HashMap<String, String>();
+        try {
 
-        String selectQuery = "SELECT * FROM " + TBL_VEHICLE + " WHERE VehicleNumber COLLATE NOCASE='" + VehicleNumber.trim() + "'";
+            String selectQuery = "SELECT * FROM " + TBL_VEHICLE + " WHERE VehicleNumber COLLATE NOCASE='" + VehicleNumber.trim() + "'";
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("VehicleId", cursor.getString(1));
-                map.put("VehicleNumber", cursor.getString(2));
-                map.put("CurrentOdometer", cursor.getString(3));
-                map.put("CurrentHours", cursor.getString(4));
-                map.put("RequireOdometerEntry", cursor.getString(5));
-                map.put("RequireHours", cursor.getString(6));
-                map.put("FuelLimitPerTxn", cursor.getString(7));
-                map.put("FuelLimitPerDay", cursor.getString(8));
-                map.put("FOBNumber", cursor.getString(9));
-                map.put("AllowedLinks", cursor.getString(10));
-                map.put("Active", cursor.getString(11));
-                map.put("CheckOdometerReasonable", cursor.getString(12));
-                map.put("OdometerReasonabilityConditions", cursor.getString(13));
-                map.put("OdoLimit", cursor.getString(14));
-                map.put("HoursLimit", cursor.getString(15));
-                map.put("MagneticCardReaderNumber", cursor.getString(19));
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("VehicleId", cursor.getString(1));
+                    map.put("VehicleNumber", cursor.getString(2));
+                    map.put("CurrentOdometer", cursor.getString(3));
+                    map.put("CurrentHours", cursor.getString(4));
+                    map.put("RequireOdometerEntry", cursor.getString(5));
+                    map.put("RequireHours", cursor.getString(6));
+                    map.put("FuelLimitPerTxn", cursor.getString(7));
+                    map.put("FuelLimitPerDay", cursor.getString(8));
+                    map.put("FOBNumber", cursor.getString(9));
+                    map.put("AllowedLinks", cursor.getString(10));
+                    map.put("Active", cursor.getString(11));
+                    map.put("CheckOdometerReasonable", cursor.getString(12));
+                    map.put("OdometerReasonabilityConditions", cursor.getString(13));
+                    map.put("OdoLimit", cursor.getString(14));
+                    map.put("HoursLimit", cursor.getString(15));
+                    map.put("MagneticCardReaderNumber", cursor.getString(19));
 
-                System.out.println("***" + cursor.getString(1));
+                    System.out.println("***" + cursor.getString(1));
 
-                wordList = map;
+                    wordList = map;
 
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " getVehicleDetailsByVehicleNumber Exception" + e.getMessage());
         }
         return wordList;
     }

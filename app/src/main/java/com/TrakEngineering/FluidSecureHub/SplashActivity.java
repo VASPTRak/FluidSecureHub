@@ -97,7 +97,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     public static String imei_mob_folder_name = "FSHUBUUID",HubType = "";
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
-
     com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager wifiApManager;
     ConnectivityManager connection_manager;
 
@@ -108,7 +107,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         setContentView(R.layout.activity_splash);
 
         getSupportActionBar().setTitle("HUB Application");
-
 
         CommonUtils.LogMessage(TAG, "SplashActivity", null);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -212,65 +210,65 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
     public void turnGPSOn() {
 
-try {
-    AppConstants.WriteinFile(TAG + "SplashActivity In turnGPSOn");
-    @SuppressLint("RestrictedApi") LocationRequest mLocationRequest = new LocationRequest();
-    //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        try {
+            AppConstants.WriteinFile(TAG + "SplashActivity In turnGPSOn");
+            @SuppressLint("RestrictedApi") LocationRequest mLocationRequest = new LocationRequest();
+            //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-    @SuppressLint("RestrictedApi") LocationRequest mLocationRequest1 = new LocationRequest();
-    //mLocationRequest1.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-
-    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-            .addLocationRequest(mLocationRequest)
-            .addLocationRequest(mLocationRequest1);
+            @SuppressLint("RestrictedApi") LocationRequest mLocationRequest1 = new LocationRequest();
+            //mLocationRequest1.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
 
-    LocationSettingsRequest mLocationSettingsRequest = builder.build();
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(mLocationRequest)
+                    .addLocationRequest(mLocationRequest1);
 
 
-    PendingResult<LocationSettingsResult> result =
-            LocationServices.SettingsApi.checkLocationSettings(
-                    mGoogleApiClient,
-                    mLocationSettingsRequest
-            );
+            LocationSettingsRequest mLocationSettingsRequest = builder.build();
 
-    result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-        @Override
-        public void onResult(LocationSettingsResult result) {
-            final Status status = result.getStatus();
 
-            switch (status.getStatusCode()) {
-                case LocationSettingsStatusCodes.SUCCESS:
-                    Log.i("Splash", "All location settings are satisfied.");
+            PendingResult<LocationSettingsResult> result =
+                    LocationServices.SettingsApi.checkLocationSettings(
+                            mGoogleApiClient,
+                            mLocationSettingsRequest
+                    );
 
-                    break;
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    Log.i("Splash", "Location settings are not satisfied. Show the user a dialog to" +
-                            "upgrade location settings ");
+            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                @Override
+                public void onResult(LocationSettingsResult result) {
+                    final Status status = result.getStatus();
 
-                    try {
-                        // Show the dialog by calling startResolutionForResult(), and check the result
-                        // in onActivityResult().
-                        status.startResolutionForResult(SplashActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException e) {
-                        Log.i("Splash", "PendingIntent unable to execute request.");
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            Log.i("Splash", "All location settings are satisfied.");
+
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            Log.i("Splash", "Location settings are not satisfied. Show the user a dialog to" +
+                                    "upgrade location settings ");
+
+                            try {
+                                // Show the dialog by calling startResolutionForResult(), and check the result
+                                // in onActivityResult().
+                                status.startResolutionForResult(SplashActivity.this, REQUEST_CHECK_SETTINGS);
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.i("Splash", "PendingIntent unable to execute request.");
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            Log.i("Splash", "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                                    "not created.");
+                            break;
                     }
-                    break;
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    Log.i("Splash", "Location settings are inadequate, and cannot be fixed here. Dialog " +
-                            "not created.");
-                    break;
-            }
+                }
+            });
+
+
+            //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            //startActivity(in);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    });
-
-
-    //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-    //startActivity(in);
-}catch (Exception e){
-    e.printStackTrace();
-}
     }
 
     @Override
@@ -391,12 +389,17 @@ try {
 
     private boolean TestPermissions() {
         boolean isValue = false;
+        boolean isGranted = false;
 
         try {
             String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
 
-            boolean isGranted = checkPermission(SplashActivity.this, permissions[0]);
-
+            for (int i = 0; i < permissions.length; i++) {
+                isGranted = checkPermission(SplashActivity.this, permissions[i]);
+                if (!isGranted) {
+                    break;
+                }
+            }
 
             if (!isGranted) {
                 ActivityCompat.requestPermissions(SplashActivity.this, permissions, PERMISSION_REQUEST_CODE_CORSE_LOCATION);
@@ -507,6 +510,7 @@ try {
 
         try {
 
+            CheckAllPermissions();
 
             JSONObject jsonObj = new JSONObject(response);
 
@@ -656,7 +660,7 @@ try {
                     if (IsApproved.equalsIgnoreCase("True")) {
                         CommonUtils.SaveUserInPref(SplashActivity.this, userName, userMobile, userEmail, "", IsDepartmentRequire, IsPersonnelPINRequire,
                                 IsOtherRequire, "", OtherLabel, TimeOut, HubId, IsPersonnelPINRequireForHub, FluidSecureSiteName, IsVehicleHasFob, IsPersonHasFob,
-                                IsVehicleNumberRequire, WifiChannelToUse,HubType, IsNonValidateVehicle,IsNonValidatePerson,IsPersonPinAndFOBRequire,AllowAccessDeviceORManualEntry,
+                                IsVehicleNumberRequire, WifiChannelToUse, HubType, IsNonValidateVehicle, IsNonValidatePerson, IsPersonPinAndFOBRequire, AllowAccessDeviceORManualEntry,
                                 AllowAccessDeviceORManualEntryForVehicle, CompanyName);
 
                         if (IsLoginRequire.trim().equalsIgnoreCase("True")) {
@@ -740,6 +744,19 @@ try {
         }
     }
 
+    private void CheckAllPermissions() {
+        try {
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
+            String grantedPermissions = "";
+            for (int i = 0; i < permissions.length; i++) {
+                boolean isGranted = checkPermission(SplashActivity.this, permissions[i]);
+                grantedPermissions = grantedPermissions + "(" + permissions[i] + " => IsGranted: " + isGranted + "); ";
+            }
+            AppConstants.WriteinFile(TAG + "grantedPermissions: [" + grantedPermissions + "]");
+        } catch (Exception e) {
+            CommonUtils.LogMessage(TAG, "CheckAllPermissions", e);
+        }
+    }
 
     public class CheckApproved extends AsyncTask<String, Void, String> {
 
@@ -887,7 +904,7 @@ try {
                 break;
 
             case PERMISSION_REQUEST_CODE_READ_phone:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
 
                     showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
                     Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app.", Toast.LENGTH_SHORT).show();
@@ -901,7 +918,7 @@ try {
 
 
             case PERMISSION_REQUEST_CODE_CORSE_LOCATION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
 
                     showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");

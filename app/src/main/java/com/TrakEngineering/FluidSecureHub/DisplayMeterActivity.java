@@ -164,8 +164,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     String jsonRelayOn = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":1}}";
     String jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
 
-
-
     public Network networkTransportWifi;
 
     boolean pulsarConnected = false;
@@ -572,7 +570,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         IntentFilter ifilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         receiver = new NetworkReceiver();
         this.registerReceiver(receiver, ifilter);
-
 
     }
 
