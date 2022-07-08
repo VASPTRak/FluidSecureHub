@@ -510,7 +510,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         try {
 
-            CheckAllPermissions();
+            //CheckAllPermissions();
 
             JSONObject jsonObj = new JSONObject(response);
 

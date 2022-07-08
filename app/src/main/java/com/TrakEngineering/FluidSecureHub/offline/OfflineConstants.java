@@ -256,12 +256,12 @@ public class OfflineConstants {
 
     }
 
-    public static void setAlaramManagerToStartDownloadOfflineData(Context ctx) {
+    public static void setAlarmManagerToStartDownloadOfflineData(Context ctx) {
 
         try {
-            Log.i(TAG, " setAlaramManagerToStartDownloadOfflineData _templog");
+            Log.i(TAG, " setAlarmManagerToStartDownloadOfflineData _templog");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " setAlaramManagerToStartDownloadOfflineData _templog");
+                AppConstants.WriteinFile(TAG + " setAlarmManagerToStartDownloadOfflineData _templog");
 
             SharedPreferences sharedPref = ctx.getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
             String isOffline = sharedPref.getString("isOffline", "");
@@ -283,9 +283,9 @@ public class OfflineConstants {
                     AlarmManager.INTERVAL_DAY, alarmIntent);
 
         } catch (Exception e) {
-            Log.i(TAG, " setAlaramManagerToStartDownloadOfflineData Exception:" + e.toString());
+            Log.i(TAG, " setAlarmManagerToStartDownloadOfflineData Exception:" + e.toString());
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " setAlaramManagerToStartDownloadOfflineData Exception:" + e.toString());
+                AppConstants.WriteinFile(TAG + " setAlarmManagerToStartDownloadOfflineData Exception:" + e.toString());
         }
     }
 

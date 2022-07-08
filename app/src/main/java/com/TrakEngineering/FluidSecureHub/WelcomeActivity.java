@@ -991,8 +991,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             BatteryPercentageService();
         }
 
-        /*if (OfflineConstants.isOfflineAccess(WelcomeActivity.this))
-            OfflineConstants.setAlaramManagerToStartDownloadOfflineData(WelcomeActivity.this);*/
+        if (OfflineConstants.isOfflineAccess(WelcomeActivity.this))
+            OfflineConstants.setAlarmManagerToStartDownloadOfflineData(WelcomeActivity.this);
 
         Intent i = new Intent(this, OffBackgroundService.class);
         this.startService(i);

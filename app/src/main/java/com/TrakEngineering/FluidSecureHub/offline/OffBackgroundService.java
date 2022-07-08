@@ -905,7 +905,7 @@ public class OffBackgroundService extends Service {
 
         Date currentDate = parseTime(CurrentHour + ":" + CurrentMinutes);
         Date savedOfflineDate = parseTime(HourOfDay + ":" + MinuteOfHour);
-        if (savedOfflineDate.before(currentDate)) { // checking offline access time is less than current time or not.
+        if (savedOfflineDate.equals(currentDate) || savedOfflineDate.before(currentDate)) { // checking offline access time is same or less than current time or not.
             return true;
         } else {
             Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
