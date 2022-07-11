@@ -39,13 +39,7 @@ import com.TrakEngineering.FluidSecureHub.BackgroundServiceNew.MyService_FSNP;
 import com.TrakEngineering.FluidSecureHub.EddystoneScanner.EddystoneScannerService;
 import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UpdateTransactionStatusClass;
 import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
-import com.TrakEngineering.FluidSecureHub.retrofit.BusProvider;
-import com.TrakEngineering.FluidSecureHub.retrofit.ErrorEvent;
-import com.TrakEngineering.FluidSecureHub.retrofit.Interface;
-import com.TrakEngineering.FluidSecureHub.retrofit.ServerEvent;
-import com.TrakEngineering.FluidSecureHub.retrofit.ServerResponse;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -73,13 +67,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Stack;
-
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -723,20 +710,21 @@ public class CommonUtils {
     }
 
 
-    public static void SaveVehiFuelInPref_FS1(Context activity, String TransactionId_FS1, String VehicleId_FS1, String PhoneNumber_FS1, String PersonId_FS1, String PulseRatio_FS1, String MinLimit_FS1, String FuelTypeId_FS1, String ServerDate_FS1, String IntervalToStopFuel_FS1, String PrintDate_FS1, String Company_FS1, String Location_FS1, String PersonName_FS1, String PrinterMacAddress_FS1, String PrinterName_FS1, String vehicleNumber_FS1, String accOther_FS1, String VehicleSum_FS1, String DeptSum_FS1, String VehPercentage_FS1, String DeptPercentage_FS1, String SurchargeType_FS1, String ProductPrice_FS1, String IsTLDCall_FS1, String EnablePrinter_FS1, String OdoMeter_FS1, String Hours_FS1, String PumpOnTime_FS1,String LimitReachedMessage_FS1,String SiteId_FS1) {
+    public static void SaveVehiFuelInPref_FS1(Context activity, String TransactionId_FS1, String VehicleId_FS1, String PhoneNumber_FS1, String PersonId_FS1, String PulseRatio_FS1, String MinLimit_FS1, String FuelTypeId_FS1, String ServerDate_FS1, String IntervalToStopFuel_FS1, String PrintDate_FS1, String Company_FS1, String Location_FS1, String PersonName_FS1, String PrinterMacAddress_FS1, String PrinterName_FS1, String vehicleNumber_FS1, String accOther_FS1, String VehicleSum_FS1, String DeptSum_FS1, String VehPercentage_FS1, String DeptPercentage_FS1, String SurchargeType_FS1, String ProductPrice_FS1, String IsTLDCall_FS1, String EnablePrinter_FS1, String OdoMeter_FS1, String Hours_FS1, String PumpOnTime_FS1,String LimitReachedMessage_FS1,String VehicleNumber_FS1,String TransactionDateWithFormat_FS1,String SiteId_FS1) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS1", TransactionId_FS1);
         editor.putString("VehicleId_FS1", VehicleId_FS1);
-        editor.putString("VehicleId_FS1", VehicleId_FS1);
+        editor.putString("VehicleNumber_FS1", VehicleNumber_FS1);
         editor.putString("PhoneNumber_FS1", PhoneNumber_FS1);
         editor.putString("PersonId_FS1", PersonId_FS1);
         editor.putString("PulseRatio_FS1", PulseRatio_FS1);
         editor.putString("MinLimit_FS1", MinLimit_FS1);
         editor.putString("FuelTypeId_FS1", FuelTypeId_FS1);
         editor.putString("ServerDate_FS1", ServerDate_FS1);
+        editor.putString("TransactionDateWithFormat_FS1", TransactionDateWithFormat_FS1);
         editor.putString("IntervalToStopFuel_FS1", IntervalToStopFuel_FS1);
         editor.putString("PumpOnTime_FS1", PumpOnTime_FS1);
         editor.putString("PrintDate_FS1", PrintDate_FS1);
@@ -764,19 +752,21 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref(Context activity, String TransactionId, String VehicleId, String PhoneNumber, String PersonId, String PulseRatio, String MinLimit, String FuelTypeId, String ServerDate, String IntervalToStopFuel, String PrintDate, String Company, String Location, String PersonName, String PrinterMacAddress, String PrinterName, String vehicleNumber, String accOther, String VehicleSum, String DeptSum, String VehPercentage, String DeptPercentage, String SurchargeType, String ProductPrice, String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime,String LimitReachedMessage,String SiteId) {
+    public static void SaveVehiFuelInPref(Context activity, String TransactionId, String VehicleId, String PhoneNumber, String PersonId, String PulseRatio, String MinLimit, String FuelTypeId, String ServerDate, String IntervalToStopFuel, String PrintDate, String Company, String Location, String PersonName, String PrinterMacAddress, String PrinterName, String vehicleNumber, String accOther, String VehicleSum, String DeptSum, String VehPercentage, String DeptPercentage, String SurchargeType, String ProductPrice, String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime,String LimitReachedMessage,String VehicleNumber,String TransactionDateWithFormat,String SiteId) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId", TransactionId);
         editor.putString("VehicleId", VehicleId);
+        editor.putString("VehicleNumber", VehicleNumber);
         editor.putString("PhoneNumber", PhoneNumber);
         editor.putString("PersonId", PersonId);
         editor.putString("PulseRatio", PulseRatio);
         editor.putString("MinLimit", MinLimit);
         editor.putString("FuelTypeId", FuelTypeId);
         editor.putString("ServerDate", ServerDate);
+        editor.putString("TransactionDateWithFormat", TransactionDateWithFormat);
         editor.putString("IntervalToStopFuel", IntervalToStopFuel);
         editor.putString("PumpOnTime", PumpOnTime);
         editor.putString("PrintDate", PrintDate);
@@ -804,20 +794,21 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS3(Context activity, String TransactionId_FS3, String VehicleId_FS3, String PhoneNumber_FS3, String PersonId_FS3, String PulseRatio_FS3, String MinLimit_FS3, String FuelTypeId_FS3, String ServerDate_FS3, String IntervalToStopFuel_FS3, String PrintDate_FS3, String Company_FS3, String Location_FS3, String PersonName_FS3, String PrinterMacAddress_FS3, String PrinterName_FS3, String vehicleNumber_FS3, String accOther_FS3, String VehicleSum_FS3, String DeptSum_FS3, String VehPercentage_FS3, String DeptPercentage_FS3, String SurchargeType_FS3, String ProductPrice_FS3, String IsTLDCall_FS3, String EnablePrinter_FS3, String OdoMeter_FS3, String Hours_FS3, String PumpOnTime_FS3,String LimitReachedMessage_FS3,String SiteId_FS3) {
+    public static void SaveVehiFuelInPref_FS3(Context activity, String TransactionId_FS3, String VehicleId_FS3, String PhoneNumber_FS3, String PersonId_FS3, String PulseRatio_FS3, String MinLimit_FS3, String FuelTypeId_FS3, String ServerDate_FS3, String IntervalToStopFuel_FS3, String PrintDate_FS3, String Company_FS3, String Location_FS3, String PersonName_FS3, String PrinterMacAddress_FS3, String PrinterName_FS3, String vehicleNumber_FS3, String accOther_FS3, String VehicleSum_FS3, String DeptSum_FS3, String VehPercentage_FS3, String DeptPercentage_FS3, String SurchargeType_FS3, String ProductPrice_FS3, String IsTLDCall_FS3, String EnablePrinter_FS3, String OdoMeter_FS3, String Hours_FS3, String PumpOnTime_FS3,String LimitReachedMessage_FS3,String VehicleNumber_FS3,String TransactionDateWithFormat_FS3,String SiteId_FS3) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS3", TransactionId_FS3);
         editor.putString("VehicleId_FS3", VehicleId_FS3);
-        editor.putString("VehicleId_FS3", VehicleId_FS3);
+        editor.putString("VehicleNumber_FS3", VehicleNumber_FS3);
         editor.putString("PhoneNumber_FS3", PhoneNumber_FS3);
         editor.putString("PersonId_FS3", PersonId_FS3);
         editor.putString("PulseRatio_FS3", PulseRatio_FS3);
         editor.putString("MinLimit_FS3", MinLimit_FS3);
         editor.putString("FuelTypeId_FS3", FuelTypeId_FS3);
         editor.putString("ServerDate_FS3", ServerDate_FS3);
+        editor.putString("TransactionDateWithFormat_FS3", TransactionDateWithFormat_FS3);
         editor.putString("IntervalToStopFuel_FS3", IntervalToStopFuel_FS3);
         editor.putString("PumpOnTime_FS3", PumpOnTime_FS3);
         editor.putString("PrintDate_FS3", PrintDate_FS3);
@@ -844,20 +835,21 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS4(Context activity, String TransactionId_FS4, String VehicleId_FS4, String PhoneNumber_FS4, String PersonId_FS4, String PulseRatio_FS4, String MinLimit_FS4, String FuelTypeId_FS4, String ServerDate_FS4, String IntervalToStopFuel_FS4, String PrintDate_FS4, String Company_FS4, String Location_FS4, String PersonName_FS4, String PrinterMacAddress_FS4, String PrinterName_FS4, String vehicleNumber_FS4, String accOther_FS4, String VehicleSum_FS4, String DeptSum_FS4, String VehPercentage_FS4, String DeptPercentage_FS4, String SurchargeType_FS4, String ProductPrice_FS4, String IsTLDCall_FS4, String EnablePrinter_FS4, String OdoMeter_FS4, String Hours_FS4, String PumpOnTime_FS4,String LimitReachedMessage_FS4,String SiteId_FS4) {
+    public static void SaveVehiFuelInPref_FS4(Context activity, String TransactionId_FS4, String VehicleId_FS4, String PhoneNumber_FS4, String PersonId_FS4, String PulseRatio_FS4, String MinLimit_FS4, String FuelTypeId_FS4, String ServerDate_FS4, String IntervalToStopFuel_FS4, String PrintDate_FS4, String Company_FS4, String Location_FS4, String PersonName_FS4, String PrinterMacAddress_FS4, String PrinterName_FS4, String vehicleNumber_FS4, String accOther_FS4, String VehicleSum_FS4, String DeptSum_FS4, String VehPercentage_FS4, String DeptPercentage_FS4, String SurchargeType_FS4, String ProductPrice_FS4, String IsTLDCall_FS4, String EnablePrinter_FS4, String OdoMeter_FS4, String Hours_FS4, String PumpOnTime_FS4,String LimitReachedMessage_FS4,String VehicleNumber_FS4,String TransactionDateWithFormat_FS4,String SiteId_FS4) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS4", TransactionId_FS4);
         editor.putString("VehicleId_FS4", VehicleId_FS4);
-        editor.putString("VehicleId_FS4", VehicleId_FS4);
+        editor.putString("VehicleNumber_FS4", VehicleNumber_FS4);
         editor.putString("PhoneNumber_FS4", PhoneNumber_FS4);
         editor.putString("PersonId_FS4", PersonId_FS4);
         editor.putString("PulseRatio_FS4", PulseRatio_FS4);
         editor.putString("MinLimit_FS4", MinLimit_FS4);
         editor.putString("FuelTypeId_FS4", FuelTypeId_FS4);
         editor.putString("ServerDate_FS4", ServerDate_FS4);
+        editor.putString("TransactionDateWithFormat_FS4", TransactionDateWithFormat_FS4);
         editor.putString("IntervalToStopFuel_FS4", IntervalToStopFuel_FS4);
         editor.putString("PumpOnTime_FS4", PumpOnTime_FS4);
         editor.putString("PrintDate_FS4", PrintDate_FS4);
@@ -885,20 +877,21 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS5(Context activity, String TransactionId_FS5, String VehicleId_FS5, String PhoneNumber_FS5, String PersonId_FS5, String PulseRatio_FS5, String MinLimit_FS5, String FuelTypeId_FS5, String ServerDate_FS5, String IntervalToStopFuel_FS5, String PrintDate_FS5, String Company_FS5, String Location_FS5, String PersonName_FS5, String PrinterMacAddress_FS5, String PrinterName_FS5, String vehicleNumber_FS5, String accOther_FS5, String VehicleSum_FS5, String DeptSum_FS5, String VehPercentage_FS5, String DeptPercentage_FS5, String SurchargeType_FS5, String ProductPrice_FS5, String IsTLDCall_FS5, String EnablePrinter_FS5, String OdoMeter_FS5, String Hours_FS5, String PumpOnTime_FS5,String LimitReachedMessage_FS5,String SiteId_FS5) {
+    public static void SaveVehiFuelInPref_FS5(Context activity, String TransactionId_FS5, String VehicleId_FS5, String PhoneNumber_FS5, String PersonId_FS5, String PulseRatio_FS5, String MinLimit_FS5, String FuelTypeId_FS5, String ServerDate_FS5, String IntervalToStopFuel_FS5, String PrintDate_FS5, String Company_FS5, String Location_FS5, String PersonName_FS5, String PrinterMacAddress_FS5, String PrinterName_FS5, String vehicleNumber_FS5, String accOther_FS5, String VehicleSum_FS5, String DeptSum_FS5, String VehPercentage_FS5, String DeptPercentage_FS5, String SurchargeType_FS5, String ProductPrice_FS5, String IsTLDCall_FS5, String EnablePrinter_FS5, String OdoMeter_FS5, String Hours_FS5, String PumpOnTime_FS5,String LimitReachedMessage_FS5,String VehicleNumber_FS5,String TransactionDateWithFormat_FS5,String SiteId_FS5) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS5", TransactionId_FS5);
         editor.putString("VehicleId_FS5", VehicleId_FS5);
-        editor.putString("VehicleId_FS5", VehicleId_FS5);
+        editor.putString("VehicleNumber_FS5", VehicleNumber_FS5);
         editor.putString("PhoneNumber_FS5", PhoneNumber_FS5);
         editor.putString("PersonId_FS5", PersonId_FS5);
         editor.putString("PulseRatio_FS5", PulseRatio_FS5);
         editor.putString("MinLimit_FS5", MinLimit_FS5);
         editor.putString("FuelTypeId_FS5", FuelTypeId_FS5);
         editor.putString("ServerDate_FS5", ServerDate_FS5);
+        editor.putString("TransactionDateWithFormat_FS5", TransactionDateWithFormat_FS5);
         editor.putString("IntervalToStopFuel_FS5", IntervalToStopFuel_FS5);
         editor.putString("PumpOnTime_FS5", PumpOnTime_FS5);
         editor.putString("PrintDate_FS5", PrintDate_FS5);
@@ -926,20 +919,21 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS6(Context activity, String TransactionId_FS6, String VehicleId_FS6, String PhoneNumber_FS6, String PersonId_FS6, String PulseRatio_FS6, String MinLimit_FS6, String FuelTypeId_FS6, String ServerDate_FS6, String IntervalToStopFuel_FS6, String PrintDate_FS6, String Company_FS6, String Location_FS6, String PersonName_FS6, String PrinterMacAddress_FS6, String PrinterName_FS6, String vehicleNumber_FS6, String accOther_FS6, String VehicleSum_FS6, String DeptSum_FS6, String VehPercentage_FS6, String DeptPercentage_FS6, String SurchargeType_FS6, String ProductPrice_FS6, String IsTLDCall_FS6, String EnablePrinter_FS6, String OdoMeter_FS6, String Hours_FS6, String PumpOnTime_FS6,String LimitReachedMessage_FS6,String SiteId_FS6) {
+    public static void SaveVehiFuelInPref_FS6(Context activity, String TransactionId_FS6, String VehicleId_FS6, String PhoneNumber_FS6, String PersonId_FS6, String PulseRatio_FS6, String MinLimit_FS6, String FuelTypeId_FS6, String ServerDate_FS6, String IntervalToStopFuel_FS6, String PrintDate_FS6, String Company_FS6, String Location_FS6, String PersonName_FS6, String PrinterMacAddress_FS6, String PrinterName_FS6, String vehicleNumber_FS6, String accOther_FS6, String VehicleSum_FS6, String DeptSum_FS6, String VehPercentage_FS6, String DeptPercentage_FS6, String SurchargeType_FS6, String ProductPrice_FS6, String IsTLDCall_FS6, String EnablePrinter_FS6, String OdoMeter_FS6, String Hours_FS6, String PumpOnTime_FS6,String LimitReachedMessage_FS6,String VehicleNumber_FS6,String TransactionDateWithFormat_FS6,String SiteId_FS6) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS6", TransactionId_FS6);
         editor.putString("VehicleId_FS6", VehicleId_FS6);
-        editor.putString("VehicleId_FS6", VehicleId_FS6);
+        editor.putString("VehicleNumber_FS6", VehicleNumber_FS6);
         editor.putString("PhoneNumber_FS6", PhoneNumber_FS6);
         editor.putString("PersonId_FS6", PersonId_FS6);
         editor.putString("PulseRatio_FS6", PulseRatio_FS6);
         editor.putString("MinLimit_FS6", MinLimit_FS6);
         editor.putString("FuelTypeId_FS6", FuelTypeId_FS6);
         editor.putString("ServerDate_FS6", ServerDate_FS6);
+        editor.putString("TransactionDateWithFormat_FS6", TransactionDateWithFormat_FS6);
         editor.putString("IntervalToStopFuel_FS6", IntervalToStopFuel_FS6);
         editor.putString("PumpOnTime_FS6", PumpOnTime_FS6);
         editor.putString("PrintDate_FS6", PrintDate_FS6);

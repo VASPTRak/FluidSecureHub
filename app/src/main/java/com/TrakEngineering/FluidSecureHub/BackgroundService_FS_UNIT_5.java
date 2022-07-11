@@ -77,7 +77,7 @@ import static com.TrakEngineering.FluidSecureHub.CommonUtils.GetDateString;
 public class BackgroundService_FS_UNIT_5 extends Service {
 
 
-    private static final String TAG = "BS_FS5  ";
+    private static final String TAG = "BS_FS5 ";
     String EMPTY_Val = "";
     ConnectionDetector cd = new ConnectionDetector(BackgroundService_FS_UNIT_5.this);
     private int AttemptCount = 0;

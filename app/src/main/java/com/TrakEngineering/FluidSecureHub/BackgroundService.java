@@ -26,7 +26,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -143,12 +142,8 @@ public class BackgroundService extends Service {
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
             ReplaceHoseNameFlagSynToServer();
         }
-//        uploadLast10Transaction("storeCmtxtnid_10_record0"); //link0 last 10 trxn
-//        uploadLast10Transaction("storeCmtxtnid_10_record1"); //link1 last 10 trxn
-//        uploadLast10Transaction("storeCmtxtnid_10_record2"); //link2 last 10 trxn
-//        uploadLast10Transaction("storeCmtxtnid_10_record3"); //link3 last 10 trxn
 
-        //uploadLast20TransactionOnce(); // last 20 trxn
+        uploadLast20TransactionOnce(); // last 20 trxn
 
         uploadConnectionissueLogtoserver();// upload connection issue log.
 

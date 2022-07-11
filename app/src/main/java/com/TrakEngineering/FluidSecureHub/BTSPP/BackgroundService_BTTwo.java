@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -103,14 +104,14 @@ public class BackgroundService_BTTwo extends Service {
                 SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
                 TransactionId = sharedPref.getString("TransactionId", "");
                 VehicleId = sharedPref.getString("VehicleId", "");
-                VehicleNumber = ""; //sharedPref.getString("VehicleNumber", "");
+                VehicleNumber = sharedPref.getString("VehicleNumber", "");
                 PhoneNumber = sharedPref.getString("PhoneNumber", "");
                 PersonId = sharedPref.getString("PersonId", "");
                 PulseRatio = sharedPref.getString("PulseRatio", "1");
                 MinLimit = sharedPref.getString("MinLimit", "0");
                 FuelTypeId = sharedPref.getString("FuelTypeId", "");
                 ServerDate = sharedPref.getString("ServerDate", "");
-                TransactionDateWithFormat = ""; //sharedPref.getString("TransactionDateWithFormat", "");
+                TransactionDateWithFormat = sharedPref.getString("TransactionDateWithFormat", "");
                 IntervalToStopFuel = sharedPref.getString("IntervalToStopFuel", "0");
                 IsTLDCall = sharedPref.getString("IsTLDCall", "False");
                 EnablePrinter = sharedPref.getString("EnablePrinter", "False");
@@ -145,9 +146,10 @@ public class BackgroundService_BTTwo extends Service {
                 LinkName = CommonUtils.getlinkName(1);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
-                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")){
+
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
                         infoCommand();
-                    }else{
+                    } else {
                         IsThisBTTrnx = false;
                         CloseTransaction();
                         Log.i(TAG, "BTLink 2: Link not connected. Please try again!");
@@ -196,11 +198,24 @@ public class BackgroundService_BTTwo extends Service {
                     if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
                         //Info command success.
                         Log.i(TAG, "BTLink 2: InfoCommand Response success 1:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: InfoCommand Response success 1:>>" + Response);
 
                         if (!TransactionId.isEmpty()) {
-                            transactionIdCommand(TransactionId);
+                            if (Response.contains("records") && Response.contains("mac_address")) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 2: InfoCommand Response success 1.");
+                                BTConstants.isNewVersionLinkTwo = true;
+                                parseInfoCommandResponseForLast20txtn(Response);
+                                Response = "";
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 2: InfoCommand Response success 1:>>" + Response);
+                            }
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    transactionIdCommand(TransactionId);
+                                }
+                            }, 1000);
                         } else {
                             Log.i(TAG, "BTLink 2: Please check TransactionId empty>>" + TransactionId);
                             if (AppConstants.GenerateLogs)
@@ -220,10 +235,24 @@ public class BackgroundService_BTTwo extends Service {
                     if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
                         //Info command success.
                         Log.i(TAG, "BTLink 2: InfoCommand Response success 2:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: InfoCommand Response success 2:>>" + Response);
+
                         if (!TransactionId.isEmpty()) {
-                            transactionIdCommand(TransactionId);
+                            if (Response.contains("records") && Response.contains("mac_address")) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 2: InfoCommand Response success 2.");
+                                BTConstants.isNewVersionLinkTwo = true;
+                                parseInfoCommandResponseForLast20txtn(Response);
+                                Response = "";
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 2: InfoCommand Response success 2:>>" + Response);
+                            }
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    transactionIdCommand(TransactionId);
+                                }
+                            }, 1000);
                         } else {
                             Log.i(TAG, "BTLink 2: Please check TransactionId empty>>" + TransactionId);
                             if (AppConstants.GenerateLogs)
@@ -258,20 +287,25 @@ public class BackgroundService_BTTwo extends Service {
             Response = "";
             String transaction_id_cmd = BTConstants.transaction_id_cmd;
 
+            if (BTConstants.isNewVersionLinkTwo) {
+                transaction_id_cmd = transaction_id_cmd.replace("txtnid:", ""); // For New version LK_COMM=T:XXXXX;D:XXXXX;V:XXXXXXXX;
+                TransactionDateWithFormat = BTConstants.parseDateForNewVersion(TransactionDateWithFormat);
+            }
+
             if (IsThisBTTrnx) {
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send2(transaction_id_cmd + transactionId);
+                btspp.send2(transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
             } else {
-                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd + transactionId, SERVER_IP, this)).start();
+                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";", SERVER_IP, this)).start();
             }
-            Log.i(TAG, "BTLink 2: In Request>>" + transaction_id_cmd + transactionId);
+            Log.i(TAG, "BTLink 2: In Request>>" + transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
 
             new CountDownTimer(4000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
 
                     try {
-                        if (Request.equalsIgnoreCase(BTConstants.transaction_id_cmd + transactionId) && Response.contains(transactionId)) {
+                        if (Request.contains(transactionId) && Response.contains(transactionId)) {
                             //Info command success.
                             Log.i(TAG, "BTLink 2: transactionId Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
@@ -292,7 +326,7 @@ public class BackgroundService_BTTwo extends Service {
 
                 public void onFinish() {
 
-                    if (Request.equalsIgnoreCase(BTConstants.transaction_id_cmd + transactionId) && Response.contains(transactionId)) {
+                    if (Request.contains(transactionId) && Response.contains(transactionId)) {
                         //Info command success.
                         Log.i(TAG, "BTLink 2: transactionId Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
@@ -382,8 +416,8 @@ public class BackgroundService_BTTwo extends Service {
         try {
             unregisterReceiver(broadcastBlueLinkTwoData);
             stopTxtprocess = true;
-            Constants.FS_1STATUS = "FREE";
-            Constants.FS_1Pulse = "00";
+            Constants.FS_2STATUS = "FREE";
+            Constants.FS_2Pulse = "00";
             CancelTimer();
             this.stopSelf();
         } catch (Exception e) {
@@ -579,7 +613,11 @@ public class BackgroundService_BTTwo extends Service {
                 Log.i(TAG, "BTLink 2: Timer count..");
 
                 String checkPulses;
-                checkPulses = "pulse:";
+                if (BTConstants.isNewVersionLinkTwo) {
+                    checkPulses = "pulse";
+                } else {
+                    checkPulses = "pulse:";
+                }
 
                 FdCheckFunction(checkPulses);//Fdcheck
 
@@ -617,12 +655,21 @@ public class BackgroundService_BTTwo extends Service {
             pumpTimingsOnOffFunction();//PumpOn/PumpOff functionality
             String outputQuantity;
 
-            String[] items = Response.trim().split(":");
-            if (items.length > 1) {
-                outputQuantity = items[1].replaceAll("\"", "").trim();
+            if (BTConstants.isNewVersionLinkTwo) {
+                if (Response.contains("pulse")) {
+                    JSONObject jsonObj = new JSONObject(Response);
+                    outputQuantity = jsonObj.getString("pulse");
+                } else {
+                    return;
+                }
             } else {
-                // response is "OFF" after relay_off_cmd
-                return;
+                String[] items = Response.trim().split(":");
+                if (items.length > 1) {
+                    outputQuantity = items[1].replaceAll("\"", "").trim();
+                } else {
+                    // response is "OFF" after relay_off_cmd
+                    return;
+                }
             }
 
             Pulses = Integer.parseInt(outputQuantity);
@@ -758,6 +805,22 @@ public class BackgroundService_BTTwo extends Service {
                 renameOnCommand();
             }
 
+            /*// Save upgrade details to cloud
+            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            String hoseid = sharedPref.getString("hoseid_bt2", "");
+            String fsversion = sharedPref.getString("fsversion_bt2", "");
+
+            UpgradeVersionEntity objEntityClass = new UpgradeVersionEntity();
+            objEntityClass.IMEIUDID = AppConstants.getIMEI(BackgroundService_BTTwo.this);
+            objEntityClass.Email = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTTwo.this).PersonEmail;
+            objEntityClass.HoseId = hoseid;
+            objEntityClass.Version = fsversion;
+
+            if (hoseid != null && !hoseid.trim().isEmpty()) {
+                new UpgradeCurrentVersionWithUpgradableVersion(objEntityClass).execute();
+            }
+            //=============================================================*/
+
             boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTTwo.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
             if (!BSRunning) {
                 startService(new Intent(this, BackgroundService.class));
@@ -888,6 +951,99 @@ public class BackgroundService_BTTwo extends Service {
         }
     }
 
+    private  void parseInfoCommandResponseForLast20txtn(String response){
+
+        try{
+
+            ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
+
+            JSONObject jsonObject = new JSONObject(response);
+
+            JSONArray jsonArray = jsonObject.getJSONArray("records");
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject j = jsonArray.getJSONObject(i);
+                String txtn = j.getString("txtn");
+                String date = j.getString("date");
+                String vehicle = j.getString("vehicle");
+                String pulse = j.getString("pulse");
+                String dflag = j.getString("dflag");
+
+                try {
+                    if (!date.contains("-") && date.length() == 12) { // change date format from "yyMMddHHmmss" to "yyyy-MM-dd HH:mm:ss"
+                        date = BTConstants.parseDateForOldVersion(date);
+                    }
+                } catch (Exception e) {
+                    Log.i(TAG, " BTLink 2: Exception while parsing date format.>> " + e.getMessage());
+                }
+
+                HashMap<String, String> Hmap = new HashMap<>();
+                Hmap.put("TransactionID", txtn);//TransactionID
+                Hmap.put("Pulses", pulse);//Pulses
+                Hmap.put("FuelQuantity", ReturnQty(pulse));//FuelQuantity
+                Hmap.put("TransactionDateTime", date); //TransactionDateTime
+                Hmap.put("VehicleId", vehicle); //VehicleId
+                Hmap.put("dflag", dflag);
+
+                ReturnQty(pulse);
+
+                arrayList.add(Hmap);
+            }
+
+            Gson gs = new Gson();
+            EntityCmd20Txn ety = new EntityCmd20Txn();
+            ety.cmtxtnid_20_record = arrayList;
+
+            String json20txn = gs.toJson(ety);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 2: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);
+            Log.i(TAG, "BTLink 2: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);
+
+            SharedPreferences sharedPref = BackgroundService_BTTwo.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("LINK2", json20txn);
+            editor.apply();
+
+            JSONObject versionJsonArray = jsonObject.getJSONObject("version");
+            AppConstants.WriteinFile(TAG + " Version ==> " + versionJsonArray.getString("version"));
+
+        }catch (Exception e){
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 2: Exception in parseInfoCommandResponseForLast20txtn. response>> " + response + "; Exception>>" + e.toString());
+        }
+    }
+
+    public class EntityCmd20Txn {
+        ArrayList cmtxtnid_20_record;
+        String jsonfromLink;
+    }
+
+    private String ReturnQty(String outputQuantity){
+
+        String return_qty = "";
+        try {
+
+            double fillqty = 0;
+            Integer Pulses = Integer.parseInt(outputQuantity);
+            if (Pulses > 0) {
+                fillqty = Double.parseDouble(outputQuantity);
+                fillqty = fillqty / numPulseRatio;//convert to gallons
+
+                fillqty = AppConstants.roundNumber(fillqty, 2);
+
+                DecimalFormat precision = new DecimalFormat("0.00");
+                return_qty = (precision.format(fillqty));
+            }else{
+                return_qty = "0";
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return return_qty;
+    }
+
     public void offlineLogicBT2() {
 
         try {
@@ -925,7 +1081,7 @@ public class BackgroundService_BTTwo extends Service {
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
             Calendar calendar = Calendar.getInstance();
-            TransactionDateWithFormat = ""; //BTConstants.dateFormatForOldVersion.format(calendar.getTime());
+            TransactionDateWithFormat = BTConstants.dateFormatForOldVersion.format(calendar.getTime());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -956,6 +1112,62 @@ public class BackgroundService_BTTwo extends Service {
                 }
             }
         }
-
     }
+
+    /*public void storeUpgradeFSVersion(Context context, String hoseid, String fsversion) {
+
+        SharedPreferences sharedPref = context.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("hoseid_bt2", hoseid);
+        editor.putString("fsversion_bt2", fsversion);
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " Upgrade details saved. (" + hoseid + "==>" + fsversion + ")");
+        editor.commit();
+    }
+
+    public class UpgradeCurrentVersionWithUpgradableVersion extends AsyncTask<Void, Void, String> {
+        UpgradeVersionEntity objUpgrade;
+        public String response = null;
+
+        public UpgradeCurrentVersionWithUpgradableVersion(UpgradeVersionEntity objUpgrade) {
+            this.objUpgrade = objUpgrade;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            try {
+                ServerHandler serverHandler = new ServerHandler();
+
+                Gson gson = new Gson();
+                String jsonData = gson.toJson(objUpgrade);
+                AppConstants.WriteinFile(TAG + " BTLink 2: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
+
+                //----------------------------------------------------------------------------------
+                String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion");
+                response = serverHandler.PostTextData(BackgroundService_BTTwo.this, AppConstants.webURL, jsonData, authString);
+                //----------------------------------------------------------------------------------
+
+            } catch (Exception ex) {
+                AppConstants.WriteinFile(TAG + " BTLink 2: UpgradeCurrentVersionWithUpgradableVersion Exception: " + ex.getMessage());
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String aVoid) {
+            try {
+                JSONObject jsonObject = new JSONObject(aVoid);
+                String ResponceMessage = jsonObject.getString("ResponceMessage");
+                String ResponceText = jsonObject.getString("ResponceText");
+
+                if (ResponceMessage.equalsIgnoreCase("success")) {
+                    AppConstants.clearSharedPrefByName(BackgroundService_BTTwo.this, Constants.PREF_FS_UPGRADE);
+                }
+            } catch (Exception e) {
+                AppConstants.WriteinFile(TAG + " BTLink 2: UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
+            }
+        }
+    }*/
+
 }

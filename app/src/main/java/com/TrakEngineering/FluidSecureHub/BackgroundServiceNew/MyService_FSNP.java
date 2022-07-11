@@ -1,6 +1,5 @@
 package com.TrakEngineering.FluidSecureHub.BackgroundServiceNew;
 
-import android.app.Activity;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -29,7 +28,6 @@ import com.TrakEngineering.FluidSecureHub.BackgroundService_FS_UNIT_3;
 import com.TrakEngineering.FluidSecureHub.BackgroundService_FS_UNIT_4;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.Constants;
-import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.TrakEngineering.FluidSecureHub.retrofit.BusProvider;
 import com.TrakEngineering.FluidSecureHub.retrofit.ErrorEvent;
 import com.TrakEngineering.FluidSecureHub.retrofit.Interface;
@@ -52,7 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -862,7 +859,7 @@ public class MyService_FSNP extends Service {
                         String PumpOnTime_FS1 = "";
 
 
-                        CommonUtils.SaveVehiFuelInPref_FS1(MyService_FSNP.this, TransactionId_FS1, VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1, PrintDate_FS1, Company_FS1, Location_FS1, PersonName_FS1, PrinterMacAddress_FS1, PrinterName_FS1, vehicleNumber, accOther, VehicleSum_FS1, DeptSum_FS1, VehPercentage_FS1, DeptPercentage_FS1, SurchargeType_FS1, ProductPrice_FS1, IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1,"","");
+                        CommonUtils.SaveVehiFuelInPref_FS1(MyService_FSNP.this, TransactionId_FS1, VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1, PrintDate_FS1, Company_FS1, Location_FS1, PersonName_FS1, PrinterMacAddress_FS1, PrinterName_FS1, vehicleNumber, accOther, VehicleSum_FS1, DeptSum_FS1, VehPercentage_FS1, DeptPercentage_FS1, SurchargeType_FS1, ProductPrice_FS1, IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1,"","","","");
 
 
                     } else if (SelectedHose.equalsIgnoreCase("1")) {
@@ -902,7 +899,7 @@ public class MyService_FSNP extends Service {
                         String PumpOnTime = "";
 
 
-                        CommonUtils.SaveVehiFuelInPref(MyService_FSNP.this, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, PrintDate, Company, Location, PersonName, PrinterMacAddress, PrinterName, vehicleNumber, accOther, VehicleSum, DeptSum, VehPercentage, DeptPercentage, SurchargeType, ProductPrice, IsTLDCall1,EnablePrinter1,OdoMeter,Hours,PumpOnTime,"","");
+                        CommonUtils.SaveVehiFuelInPref(MyService_FSNP.this, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, PrintDate, Company, Location, PersonName, PrinterMacAddress, PrinterName, vehicleNumber, accOther, VehicleSum, DeptSum, VehPercentage, DeptPercentage, SurchargeType, ProductPrice, IsTLDCall1,EnablePrinter1,OdoMeter,Hours,PumpOnTime,"","","","");
 
 
                     } else if (SelectedHose.equalsIgnoreCase("2")) {
@@ -940,7 +937,7 @@ public class MyService_FSNP extends Service {
                         String Hours_FS3 = "";
                         String PumpOnTime_FS3 = "";
 
-                        CommonUtils.SaveVehiFuelInPref_FS3(MyService_FSNP.this, TransactionId_FS3, VehicleId_FS3, PhoneNumber_FS3, PersonId_FS3, PulseRatio_FS3, MinLimit_FS3, FuelTypeId_FS3, ServerDate_FS3, IntervalToStopFuel_FS3, PrintDate_FS3, Company_FS3, Location_FS3, PersonName_FS3, PrinterMacAddress_FS3, PrinterName_FS3, vehicleNumber, accOther, VehicleSum_FS3, DeptSum_FS3, VehPercentage_FS3, DeptPercentage_FS3, SurchargeType_FS3, ProductPrice_FS3, IsTLDCall_FS3,EnablePrinter_FS3,OdoMeter_FS3,Hours_FS3,PumpOnTime_FS3,"","");
+                        CommonUtils.SaveVehiFuelInPref_FS3(MyService_FSNP.this, TransactionId_FS3, VehicleId_FS3, PhoneNumber_FS3, PersonId_FS3, PulseRatio_FS3, MinLimit_FS3, FuelTypeId_FS3, ServerDate_FS3, IntervalToStopFuel_FS3, PrintDate_FS3, Company_FS3, Location_FS3, PersonName_FS3, PrinterMacAddress_FS3, PrinterName_FS3, vehicleNumber, accOther, VehicleSum_FS3, DeptSum_FS3, VehPercentage_FS3, DeptPercentage_FS3, SurchargeType_FS3, ProductPrice_FS3, IsTLDCall_FS3,EnablePrinter_FS3,OdoMeter_FS3,Hours_FS3,PumpOnTime_FS3,"","","","");
 
                     } else if (SelectedHose.equalsIgnoreCase("3")) {
 
@@ -976,7 +973,7 @@ public class MyService_FSNP extends Service {
                         String Hours_FS4 = "";
                         String PumpOnTime_FS4 = "";
 
-                        CommonUtils.SaveVehiFuelInPref_FS4(MyService_FSNP.this, TransactionId_FS4, VehicleId_FS4, PhoneNumber_FS4, PersonId_FS4, PulseRatio_FS4, MinLimit_FS4, FuelTypeId_FS4, ServerDate_FS4, IntervalToStopFuel_FS4, PrintDate_FS4, Company_FS4, Location_FS4, PersonName_FS4, PrinterMacAddress_FS4, PrinterName_FS4, vehicleNumber, accOther, VehicleSum_FS4, DeptSum_FS4, VehPercentage_FS4, DeptPercentage_FS4, SurchargeType_FS4, ProductPrice_FS4, IsTLDCall_FS4,EnablePrinter_FS4,OdoMeter_FS4,Hours_FS4,PumpOnTime_FS4,"","");
+                        CommonUtils.SaveVehiFuelInPref_FS4(MyService_FSNP.this, TransactionId_FS4, VehicleId_FS4, PhoneNumber_FS4, PersonId_FS4, PulseRatio_FS4, MinLimit_FS4, FuelTypeId_FS4, ServerDate_FS4, IntervalToStopFuel_FS4, PrintDate_FS4, Company_FS4, Location_FS4, PersonName_FS4, PrinterMacAddress_FS4, PrinterName_FS4, vehicleNumber, accOther, VehicleSum_FS4, DeptSum_FS4, VehPercentage_FS4, DeptPercentage_FS4, SurchargeType_FS4, ProductPrice_FS4, IsTLDCall_FS4,EnablePrinter_FS4,OdoMeter_FS4,Hours_FS4,PumpOnTime_FS4,"","","","");
 
 
                     } else {

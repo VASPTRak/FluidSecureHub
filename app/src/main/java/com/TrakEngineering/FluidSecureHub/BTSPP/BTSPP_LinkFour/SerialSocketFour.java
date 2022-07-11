@@ -89,9 +89,9 @@ public class SerialSocketFour implements Runnable {
         if (!connected)
             throw new IOException("not connected");
         try {
-            Log.i(TAG, "BTLink 1:InreadPulse:");
+            Log.i(TAG, "BTLink 4:InreadPulse:");
             if (socket.isConnected())
-            Log.i(TAG, "BTLink 1:InreadPulse:socket connected");
+            Log.i(TAG, "BTLink 4:InreadPulse:socket connected");
 
             try {
                 InputStream socketInputStream = socket.getInputStream();
@@ -104,19 +104,19 @@ public class SerialSocketFour implements Runnable {
                         byte[] data = Arrays.copyOf(buffer, len);
                         if(listener != null)
                             listener.onSerialReadFour(data);
-                        Log.i(TAG, "BTLink 1:InreadPulse data: "+data.toString());
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 1:InreadPulse data: "+data.toString());
+                        Log.i(TAG, "BTLink 4:InreadPulse data: "+data.toString());
+                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 4:InreadPulse data: "+data.toString());
                     }
 
                 }else{
-                    Log.i(TAG, "BTLink 1:InreadPulse socketInputStream not avilable ");
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 1:InreadPulse socketInputStream not avilable ");
+                    Log.i(TAG, "BTLink 4:InreadPulse socketInputStream not avilable ");
+                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 4:InreadPulse socketInputStream not avilable ");
                 }
 
             }catch (Exception e){
                 e.printStackTrace();
-                Log.i(TAG, "BTLink 1:InreadPulse:Exception:"+e.toString());
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 1:InreadPulse:Exception:"+e.toString());
+                Log.i(TAG, "BTLink 4:InreadPulse:Exception:"+e.toString());
+                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 4:InreadPulse:Exception:"+e.toString());
             }
 
         }catch (Exception e){

@@ -10,14 +10,14 @@ import android.text.SpannableStringBuilder;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
-import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialListenerFour;
-import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialSocketFour;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkOne.SerialListenerOne;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkOne.SerialSocketOne;
-import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkThree.SerialListenerThree;
-import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkThree.SerialSocketThree;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkTwo.SerialListenerTwo;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkTwo.SerialSocketTwo;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkThree.SerialListenerThree;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkThree.SerialSocketThree;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialListenerFour;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialSocketFour;
 
 import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.service1;
 import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.service2;
@@ -31,6 +31,10 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     private String newline = "\r\n";
     //private String deviceAddress1 = ""; //80:7D:3A:A4:67:22
     //private String deviceAddress2 = "";
+    StringBuilder sb1 = new StringBuilder();
+    StringBuilder sb2 = new StringBuilder();
+    StringBuilder sb3 = new StringBuilder();
+    StringBuilder sb4 = new StringBuilder();
 
     public void CheckForStoredMacAddress() {
 
@@ -104,7 +108,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTLink 1: Link not connected");
             //Toast.makeText(activity, "BTLink 1: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTLink 1: Link not connected");
+                AppConstants.WriteinFile(TAG + " BTLink 1: Link not connected");
             return;
         }
         try {
@@ -117,6 +121,22 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             onSerialIoErrorOne(e);
         }
     }
+
+    /*public void sendBytes1(byte[] data) {
+        if (!BTConstants.BTLinkOneStatus) {
+            BTConstants.CurrentCommand_LinkOne = "";
+            Log.i(TAG, "BTLink 1: Link not connected");
+            //Toast.makeText(activity, "BTLink 1: Link not connected", Toast.LENGTH_SHORT).show();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: Link not connected");
+            return;
+        }
+        try {
+            service1.write(data);
+        } catch (Exception e) {
+            onSerialIoErrorOne(e);
+        }
+    }*/
 
     public void readPulse1() {
         if (!BTConstants.BTLinkOneStatus) {
@@ -138,10 +158,32 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         Log.i(TAG, "BTLink 1: Request>>" + BTConstants.CurrentCommand_LinkOne);
         Log.i(TAG, "BTLink 1: Response>>" + spn.toString());
 
+        //==========================================
+        if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+            BTConstants.isNewVersionLinkOne = true;
+        }
+        if (Response.contains("$$")) {
+            if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase("LK_COMM=info")) {
+                sb1.append(Response.replace("$$", ""));
+            }
+            sendBroadcastIntentFromLinkOne(sb1.toString());
+            sb1.setLength(0);
+        } else {
+            if (BTConstants.isNewVersionLinkOne) {
+                sb1.append(Response);
+            } else {
+                // For old version Link response
+                sb1.setLength(0);
+                sendBroadcastIntentFromLinkOne(spn.toString());
+            }
+        }
+    }
+
+    public void sendBroadcastIntentFromLinkOne(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkOneData");
         broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkOne);
-        broadcastIntent.putExtra("Response", spn.toString());
+        broadcastIntent.putExtra("Response", spn);
         broadcastIntent.putExtra("Action", "BlueLinkOne");
         activity.sendBroadcast(broadcastIntent);
     }
@@ -203,7 +245,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTLink 2: Link not connected");
             //Toast.makeText(activity, "BTLink 2: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTLink 2: Link not connected");
+                AppConstants.WriteinFile(TAG + " BTLink 2: Link not connected");
             return;
         }
         try {
@@ -213,9 +255,24 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service2.write(data);
         } catch (Exception e) {
-            onSerialIoErrorOne(e);
+            onSerialIoErrorTwo(e);
         }
     }
+
+    /*public void sendBytes2(byte[] data) {
+        if (!BTConstants.BTLinkTwoStatus) {
+            BTConstants.CurrentCommand_LinkTwo = "";
+            Log.i(TAG, "BTLink 2: Link not connected");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 2: Link not connected");
+            return;
+        }
+        try {
+            service2.write(data);
+        } catch (Exception e) {
+            onSerialIoErrorTwo(e);
+        }
+    }*/
 
     public void receive2(byte[] data) {
         String Response = new String(data);
@@ -223,10 +280,32 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         Log.i(TAG, "BTLink 2: Request>>" + BTConstants.CurrentCommand_LinkTwo);
         Log.i(TAG, "BTLink 2: Response>>" + spn.toString());
 
+        //==========================================
+        if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+            BTConstants.isNewVersionLinkTwo = true;
+        }
+        if (Response.contains("$$")) {
+            if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase("LK_COMM=info")) {
+                sb2.append(Response.replace("$$", ""));
+            }
+            sendBroadcastIntentFromLinkTwo(sb2.toString());
+            sb2.setLength(0);
+        } else {
+            if (BTConstants.isNewVersionLinkTwo) {
+                sb2.append(Response);
+            } else {
+                // For old version Link response
+                sb2.setLength(0);
+                sendBroadcastIntentFromLinkTwo(spn.toString());
+            }
+        }
+    }
+
+    public void sendBroadcastIntentFromLinkTwo(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkTwoData");
         broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkTwo);
-        broadcastIntent.putExtra("Response", spn.toString());
+        broadcastIntent.putExtra("Response", spn);
         broadcastIntent.putExtra("Action", "BlueLinkTwo");
         activity.sendBroadcast(broadcastIntent);
     }
@@ -287,7 +366,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTLink 3: Link not connected");
             //Toast.makeText(activity, "BTLink 3: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTLink 3: Link not connected");
+                AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected");
             return;
         }
         try {
@@ -301,16 +380,53 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
     }
 
+    /*public void sendBytes3(byte[] data) {
+        if (!BTConstants.BTLinkThreeStatus) {
+            BTConstants.CurrentCommand_LinkThree = "";
+            Log.i(TAG, "BTLink 3: Link not connected");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected");
+            return;
+        }
+        try {
+            service3.write(data);
+        } catch (Exception e) {
+            onSerialIoErrorThree(e);
+        }
+    }*/
+
     public void receive3(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 3: Request>>" + BTConstants.CurrentCommand_LinkThree);
         Log.i(TAG, "BTLink 3: Response>>" + spn.toString());
 
+        //==========================================
+        if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+            BTConstants.isNewVersionLinkThree = true;
+        }
+        if (Response.contains("$$")) {
+            if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase("LK_COMM=info")) {
+                sb3.append(Response.replace("$$", ""));
+            }
+            sendBroadcastIntentFromLinkThree(sb3.toString());
+            sb3.setLength(0);
+        } else {
+            if (BTConstants.isNewVersionLinkThree) {
+                sb3.append(Response);
+            } else {
+                // For old version Link response
+                sb3.setLength(0);
+                sendBroadcastIntentFromLinkThree(spn.toString());
+            }
+        }
+    }
+
+    public void sendBroadcastIntentFromLinkThree(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkThreeData");
         broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkThree);
-        broadcastIntent.putExtra("Response", spn.toString());
+        broadcastIntent.putExtra("Response", spn);
         broadcastIntent.putExtra("Action", "BlueLinkThree");
         activity.sendBroadcast(broadcastIntent);
     }
@@ -372,7 +488,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTLink 4: Link not connected");
             //Toast.makeText(activity, "BTLink 4: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTLink 4: Link not connected");
+                AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected");
             return;
         }
         try {
@@ -386,16 +502,53 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
     }
 
+    /*public void sendBytes4(byte[] data) {
+        if (!BTConstants.BTLinkFourStatus) {
+            BTConstants.CurrentCommand_LinkFour = "";
+            Log.i(TAG, "BTLink 4: Link not connected");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected");
+            return;
+        }
+        try {
+            service4.write(data);
+        } catch (Exception e) {
+            onSerialIoErrorFour(e);
+        }
+    }*/
+
     public void receive4(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 4: Request>>" + BTConstants.CurrentCommand_LinkFour);
         Log.i(TAG, "BTLink 4: Response>>" + spn.toString());
 
+        //==========================================
+        if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+            BTConstants.isNewVersionLinkFour = true;
+        }
+        if (Response.contains("$$")) {
+            if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase("LK_COMM=info")) {
+                sb4.append(Response.replace("$$", ""));
+            }
+            sendBroadcastIntentFromLinkFour(sb4.toString());
+            sb4.setLength(0);
+        } else {
+            if (BTConstants.isNewVersionLinkFour) {
+                sb4.append(Response);
+            } else {
+                // For old version Link response
+                sb4.setLength(0);
+                sendBroadcastIntentFromLinkFour(spn.toString());
+            }
+        }
+    }
+
+    public void sendBroadcastIntentFromLinkFour(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkFourData");
         broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkFour);
-        broadcastIntent.putExtra("Response", spn.toString());
+        broadcastIntent.putExtra("Response", spn);
         broadcastIntent.putExtra("Action", "BlueLinkFour");
         activity.sendBroadcast(broadcastIntent);
     }

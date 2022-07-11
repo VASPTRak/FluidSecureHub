@@ -84,7 +84,7 @@ import static com.TrakEngineering.FluidSecureHub.CommonUtils.GetDateString;
 public class BackgroundService_AP_PIPE extends Service {
 
 
-    private static final String TAG = "BS_AP_PI";
+    private static final String TAG = "BS_AP_PI ";
     String EMPTY_Val = "";
     ConnectionDetector cd = new ConnectionDetector(BackgroundService_AP_PIPE.this);
     private int AttemptCount = 0;
