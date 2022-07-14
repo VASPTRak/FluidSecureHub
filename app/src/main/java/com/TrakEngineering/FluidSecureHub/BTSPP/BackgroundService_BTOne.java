@@ -942,7 +942,8 @@ public class BackgroundService_BTOne extends Service {
     }
 
     private void fdCheckCommand() {
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " BTLink 1: Execute FD Check..>>");
         //Execute FD_check Command
         Request = "";
         Response = "";

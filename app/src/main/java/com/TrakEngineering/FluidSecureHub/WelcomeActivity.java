@@ -377,6 +377,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     String iot_version = "";
     ServerHandler serverHandler = new ServerHandler();
     public int HotspotEnableErrorCount = 0;
+    public boolean goButtonClicked = false;
 
     //============ Bluetooth reader Gatt end==============
 
@@ -1559,6 +1560,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         qrcodebleServiceOn();
         //launchCamera();     //Calling camera activity for image capture on GO button click
 
+        String LinkType = "";
+        if (serverSSIDList.size() > 0) {
+            LinkType = serverSSIDList.get(0).get("LinkCommunicationType");
+        }
+        if (!goButtonClicked && AppConstants.IsSingleLink && LinkType.equalsIgnoreCase("BT")) {
+            goButtonClicked = true;
+            CheckBTConnection(0, AppConstants.CURRENT_SELECTED_SSID, AppConstants.SELECTED_MACADDRESS);
+            return;
+        }
         ///////////////////common online offline///////////////////////////////
         EntityHub obj = offcontroller.getOfflineHubDetails(WelcomeActivity.this);
 
@@ -1586,6 +1596,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             String IsTankEmpty = serverSSIDList.get(SelectedItemPos).get("IsTankEmpty");
                             String IsLinkFlagged = serverSSIDList.get(SelectedItemPos).get("IsLinkFlagged");
                             String LinkFlaggedMessage = serverSSIDList.get(SelectedItemPos).get("LinkFlaggedMessage");
+                            String LinkCommunicationType = serverSSIDList.get(SelectedItemPos).get("LinkCommunicationType");
                             AppConstants.LAST_CONNECTED_SSID = selectedSSID;
 
                             if (IsTankEmpty.equalsIgnoreCase("True")) {
@@ -2959,7 +2970,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             String PulserTimingAd = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
                             IsDefective = serverSSIDList.get(SelectedItemPos).get("IsDefective");
                             AppConstants.PulserTimingAdjust = PulserTimingAd;
-
 
                             //tld is upgrade
                             String IsTLDFirmwareUpgrade = serverSSIDList.get(SelectedItemPos).get("IsTLDFirmwareUpgrade");
@@ -6284,26 +6294,28 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } else {
 
-            try {
-                IpAddress = "";
-                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                    if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                        break;
-                    } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
-                        if (!IpAddress.trim().isEmpty()) {
+            if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
+                try {
+                    IpAddress = "";
+                    for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                        String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                        if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
+                            IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
                             break;
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                            String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                            IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
+                            if (!IpAddress.trim().isEmpty()) {
+                                break;
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
-            } catch (Exception e) {
-                System.out.println(e);
             }
 
             if (IpAddress.equals("") && !LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -7694,36 +7706,38 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         if (serverSSIDList != null && serverSSIDList.size() == 1 && IsGateHub.equalsIgnoreCase("True") && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
 
-                            String macaddress = AppConstants.SELECTED_MACADDRESS;
-                            String HTTP_URL = "";
-                            String IpAddress = "";
+                            String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
 
-                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                if (macaddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                                    IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                                    break;
-                                } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                                    String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                            if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
+                                String macaddress = AppConstants.SELECTED_MACADDRESS;
+                                String HTTP_URL = "";
+                                String IpAddress = "";
 
-                                    IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, macaddress, MA_ConnectedDevices);
-                                    if (!IpAddress.trim().isEmpty()) {
+                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                    if (macaddress.equalsIgnoreCase(MA_ConnectedDevices)) {
+                                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
                                         break;
+                                    } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, macaddress, MA_ConnectedDevices);
+                                        if (!IpAddress.trim().isEmpty()) {
+                                            break;
+                                        }
                                     }
                                 }
+                                if (!IpAddress.trim().isEmpty()) {
+                                    HTTP_URL = "http://" + IpAddress + ":80/";
+                                }
+
+                                AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
+
+                                GateHubStartTransaction(HTTP_URL);
+                                new GetSSIDUsingLocationGateHub().execute();//temp to solve crash issue
                             }
-                            if (!IpAddress.trim().isEmpty()) {
-                                HTTP_URL = "http://" + IpAddress + ":80/";
-                            }
-
-                            AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-
-                            GateHubStartTransaction(HTTP_URL);
-                            new GetSSIDUsingLocationGateHub().execute();//temp to solve crash issue
-
-
                         } else {
                             new GetSSIDUsingLocationGateHub().execute();//temp to solve crash issue
                         }
@@ -7738,45 +7752,60 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     cancelThinDownloadManager();
                     try {
+                        AppConstants.IsSingleLink = true;
                         String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                         String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                         AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-                        String Chk_ip = "";
-                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
-                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                        String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
+                        String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
+                        String selSSID = serverSSIDList.get(0).get("WifiSSId");
+
+                        if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")) {
+                            //tvSSIDName.setText("Tap here to select hose");
+                            //btnGo.setVisibility(View.VISIBLE);
+                            AppConstants.CURRENT_SELECTED_SSID = selSSID;
+                            AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
+                            tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                            OnHoseSelected_OnClick(Integer.toString(0));
+
                         } else {
-                            getipOverOSVersion();
-                        }
+                            String Chk_ip = "";
+                            if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                                Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                            } else {
+                                getipOverOSVersion();
+                            }
 
-                        if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
+                            if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
-                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
 
-                                String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+                                    String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                    if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
 
-                                    SelectedItemPos = 0;
-                                    tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
-                                    OnHoseSelected_OnClick(Integer.toString(0));
-                                    break;
-                                } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                                    String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                                    IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
-                                    if (!IpAddress.trim().isEmpty()) {
                                         SelectedItemPos = 0;
                                         tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
                                         OnHoseSelected_OnClick(Integer.toString(0));
                                         break;
+                                    } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
+                                        if (!IpAddress.trim().isEmpty()) {
+                                            SelectedItemPos = 0;
+                                            tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                            OnHoseSelected_OnClick(Integer.toString(0));
+                                            break;
+                                        }
                                     }
                                 }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "Auto select fail");
                             }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Auto select fail");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -9025,45 +9054,50 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-                                    String Chk_ip = "";
-                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
-                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
-                                    else {
-                                        getipOverOSVersion();
-                                    }
+                                    String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
 
                                     OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", AppConstants.SITE_ID, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"));
 
-                                    if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
+                                    if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
 
-                                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                        String Chk_ip = "";
+                                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
+                                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                        else {
+                                            getipOverOSVersion();
+                                        }
 
-                                            String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                            if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+                                        if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
-                                                tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
-                                                OnHoseSelected_OnClick(Integer.toString(0));
-                                                goButtonAction(null);
-                                                break;
-                                            } else {
-                                                if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                                                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
 
-                                                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
-                                                if (!IpAddress.trim().isEmpty()) {
+                                                String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+
                                                     tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
                                                     OnHoseSelected_OnClick(Integer.toString(0));
                                                     goButtonAction(null);
                                                     break;
+                                                } else {
+                                                    if (AppConstants.GenerateLogs)
+                                                        AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                                                    String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                                    IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
+                                                    if (!IpAddress.trim().isEmpty()) {
+                                                        tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                                        OnHoseSelected_OnClick(Integer.toString(0));
+                                                        goButtonAction(null);
+                                                        break;
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        }
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -9073,24 +9107,32 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                 cancelThinDownloadManager();
                                 try {
+                                    AppConstants.IsSingleLink = true;
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
-                                    String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-                                    String Chk_ip = "";
-                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
-                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
-                                    } else {
-                                        getipOverOSVersion();
-                                    }
+                                    String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
+                                    String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
+                                    String selSSID = serverSSIDList.get(0).get("WifiSSId");
 
                                     OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", AppConstants.SITE_ID, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"));
 
                                     if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")) {
-                                        tvSSIDName.setText("Tap here to select hose");
-                                        btnGo.setVisibility(View.VISIBLE);
+                                        //tvSSIDName.setText("Tap here to select hose");
+                                        //btnGo.setVisibility(View.VISIBLE);
+                                        AppConstants.CURRENT_SELECTED_SSID = selSSID;
+                                        AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
+                                        tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                        OnHoseSelected_OnClick(Integer.toString(0));
 
                                     } else {
+                                        String Chk_ip = "";
+                                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                        } else {
+                                            getipOverOSVersion();
+                                        }
+
                                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
                                             for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
@@ -9810,7 +9852,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }
                         try {
 
-
                             if (serverSSIDList != null && serverSSIDList.size() == 1 && IsGateHub.equalsIgnoreCase("True") && Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
 
                                 //Thread.sleep(1000);
@@ -9818,44 +9859,48 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
+                                    String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
 
-                                    String Chk_ip = "";
-                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
-                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
-                                    else {
-                                        getipOverOSVersion();
-                                    }
+                                    if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
 
-                                    if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
+                                        String Chk_ip = "";
+                                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
+                                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                        else {
+                                            getipOverOSVersion();
+                                        }
 
-                                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                        if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
-                                            String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                            if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+                                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
 
-                                                tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
-                                                OnHoseSelected_OnClick(Integer.toString(0));
-                                                goButtonAction(null);
-                                                break;
-                                            } else {
-                                                if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                                                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                                String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
 
-                                                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
-                                                if (!IpAddress.trim().isEmpty()) {
                                                     tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
                                                     OnHoseSelected_OnClick(Integer.toString(0));
                                                     goButtonAction(null);
                                                     break;
+                                                } else {
+                                                    if (AppConstants.GenerateLogs)
+                                                        AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                                                    String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                                    IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
+                                                    if (!IpAddress.trim().isEmpty()) {
+                                                        tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                                        OnHoseSelected_OnClick(Integer.toString(0));
+                                                        goButtonAction(null);
+                                                        break;
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        }
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -9864,46 +9909,62 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             } else if (serverSSIDList != null && serverSSIDList.size() == 1 && Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
 
                                 try {
+                                    AppConstants.IsSingleLink = true;
                                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-                                    String Chk_ip = "";
-                                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
-                                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                    String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
+                                    String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
+                                    String selSSID = serverSSIDList.get(0).get("WifiSSId");
+
+                                    if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")) {
+                                        //tvSSIDName.setText("Tap here to select hose");
+                                        //btnGo.setVisibility(View.VISIBLE);
+                                        AppConstants.CURRENT_SELECTED_SSID = selSSID;
+                                        AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
+                                        tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                        OnHoseSelected_OnClick(Integer.toString(0));
+
                                     } else {
-                                        getipOverOSVersion();
-                                    }
+                                        String Chk_ip = "";
+                                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                                        } else {
+                                            getipOverOSVersion();
+                                        }
 
-                                    if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
+                                        if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
-                                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
 
-                                            String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                            if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
+                                                String Chk_mac = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                if (SSID_mac.equalsIgnoreCase(Chk_mac)) {
 
-                                                SelectedItemPos = 0;
-                                                tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
-                                                OnHoseSelected_OnClick(Integer.toString(0));
-                                                break;
-                                            } else {
-                                                if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                                                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                                                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
-                                                if (!IpAddress.trim().isEmpty()) {
+                                                    SelectedItemPos = 0;
                                                     tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
                                                     OnHoseSelected_OnClick(Integer.toString(0));
                                                     break;
+                                                } else {
+                                                    if (AppConstants.GenerateLogs)
+                                                        AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
+                                                    String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                                    IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, SSID_mac, Chk_mac);
+                                                    if (!IpAddress.trim().isEmpty()) {
+                                                        tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                                                        OnHoseSelected_OnClick(Integer.toString(0));
+                                                        break;
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Auto select fail", Toast.LENGTH_SHORT).show();
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Auto select fail");
+                                        }
                                     }
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -11840,7 +11901,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
 
                         AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                        RedirectBtLinkOneToNextScreen(selSSID);
+                        RedirectBtLinkOneToNextScreen(selSSID, false);
 
                     } else {
                         BTL1State = 0;
@@ -11877,7 +11938,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     }
 
                                     //code should direct user to next screen.
-                                    RedirectBtLinkOneToNextScreen(selSSID);
+                                    RedirectBtLinkOneToNextScreen(selSSID, false);
 
 
                                 } else {
@@ -12383,28 +12444,38 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         if (serverSSIDList != null && serverSSIDList.size() == 1 && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
 
             try {
+                AppConstants.IsSingleLink = true;
                 String ssidFromList = serverSSIDList.get(0).get("WifiSSId");
                 String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
                 String stringText = tvSSIDName.getText().toString().trim();
+                String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
+                String selSSID = serverSSIDList.get(0).get("WifiSSId");
+
                 if (!stringText.equalsIgnoreCase(ssidFromList)) {
                     //------------------------
                     String SSID_mac = serverSSIDList.get(0).get("MacAddress");
                     String ReconfigureLink = serverSSIDList.get(0).get("ReconfigureLink");
                     AppConstants.SITE_ID = serverSSIDList.get(0).get("SiteId");
-                    String Chk_ip = "";
-                    if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
-                        Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
-                    } else {
-                        getipOverOSVersion();
-                    }
 
                     OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", AppConstants.SITE_ID, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"));
 
                     if (LinkCommunicationType.equalsIgnoreCase("BT") && !ReconfigureLink.equalsIgnoreCase("true")) {
-                        tvSSIDName.setText("Tap here to select hose");
-                        btnGo.setVisibility(View.VISIBLE);
+                        //tvSSIDName.setText("Tap here to select hose");
+                        //btnGo.setVisibility(View.VISIBLE);
+                        AppConstants.CURRENT_SELECTED_SSID = selSSID;
+                        AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
+                        tvSSIDName.setText(serverSSIDList.get(0).get("WifiSSId"));
+                        OnHoseSelected_OnClick(Integer.toString(0));
 
                     } else {
+
+                        String Chk_ip = "";
+                        if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                            Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
+                        } else {
+                            getipOverOSVersion();
+                        }
+
                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
 
                             for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
@@ -12627,7 +12698,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         btnGo.setVisibility(View.VISIBLE);
     }
 
-    private void RedirectBtLinkOneToNextScreen(String selSSID) {
+    private void RedirectBtLinkOneToNextScreen(String selSSID, boolean forSingleHose) {
 
         // linear_fs_1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
         Constants.AccPersonnelPIN = "";
@@ -12664,9 +12735,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        goButtonAction(null);
-
-
+        if (!forSingleHose) {
+            goButtonAction(null);
+        }
     }
 
     private void RedirectBtLinkTwoToNextScreen(String selSSID) {
