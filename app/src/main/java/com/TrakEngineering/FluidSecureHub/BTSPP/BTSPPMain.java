@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 
@@ -71,6 +72,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkOneStatus = false;
         status1("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect1();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialConnectErrorOne Status: " + e.getMessage());
     }
 
     @Override
@@ -83,6 +92,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkOneStatus = false;
         status1("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect1();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialIoErrorOne Status: " + e.getMessage());
     }
 
     public void connect1() {
@@ -122,7 +139,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
     }
 
-    /*public void sendBytes1(byte[] data) {
+    public void sendBytes1(byte[] data) {
         if (!BTConstants.BTLinkOneStatus) {
             BTConstants.CurrentCommand_LinkOne = "";
             Log.i(TAG, "BTLink 1: Link not connected");
@@ -136,7 +153,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         } catch (Exception e) {
             onSerialIoErrorOne(e);
         }
-    }*/
+    }
 
     public void readPulse1() {
         if (!BTConstants.BTLinkOneStatus) {
@@ -159,12 +176,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         Log.i(TAG, "BTLink 1: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+        if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkOne = true;
         }
         if (Response.contains("$$")) {
-            if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase("LK_COMM=info")) {
-                sb1.append(Response.replace("$$", ""));
+            String res = Response.replace("$$", "");
+            if (!res.trim().isEmpty()) {
+                sb1.append(res.trim());
             }
             sendBroadcastIntentFromLinkOne(sb1.toString());
             sb1.setLength(0);
@@ -208,6 +226,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkTwoStatus = false;
         status2("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect2();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialConnectErrorTwo Status: " + e.getMessage());
     }
 
     @Override
@@ -220,6 +246,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkTwoStatus = false;
         status2("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect2();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialIoErrorTwo Status: " + e.getMessage());
     }
 
     public void connect2() {
@@ -259,7 +293,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
     }
 
-    /*public void sendBytes2(byte[] data) {
+    public void sendBytes2(byte[] data) {
         if (!BTConstants.BTLinkTwoStatus) {
             BTConstants.CurrentCommand_LinkTwo = "";
             Log.i(TAG, "BTLink 2: Link not connected");
@@ -272,7 +306,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         } catch (Exception e) {
             onSerialIoErrorTwo(e);
         }
-    }*/
+    }
 
     public void receive2(byte[] data) {
         String Response = new String(data);
@@ -281,12 +315,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         Log.i(TAG, "BTLink 2: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+        if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkTwo = true;
         }
         if (Response.contains("$$")) {
-            if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase("LK_COMM=info")) {
-                sb2.append(Response.replace("$$", ""));
+            String res = Response.replace("$$", "");
+            if (!res.trim().isEmpty()) {
+                sb2.append(res.trim());
             }
             sendBroadcastIntentFromLinkTwo(sb2.toString());
             sb2.setLength(0);
@@ -329,6 +364,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkThreeStatus = false;
         status3("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect3();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialConnectErrorThree Status: " + e.getMessage());
     }
 
     @Override
@@ -341,6 +384,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkThreeStatus = false;
         status3("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect3();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialIoErrorThree Status: " + e.getMessage());
     }
 
     public void connect3() {
@@ -380,7 +431,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
     }
 
-    /*public void sendBytes3(byte[] data) {
+    public void sendBytes3(byte[] data) {
         if (!BTConstants.BTLinkThreeStatus) {
             BTConstants.CurrentCommand_LinkThree = "";
             Log.i(TAG, "BTLink 3: Link not connected");
@@ -393,7 +444,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         } catch (Exception e) {
             onSerialIoErrorThree(e);
         }
-    }*/
+    }
 
     public void receive3(byte[] data) {
         String Response = new String(data);
@@ -402,12 +453,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         Log.i(TAG, "BTLink 3: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+        if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkThree = true;
         }
         if (Response.contains("$$")) {
-            if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase("LK_COMM=info")) {
-                sb3.append(Response.replace("$$", ""));
+            String res = Response.replace("$$", "");
+            if (!res.trim().isEmpty()) {
+                sb3.append(res.trim());
             }
             sendBroadcastIntentFromLinkThree(sb3.toString());
             sb3.setLength(0);
@@ -451,6 +503,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkFourStatus = false;
         status4("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect4();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialConnectErrorFour Status: " + e.getMessage());
     }
 
     @Override
@@ -463,6 +523,14 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkFourStatus = false;
         status4("Disconnect");
         e.printStackTrace();
+        if (BTConstants.IsFileUploadCompleted) {
+            try {
+                connect4();
+            } catch (Exception ex) {
+                Log.e("Error: ", ex.getMessage());
+            }
+        }
+        AppConstants.WriteinFile(TAG + " onSerialIoErrorFour Status: " + e.getMessage());
     }
 
     public void connect4() {
@@ -502,7 +570,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
     }
 
-    /*public void sendBytes4(byte[] data) {
+    public void sendBytes4(byte[] data) {
         if (!BTConstants.BTLinkFourStatus) {
             BTConstants.CurrentCommand_LinkFour = "";
             Log.i(TAG, "BTLink 4: Link not connected");
@@ -515,7 +583,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         } catch (Exception e) {
             onSerialIoErrorFour(e);
         }
-    }*/
+    }
 
     public void receive4(byte[] data) {
         String Response = new String(data);
@@ -524,12 +592,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         Log.i(TAG, "BTLink 4: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase("LK_COMM=info") && Response.contains("records")) {
+        if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkFour = true;
         }
         if (Response.contains("$$")) {
-            if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase("LK_COMM=info")) {
-                sb4.append(Response.replace("$$", ""));
+            String res = Response.replace("$$", "");
+            if (!res.trim().isEmpty()) {
+                sb4.append(res.trim());
             }
             sendBroadcastIntentFromLinkFour(sb4.toString());
             sb4.setLength(0);

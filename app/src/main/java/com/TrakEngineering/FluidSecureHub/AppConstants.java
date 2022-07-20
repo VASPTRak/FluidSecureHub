@@ -112,7 +112,8 @@ public class AppConstants {
     public static final String IsGateHub = "IsGateHub";
     public static final String IsStayOpenGate = "IsStayOpenGate";
 
-    public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+    //public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+    public static String FOLDER_BIN = "FSBin";
     public static String UP_Upgrade_File_name = "user1.2048.new.5.bin";
 
     public static String OfflineDataFolderName = "FSdata";
@@ -198,7 +199,7 @@ public class AppConstants {
     public static boolean DisplayToastmaxlimit = false;
     public static String MaxlimitMessage = "";
     public static boolean IsSingleLink = false;
-
+    public static boolean goButtonClicked = false;
 
     public static boolean FlickeringScreenOff;
     public static String NoSleepRespTime = "";
@@ -589,15 +590,15 @@ public class AppConstants {
 
     }
 
-    public static void colorToastHotspotOn(Context ctx, String msg, int colr) {
+    public static void colorToastHotspotOn(Context ctx, String msg, int backColor, int textColor) {
 
         Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_SHORT);
-        toast.getView().setBackgroundColor(colr);
+        toast.getView().setBackgroundColor(backColor);
         toast.setGravity(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK | Gravity.TOP, 0, AppConstants.ScreenResolutionYOffSet);
         ViewGroup group = (ViewGroup) toast.getView();
         TextView messageTextView = (TextView) group.getChildAt(0);
-        messageTextView.setShadowLayer(1, 1, 1, colr);
-        messageTextView.setTextColor(Color.BLUE);
+        messageTextView.setShadowLayer(1, 1, 1, backColor);
+        messageTextView.setTextColor(textColor);
         messageTextView.setTextSize(40);
         toast.show();
     }

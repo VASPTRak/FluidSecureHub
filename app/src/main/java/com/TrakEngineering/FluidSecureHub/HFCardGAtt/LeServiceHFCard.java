@@ -16,7 +16,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.TrakEngineering.FluidSecureHub.AcceptVehicleActivity_new;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 
 import java.util.List;

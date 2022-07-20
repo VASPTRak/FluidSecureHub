@@ -55,4 +55,5 @@
     <color name="Dashboard_presstostop_btn">#DAD8DA</color>
     <color name="Dashboard_background">#f5f1f0</color>
     <color name="backbtn">#D6D7D7</color>
+    <color name="HotspotOnToastColor">#D6D7D7</color>
 </resources>

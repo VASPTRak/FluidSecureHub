@@ -17,6 +17,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.Html;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.VehicleRequireEntity;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
@@ -69,7 +72,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
     int FobRetryCount = 0;
     long screenTimeOut;
     Timer t, ScreenOutTimeVehicle;
-    String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+    //String FOLDER_PATH = ""; //Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
 
 
 
@@ -185,26 +188,38 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         //enable hotspot.
         Constants.hotspotstayOn = true;
 
-
+        //FOLDER_PATH = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/";
 
         if (AppConstants.UP_Upgrade) {
 
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
+            //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
+            String binFolderPath = String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN));
+            File folder = new File(binFolderPath);
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();
             }
-            if (success) {
-                // Do something on success
-            } else {
-                AppConstants.AlertDialogBox(AcceptVehicleActivity.this, "Please check File is present in FSBin Folder in Internal(Device) Storage");
+
+            if (BTConstants.CurrentTransactionIsBT) {
+                AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
             }
+            String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
 
-            if (AppConstants.UP_FilePath != null)
-                new DownloadFileFromURL().execute(AppConstants.UP_FilePath, "user1.2048.new.5.bin");
-
-
-
+            File f = new File(LocalPath);
+            if (f.exists()) {
+                Log.e(TAG, "Link upgrade firmware file already exist. Skip download");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ") already exist. Skip download");
+            } else {
+                if (AppConstants.UP_FilePath != null) {
+                    //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
+                    new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name);
+                } else {
+                    Log.e(TAG, "Link upgrade File path null");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Link upgrade File path null");
+                }
+            }
         }
 
         editVehicleNumber.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -917,18 +932,21 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    public class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         ProgressDialog pd;
 
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptVehicleActivity.this);
-            pd.setMessage("Software update in progress.\nPlease wait several seconds....");
+            String message = "Upgrade file download in progress.\nPlease wait several seconds....";
+            SpannableString ss2 = new SpannableString(message);
+            ss2.setSpan(new RelativeSizeSpan(1.2f), 0, ss2.length(), 0);
+            pd.setMessage(ss2);
+            pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             pd.setCancelable(false);
             pd.show();
         }
-
 
         @Override
         protected String doInBackground(String... f_url) {
@@ -944,7 +962,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                 // Output stream to write file
-                OutputStream output = new FileOutputStream(FOLDER_PATH + f_url[1]);
+                OutputStream output = new FileOutputStream(f_url[1] + "/" + f_url[2]);
 
                 byte data[] = new byte[1024];
 
@@ -974,12 +992,10 @@ public class AcceptVehicleActivity extends AppCompatActivity {
             return null;
         }
 
-
         protected void onProgressUpdate(String... progress) {
             // setting progress percentage
-            //pDialog.setProgress(Integer.parseInt(progress[0]));
+            pd.setProgress(Integer.parseInt(progress[0]));
         }
-
 
         @Override
         protected void onPostExecute(String file_url) {

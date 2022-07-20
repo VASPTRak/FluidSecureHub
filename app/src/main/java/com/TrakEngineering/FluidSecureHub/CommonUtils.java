@@ -1644,7 +1644,7 @@ public class CommonUtils {
                             //if (millisUntilFinished / 1000 <= 13)
                             //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
                             if (tick_count[0] > 2 && !WelcomeActivity.OnWelcomeActivity)
-                                AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotpot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE);
+                                AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE, Color.BLUE);
                         }
 
                         tick_count[0]++;
@@ -1733,7 +1733,7 @@ public class CommonUtils {
                         //if (millisUntilFinished / 1000 <= 13)
                         //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
                         if (tick_count[0] > 2 && WelcomeActivity.OnWelcomeActivity == false)
-                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE);
+                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE, Color.BLUE);
                     }
 
                     tick_count[0]++;

@@ -1,6 +1,7 @@
 package com.TrakEngineering.FluidSecureHub.BTSPP;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class BTConstants {
@@ -32,6 +33,14 @@ public class BTConstants {
     public static String linkstation_cmd = "LK_COMM=HUB:";
     public static String fdcheckcommand = "LK_COMM=FD_check"; //BlueLink commands
     public static String namecommand = "LK_COMM=name:";
+    //public static String linkUpgrade_cmd = "upgrade:";
+    public static String linkUpgrade_cmd = "LK_COMM=upgrade ";
+    public static String p_type_command = "LK_COMM=p_type:";
+    public static String p_type = "";
+    public static String scope_ON_cmd = "LK_COMM=scope=ON";
+    public static String scope_READ_cmd = "LK_COMM=scope=READ";
+    public static String ScopeStatus = "";
+    public static ArrayList<Integer> BTLinkVoltageReadings = new ArrayList<>();
 
     public static boolean isNewVersionLinkOne = false;
     public static boolean isNewVersionLinkTwo = false;
@@ -61,6 +70,14 @@ public class BTConstants {
     public static String BT4REPLACEBLE_WIFI_NAME;
     public static String BT4HOSE_ID;
     public static String BT4SITE_ID;
+
+    public static String UpgradeStatusBT1 = "";
+    public static String UpgradeStatusBT2 = "";
+    public static String UpgradeStatusBT3 = "";
+    public static String UpgradeStatusBT4 = "";
+
+    public static String upgradeProgress = "0 %";
+    public static boolean IsFileUploadCompleted = false;
 
     //date formatters for Old and New version link
     public static SimpleDateFormat dateFormatForOldVersion = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

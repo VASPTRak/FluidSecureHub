@@ -1229,7 +1229,7 @@ public class BackgroundService_AP_PIPE extends Service {
                     new CommandsPOST().execute(URL_UPGRADE_START, "");
 
                     //upgrade bin
-                    String LocalPath = AppConstants.FOLDER_PATH + AppConstants.UP_Upgrade_File_name;
+                    String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
                     File f = new File(LocalPath);
 
                     if (f.exists()) {

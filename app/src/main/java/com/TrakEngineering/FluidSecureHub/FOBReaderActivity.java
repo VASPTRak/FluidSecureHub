@@ -87,7 +87,7 @@ public class FOBReaderActivity extends AppCompatActivity {
         TextView tvVersionNum = (TextView) findViewById(R.id.tvVersionNum);
         tvVersionNum.setText("Version " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
-        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " UserInfo" +AppConstants.Title + "\n AppVersion " + CommonUtils.getVersionCode(FOBReaderActivity.this));
+        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " UserInfo:\n" +AppConstants.Title + "\nAppVersion : " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
         InItGUI();
 

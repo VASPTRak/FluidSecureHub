@@ -1,17 +1,22 @@
 package com.TrakEngineering.FluidSecureHub;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -49,6 +54,7 @@ public class RegistrationActivity extends AppCompatActivity {
     EditText etFName, etMobile, etCompany;
     AutoCompleteTextView etEmail;
     Button btnSubmit;
+    private static String TAG = RegistrationActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +74,18 @@ public class RegistrationActivity extends AppCompatActivity {
 
         TextView tvVersionNum = (TextView) findViewById(R.id.tvVersionNum);
         tvVersionNum.setText("Version " + CommonUtils.getVersionCode(RegistrationActivity.this));
+        AppConstants.WriteinFile(TAG + " App Version: " + CommonUtils.getVersionCode(RegistrationActivity.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ");
 
         try {
             TelephonyManager tMgr = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
             String mPhoneNumber = tMgr.getLine1Number();
+            if (mPhoneNumber.trim().isEmpty()) {
+                boolean isGranted = checkPermission(RegistrationActivity.this, Manifest.permission.READ_PHONE_STATE);
+                AppConstants.WriteinFile(TAG + " phone permission: " + isGranted);
+            }
             etMobile.setText(mPhoneNumber);
         }catch (Exception e) {
+            AppConstants.WriteinFile(TAG + " Exception while getting phone number: " + e.getMessage());
             System.out.println(e.getMessage());
         }
 
@@ -154,6 +166,14 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
+    private boolean checkPermission(Activity context, String permission) {
+        int result = ContextCompat.checkSelfPermission(context, permission);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public static void redToast(Context ctx, String MSg) {
         Toast toast = Toast.makeText(ctx, " " + MSg + " ", Toast.LENGTH_LONG);
@@ -249,7 +269,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 // String sendData = userName + "#:#" + userMobile + "#:#" + userEmail + "#:#" + imeiNumber + "#:#" + deviceType + "#:#" + userCompany + "#:#" + "AP";
                 String sendData = userName + "#:#" + userMobile + "#:#" + "" + "#:#" + imeiNumber + "#:#" + deviceType + "#:#" + "" + "#:#" + "AP";
-
+                AppConstants.WriteinFile(TAG + " Registration details => (" + sendData + ")");
                 String AUTH_TOKEN = "Basic " + AppConstants.convertStingToBase64("123:abc:Register");
                 ServerHandler serverHandler = new ServerHandler();
 

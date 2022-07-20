@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.BackgroundServiceDownloadFirmware;
@@ -106,7 +105,7 @@ public class ServiceHFCard extends Service {
             final String action = intent.getAction();
             if (LeServiceHFCard.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Connected");
+
                 Constants.HF_ReaderStatus = "HF Connected";
                 System.out.println("ACTION_GATT_HF_CONNECTED");
 
@@ -154,7 +153,7 @@ public class ServiceHFCard extends Service {
                 mConnected = false;
                 Constants.HF_ReaderStatus = "HF Disconnected";
                 System.out.println("ACTION_GATT_HF_DISCONNECTED");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Disconnected");
+
 
             } else if (LeServiceHFCard.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 System.out.println("ACTION_GATT_HF_SERVICES_DISCOVERED");
@@ -172,7 +171,6 @@ public class ServiceHFCard extends Service {
 
 
     private void displayData(String data) {
-
         if (data != null) {
 
             try {

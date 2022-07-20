@@ -260,10 +260,10 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         Log.i(TAG,"FobreadSuccess");
         AppConstants.PinLocal_FOB_KEY = "";
         if (MagCard_FobKey != null && !MagCard_FobKey.isEmpty()) {
-            Log.i(TAG,"FobreadSuccess MagCard_FobKey"+MagCard_FobKey);
-        }else if (FobKey != null && !FobKey.isEmpty()){
-            Log.i(TAG,"FobreadSuccess FobKey"+FobKey);
-        }else {
+            Log.i(TAG, "FobreadSuccess MagCard_FobKey" + MagCard_FobKey);
+        } else if (FobKey != null && !FobKey.isEmpty()) {
+            Log.i(TAG, "FobreadSuccess FobKey" + FobKey);
+        } else {
             //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.RED);
         }
     }

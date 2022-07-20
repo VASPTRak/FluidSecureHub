@@ -1087,7 +1087,7 @@ public class BackgroundService_FS_UNIT_5 extends Service {
                     new BackgroundService_FS_UNIT_5.CommandsPOST().execute(URL_UPGRADE_START, "");
 
                     //upgrade bin
-                    String LocalPath = AppConstants.FOLDER_PATH + AppConstants.UP_Upgrade_File_name;
+                    String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
 
                     File f = new File(LocalPath);
 

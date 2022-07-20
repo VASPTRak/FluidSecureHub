@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -293,9 +292,6 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 Log.i(TAG, "SSID List Empty");
                 if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "  SSID List Empty");
             }
-
-
-
             if (IsHoseBusyCheckLocally()) {
                 int s = DefectiveLinks.size();
                 System.out.println("S" + s);
@@ -699,7 +695,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
     @SuppressLint("LongLogTag")
     public void DownloadFirmwareFile() {
 
-        File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
+        //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
+        File folder = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN)));
         boolean success = true;
         if (!folder.exists()) {
             success = folder.mkdirs();
@@ -714,7 +711,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         }
 
         if (AppConstants.UP_FilePath != null)
-            new DownloadFileFromURL().execute(AppConstants.FOLDER_PATH, AppConstants.UP_Upgrade_File_name);
+            new DownloadFileFromURL().execute(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN)), AppConstants.UP_Upgrade_File_name);
 
     }
 
@@ -734,7 +731,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                 // Output stream to write file
-                OutputStream output = new FileOutputStream(AppConstants.FOLDER_PATH + f_url[1]);
+                OutputStream output = new FileOutputStream(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + f_url[1]);
 
                 byte data[] = new byte[1024];
 
@@ -832,7 +829,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                         //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  GetUpgrateFirmwareStatus CommandsPOST Response" + cmpresponse);
 
                         //upgrade bin
-                        String LocalPath = AppConstants.FOLDER_PATH + AppConstants.UP_Upgrade_File_name;
+                        String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
                         File f = new File(LocalPath);
                         if (f.exists()) {
 

@@ -23,12 +23,17 @@ import com.TrakEngineering.FluidSecureHub.DBController;
 import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
+import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
+import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -149,7 +154,7 @@ public class BackgroundService_BTOne extends Service {
                     IsThisBTTrnx = true;
 
                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
-                        infoCommand();
+                        BTLinkUpgradeCheck(); //infoCommand();
                     } else {
                         IsThisBTTrnx = false;
                         CloseTransaction();
@@ -158,7 +163,6 @@ public class BackgroundService_BTOne extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 1: Link not connected. Please try again!");
                         this.stopSelf();
                     }
-
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
                     IsThisBTTrnx = false;
                     infoCommand();
@@ -183,6 +187,9 @@ public class BackgroundService_BTOne extends Service {
     private void infoCommand() {
 
         try {
+            if (BTConstants.IsFileUploadCompleted) {
+                BTConstants.IsFileUploadCompleted = false;
+            }
             //Execute info command
             Request = "";
             Response = "";
@@ -501,6 +508,7 @@ public class BackgroundService_BTOne extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkOneData + ")");
             }
             stopTxtprocess = true;
+            AppConstants.goButtonClicked = false;
             Constants.FS_1STATUS = "FREE";
             Constants.FS_1Pulse = "00";
             CancelTimer();
@@ -691,7 +699,6 @@ public class BackgroundService_BTOne extends Service {
                     AppConstants.WriteinFile(" Offline >> BTLink 1:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
             }
 
-
             reachMaxLimit();
 
         } catch (Exception e) {
@@ -734,7 +741,6 @@ public class BackgroundService_BTOne extends Service {
                         if (!redpulseloop_on)
                             ReadPulse();
                     }
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -808,7 +814,7 @@ public class BackgroundService_BTOne extends Service {
                 renameOnCommand();
             }
 
-            /*// Save upgrade details to cloud
+            // Save upgrade details to cloud
             SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             String hoseid = sharedPref.getString("hoseid_bt1", "");
             String fsversion = sharedPref.getString("fsversion_bt1", "");
@@ -821,8 +827,17 @@ public class BackgroundService_BTOne extends Service {
 
             if (hoseid != null && !hoseid.trim().isEmpty()) {
                 new UpgradeCurrentVersionWithUpgradableVersion(objEntityClass).execute();
+
+                // Update upgrade details into serverSSIDList
+                if (AppConstants.IsSingleLink) {
+                    HashMap<String, String> selSSid = WelcomeActivity.serverSSIDList.get(0);
+                    selSSid.put("IsUpgrade", "N");
+                    selSSid.put("FirmwareVersion", fsversion);
+                    WelcomeActivity.serverSSIDList.set(0, selSSid);
+                }
+                //=============================================================
             }
-            //=============================================================*/
+            //=============================================================
 
             boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTOne.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
             if (!BSRunning) {
@@ -962,6 +977,7 @@ public class BackgroundService_BTOne extends Service {
             ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
 
             JSONObject jsonObject = new JSONObject(response);
+
             JSONArray jsonArray = jsonObject.getJSONArray("records");
             for (int i = 0; i < jsonArray.length(); i++) {
 
@@ -980,13 +996,13 @@ public class BackgroundService_BTOne extends Service {
                     Log.i(TAG, " BTLink 1: Exception while parsing date format.>> " + e.getMessage());
                 }
 
-                HashMap<String,String> Hmap = new HashMap<>();
-                Hmap.put("TransactionID",txtn);//TransactionID
-                Hmap.put("Pulses",pulse);//Pulses
-                Hmap.put("FuelQuantity",ReturnQty(pulse));//FuelQuantity
-                Hmap.put("TransactionDateTime",date); //TransactionDateTime
-                Hmap.put("VehicleId",vehicle); //VehicleId
-                Hmap.put("dflag",dflag);
+                HashMap<String, String> Hmap = new HashMap<>();
+                Hmap.put("TransactionID", txtn);//TransactionID
+                Hmap.put("Pulses", pulse);//Pulses
+                Hmap.put("FuelQuantity", ReturnQty(pulse));//FuelQuantity
+                Hmap.put("TransactionDateTime", date); //TransactionDateTime
+                Hmap.put("VehicleId", vehicle); //VehicleId
+                Hmap.put("dflag", dflag);
 
                 ReturnQty(pulse);
 
@@ -1010,12 +1026,11 @@ public class BackgroundService_BTOne extends Service {
             JSONObject versionJsonArray = jsonObject.getJSONObject("version");
             AppConstants.WriteinFile(TAG + " Version ==> " + versionJsonArray.getString("version"));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: Exception in parseInfoCommandResponseForLast20txtn. response>> " + response + "; Exception>>" + e.toString());
         }
-
     }
 
     public class EntityCmd20Txn {
@@ -1116,10 +1131,172 @@ public class BackgroundService_BTOne extends Service {
                 }
             }
         }
-
     }
 
-    /*public void storeUpgradeFSVersion(Context context, String hoseid, String fsversion) {
+    private void BTLinkUpgradeCheck() {
+        try {
+            boolean isUpgrade = false;
+
+            if (BTConstants.CurrentTransactionIsBT) {
+                if (BTConstants.CurrentSelectedLinkBT == 1) {
+                    if (AppConstants.UP_Upgrade_fs1) {
+                        isUpgrade = true;
+                    }
+                }
+            }
+
+            if (isUpgrade) {
+
+                String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+                File file = new File(LocalPath);
+                if (file.exists() && AppConstants.UP_Upgrade_File_name.startsWith("BT_")) {
+                    BTConstants.UpgradeStatusBT1 = "Started";
+                    new BTLinkUpgradeFunctionality().execute();
+
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeCommand - File (" + AppConstants.UP_Upgrade_File_name + ") Not found.");
+                    infoCommand();
+                }
+            } else {
+                infoCommand();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeCommand Exception:>>" + e.getMessage());
+            infoCommand();
+        }
+    }
+
+    public class BTLinkUpgradeFunctionality extends AsyncTask<String, String, String> {
+
+        //ProgressDialog pd;
+        int counter = 0;
+
+        @Override
+        protected void onPreExecute() {
+            /*pd = new ProgressDialog(DisplayMeterActivity.this);
+            pd.setMessage("Software update in progress.\nPlease wait several seconds....");
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pd.setCancelable(false);
+            pd.show();*/
+        }
+
+        @Override
+        protected String doInBackground(String... f_url) {
+
+            try {
+                String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLinkUpgradeFunctionality file name: " + AppConstants.UP_Upgrade_File_name);
+
+                File file = new File(LocalPath);
+
+                long file_size = file.length();
+                long tempFileSize = file_size;
+
+                AppConstants.WriteinFile(TAG + " Upgrade process start...");
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.send1(BTConstants.linkUpgrade_cmd + file_size);
+
+                InputStream inputStream = new FileInputStream(file);
+
+                int BUFFER_SIZE = 490; //8192;
+                byte[] bufferBytes = new byte[BUFFER_SIZE];
+
+                Thread.sleep(2000);
+
+                if (inputStream != null) {
+                    long bytesWritten = 0;
+                    int amountOfBytesRead;
+                    //BufferedInputStream bufferedReader = new BufferedInputStream(inputStream);
+                    //while ((amountOfBytesRead = bufferedReader.read(bufferBytes, 0, bufferBytes.length)) != -1) {
+
+                    while ((amountOfBytesRead = inputStream.read(bufferBytes)) != -1) {
+
+                        bytesWritten += amountOfBytesRead;
+                        String progressValue = (int) (100 * ((double) bytesWritten) / ((double) file_size)) + " %";
+                        //AppConstants.WriteinFile(TAG + " ~~~~~~~~ Progress : " + progressValue);
+                        BTConstants.upgradeProgress = progressValue;
+
+                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            btspp.sendBytes1(bufferBytes);
+
+                            tempFileSize = tempFileSize - BUFFER_SIZE;
+                            if (tempFileSize < BUFFER_SIZE){
+                                int i = (int) (long) tempFileSize;
+                                if (i > 0) {
+                                    //i = i + BUFFER_SIZE;
+                                    bufferBytes = new byte[i];
+                                }
+                            }
+
+                            Thread.sleep(25);
+                        } else {
+                            BTConstants.IsFileUploadCompleted = false;
+                            AppConstants.WriteinFile(TAG + " After upgrade command (Link is not connected.): Progress: " + progressValue);
+                            BTConstants.UpgradeStatusBT1 = "Incomplete";
+                            break;
+                        }
+                    }
+                    inputStream.close();
+                    if (BTConstants.UpgradeStatusBT1.isEmpty()) {
+                        BTConstants.UpgradeStatusBT1 = "Completed";
+                    }
+                }
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLinkUpgradeFunctionality doInBackground Exception: " + e.getMessage());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            //pd.dismiss();
+            AppConstants.WriteinFile(TAG + " onPostExecute Status: " + BTConstants.BTStatusStrOne);
+            BTConstants.upgradeProgress = "0 %";
+            if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Completed")) {
+                BTConstants.IsFileUploadCompleted = true;
+                storeUpgradeFSVersion(BackgroundService_BTOne.this, AppConstants.UP_HoseId_fs1, AppConstants.UP_FirmwareVersion);
+
+                Handler handler = new Handler();
+                int delay = 10000;
+
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            counter = 0;
+                            handler.removeCallbacksAndMessages(null);
+                            infoCommand();
+                        } else {
+                            counter++;
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 1: Reconnecting... attempt (" + counter + ")");
+                            if (counter < 3) {
+                                handler.postDelayed(this, delay);
+                            } else {
+                                Log.i(TAG, "BTLink 1: Failed to connecting to link.");
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 1: Failed to connecting to link. (" + BTConstants.BTStatusStrOne + ")");
+                                IsThisBTTrnx = false;
+                                CloseTransaction();
+                            }
+                        }
+                    }
+                }, delay);
+
+            } else {
+                infoCommand();
+            }
+        }
+    }
+
+    public void storeUpgradeFSVersion(Context context, String hoseid, String fsversion) {
 
         SharedPreferences sharedPref = context.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -1173,6 +1350,6 @@ public class BackgroundService_BTOne extends Service {
                 AppConstants.WriteinFile(TAG + " BTLink 1: UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
             }
         }
-    }*/
+    }
 
 }

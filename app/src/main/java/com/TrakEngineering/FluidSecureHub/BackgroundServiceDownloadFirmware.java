@@ -2,6 +2,7 @@ package com.TrakEngineering.FluidSecureHub;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -38,9 +39,8 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
     private static String TAG = "BS_DFirmware";
-    String HTTP_URL = "";
-
     static ServerHandler serverHandler = new ServerHandler();
+    Context context;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -53,6 +53,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
         return Service.START_STICKY;
     }
+
 
     public static void FsvmDataAsyncCall(String jsonData, String authString) {
         RequestBody body = RequestBody.create(TEXT, jsonData);
@@ -266,7 +267,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 String IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
                 String BLEVersion = myPrefslo.getString("BLEVersion", "");
                 String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
-                String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+                //String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
 
                 URL url = new URL(f_url[0]);
                 URLConnection conection = url.openConnection();
@@ -279,9 +280,9 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
                 // Output stream to write file
                 OutputStream output = null;
-                if (f_url[2].equals("UP_Upgrade"))
-                    output = new FileOutputStream(FOLDER_PATH + f_url[1]);
-                else if (f_url[2].equals("BLEUpdate"))
+                //if (f_url[2].equals("UP_Upgrade")) // Moved UP_Upgrade related code into AcceptVehicleActivity_new and AcceptPinActivity_new
+                //    output = new FileOutputStream(FOLDER_PATH + f_url[1]);
+                if (f_url[2].equals("BLEUpdate"))
                     output = new FileOutputStream(FOLDER_PATH_BLE + f_url[1]);
 
                 byte data[] = new byte[1024];
@@ -337,12 +338,14 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
     public static class ManualDownloadLinkAndReaderFirmware extends AsyncTask<String, String, String> {
 
         String http_url = "";
+        String binFolderPath = "";
         @Override
         protected String doInBackground(String... f_url) {
             int count;
             try {
 
                 http_url = f_url[3];
+                binFolderPath = f_url[4];
 
                 //BLE upgrade
                 SharedPreferences myPrefslo = ctx.getSharedPreferences("BLEUpgradeInfo", 0);
@@ -352,7 +355,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 String IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
                 String BLEVersion = myPrefslo.getString("BLEVersion", "");
                 String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
-                String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+                //String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
 
                 URL url = new URL(f_url[0]);
                 URLConnection conection = url.openConnection();
@@ -366,7 +369,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 // Output stream to write file
                 OutputStream output = null;
                 if (f_url[2].equals("UP_Upgrade"))
-                    output = new FileOutputStream(FOLDER_PATH + f_url[1]);
+                    output = new FileOutputStream(binFolderPath + f_url[1]);
                 else if (f_url[2].equals("BLEUpdate"))
                     output = new FileOutputStream(FOLDER_PATH_BLE + f_url[1]);
 
@@ -410,7 +413,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "ManualLinkUpgrade bin file downloaded:"+f_url[1]);
 
                 Thread.sleep(2000);
-                manualUpgradeStart(http_url);
+                manualUpgradeStart(http_url, binFolderPath);
 
             } catch (Exception e) {
                 Log.e("Error in Firmware file download: ", e.getMessage());
@@ -423,22 +426,23 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
 
     }
 
-    public static void manualUpgradeStart(String http_url){
+    public static void manualUpgradeStart(String http_url, String binFolderPath) {
 
         String URL_UPGRADE_START = http_url + "upgrade?command=start";
 
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " URL_UPGRADE_START CMD");
-                new CommandsPOST().execute(URL_UPGRADE_START, "");
+        if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " URL_UPGRADE_START CMD");
+        new CommandsPOST().execute(URL_UPGRADE_START, "");
 
-                //upgrade bin
-                String LocalPath = AppConstants.FOLDER_PATH + AppConstants.UP_Upgrade_File_name;
-                File f = new File(LocalPath);
+        //upgrade bin
+        String LocalPath = binFolderPath + AppConstants.UP_Upgrade_File_name;
+        File f = new File(LocalPath);
 
-                if (f.exists()) {
-                    new OkHttpFileUpload().execute(LocalPath, "application/binary",http_url);
-                } else {
-                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "ManualLinkUpgrade Firmware File Not found. ");
-                }
+        if (f.exists()) {
+            new OkHttpFileUpload().execute(LocalPath, "application/binary", http_url);
+        } else {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "ManualLinkUpgrade Firmware File Not found. ");
+        }
 
     }
 

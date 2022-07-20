@@ -47,6 +47,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 import com.TrakEngineering.FluidSecureHub.HFCardGAtt.ServiceHFCard;
 import com.TrakEngineering.FluidSecureHub.LFCardGAtt.ServiceLFCard;
 import com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard;
@@ -68,9 +69,15 @@ import com.squareup.okhttp.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -127,7 +134,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private LinearLayout layout_reader_status;
     TextView tv_enter_pin_no, tv_ok, tv_hf_status, tv_lf_status, tv_mag_status, tv_reader_status;
     Button btnSave, btnCancel, btn_ReadFobAgain, btn_barcode;
-    String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub, IsNonValidatePerson = "",IsOffvehicleScreenRequired = "";
+    String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub, IsNonValidatePerson = "",IsOffvehicleScreenRequired = "",IsPersonPinAndFOBRequire = "",AllowAccessDeviceORManualEntry = "";
     String TimeOutinMinute;
     Timer t, ScreenOutTime;
 
@@ -187,6 +194,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
         IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
+        IsPersonPinAndFOBRequire = sharedPrefODO.getString(AppConstants.IsPersonPinAndFOBRequire, "");
+        AllowAccessDeviceORManualEntry = sharedPrefODO.getString(AppConstants.AllowAccessDeviceORManualEntry, "");
         IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
         IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
 
@@ -1104,8 +1113,24 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             linearBarcode.setVisibility(View.VISIBLE);
         }*/
 
+        if (IsPersonPinAndFOBRequire.equalsIgnoreCase("true") || AllowAccessDeviceORManualEntry.equalsIgnoreCase("true")){
 
-        if (IsPersonHasFob.equalsIgnoreCase("true")) {
+            btnCancel.setVisibility(View.VISIBLE);
+            btnSave.setVisibility(View.VISIBLE);
+            mDisableFOBReadingForPin = "N";
+
+            int width = ActionBar.LayoutParams.MATCH_PARENT;
+            int height = ActionBar.LayoutParams.WRAP_CONTENT;
+            LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width, height);
+            parms.gravity = Gravity.CENTER;
+            etPersonnelPin.setLayoutParams(parms);
+
+            Linear_layout_Save_back_buttons.setVisibility(View.VISIBLE);
+            tv_fob_Reader.setVisibility(View.VISIBLE);
+            tv_dont_have_fob.setVisibility(View.VISIBLE);
+            tv_or.setVisibility(View.VISIBLE);
+
+        }else if (IsPersonHasFob.equalsIgnoreCase("true")) {
 
 
             btnCancel.setVisibility(View.VISIBLE);
@@ -2326,21 +2351,27 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         if (AppConstants.UP_Upgrade) {
 
             //Check for /FSBin folder if not create one
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
+            //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
+            String binFolderPath = String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN));
+            File folder = new File(binFolderPath);
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();
             }
 
-            String LocalPath = AppConstants.FOLDER_PATH + AppConstants.UP_Upgrade_File_name;
+            if (BTConstants.CurrentTransactionIsBT) {
+                AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
+            }
+            String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
             File f = new File(LocalPath);
             if (f.exists()) {
                 Log.e(TAG, "Link upgrade firmware file already exist. Skip download");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Link upgrade firmware file already exist. Skip download");
+                    AppConstants.WriteinFile(TAG + " Link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ") already exist. Skip download");
             } else {
                 if (AppConstants.UP_FilePath != null) {
-                    new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
+                    //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
+                    new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name);
                 } else {
                     Log.e(TAG, "Link upgrade File path null");
                     if (AppConstants.GenerateLogs)
@@ -2348,8 +2379,77 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 }
             }
         }
+    }
 
-        //BLE upgrade is in ServiceLFCard and ServiceHFCard Background service
+    public class DownloadFileFromURL extends AsyncTask<String, String, String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            pd = new ProgressDialog(AcceptPinActivity_new.this);
+            String message = "Upgrade file download in progress.\nPlease wait several seconds....";
+            SpannableString ss2 = new SpannableString(message);
+            ss2.setSpan(new RelativeSizeSpan(1.2f), 0, ss2.length(), 0);
+            pd.setMessage(ss2);
+            pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... f_url) {
+            int count;
+            try {
+                URL url = new URL(f_url[0]);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                // getting file length
+                int lenghtOfFile = connection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
+                // Output stream to write file
+                OutputStream output = new FileOutputStream(f_url[1] + "/" + f_url[2]);
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+
+            return null;
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            pd.setProgress(Integer.parseInt(progress[0]));
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            pd.dismiss();
+        }
     }
 
     @SuppressLint("ResourceAsColor")
