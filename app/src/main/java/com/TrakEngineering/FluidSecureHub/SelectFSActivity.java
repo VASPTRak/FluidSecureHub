@@ -404,7 +404,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(SelectFSActivity.this);
                     // set title
 
-                    alertDialogBuilder.setTitle("Fuel Secure");
+                    alertDialogBuilder.setTitle("");
                     alertDialogBuilder
                             .setMessage(ResponseTextSite)
                             .setCancelable(false)

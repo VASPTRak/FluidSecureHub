@@ -1643,8 +1643,8 @@ public class CommonUtils {
                         } else {
                             //if (millisUntilFinished / 1000 <= 13)
                             //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
-                            if (tick_count[0] > 2 && !WelcomeActivity.OnWelcomeActivity)
-                                AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE, Color.BLUE);
+                            /*if (tick_count[0] > 2 && !WelcomeActivity.OnWelcomeActivity)
+                                AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE, Color.BLUE);*/
                         }
 
                         tick_count[0]++;
@@ -1732,8 +1732,8 @@ public class CommonUtils {
                     } else {
                         //if (millisUntilFinished / 1000 <= 13)
                         //AppConstants.colorToastHotspotOn(context, "Please press  Mobile      ^     \nHotspot button. \nWaiting seconds..." + millisUntilFinished / 1000, Color.RED);
-                        if (tick_count[0] > 2 && WelcomeActivity.OnWelcomeActivity == false)
-                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE, Color.BLUE);
+                        /*if (tick_count[0] > 2 && WelcomeActivity.OnWelcomeActivity == false)
+                            AppConstants.colorToastHotspotOn(context, "We have detected that        " + context.getString(R.string.arrow_uni_code) + "   Mobile Hotspot is off. \n\nPlease press the Hotspot Toggle above.", Color.WHITE, Color.BLUE);*/
                     }
 
                     tick_count[0]++;
@@ -1984,6 +1984,7 @@ public class CommonUtils {
 
             String mac_address = "";
             String AP_mac_address = "";
+            String iot_version = "";
             if (result.startsWith("{") && result.contains("Version")) {
                 try {
                     JSONObject jsonObj = new JSONObject(result);
@@ -1992,6 +1993,9 @@ public class CommonUtils {
 
                     mac_address = jsonObject.getString("mac_address");
 
+                    if (result.contains("iot_version")) {
+                        iot_version = jsonObject.getString("iot_version");
+                    }
                     if (result.contains("AP_mac_address")) {
                         AP_mac_address = jsonObject.getString("AP_mac_address");
                     }
@@ -2005,7 +2009,7 @@ public class CommonUtils {
             if (mac_address.equalsIgnoreCase(selMacAddress) || AP_mac_address.equalsIgnoreCase(selMacAddress)) { // compare with MAC saved in cloud.
                 if (mac_address.equalsIgnoreCase(MA_ConnectedDevices)) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "[STA Mac Address (from info command) ==> " + mac_address + "; Connected Device Mac Address ==> " + MA_ConnectedDevices + "]");
+                        AppConstants.WriteinFile(TAG + "Mac Address found from info command.\n [STA Mac Address (from info command) => " + mac_address + " <==> Connected Device Mac Address => " + MA_ConnectedDevices + "]");
                     validIpAddress = ipAddress;
                 } else {
                     String staMacAddressFromLink = "";
@@ -2018,13 +2022,13 @@ public class CommonUtils {
                     String APMacAddress = generateAPMacFromSTAMac(TAG, staMacAddressFromLink);
                     if (APMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "\n[STA Mac Address (from info command) ==> " + staMacAddressFromLink + ";\n AP Mac Address ==> " + APMacAddress + ";\n Connected Device Mac Address ==> " + MA_ConnectedDevices + "]");
+                            AppConstants.WriteinFile(TAG + "Mac Address found from info command.\n [STA Mac Address (from info command) ==> " + staMacAddressFromLink + "; AP Mac Address (Generated from STA Mac) ==> " + APMacAddress + "]");
                         validIpAddress = ipAddress;
                     }
                 }
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "\n[Selected Mac Address ==> " + selMacAddress + ";\n Connected Device Mac Address ==> " + MA_ConnectedDevices + ";\n STA Mac Address (from info command) ==> " + mac_address + ";\n AP Mac Address (from info command) ==> " + AP_mac_address + "]");
+                    AppConstants.WriteinFile(TAG + "Selected Mac Address (" + selMacAddress + ") is not found in info command response.\n [Version: " + iot_version + "; STA Mac Address (from info command) ==> " + mac_address + "; AP Mac Address (from info command) ==> " + AP_mac_address + "]");
             }
 
         } catch (Exception e) {

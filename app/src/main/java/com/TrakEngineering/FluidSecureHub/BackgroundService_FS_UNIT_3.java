@@ -323,7 +323,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         } catch (NullPointerException e) {
             Log.d("Ex", e.getMessage());
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  onStartCommand Execption " + e);
+                AppConstants.WriteinFile(TAG + "  onStartCommand Exception " + e);
             this.stopSelf();
         }
 
@@ -513,7 +513,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Exception " + e);
                 stopSelf();
             }
 
@@ -534,7 +534,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsPOST OnPostExecution Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  CommandsPOST OnPostExecution Exception " + e);
                 System.out.println(e);
                 stopSelf();
             }
@@ -568,7 +568,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsGET doInBackground Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  CommandsGET doInBackground Exception " + e);
                 stopSelf();
             }
 
@@ -586,7 +586,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             } catch (Exception e) {
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsGET OnPostExecution Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  CommandsGET OnPostExecution Exception " + e);
                 System.out.println(e);
                 stopSelf();
             }
@@ -639,7 +639,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 } catch (Exception e) {
                     System.out.println(e);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  startQuantityInterval Execption " + e);
+                        AppConstants.WriteinFile(TAG + "  startQuantityInterval Exception " + e);
                 }
 
             }
@@ -678,7 +678,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity doInBackground Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity doInBackground Exception " + e);
                 Log.d("Ex", e.getMessage());
             }
 
@@ -713,7 +713,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Exception " + e);
                 System.out.println(e);
             }
 
@@ -796,7 +796,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                     } catch (Exception e) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Execption " + e);
+                            AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Exception " + e);
                         System.out.println(e);
                     }
 
@@ -951,13 +951,13 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                 } catch (Exception e) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  quantity reach max limit1 Execption " + e);
+                        AppConstants.WriteinFile(TAG + "  quantity reach max limit1 Exception " + e);
                 }
             }
         } catch (Exception e) {
             System.out.println(e);
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  quantity reach max limit2 Execption " + e);
+                AppConstants.WriteinFile(TAG + "  quantity reach max limit2 Exception " + e);
         }
     }
 
@@ -984,7 +984,6 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             @Override
             public void run() {
 
-
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -995,7 +994,6 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                             for (int i = 0; i < 3; i++) {
 
                                 String result = new GETFINALPulsar().execute(URL_GET_PULSAR).get();
-
 
                                 if (result.contains("pulsar_status")) {
 
@@ -1017,34 +1015,26 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                                             AppConstants.WriteinFile(TAG + "  Count recorded from the link: " + counts);
                                     }
 
-                            /*
-                            if (i == 0)
-                                cntA = counts;
-                            else if (i == 1)
-                                cntB = counts;
-                            else
-                                cntC = counts;
-                            */
-
+                                    /*if (i == 0)
+                                        cntA = counts;
+                                    else if (i == 1)
+                                        cntB = counts;
+                                    else
+                                        cntC = counts;*/
 
                                     if (i == 2) {
-
                                         new Handler().postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
                                                 finalLastStep();
                                             }
-                                        }, 1000);
-
-
+                                        }, 500); //1000
                                     }
-
-
                                 }
                             }
                         } catch (Exception e) {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  stopButtonFunctionality Execption " + e);
+                                AppConstants.WriteinFile(TAG + "  stopButtonFunctionality Exception " + e);
                             System.out.println(e);
                         }
                     }
@@ -1070,12 +1060,12 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 }
             }
 
-        }, 2500);
+        }, 1000); //2500
 
-        long secondsTime = 3000;
+        long secondsTime = 500; //3000
 
         if (AppConstants.NeedToRenameFS3) {
-            secondsTime = 5000;
+            secondsTime = 2000; //5000
         }
 
         if (AppConstants.UP_Upgrade_fs3) {
@@ -1112,6 +1102,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             @Override
             public void run() {
 
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Transaction stopped.");
                 Constants.FS_3STATUS = "FREE";
                 clearEditTextFields();
                 //AppConstants.disconnectWiFi(DisplayMeterActivity.this);
@@ -1147,7 +1139,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar doInBackground Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar doInBackground Exception " + e);
                 Log.d("Ex", e.getMessage());
             }
 
@@ -1170,7 +1162,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar onPostExecute Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar onPostExecute Exception " + e);
                 System.out.println(e);
             }
 
@@ -1243,7 +1235,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  secondsTimeLogic Execption " + e);
+                AppConstants.WriteinFile(TAG + "  secondsTimeLogic Exception " + e);
         }
     }
 
@@ -1698,7 +1690,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  TankMonitorReading ~~~Execption~~" + e);
+                AppConstants.WriteinFile(TAG + "  TankMonitorReading ~~~Exception~~" + e);
         }
 
 

@@ -23,7 +23,8 @@ public class OfflineConstants {
 
     public static final String TAG = OfflineConstants.class.getSimpleName();
 
-    public static void storeCurrentTransaction(Context ctx, String HubId, String SiteId, String VehicleId, String CurrentOdometer, String CurrentHours, String PersonId, String FuelQuantity, String TransactionDateTime) {
+    public static void storeCurrentTransaction(Context ctx, String HubId, String SiteId, String VehicleId, String CurrentOdometer, String CurrentHours, String PersonId,
+                                               String FuelQuantity, String TransactionDateTime, String VehicleNumber) {
 
         SharedPreferences pref = ctx.getSharedPreferences("storeCurrentTransaction", 0);
         SharedPreferences.Editor editor = pref.edit();
@@ -53,6 +54,9 @@ public class OfflineConstants {
         if (!TransactionDateTime.trim().isEmpty())
             editor.putString("TransactionDateTime", TransactionDateTime);
 
+        if (!VehicleNumber.trim().isEmpty())
+            editor.putString("VehicleNumber", VehicleNumber);
+
         // commit changes
         editor.apply();
     }
@@ -66,13 +70,13 @@ public class OfflineConstants {
         EntityOffTranz eot = new EntityOffTranz();
         eot.HubId = sharedPref.getString("HubId", "");
         eot.SiteId = sharedPref.getString("SiteId", "");
-        eot.VehicleId = sharedPref.getString("VehicleId", "");
+        eot.VehicleId = sharedPref.getString("VehicleId", "0");
         eot.CurrentOdometer = sharedPref.getString("CurrentOdometer", "");
         eot.CurrentHours = sharedPref.getString("CurrentHours", "");
         eot.PersonId = sharedPref.getString("PersonId", "");
         eot.FuelQuantity = sharedPref.getString("FuelQuantity", "");
         eot.TransactionDateTime = sharedPref.getString("TransactionDateTime", "");
-
+        eot.VehicleNumber = sharedPref.getString("VehicleNumber", "");
 
         return eot;
     }

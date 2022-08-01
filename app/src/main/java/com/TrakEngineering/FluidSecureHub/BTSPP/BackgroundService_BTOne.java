@@ -50,7 +50,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 public class BackgroundService_BTOne extends Service {
 
     private static final String TAG = BackgroundService_BTOne.class.getSimpleName();
@@ -153,14 +152,14 @@ public class BackgroundService_BTOne extends Service {
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
 
-                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                    if (checkBTLinkStatus()) { //BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")
                         BTLinkUpgradeCheck(); //infoCommand();
                     } else {
                         IsThisBTTrnx = false;
                         CloseTransaction();
                         Log.i(TAG, "BTLink 1: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: Link not connected. Please try again!");
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Link not connected. Please try again! (Status: " + BTConstants.BTStatusStrOne + ")");
                         this.stopSelf();
                     }
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
@@ -182,6 +181,44 @@ public class BackgroundService_BTOne extends Service {
         }
 
         return Service.START_NOT_STICKY;
+    }
+
+    private boolean checkBTLinkStatus() {
+        boolean isConnected = false;
+        try {
+            if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                isConnected = true;
+            } else {
+                Thread.sleep(1000);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 1)");
+                if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                    isConnected = true;
+                } else {
+                    Thread.sleep(2000);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 2)");
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(2000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 3)");
+                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        }
+                    }
+                }
+            }
+            if (isConnected) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 1: Link is connected.");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: checkBTLinkStatus Exception:>>" + e.getMessage());
+        }
+        return isConnected;
     }
 
     private void infoCommand() {
@@ -545,21 +582,21 @@ public class BackgroundService_BTOne extends Service {
                 new Thread(new ClientSendAndListenUDPOne(BTConstants.namecommand + BTConstants.BT1REPLACEBLE_WIFI_NAME, SERVER_IP, this)).start();
             }
 
-                Log.i(TAG, "BTLink 1: rename Command>>");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: rename Command>>");
-                String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTOne.this).PersonEmail;
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag");
+            Log.i(TAG, "BTLink 1: rename Command>>");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: rename Command>>");
+            String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTOne.this).PersonEmail;
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag");
 
-                RenameHose rhose = new RenameHose();
-                rhose.SiteId = BTConstants.BT1SITE_ID;
-                rhose.HoseId = BTConstants.BT1HOSE_ID;
-                rhose.IsHoseNameReplaced = "Y";
+            RenameHose rhose = new RenameHose();
+            rhose.SiteId = BTConstants.BT1SITE_ID;
+            rhose.HoseId = BTConstants.BT1HOSE_ID;
+            rhose.IsHoseNameReplaced = "Y";
 
-                Gson gson = new Gson();
-                String jsonData = gson.toJson(rhose);
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(rhose);
 
-                storeIsRenameFlag(this,BTConstants.BT1NeedRename, jsonData, authString);
+            storeIsRenameFlag(this,BTConstants.BT1NeedRename, jsonData, authString);
 
 
         } catch (Exception e) {
@@ -638,9 +675,9 @@ public class BackgroundService_BTOne extends Service {
                     if (pulseCount > 4) {
                         //Stop transaction
                         pulseCount();
-                        Log.i(TAG, "BTLink 1: Execute FD Check..>>");
+                        Log.i(TAG, "BTLink 1: Stop Transaction>>");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: Execute FD Check..>>");
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Stop Transaction>>");
                         cancel();
                         TransactionCompleteFunction();
                         CloseTransaction();
@@ -970,7 +1007,7 @@ public class BackgroundService_BTOne extends Service {
         }
     }
 
-    private  void parseInfoCommandResponseForLast20txtn(String response){
+    private void parseInfoCommandResponseForLast20txtn(String response){
 
         try{
 

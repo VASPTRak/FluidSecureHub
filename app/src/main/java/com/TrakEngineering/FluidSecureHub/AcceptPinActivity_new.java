@@ -120,7 +120,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     int Count = 1, LF_ReaderConnectionCountPin = 0, sec_count = 0;
     private boolean barcodeReaderCall = true;
 
-    private static final String TAG = "DeviceControl_Pin";
+    private static final String TAG = "DeviceControl_Pin ";
     public static double CurrentLat = 0, CurrentLng = 0;
     RelativeLayout footer_keybord;
     LinearLayout Linear_layout_Save_back_buttons;
@@ -134,9 +134,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private LinearLayout layout_reader_status;
     TextView tv_enter_pin_no, tv_ok, tv_hf_status, tv_lf_status, tv_mag_status, tv_reader_status;
     Button btnSave, btnCancel, btn_ReadFobAgain, btn_barcode;
-    String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub, IsNonValidatePerson = "",IsOffvehicleScreenRequired = "",IsPersonPinAndFOBRequire = "",AllowAccessDeviceORManualEntry = "";
+    String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub,IsOffvehicleScreenRequired = "",IsPersonPinAndFOBRequire = "",AllowAccessDeviceORManualEntry = "";
     String TimeOutinMinute;
     Timer t, ScreenOutTime;
+    String IsNonValidatePerson = "";
 
     ConnectionDetector cd = new ConnectionDetector(AcceptPinActivity_new.this);
     List<Timer> TimerList = new ArrayList<Timer>();
@@ -387,7 +388,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 } else {
 
                     AppConstants.AUTH_CALL_SUCCESS = false;
-                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile("Offline Pin : " + pin);
+                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Offline Pin : " + pin);
                     //if (AppConstants.GenerateLogs)
                     //    AppConstants.WriteinFile(TAG + " if(OfflineConstants.isOfflineAccess(WelcomeActivity.this)){AppConstants.NETWORK_STRENGTH = false;}");
 
@@ -945,7 +946,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                 IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
-                IsNonValidatePerson = sharedPrefODO.getString(AppConstants.IsNonValidatePerson, "");
+
+                if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                    IsNonValidatePerson = sharedPrefODO.getString(AppConstants.IsNonValidatePerson, "");
+                }
+                else {
+                    IsNonValidatePerson = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidatePerson;
+                }
 
                 if (MagCard_personnel != null && !MagCard_personnel.isEmpty()) {
 
@@ -971,7 +978,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             etPersonnelPin.setText(PinNumber);
                         } else {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile("Please check your Offline Access");
+                                AppConstants.WriteinFile(TAG + "Please check your Offline Access");
                             CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
                             //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
                         }
@@ -1006,7 +1013,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 etPersonnelPin.setText(PinNumber);
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("Please check your Offline Access");
+                                    AppConstants.WriteinFile(TAG + "Please check your Offline Access");
                                 CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
                                 //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
                             }
@@ -1104,6 +1111,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             if (IsPersonHasFob.trim().equalsIgnoreCase("y"))
                 IsPersonHasFob = "true";
+
+            IsNonValidatePerson = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidatePerson;
         }
 
         /*
@@ -1344,7 +1353,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     Log.i(TAG, "VehicleNumber: " + vehicleNumber);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "VehicleNumber: " + vehicleNumber);
+                        AppConstants.WriteinFile(TAG + " VehicleNumber: " + vehicleNumber);
 
                     if (AppConstants.APDU_FOB_KEY.equalsIgnoreCase("")) {
                         Log.i(TAG, "PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "  Fob:" + AppConstants.APDU_FOB_KEY);
@@ -2188,7 +2197,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             startActivity(ii);
                         } else {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile("Vehicle is not assigned for this PIN");
+                                AppConstants.WriteinFile(TAG + "Vehicle is not assigned for this PIN");
                             CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not assigned for this PIN");
                             //AppConstants.colorToastBigFont(getApplicationContext(), "Vehicle is not assigned for this PIN", Color.RED);
                         }
@@ -2196,7 +2205,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile("Personnel is not allowed for selected Vehicle");
+                            AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Vehicle");
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Vehicle");
                         //AppConstants.colorToastBigFont(getApplicationContext(), "Personnel is not allowed for selected Vehicle", Color.RED);
                     }
@@ -2204,7 +2213,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("Personnel is not allowed for selected Link");
+                        AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Link");
                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Link");
                     //AppConstants.colorToastBigFont(getApplicationContext(), "Personnel is not allowed for selected Link", Color.RED);
                 }
@@ -2213,59 +2222,112 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         } else {
 
-            if (AppConstants.APDU_FOB_KEY != null && !AppConstants.APDU_FOB_KEY.isEmpty()) {
-                String fob = AppConstants.APDU_FOB_KEY.replace(":", "");
-                HashMap<String, String> VehicleMap = controller.getVehicleDetailsByFOBNumber(fob.trim());
-                if (VehicleMap.size() > 0) {
-                    //vehicle fob please present pin fob
-                    String msg = "This is " + ScreenNameForVehicle + " Access Device. Please use your " + ScreenNameForPersonnel + " Access Device";
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("Personnel is not found in offline db");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("Personnel is not found in offline db");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid Access Device");
-                }
+            String validatePersonnel = "Yes";
+            if (IsNonValidatePerson.equalsIgnoreCase("True")) {
+                validatePersonnel = "No";
+            }
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Validate person => " + validatePersonnel);
+            if (IsNonValidatePerson.equalsIgnoreCase("True")) {
+                Intent ii = new Intent(AcceptPinActivity_new.this, DisplayMeterActivity.class);
+                startActivity(ii);
 
-            } else if (etPersonnelPin.getText().toString().trim() != null && !etPersonnelPin.getText().toString().trim().isEmpty()) {
+            } else {
+                if (AppConstants.APDU_FOB_KEY != null && !AppConstants.APDU_FOB_KEY.isEmpty()) {
+                    String fob = AppConstants.APDU_FOB_KEY.replace(":", "");
+                    HashMap<String, String> VehicleMap = controller.getVehicleDetailsByFOBNumber(fob.trim());
+                    if (VehicleMap.size() > 0) {
+                        //vehicle fob please present pin fob
+                        String msg = "This is " + ScreenNameForVehicle + " Access Device. Please use your " + ScreenNameForPersonnel + " Access Device";
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. Access Device (" + fob + ") is vehicle access device.");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid Access Device");
+                    }
 
-                String V_Number = etPersonnelPin.getText().toString().trim();
-                HashMap<String, String> VehicleMap = controller.getVehicleDetailsByVehicleNumber(V_Number);
-                if (VehicleMap.size() > 0) {
-                    //vehicle fob please present pin fob
-                    String msg = "This is " + ScreenNameForVehicle + " Number. Please use your " + ScreenNameForPersonnel + "Number";
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("Personnel is not found in offline db");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("Personnel is not found in offline db");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid Number");
+                } else if (etPersonnelPin.getText().toString().trim() != null && !etPersonnelPin.getText().toString().trim().isEmpty()) {
+
+                    String V_Number = etPersonnelPin.getText().toString().trim();
+                    HashMap<String, String> VehicleMap = controller.getVehicleDetailsByVehicleNumber(V_Number);
+                    if (VehicleMap.size() > 0) {
+                        //vehicle fob please present pin fob
+                        String msg = "This is " + ScreenNameForVehicle + " Number. Please use your " + ScreenNameForPersonnel + "Number";
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. This (" + V_Number + ") is vehicle number.");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db.");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid Number");
+                    }
                 }
             }
-
 
             onResume();
         }
     }
 
     public void offlinePersonInitialization(HashMap<String, String> hmap) {
+        try {
+            if (hmap != null && hmap.size() > 0) {
+                String PersonId = hmap.get("PersonId");
+                String PinNumber = hmap.get("PinNumber");
+                String FuelLimitPerTxn = hmap.get("FuelLimitPerTxn");
+                String FuelLimitPerDay = hmap.get("FuelLimitPerDay");
+                String FOBNumber = hmap.get("FOBNumber");
+                String RequireHours = hmap.get("RequireHours");
 
-        if (hmap != null && hmap.size() > 0) {
-            String PersonId = hmap.get("PersonId");
-            String PinNumber = hmap.get("PinNumber");
-            String FuelLimitPerTxn = hmap.get("FuelLimitPerTxn");
-            String FuelLimitPerDay = hmap.get("FuelLimitPerDay");
-            String FOBNumber = hmap.get("FOBNumber");
-            String RequireHours = hmap.get("RequireHours");
+                AppConstants.OFF_PERSON_PIN = PinNumber;
 
+                OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "");
 
-            AppConstants.OFF_PERSON_PIN = PinNumber;
+                OfflineConstants.storeFuelLimit(AcceptPinActivity_new.this, "", "", "", PersonId, FuelLimitPerTxn, FuelLimitPerDay);
+            } else {
 
-            OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "");
+                String PinNumber = "";
+                try {
+                    String pin = etPersonnelPin.getText().toString().trim();
+                    if (!pin.isEmpty()) {
+                        PinNumber = pin.trim();
+                    } else if (!AppConstants.APDU_FOB_KEY.isEmpty()) {
+                        PinNumber = AppConstants.APDU_FOB_KEY.trim();
+                    } else if (!Barcode_pin_val.isEmpty()) {
+                        PinNumber = Barcode_pin_val.trim();
+                    } else if (!MagCard_personnel.isEmpty()) {
+                        PinNumber = MagCard_personnel.trim();
+                    }
+                } catch (Exception ex) {
+                    PinNumber = "";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Exception while getting entered pin number. " + ex.getMessage());
+                }
 
-            OfflineConstants.storeFuelLimit(AcceptPinActivity_new.this, "", "", "", PersonId, FuelLimitPerTxn, FuelLimitPerDay);
+                if (IsNonValidatePerson.equalsIgnoreCase("True")) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Pin Number (Non-validate): " + PinNumber);
+                    if (!PinNumber.isEmpty()) {
+
+                        AppConstants.OFF_PERSON_PIN = PinNumber;
+
+                        OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", "0", "", "", "");
+
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Pin Number is empty.");
+                    }
+                } else {
+                    if (!cd.isConnectingToInternet()) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Pin Number (" + PinNumber + ") not found in offline db.");
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception in offlinePersonInitialization. " + ex.getMessage());
         }
     }
 
@@ -2628,10 +2690,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             //offline---------------
                             if (InScrverCall) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("Previous call in queue Skip QRcode status:" + InScrverCall);
+                                    AppConstants.WriteinFile(TAG + "Previous call in queue Skip QRcode status:" + InScrverCall);
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("Offline Barcode Read: " + Barcode_pin_val);
+                                    AppConstants.WriteinFile(TAG + "Offline Barcode Read: " + Barcode_pin_val);
                             }
 
                         }
@@ -2787,7 +2849,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
                         //offline---------------
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile("Offline Barcode Read: " + Barcode_pin_val);
+                            AppConstants.WriteinFile(TAG + "Offline Barcode Read: " + Barcode_pin_val);
                     }
 
                 } else {

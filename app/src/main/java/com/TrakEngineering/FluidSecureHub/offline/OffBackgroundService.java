@@ -337,7 +337,6 @@ public class OffBackgroundService extends Service {
 
             }
 
-
             return resp;
         }
 
@@ -346,7 +345,6 @@ public class OffBackgroundService extends Service {
         protected void onPostExecute(String result) {
 
             if (result != null && !result.isEmpty()) {
-
 
                 try {
 
@@ -380,10 +378,14 @@ public class OffBackgroundService extends Service {
                         String VehicleDataFilePath = HubDataObj.getString("VehicleDataFilePath");
                         String PersonnelDataFilePath = HubDataObj.getString("PersonnelDataFilePath");
                         String LinkDataFilePath = HubDataObj.getString("LinkDataFilePath");
+                        String IsNonValidateVehicle = HubDataObj.getString("IsNonValidateVehicle");
+                        String IsNonValidatePerson = HubDataObj.getString("IsNonValidatePerson");
+                        String IsNonValidateODOM = HubDataObj.getString("IsNonValidateODOM");
 
-                        controller.storeOfflineHubDetails(OffBackgroundService.this, HubId, AllowedLinks, PersonnelPINNumberRequired, VehicleNumberRequired, PersonhasFOB, VehiclehasFOB, WiFiChannel,
-                                BluetoothCardReader, BluetoothCardReaderMacAddress, LFBluetoothCardReader, LFBluetoothCardReaderMacAddress,
-                                PrinterMacAddress, PrinterName, EnablePrinter, VehicleDataFilePath, PersonnelDataFilePath, LinkDataFilePath);
+                        controller.storeOfflineHubDetails(OffBackgroundService.this, HubId, AllowedLinks, PersonnelPINNumberRequired, VehicleNumberRequired, PersonhasFOB,
+                                VehiclehasFOB, WiFiChannel, BluetoothCardReader, BluetoothCardReaderMacAddress, LFBluetoothCardReader, LFBluetoothCardReaderMacAddress,
+                                PrinterMacAddress, PrinterName, EnablePrinter, VehicleDataFilePath, PersonnelDataFilePath, LinkDataFilePath, IsNonValidateVehicle,
+                                IsNonValidatePerson, IsNonValidateODOM);
 
                         if (cd.isConnecting()) {
 

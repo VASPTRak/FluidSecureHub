@@ -126,10 +126,24 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     String selSiteId = SSIDList.get(i).get("SiteId");
                     String hoseID = SSIDList.get(i).get("HoseId");
                     String IsUpgrade = SSIDList.get(i).get("IsUpgrade"); //"Y";//
+                    String LinkCommunicationType = "HTTP";
+                    try {
+                        LinkCommunicationType = SSIDList.get(i).get("LinkCommunicationType");
+                    } catch (Exception e) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " Exception while getting LinkCommunicationType of WifiSSId (" + selSSID + "). " + e.getMessage());
+                    }
+
+                    if (LinkCommunicationType != null) {
+                        if (!LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
 
                     boolean IsConnectedToHotspot = false;
                     boolean IsinfoCmdSuccess = false;
-
 
                     if (!IsFsConnected(selMacAddress)) {
 

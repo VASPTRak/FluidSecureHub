@@ -735,7 +735,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 }
 
             } else {
-                AppConstants.AlertDialogFinishWithTitle(SplashActivity.this, "Fuel Secure", "No Internet");
+                AppConstants.AlertDialogFinishWithTitle(SplashActivity.this, "", "No Internet");
             }
 
 

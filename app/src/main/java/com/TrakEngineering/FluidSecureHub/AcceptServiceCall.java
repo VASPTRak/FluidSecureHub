@@ -372,32 +372,67 @@ public class AcceptServiceCall {
 
                             CommonUtils.SaveVehiFuelInPref_FS1(activity, TransactionId_FS1, VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1, PrintDate_FS1, Company_FS1, Location_FS1, PersonName_FS1, PrinterMacAddress_FS1, PrinterName_FS1, vehicleNumber, accOther, VehicleSum_FS1, DeptSum_FS1, VehPercentage_FS1, DeptPercentage_FS1, SurchargeType_FS1, ProductPrice_FS1, IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1,LimitReachedMessage_FS1,VehicleNumber_FS1,TransactionDateWithFormat_FS1,SiteId_FS1);
 
-
                             if (IsGateHub.equalsIgnoreCase("True")) {
 
-
-                                Log.e("GateSoftwareDelayIssue","   IsGatehub true");
+                                Log.e("GateSoftwareDelayIssue"," IsGatehub true");
                                 //System.out.println("Gate hub true skip display meter ancivity and start transiction ");
-                                String macaddress = AppConstants.SELECTED_MACADDRESS;
+                                //String macaddress = AppConstants.SELECTED_MACADDRESS;
                                 //String HTTP_URL = "";
                                 String IpAddress = "";
 
-                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                    if (macaddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                                        break;
-                                    } else {
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Check Mac Address from Info Command. (" + (i + 1) + ")");
-                                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() == 1) {
+                                    try {
+                                        String LinkCommunicationType = WelcomeActivity.serverSSIDList.get(0).get("LinkCommunicationType");
+                                        if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
+                                            String selSSID = WelcomeActivity.serverSSIDList.get(0).get("WifiSSId");
+                                            String selMacAddress = WelcomeActivity.serverSSIDList.get(0).get("MacAddress");
 
-                                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, macaddress, MA_ConnectedDevices);
-                                        if (!IpAddress.trim().isEmpty()) {
-                                            break;
+                                            boolean isMacConnected = false;
+                                            if (AppConstants.DetailsListOfConnectedDevices != null) {
+                                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+
+                                                    if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
+                                                        if (AppConstants.GenerateLogs)
+                                                            AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
+                                                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                                        isMacConnected = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            if (!isMacConnected) {
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
+
+                                                if (AppConstants.DetailsListOfConnectedDevices != null) {
+                                                    for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                                        String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                        if (AppConstants.GenerateLogs)
+                                                            AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
+
+                                                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
+                                                        if (!IpAddress.trim().isEmpty()) {
+                                                            if (AppConstants.GenerateLogs)
+                                                                AppConstants.WriteinFile("===================================================================");
+                                                            break;
+                                                        }
+                                                        if (AppConstants.GenerateLogs)
+                                                            AppConstants.WriteinFile("===================================================================");
+                                                    }
+                                                }
+                                            }
                                         }
+                                    } catch (Exception e) {
+                                        IpAddress = "";
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
                                     }
                                 }
+
                                 if (!IpAddress.trim().isEmpty()) {
                                     HTTP_URL = "http://" + IpAddress + ":80/";
                                 }
@@ -1285,6 +1320,9 @@ public class AcceptServiceCall {
 
             if (!result.trim().isEmpty()) {
                 validIpAddress = CommonUtils.CheckMacAddressFromInfoCommand(TAG, result, connectedIp, selMacAddress, MA_ConnectedDevices);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Info command response is empty. (IP: " + connectedIp + "; MAC Address: " + MA_ConnectedDevices + ")");
             }
 
         } catch (Exception e) {
@@ -1303,8 +1341,8 @@ public class AcceptServiceCall {
         protected String doInBackground(String... param) {
             try {
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(5, TimeUnit.SECONDS);
-                client.setReadTimeout(5, TimeUnit.SECONDS);
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
                 Request request = new Request.Builder()
                         .url(param[0])
                         .build();
@@ -1325,7 +1363,7 @@ public class AcceptServiceCall {
                 System.out.println("APFS_PIPE OUTPUT" + result);
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsGET onPostExecute Execption " + e);
+                    AppConstants.WriteinFile(TAG + "  CommandsGET onPostExecute Exception " + e.getMessage());
                 System.out.println(e);
             }
         }

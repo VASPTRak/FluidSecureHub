@@ -65,7 +65,9 @@ public class NetworkReceiver extends BroadcastReceiver {
             System.out.println("Network not switched");
         } else {
             //NetworkSwitched
-            //AppConstants.NETWORK_STRENGTH = true;
+            if (AppConstants.IS_MOBILE_ON) {
+                AppConstants.NETWORK_STRENGTH = true;
+            }
             AppConstants.PRE_STATE_MOBILEDATA = CurrentState;
             Log.i(TAG, "Network Switched:" + AppConstants.IS_MOBILE_ON + " CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
             if (AppConstants.GenerateLogs)

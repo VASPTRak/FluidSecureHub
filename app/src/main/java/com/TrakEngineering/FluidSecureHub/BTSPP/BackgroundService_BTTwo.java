@@ -152,7 +152,7 @@ public class BackgroundService_BTTwo extends Service {
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
 
-                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                    if (checkBTLinkStatus()) { //BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")
                         BTLinkUpgradeCheck(); //infoCommand();
                     } else {
                         IsThisBTTrnx = false;
@@ -181,6 +181,44 @@ public class BackgroundService_BTTwo extends Service {
         }
 
         return Service.START_NOT_STICKY;
+    }
+
+    private boolean checkBTLinkStatus() {
+        boolean isConnected = false;
+        try {
+            if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                isConnected = true;
+            } else {
+                Thread.sleep(1000);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 1)");
+                if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                    isConnected = true;
+                } else {
+                    Thread.sleep(2000);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 2)");
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(2000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 3)");
+                        if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        }
+                    }
+                }
+            }
+            if (isConnected) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 2: Link is connected.");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 2: checkBTLinkStatus Exception:>>" + e.getMessage());
+        }
+        return isConnected;
     }
 
     private void infoCommand() {
@@ -959,7 +997,7 @@ public class BackgroundService_BTTwo extends Service {
         }
     }
 
-    private  void parseInfoCommandResponseForLast20txtn(String response){
+    private void parseInfoCommandResponseForLast20txtn(String response){
 
         try{
 
@@ -1015,7 +1053,7 @@ public class BackgroundService_BTTwo extends Service {
             JSONObject versionJsonArray = jsonObject.getJSONObject("version");
             AppConstants.WriteinFile(TAG + " Version ==> " + versionJsonArray.getString("version"));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 2: Exception in parseInfoCommandResponseForLast20txtn. response>> " + response + "; Exception>>" + e.toString());

@@ -548,8 +548,7 @@ public class AppConstants {
     }
 
 
-    public static void AlertDialogFinishWithTitle(final Activity ctx, String title, String message
-    ) {
+    public static void AlertDialogFinishWithTitle(final Activity ctx, String title, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(message);

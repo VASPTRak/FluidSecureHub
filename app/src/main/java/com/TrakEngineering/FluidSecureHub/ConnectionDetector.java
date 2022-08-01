@@ -19,11 +19,11 @@ public class ConnectionDetector {
 	//----------------------------------------------------------------------------------------------------
 	public boolean isConnectingToInternet(){
 
-		if (OfflineConstants. isTotalOfflineEnabled(_context)){
+		if (OfflineConstants.isTotalOfflineEnabled(_context)){
 			return false;
 		} else if (isConnecting() && !OfflineConstants.isOfflineAccess(_context)){
 			return true;
-		}else if (isConnecting() && IsTypeStable() && Constants.IsSignalSrtengthOk ){ //&& !IsFlightModeOn()
+		}else if (isConnecting() && IsTypeStable() && Constants.IsSignalSrtengthOk){ //&& !IsFlightModeOn()
 			return true;
 		}
 		//Constants.CurrentNetworkType = "Offline";

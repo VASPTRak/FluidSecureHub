@@ -79,7 +79,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialConnectErrorOne Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorOne Status: " + e.getMessage());
     }
 
     @Override
@@ -99,13 +99,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialIoErrorOne Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialIoErrorOne Status: " + e.getMessage());
     }
 
     public void connect1() {
         try {
 
-            if (BTConstants.deviceAddress1 != null || !BTConstants.deviceAddress1.isEmpty()) {
+            if (BTConstants.deviceAddress1 != null && !BTConstants.deviceAddress1.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress1);
                 status1("Connecting...");
@@ -233,7 +233,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialConnectErrorTwo Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorTwo Status: " + e.getMessage());
     }
 
     @Override
@@ -253,13 +253,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialIoErrorTwo Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialIoErrorTwo Status: " + e.getMessage());
     }
 
     public void connect2() {
         try {
 
-            if (BTConstants.deviceAddress2 != null || !BTConstants.deviceAddress2.isEmpty()) {
+            if (BTConstants.deviceAddress2 != null && !BTConstants.deviceAddress2.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress2);
                 status2("Connecting...");
@@ -371,7 +371,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialConnectErrorThree Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorThree Status: " + e.getMessage());
     }
 
     @Override
@@ -391,13 +391,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialIoErrorThree Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialIoErrorThree Status: " + e.getMessage());
     }
 
     public void connect3() {
         try {
 
-            if (BTConstants.deviceAddress3 != null || !BTConstants.deviceAddress3.isEmpty()) {
+            if (BTConstants.deviceAddress3 != null && !BTConstants.deviceAddress3.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress3);
                 status3("Connecting...");
@@ -510,7 +510,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialConnectErrorFour Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorFour Status: " + e.getMessage());
     }
 
     @Override
@@ -530,13 +530,13 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
                 Log.e("Error: ", ex.getMessage());
             }
         }
-        AppConstants.WriteinFile(TAG + " onSerialIoErrorFour Status: " + e.getMessage());
+        //AppConstants.WriteinFile(TAG + " onSerialIoErrorFour Status: " + e.getMessage());
     }
 
     public void connect4() {
         try {
 
-            if (BTConstants.deviceAddress4 != null || !BTConstants.deviceAddress4.isEmpty()) {
+            if (BTConstants.deviceAddress4 != null && !BTConstants.deviceAddress4.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress4);
                 status4("Connecting...");

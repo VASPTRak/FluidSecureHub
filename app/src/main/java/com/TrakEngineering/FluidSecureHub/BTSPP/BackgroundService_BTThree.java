@@ -152,7 +152,7 @@ public class BackgroundService_BTThree extends Service {
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
 
-                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                    if (checkBTLinkStatus()) { //BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")
                         BTLinkUpgradeCheck(); //infoCommand();
                     } else {
                         IsThisBTTrnx = false;
@@ -181,6 +181,44 @@ public class BackgroundService_BTThree extends Service {
         }
 
         return Service.START_NOT_STICKY;
+    }
+
+    private boolean checkBTLinkStatus() {
+        boolean isConnected = false;
+        try {
+            if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                isConnected = true;
+            } else {
+                Thread.sleep(1000);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 1)");
+                if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                    isConnected = true;
+                } else {
+                    Thread.sleep(2000);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 2)");
+                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(2000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 3)");
+                        if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        }
+                    }
+                }
+            }
+            if (isConnected) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 3: Link is connected.");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: checkBTLinkStatus Exception:>>" + e.getMessage());
+        }
+        return isConnected;
     }
 
     private void infoCommand() {
@@ -637,9 +675,9 @@ public class BackgroundService_BTThree extends Service {
                     if (pulseCount > 4) {
                         //Stop transaction
                         pulseCount();
-                        Log.i(TAG, "BTLink 3: Execute FD Check..>>");
+                        Log.i(TAG, "BTLink 3: Stop Transaction>>");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Execute FD Check..>>");
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Stop Transaction>>");
                         cancel();
                         TransactionCompleteFunction();
                         CloseTransaction();
@@ -959,7 +997,7 @@ public class BackgroundService_BTThree extends Service {
         }
     }
 
-    private  void parseInfoCommandResponseForLast20txtn(String response){
+    private void parseInfoCommandResponseForLast20txtn(String response){
 
         try{
 

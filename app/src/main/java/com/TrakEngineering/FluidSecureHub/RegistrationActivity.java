@@ -101,18 +101,13 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         etEmail.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(emailSet)));
 
-
-
-
-
-
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
                 if (etFName.getText().toString().trim().isEmpty()) {
-                    redToast(RegistrationActivity.this, "Please enter Name");
+                    redToast(RegistrationActivity.this, "Please enter HUB Name");
                     etFName.requestFocus();
                 }/* else if (etMobile.getText().toString().trim().isEmpty()) {
                     redToast(RegistrationActivity.this, "Please enter Mobile");
