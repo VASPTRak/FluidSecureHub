@@ -322,7 +322,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             AppConstants.IsFirstTimeUse = "False";
             firstTimeUseWarningDilaog(DisplayMeterActivity.this);
         } else {
-            proseedToPostResume();
+            proceedToPostResume();
         }
     }
 
@@ -889,11 +889,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     UDPServiceSelectionFunction();
                 } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-                        StartbuttonFunctionality();
+                        StartButtonFunctionality();
                     } else {
                         if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
-                            StartbuttonFunctionality();
+                            StartButtonFunctionality();
                         } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
                             AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
                             Istimeout_Sec = true;
                             ResetTimeoutDisplayMeterScreen();
@@ -903,7 +905,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 break;
 
             case R.id.btnCancel:
-
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Cancel button clicked.");
                 if (btnStart.isClickable() && cd.isConnectingToInternet()) {
                     //did not press start (start appeared, was never pressed):  User did not Press Start = 7
                     UpdateDiffStatusMessages("7");
@@ -2774,7 +2777,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     @SuppressLint("ResourceAsColor")
     public void BtnStartStateChange(boolean btnState) {
 
-
         if (btnState) {
             btnStart.setClickable(true);
             btnStart.setBackgroundColor(Color.parseColor("#56AF47"));
@@ -2790,11 +2792,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void StartbuttonFunctionality() {
-
+    public void StartButtonFunctionality() {
 
         try {
-
             SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -2856,6 +2856,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 startActivity(i);
             } else if (AppConstants.FS_selected.equalsIgnoreCase("4")) {
 
+                editor.putString("HttpLinkFive", HTTP_URL);
+                editor.apply();
 
                 Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_FS_UNIT_5.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
@@ -2867,6 +2869,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 startActivity(i);
             } else if (AppConstants.FS_selected.equalsIgnoreCase("5")) {
 
+                editor.putString("HttpLinkSix", HTTP_URL);
+                editor.apply();
 
                 Intent serviceIntent = new Intent(DisplayMeterActivity.this, BackgroundService_FS_UNIT_6.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
@@ -2882,7 +2886,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " StartbuttonFunctionality " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " StartButtonFunctionality Exception: " + e.getMessage());
         }
 
     }
@@ -4124,6 +4128,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             }
         } else {
             //Something went wrong in selecting link please check
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Selected BT LINK (" + AppConstants.CURRENT_SELECTED_SSID + ") is unavailable.");
+            TerminateTransaction();
         }
     }
 
@@ -4180,8 +4187,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private void proseedToPostResume() {
-
+    private void proceedToPostResume() {
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " proceedToPostResume (" + LinkCommunicationType + ")");
         if (LinkCommunicationType.equalsIgnoreCase("BT")) {
 
             BtnStartStateChange(true);
@@ -4223,7 +4231,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             public void onFinish() {
 
                 dialogBus.dismiss();
-                proseedToPostResume();
+                proceedToPostResume();
 
             }
         };
@@ -4236,7 +4244,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             public void onClick(View v) {
                 dialogBus.dismiss();
                 if (finalCTimer != null) finalCTimer.cancel();
-                proseedToPostResume();
+                proceedToPostResume();
             }
 
         });

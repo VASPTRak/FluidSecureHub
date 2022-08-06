@@ -1163,6 +1163,8 @@ public class AcceptServiceCall {
 
                     AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.RED);
                     AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " CommandsGET_Info: info command response is empty. Redirecting to welcome activity.");
                     Intent intent = new Intent(activity, WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     activity.startActivity(intent);

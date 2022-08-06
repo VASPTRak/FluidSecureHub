@@ -268,6 +268,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     private static final int EXPIRE_TIMEOUT = 5000;
     private static final int EXPIRE_TASK_PERIOD = 1000;
     private int BTL1State = 0, BTL2State = 0, BTL3State = 0, BTL4State = 0;
+    private int BTL1counter = 0, BTL2counter = 0, BTL3counter = 0, BTL4counter = 0;
 
     //EddystoneScannerService
     private EddystoneScannerService mService;
@@ -1607,7 +1608,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.IsBTLinkSelectedCurrently = false;
                     }
 
-                    SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                    if (hoseID == null) {
+                        hoseID = "0";
+                    }
+                    if (IsUpgrade == null) {
+                        IsUpgrade = "";
+                    }
+                    if (FirmwareVersion == null) {
+                        FirmwareVersion = "";
+                    }
+
+                    if (!IsUpgrade.isEmpty()) {
+                        SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                    }
 
                     if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                         CheckBTConnection(0, AppConstants.CURRENT_SELECTED_SSID, AppConstants.SELECTED_MACADDRESS);
@@ -1616,6 +1629,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
         }
+
         ///////////////////common online offline///////////////////////////////
         EntityHub obj = offcontroller.getOfflineHubDetails(WelcomeActivity.this);
 
@@ -2028,34 +2042,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public void button1ClickCode() {
 
-
         removeFSNPFromList(0);
-
 
         //Clear FA vehicle number and personnel pin
         Constants.GateHubPinNo = "";
         Constants.GateHubvehicleNo = "";
 
         FS1_Stpflag = false;
-        String IpAddress = null;
-
-        //if (serverSSIDList != null && serverSSIDList.size() > 0)
 
         String selSSID = serverSSIDList.get(0).get("WifiSSId");
         String selMacAddress = serverSSIDList.get(0).get("MacAddress");
 
-
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Link:" + selSSID + " Stop button pressed");
-
-
-        /*for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-            String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-            if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                HTTP_URL_FS_1 = "http://" + IpAddress + ":80/";
-            }
-        }*/
+            AppConstants.WriteinFile(TAG + " Link 1: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_1 = sharedPref.getString("HttpLinkOne", "");
@@ -2066,25 +2065,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         URL_WIFI_FS1 = HTTP_URL_FS_1 + "config?command=wifi";
         URL_RELAY_FS1 = HTTP_URL_FS_1 + "config?command=relay";
 
-
-        if (IpAddress != "" || IpAddress != null) {
-
-            stopService(new Intent(WelcomeActivity.this, BackgroundService_AP_PIPE.class));
-            stopButtonFunctionality_FS1();
-            // Constants.FS_1STATUS = "FREE";
-            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
-            }
-            // Toast.makeText(getApplicationContext(), "Fs 1 stop button pressed", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Please make sure your connected to FS unit", Toast.LENGTH_SHORT).show();
+        if (HTTP_URL_FS_1.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please make sure your connected to FS unit");
+                AppConstants.WriteinFile(TAG + " Link 1: " + selSSID + ": HTTP URL is empty.");
+        }
+
+        stopService(new Intent(WelcomeActivity.this, BackgroundService_AP_PIPE.class));
+        stopButtonFunctionality_FS1();
+        if (Constants.BusyVehicleNumberList != null) {
+            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
         }
     }
 
     public void button2ClickCode() {
-
 
         removeFSNPFromList(1);
 
@@ -2094,43 +2087,25 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Link:" + selSSID + " Stop button pressed");
-
-
-        /*for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-            String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-            if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                HTTP_URL_FS_2 = "http://" + IpAddress + ":80/";
-            }
-        }*/
+            AppConstants.WriteinFile(TAG + " Link 2: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_2 = sharedPref.getString("HttpLinkTwo", "");
-
 
         URL_GET_PULSAR_FS2 = HTTP_URL_FS_2 + "client?command=pulsar ";
         URL_SET_PULSAR_FS2 = HTTP_URL_FS_2 + "config?command=pulsar";
         URL_WIFI_FS2 = HTTP_URL_FS_2 + "config?command=wifi";
         URL_RELAY_FS2 = HTTP_URL_FS_2 + "config?command=relay";
 
-
-        if (IpAddress != "" || IpAddress != null) {
-            try {
-                stopService(new Intent(WelcomeActivity.this, BackgroundService_AP.class));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            stopButtonFunctionality_FS2();
-            // Constants.FS_2STATUS = "FREE";
-            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
-            }
-            // Toast.makeText(getApplicationContext(), "Fs 2 stop button pressed", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Please make sure your connected to FS unit", Toast.LENGTH_SHORT).show();
+        if (HTTP_URL_FS_2.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please make sure your connected to FS unit");
+                AppConstants.WriteinFile(TAG + " Link 2: " + selSSID + ": HTTP URL is empty.");
+        }
+
+        stopService(new Intent(WelcomeActivity.this, BackgroundService_AP.class));
+        stopButtonFunctionality_FS2();
+        if (Constants.BusyVehicleNumberList != null) {
+            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
         }
     }
 
@@ -2144,15 +2119,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Link:" + selSSID + " Stop button pressed");
-
-        /*for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-            String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-            if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                HTTP_URL_FS_3 = "http://" + IpAddress + ":80/";
-            }
-        }*/
+            AppConstants.WriteinFile(TAG + " Link 3: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_3 = sharedPref.getString("HttpLinkThree", "");
@@ -2162,19 +2129,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         URL_WIFI_FS3 = HTTP_URL_FS_3 + "config?command=wifi";
         URL_RELAY_FS3 = HTTP_URL_FS_3 + "config?command=relay";
 
-
-        if (IpAddress != "" || IpAddress != null) {
-            stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_3.class));
-            stopButtonFunctionality_FS3();
-            // Constants.FS_3STATUS = "FREE";
-            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
-            }
-            // Toast.makeText(getApplicationContext(), "Fs 2 stop button pressed", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Please make sure your connected to FS unit", Toast.LENGTH_SHORT).show();
+        if (HTTP_URL_FS_3.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please make sure your connected to FS unit");
+                AppConstants.WriteinFile(TAG + " Link 3: " + selSSID + ": HTTP URL is empty.");
+        }
+
+        stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_3.class));
+        stopButtonFunctionality_FS3();
+        if (!Constants.BusyVehicleNumberList.equals(null)) {
+            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
         }
     }
 
@@ -2188,16 +2151,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Link:" + selSSID + " Stop button pressed");
-
-        /*if (AppConstants.DetailsListOfConnectedDevices != null)
-            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                    IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                    HTTP_URL_FS_4 = "http://" + IpAddress + ":80/";
-                }
-            }*/
+            AppConstants.WriteinFile(TAG + " Link 4: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_4 = sharedPref.getString("HttpLinkFour", "");
@@ -2207,18 +2161,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         URL_WIFI_FS4 = HTTP_URL_FS_4 + "config?command=wifi";
         URL_RELAY_FS4 = HTTP_URL_FS_4 + "config?command=relay";
 
-
-        if (IpAddress != "" || IpAddress != null) {
-            stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_4.class));
-            stopButtonFunctionality_FS4();
-            // Constants.FS_4STATUS = "FREE";
-            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS4);
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "Please make sure your connected to FS unit", Toast.LENGTH_SHORT).show();
+        if (HTTP_URL_FS_4.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please make sure your connected to FS unit");
+                AppConstants.WriteinFile(TAG + " Link 4: " + selSSID + ": HTTP URL is empty.");
+        }
+
+        stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_4.class));
+        stopButtonFunctionality_FS4();
+        if (Constants.BusyVehicleNumberList != null) {
+            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS4);
         }
     }
 
@@ -2232,66 +2183,25 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Link:" + selSSID + " Stop button pressed");
+            AppConstants.WriteinFile(TAG + " Link 5: " + selSSID + ". Stop button pressed");
 
-        boolean isMacConnected = false;
-        if (AppConstants.DetailsListOfConnectedDevices != null) {
-            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-
-                if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
-                    IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                    isMacConnected = true;
-                    break;
-                }
-            }
-        }
-
-        if (!isMacConnected) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
-            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
-
-                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
-                if (!IpAddress.trim().isEmpty()) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("===================================================================");
-                    break;
-                }
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("===================================================================");
-            }
-        }
-
-        if (!IpAddress.trim().isEmpty()) {
-            HTTP_URL_FS_5 = "http://" + IpAddress + ":80/";
-        }
+        SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
+        HTTP_URL_FS_5 = sharedPref.getString("HttpLinkFive", "");
 
         URL_GET_PULSAR_FS5 = HTTP_URL_FS_5 + "client?command=pulsar ";
         URL_SET_PULSAR_FS5 = HTTP_URL_FS_5 + "config?command=pulsar";
         URL_WIFI_FS5 = HTTP_URL_FS_5 + "config?command=wifi";
         URL_RELAY_FS5 = HTTP_URL_FS_5 + "config?command=relay";
 
-
-        if (IpAddress != "" || IpAddress != null) {
-            stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_5.class));
-            stopButtonFunctionality_FS5();
-            // Constants.FS_5STATUS = "FREE";
-            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS5);
-            }
-        } else {
-            tv_fs5_stop.setClickable(true);
-            Toast.makeText(getApplicationContext(), "Please make sure your connected to FS unit", Toast.LENGTH_SHORT).show();
+        if (HTTP_URL_FS_5.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please make sure your connected to FS unit");
+                AppConstants.WriteinFile(TAG + " Link 5: " + selSSID + ": HTTP URL is empty.");
+        }
+
+        stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_5.class));
+        stopButtonFunctionality_FS5();
+        if (Constants.BusyVehicleNumberList != null) {
+            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS5);
         }
     }
 
@@ -2305,66 +2215,25 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Link:" + selSSID + " Stop button pressed");
+            AppConstants.WriteinFile(TAG + " Link 6: " + selSSID + ". Stop button pressed");
 
-        boolean isMacConnected = false;
-        if (AppConstants.DetailsListOfConnectedDevices != null) {
-            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-
-                if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
-                    IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                    isMacConnected = true;
-                    break;
-                }
-            }
-        }
-
-        if (!isMacConnected) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
-            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
-
-                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
-                if (!IpAddress.trim().isEmpty()) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("===================================================================");
-                    break;
-                }
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("===================================================================");
-            }
-        }
-
-        if (!IpAddress.trim().isEmpty()) {
-            HTTP_URL_FS_6 = "http://" + IpAddress + ":80/";
-        }
+        SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
+        HTTP_URL_FS_6 = sharedPref.getString("HttpLinkSix", "");
 
         URL_GET_PULSAR_FS6 = HTTP_URL_FS_6 + "client?command=pulsar ";
         URL_SET_PULSAR_FS6 = HTTP_URL_FS_6 + "config?command=pulsar";
         URL_WIFI_FS6 = HTTP_URL_FS_6 + "config?command=wifi";
         URL_RELAY_FS6 = HTTP_URL_FS_6 + "config?command=relay";
 
-
-        if (IpAddress != "" || IpAddress != null) {
-            stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_6.class));
-            stopButtonFunctionality_FS6();
-            // Constants.FS_6STATUS = "FREE";
-            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS6);
-            }
-        } else {
-            tv_fs6_stop.setClickable(true);
-            Toast.makeText(getApplicationContext(), "Please make sure your connected to FS unit", Toast.LENGTH_SHORT).show();
+        if (HTTP_URL_FS_6.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please make sure your connected to FS unit");
+                AppConstants.WriteinFile(TAG + " Link 6: " + selSSID + ": HTTP URL is empty.");
+        }
+
+        stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_6.class));
+        stopButtonFunctionality_FS6();
+        if (Constants.BusyVehicleNumberList != null) {
+            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS6);
         }
     }
 
@@ -2979,7 +2848,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.UP_FilePath = UPFilePath;
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK: " + selSSID);
+                        AppConstants.WriteinFile(TAG + "Selected LINK: " + selSSID + " (position: " + (position + 1) + ")");
 
                     if (IsTankEmpty != null && IsTankEmpty.equalsIgnoreCase("True")) {
 
@@ -3431,7 +3300,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         AppConstants.LastSelectedHose = String.valueOf(position);
                                         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
                                             // linear_fs_1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
-
 
                                             Constants.AccPersonnelPIN = "";
                                             tvSSIDName.setText(selSSID);
@@ -4604,8 +4472,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     public void finalLastStep_fs1() {
-
-
+        AppConstants.IsTransactionCompleted = true;
     }
 
     //=======FS UNIT 2 =========
@@ -5726,13 +5593,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         // Toast.makeText(getApplicationContext(),"FS_Count"+FS_Count,Toast.LENGTH_SHORT).show();
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
-
             //Set "Tap here to select hose" message
             if (RestHoseinUse_FS1) {
                 RestHoseinUse_FS1 = false;
                 tvSSIDName.setText("Tap here to select hose");
                 SelectedItemPos = -1;
                 btnGo.setVisibility(View.VISIBLE);
+            }
+
+            if (!cd.isConnectingToInternet() && AppConstants.IsTransactionCompleted) {
+                AppConstants.IsTransactionCompleted = false;
+                if (serverSSIDList != null && serverSSIDList.size() == 1) {
+                    tvSSIDName.setText("Tap here to select hose");
+                    SelectedItemPos = -1;
+                    btnGo.setVisibility(View.VISIBLE);
+                }
             }
 
             Fs1_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
@@ -8658,7 +8533,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             //Info command commented
             String FSStatus = new CommandsGET().execute(URL_INFO).get();
-            Log.e("GateSoftwareDelayIssue", "   Info command ");
+            Log.e("GateSoftwareDelayIssue", " Info command ");
             if (FSStatus.startsWith("{") && FSStatus.contains("Version")) {
 
                 try {
@@ -8678,26 +8553,20 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     editor.putString("fsversion_fs1", iot_version);
                     editor.commit();
 
-
                     //IF upgrade firmware true check below
                     if (AppConstants.UP_Upgrade) {
                         CheckForUpdateFirmware(AppConstants.UP_HoseId_fs1, iot_version, AppConstants.FS_selected);
                     }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             } else {
-
                 //Info command else commented
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  Link is unavailable info command");
-                //AppConstants.colorToastBigFont(WelcomeActivity.this, " Link is unavailable", Color.RED);
-
+                    AppConstants.WriteinFile(TAG + " GateHubStartTransaction: info command response is empty.");
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -12263,7 +12132,217 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         Log.i(TAG, "BTLink 4: closeBTSppMain");
     }
 
+    private boolean checkBTLinkStatus(int position) {
+        boolean isConnected = false;
+        try {
+            switch (position) {
+                case 1:
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(1000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 1)");
+                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        } else {
+                            Thread.sleep(2000);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 2)");
+                            if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                                isConnected = true;
+                            } else {
+                                Thread.sleep(2000);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 3)");
+                                if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                                    isConnected = true;
+                                }
+                            }
+                        }
+                    }
+                    if (isConnected) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Link is connected.");
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: STATUS: " + BTConstants.BTStatusStrOne);
+                    }
+                    break;
+                case 2:
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(1000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 1)");
+                        if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        } else {
+                            Thread.sleep(2000);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 2)");
+                            if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                                isConnected = true;
+                            } else {
+                                Thread.sleep(2000);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 3)");
+                                if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                                    isConnected = true;
+                                }
+                            }
+                        }
+                    }
+                    if (isConnected) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 2: Link is connected.");
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 2: STATUS: " + BTConstants.BTStatusStrTwo);
+                    }
+                    break;
+                case 3:
+                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(1000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 1)");
+                        if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        } else {
+                            Thread.sleep(2000);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 2)");
+                            if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                                isConnected = true;
+                            } else {
+                                Thread.sleep(2000);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 3)");
+                                if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                                    isConnected = true;
+                                }
+                            }
+                        }
+                    }
+                    if (isConnected) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Link is connected.");
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 3: STATUS: " + BTConstants.BTStatusStrThree);
+                    }
+                    break;
+                case 4:
+                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(1000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 1)");
+                        if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        } else {
+                            Thread.sleep(2000);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 2)");
+                            if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                                isConnected = true;
+                            } else {
+                                Thread.sleep(2000);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 3)");
+                                if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                                    isConnected = true;
+                                }
+                            }
+                        }
+                    }
+                    if (isConnected) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Link is connected.");
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 4: STATUS: " + BTConstants.BTStatusStrFour);
+                    }
+                    break;
+            }
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink " + position + ": checkBTLinkStatus Exception:>>" + e.getMessage());
+        }
+        return isConnected;
+    }
+
+    public void retryConnect(int position) {
+        try {
+            switch (position) {
+                case 1:
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
+                        BTConstants.CurrentTransactionIsBT = false;
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: retryConnect");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect1();
+                        BTConstants.CurrentTransactionIsBT = false;
+                    }
+                    break;
+                case 2:
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connecting...")) {
+                        BTConstants.CurrentTransactionIsBT = false;
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 2: retryConnect");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect2();
+                        BTConstants.CurrentTransactionIsBT = false;
+                    }
+                    break;
+                case 3:
+                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connecting...")) {
+                        BTConstants.CurrentTransactionIsBT = false;
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 3: retryConnect");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect3();
+                        BTConstants.CurrentTransactionIsBT = false;
+                    }
+                    break;
+                case 4:
+                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connecting...")) {
+                        BTConstants.CurrentTransactionIsBT = false;
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 4: retryConnect");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect4();
+                        BTConstants.CurrentTransactionIsBT = false;
+                    }
+                    break;
+            }
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink " + position + ": retryConnect Exception:>>" + e.getMessage());
+        }
+    }
+
     private void CheckBTConnection(int selectedItemPos, String selSSID, String selMacAddress) {
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "Check BT connection for Link: " + selSSID);
 
         switch (selectedItemPos) {
 
@@ -12288,7 +12367,66 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
                         RestrictHoseSelection("Connecting...");
-                        new Handler().postDelayed(new Runnable() {
+
+                        Handler handler = new Handler();
+                        int delay = 4000;
+
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress1)) {
+
+                                    if (BTL1counter == 0) {
+                                        BTL1counter++;
+
+                                        retryConnect(1);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        if (BTL1counter < 2) {
+                                            if (checkBTLinkStatus(1)) {
+                                                RedirectBtLinkOneToNextScreen(selSSID);
+                                            } else {
+                                                BTL1counter++;
+
+                                                retryConnect(1);
+
+                                                handler.postDelayed(this, delay);
+                                            }
+                                        } else {
+                                            if (checkBTLinkStatus(1)) {
+                                                RedirectBtLinkOneToNextScreen(selSSID);
+                                            } else {
+                                                BTL1counter = 0;
+                                                BTConstants.CurrentTransactionIsBT = false;
+                                                RestrictHoseSelection("Hose not connected");
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                            }
+                                        }
+                                    }
+                                } else {
+
+                                    if (BTL1State < 2) { //BTL1State == 0
+                                        BTL1State++; //BTL1State = 1
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                    } else {
+                                        BTL1State = 0; //BTL1State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
+                                    }
+                                }
+                            }
+                        }, delay);
+
+                        /*new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
 
@@ -12298,22 +12436,17 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
                                         Log.i(TAG, "BTLink 1 msg Connecting...");
                                         //countDown();
-                                        //AppConstants.colorToast(getApplicationContext(), "Connecting...", Color.BLUE);
                                         BTConstants.CurrentTransactionIsBT = false;
-                                        //RestrictHoseSelection("Connecting...");
                                     } else {
                                         //Retrying to connect to link
                                         BTSPPMain btspp = new BTSPPMain();
                                         btspp.activity = WelcomeActivity.this;
                                         btspp.connect1();
-                                        //RestrictHoseSelection("Connecting...");
                                         BTConstants.CurrentTransactionIsBT = false;
-                                        //AppConstants.colorToast(getApplicationContext(), "Please wait for while and try..!!", Color.BLUE);
                                     }
 
                                     //code should direct user to next screen.
                                     RedirectBtLinkOneToNextScreen(selSSID);
-
 
                                 } else {
 
@@ -12321,18 +12454,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         BTL1State++; //BTL1State = 1
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
                                     } else {
-                                        //BTL1State = 1;
+                                        BTL1State = 0; //BTL1State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
                                     }
 
                                 }
 
                             }
-                        }, 4000);
+                        }, 4000);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
@@ -12359,7 +12496,66 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
                         RestrictHoseSelection("Connecting...");
-                        new Handler().postDelayed(new Runnable() {
+
+                        Handler handler = new Handler();
+                        int delay = 4000;
+
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress2)) {
+
+                                    if (BTL2counter == 0) {
+                                        BTL2counter++;
+
+                                        retryConnect(2);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        if (BTL2counter < 2) {
+                                            if (checkBTLinkStatus(2)) {
+                                                RedirectBtLinkTwoToNextScreen(selSSID);
+                                            } else {
+                                                BTL2counter++;
+
+                                                retryConnect(2);
+
+                                                handler.postDelayed(this, delay);
+                                            }
+                                        } else {
+                                            if (checkBTLinkStatus(2)) {
+                                                RedirectBtLinkTwoToNextScreen(selSSID);
+                                            } else {
+                                                BTL2counter = 0;
+                                                BTConstants.CurrentTransactionIsBT = false;
+                                                RestrictHoseSelection("Hose not connected");
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                            }
+                                        }
+                                    }
+                                } else {
+
+                                    if (BTL2State < 2) { //BTL2State == 0
+                                        BTL2State++; //BTL2State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                    } else {
+                                        BTL2State = 0; //BTL2State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
+                                    }
+                                }
+                            }
+                        }, delay);
+
+                        /*new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
 
@@ -12391,18 +12587,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         BTL2State++; //BTL2State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
                                     } else {
-                                        //BTL2State = 1;
+                                        BTL2State = 0; //BTL2State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
                                     }
                                 }
 
                             }
-                        }, 4000);
-
+                        }, 4000);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
@@ -12430,7 +12629,66 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
                         RestrictHoseSelection("Connecting...");
-                        new Handler().postDelayed(new Runnable() {
+
+                        Handler handler = new Handler();
+                        int delay = 4000;
+
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress3)) {
+
+                                    if (BTL3counter == 0) {
+                                        BTL3counter++;
+
+                                        retryConnect(3);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        if (BTL3counter < 2) {
+                                            if (checkBTLinkStatus(3)) {
+                                                RedirectBtLinkThreeToNextScreen(selSSID);
+                                            } else {
+                                                BTL3counter++;
+
+                                                retryConnect(3);
+
+                                                handler.postDelayed(this, delay);
+                                            }
+                                        } else {
+                                            if (checkBTLinkStatus(3)) {
+                                                RedirectBtLinkThreeToNextScreen(selSSID);
+                                            } else {
+                                                BTL3counter = 0;
+                                                BTConstants.CurrentTransactionIsBT = false;
+                                                RestrictHoseSelection("Hose not connected");
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                            }
+                                        }
+                                    }
+                                } else {
+
+                                    if (BTL3State < 2) { //BTL3State == 0
+                                        BTL3State++; //BTL3State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                    } else {
+                                        BTL3State = 0; //BTL3State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
+                                    }
+                                }
+                            }
+                        }, delay);
+
+                        /*new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
 
@@ -12462,18 +12720,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         BTL3State++; //BTL3State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
                                     } else {
-                                        //BTL3State = 1;
+                                        BTL3State = 0; //BTL3State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
                                     }
                                 }
 
                             }
-                        }, 4000);
-
+                        }, 4000);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
@@ -12502,7 +12763,66 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
                         RestrictHoseSelection("Connecting...");
-                        new Handler().postDelayed(new Runnable() {
+
+                        Handler handler = new Handler();
+                        int delay = 4000;
+
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress4)) {
+
+                                    if (BTL4counter == 0) {
+                                        BTL4counter++;
+
+                                        retryConnect(4);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        if (BTL4counter < 2) {
+                                            if (checkBTLinkStatus(4)) {
+                                                RedirectBtLinkFourToNextScreen(selSSID);
+                                            } else {
+                                                BTL4counter++;
+
+                                                retryConnect(4);
+
+                                                handler.postDelayed(this, delay);
+                                            }
+                                        } else {
+                                            if (checkBTLinkStatus(4)) {
+                                                RedirectBtLinkFourToNextScreen(selSSID);
+                                            } else {
+                                                BTL4counter = 0;
+                                                BTConstants.CurrentTransactionIsBT = false;
+                                                RestrictHoseSelection("Hose not connected");
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                            }
+                                        }
+                                    }
+                                } else {
+
+                                    if (BTL4State < 2) { //BTL4State == 0
+                                        BTL4State++; //BTL4State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+                                    } else {
+                                        BTL4State = 0; //BTL4State = 1;
+                                        BTConstants.CurrentTransactionIsBT = false;
+                                        RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
+                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
+                                    }
+                                }
+                            }
+                        }, delay);
+
+                        /*new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
 
@@ -12534,17 +12854,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         BTL4State++; //BTL4State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
                                     } else {
-                                        //BTL4State = 1;
+                                        BTL4State = 0; //BTL4State = 1;
                                         BTConstants.CurrentTransactionIsBT = false;
                                         RestrictHoseSelection("Hose not connected");
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Hose is Unavailable.");
                                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
                                     }
                                 }
 
                             }
-                        }, 4000);
+                        }, 4000);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
@@ -12973,7 +13297,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    tvSSIDName.setText("Tap here to select hose");
+                    if (!s.equalsIgnoreCase("Connecting...")) {
+                        tvSSIDName.setText("Tap here to select hose");
+                    }
                     btnGo.setVisibility(View.GONE);
                 }
             }, 6000);
@@ -13041,6 +13367,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
+        AppConstants.goButtonClicked = true;
         goButtonAction(null);
 
 

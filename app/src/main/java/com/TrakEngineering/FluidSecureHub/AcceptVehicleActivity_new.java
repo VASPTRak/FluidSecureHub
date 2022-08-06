@@ -183,6 +183,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     boolean bleLFUpdateSuccessFlag = false;
     boolean bleHFUpdateSuccessFlag = false;
     HashMap<String, String> hmapSwitchOffline = new HashMap<>();
+    String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "";
 
     //-------------------------
     ConnectionDetector cd = new ConnectionDetector(AcceptVehicleActivity_new.this);
@@ -890,7 +891,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     new GetVehicleNuOnFobKeyDetection().execute();
                 }
             } else {
-
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                 //offline---------------Codehereorequest #1729 (Eva) New Boston Concrete.
                 AppConstants.AUTH_CALL_SUCCESS = false;
                 if (AppConstants.GenerateLogs)
@@ -907,9 +909,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Please check your Offline Access");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
-                    //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                        AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                    //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server"); // Removed from all places as per #1899 => Eva's comment (Aug 4th)
                 }
             }
 
@@ -930,8 +931,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     new GetVehicleNuOnFobKeyDetection().execute();
                 }
             } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                 ///offlline-------------------
-
                 AppConstants.AUTH_CALL_SUCCESS = false;
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "Offline Vehicle FOB: " + AppConstants.APDU_FOB_KEY);
@@ -947,9 +949,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Please check your Offline Access");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
-                    //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                        AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                    //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                 }
             }
 
@@ -1479,15 +1480,17 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     editVehicleNumber.setFocusable(true);
                     btnSave.setEnabled(true);
 
-
                     AppConstants.AUTH_CALL_SUCCESS = false;
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
                     if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "ServerCallFirst  Temporary loss of cell service ~Switching to offline mode!!");
                         checkVehicleOFFLINEvalidation(hmapSwitchOffline);
                     } else {
-                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                     }
                 }
 
@@ -1524,7 +1527,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         new ServerCallFirst().execute();
                     }
                 } else {
-
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                     AppConstants.AUTH_CALL_SUCCESS = false;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Offline Vehicle No.: " + V_Number);
@@ -1532,8 +1536,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                         checkVehicleOFFLINEvalidation(hmap);
                     } else {
-                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                     }
 
                 }
@@ -1649,8 +1654,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
 
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                     //offline---------------
-
                     AppConstants.AUTH_CALL_SUCCESS = false;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Offline Vehicle No.: " + V_Number);
@@ -1658,8 +1664,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                         checkVehicleOFFLINEvalidation(hmap);
                     } else {
-                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                     }
 
                 }
@@ -2103,7 +2110,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     }
 
                 } else {
-
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
                     if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "GetVehicleNuOnFobKeyDetection  Temporary loss of cell service ~Switching to offline mode!!");
@@ -2113,8 +2121,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                         checkVehicleOFFLINEvalidation(hmapSwitchOffline);
                     } else {
-                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                     }
 
 
@@ -2873,6 +2882,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             new GetVehicleNuOnFobKeyDetection().execute();
                         }
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                         //offline---------------
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Offline Barcode Read: " + Barcode_val);
@@ -2880,8 +2891,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                             checkVehicleOFFLINEvalidation(hmap);
                         } else {
-                            //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                         }
 
                     }
@@ -3306,49 +3318,69 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 boolean ReaderStatusUI = false;
 
                 //LF reader status on UI
-                if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && AppConstants.showReaderStatus) {
-                    ReaderStatusUI = true;
-                    tv_lf_status.setVisibility(View.VISIBLE);
-                    if (Constants.LF_ReaderStatus.equals("LF Connected") || Constants.LF_ReaderStatus.equals("LF Discovered")) {
-                        tv_lf_status.setText(Constants.LF_ReaderStatus);
-                        tv_lf_status.setTextColor(Color.parseColor("#4CAF50"));
-                    } else {
-                        retryConnect();
-                        tv_lf_status.setText(Constants.LF_ReaderStatus);
-                        tv_lf_status.setTextColor(Color.parseColor("#ff0000"));
+                if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                    if (!Constants.LF_ReaderStatus.equalsIgnoreCase(LFReaderStatus)) {
+                        LFReaderStatus = Constants.LF_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "LF Reader Status: " + Constants.LF_ReaderStatus);
                     }
-
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_lf_status.setVisibility(View.VISIBLE);
+                        if (Constants.LF_ReaderStatus.equals("LF Connected") || Constants.LF_ReaderStatus.equals("LF Discovered")) {
+                            tv_lf_status.setText(Constants.LF_ReaderStatus);
+                            tv_lf_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_lf_status.setText(Constants.LF_ReaderStatus);
+                            tv_lf_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
+                    }
                 } else {
                     tv_lf_status.setVisibility(View.GONE);
                 }
 
                 //Hf reader status on UI
-                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && AppConstants.showReaderStatus) {
-                    ReaderStatusUI = true;
-                    tv_hf_status.setVisibility(View.VISIBLE);
-                    if (Constants.HF_ReaderStatus.equals("HF Connected") || Constants.HF_ReaderStatus.equals("HF Discovered")) {
-                        tv_hf_status.setText(Constants.HF_ReaderStatus);
-                        tv_hf_status.setTextColor(Color.parseColor("#4CAF50"));
-                    } else {
-                        retryConnect();
-                        tv_hf_status.setText(Constants.HF_ReaderStatus);
-                        tv_hf_status.setTextColor(Color.parseColor("#ff0000"));
+                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                    if (!Constants.HF_ReaderStatus.equalsIgnoreCase(HFReaderStatus)) {
+                        HFReaderStatus = Constants.HF_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "HF Reader Status: " + Constants.HF_ReaderStatus);
+                    }
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_hf_status.setVisibility(View.VISIBLE);
+                        if (Constants.HF_ReaderStatus.equals("HF Connected") || Constants.HF_ReaderStatus.equals("HF Discovered")) {
+                            tv_hf_status.setText(Constants.HF_ReaderStatus);
+                            tv_hf_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_hf_status.setText(Constants.HF_ReaderStatus);
+                            tv_hf_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
                     }
                 } else {
                     tv_hf_status.setVisibility(View.GONE);
                 }
 
                 //Magnetic reader status on UI
-                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && AppConstants.showReaderStatus) {
-                    ReaderStatusUI = true;
-                    tv_mag_status.setVisibility(View.VISIBLE);
-                    if (Constants.Mag_ReaderStatus.equals("Mag Connected") || Constants.Mag_ReaderStatus.equals("Mag Discovered")) {
-                        tv_mag_status.setText(Constants.Mag_ReaderStatus);
-                        tv_mag_status.setTextColor(Color.parseColor("#4CAF50"));
-                    } else {
-                        retryConnect();
-                        tv_mag_status.setText(Constants.Mag_ReaderStatus);
-                        tv_mag_status.setTextColor(Color.parseColor("#ff0000"));
+                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                    if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
+                        MagReaderStatus = Constants.Mag_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Mag Reader Status: " + Constants.Mag_ReaderStatus);
+                    }
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_mag_status.setVisibility(View.VISIBLE);
+                        if (Constants.Mag_ReaderStatus.equals("Mag Connected") || Constants.Mag_ReaderStatus.equals("Mag Discovered")) {
+                            tv_mag_status.setText(Constants.Mag_ReaderStatus);
+                            tv_mag_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_mag_status.setText(Constants.Mag_ReaderStatus);
+                            tv_mag_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
                     }
                 } else {
                     tv_mag_status.setVisibility(View.GONE);
@@ -3469,6 +3501,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                                 new GetVehicleNuOnFobKeyDetection().execute();
                             }
                         } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                             //offline---------------
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Offline Barcode Read: " + Barcode_val);
@@ -3476,8 +3510,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                                 checkVehicleOFFLINEvalidation(hmap);
                             } else {
-                                //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Please check your Offline Access");
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                                //CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Unable to connect server");
                             }
 
                         }

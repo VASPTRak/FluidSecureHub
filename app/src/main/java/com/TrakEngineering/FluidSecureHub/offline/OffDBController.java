@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 public class OffDBController extends SQLiteOpenHelper {
     private static final String LOGCAT = null;
-    private static final String TAG = "OffDBController";
+    private static final String TAG = "OffDBController ";
 
     public static String TBL_LINK = "tbl_off_link";
     public static String TBL_FUEL_TIMING = "tbl_off_fuel_timings";
@@ -299,29 +299,34 @@ public class OffDBController extends SQLiteOpenHelper {
 
 
     public long insertOfflineTransactions(EntityOffTranz eot) {
+        long insertedID = 0;
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
+            values.put("HubId", eot.HubId);
+            values.put("SiteId", eot.SiteId);
+            values.put("VehicleId", eot.VehicleId);
+            values.put("CurrentOdometer", eot.CurrentOdometer);
+            values.put("CurrentHours", eot.CurrentHours);
+            values.put("PersonId", eot.PersonId);
+            values.put("PersonPin", eot.PersonPin);
+            values.put("FuelQuantity", eot.FuelQuantity);
+            values.put("Pulses", eot.Pulses);
+            values.put("TransactionDateTime", eot.TransactionDateTime);
+            values.put("OfflineFakeTransactionId", eot.OfflineFakeTransactionId);
+            values.put("VehicleNumber", eot.VehicleNumber);
 
-        values.put("HubId", eot.HubId);
-        values.put("SiteId", eot.SiteId);
-        values.put("VehicleId", eot.VehicleId);
-        values.put("CurrentOdometer", eot.CurrentOdometer);
-        values.put("CurrentHours", eot.CurrentHours);
-        values.put("PersonId", eot.PersonId);
-        values.put("PersonPin", eot.PersonPin);
-        values.put("FuelQuantity", eot.FuelQuantity);
-        values.put("Pulses", eot.Pulses);
-        values.put("TransactionDateTime", eot.TransactionDateTime);
-        values.put("OfflineFakeTransactionId", eot.OfflineFakeTransactionId);
-        values.put("VehicleNumber", eot.VehicleNumber);
-
-        long insertedID = database.insert(TBL_TRANSACTION, null, values);
-        database.close();
-
+            insertedID = database.insert(TBL_TRANSACTION, null, values);
+            database.close();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Transaction saved locally.");
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " insertOfflineTransactions Exception: " + e.getMessage());
+        }
         return insertedID;
     }
-
 
     public int updateOfflinePulsesQuantity(String sqlite_id, String Pulses, String Quantity, String OfflineFakeTransactionId) {
         SQLiteDatabase database = this.getWritableDatabase();

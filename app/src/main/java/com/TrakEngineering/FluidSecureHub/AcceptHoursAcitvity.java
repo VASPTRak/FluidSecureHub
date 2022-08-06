@@ -422,7 +422,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                         }
                     } else {
-
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                         //offline----------------------
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Offline Entered Hours: " + etHours.getText());
@@ -517,10 +518,10 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                 offlineValidHrs();
                             }
 
-
                         } else {
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptHoursAcitvity.this, "Message", "Please check your Offline Access");
-                            //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptHoursAcitvity.this, "Message", "Unable to connect server");
                             Istimeout_Sec = true;
                             ResetTimeoutHoursScreen();
                         }

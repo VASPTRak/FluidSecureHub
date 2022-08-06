@@ -162,6 +162,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     String FOLDER_PATH_BLE = null;
     HashMap<String, String> hmapSwitchOfflinepin = new HashMap<>();
+    String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "";
 
     private static final int EXPIRE_TIMEOUT = 5000;
     private static final int EXPIRE_TASK_PERIOD = 1000;
@@ -386,11 +387,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         }
                     }
                 } else {
-
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                     AppConstants.AUTH_CALL_SUCCESS = false;
-                    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Offline Pin : " + pin);
-                    //if (AppConstants.GenerateLogs)
-                    //    AppConstants.WriteinFile(TAG + " if(OfflineConstants.isOfflineAccess(WelcomeActivity.this)){AppConstants.NETWORK_STRENGTH = false;}");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Offline Pin : " + pin);
 
                     if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                         //offline----------
@@ -400,8 +401,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             checkPINvalidation(hmap);
                         }
                     } else {
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
-                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                     }
 
                 }
@@ -971,6 +973,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             new GetPinNuOnFobKeyDetection().execute();
                         }
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                         //offline---------------
                         if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                             checkPINvalidation(hmap);
@@ -978,9 +982,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             etPersonnelPin.setText(PinNumber);
                         } else {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Please check your Offline Access");
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
-                            //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                                AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                         }
                     }
 
@@ -1006,16 +1009,16 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                             if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                                 checkPINvalidation(hmap);
                                 String PinNumber = hmap.get("PinNumber");
                                 etPersonnelPin.setText(PinNumber);
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Please check your Offline Access");
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
-                                //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                                    AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                                //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                             }
                         }
                         tv_fob_number.setText("Access Device No: " + test);
@@ -1536,7 +1539,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 }
             } else {
-
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality Temporary loss of cell service ~Switching to offline mode!!");
@@ -1547,8 +1551,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     checkPINvalidation(hmapSwitchOfflinepin);
 
                 } else {
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
-                    //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                    //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                 }
 
             }
@@ -1912,7 +1917,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     }
 
                 } else {
-
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
                     if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "GetPinNuOnFobKeyDetection Temporary loss of cell service ~Switching to offline mode!!");
@@ -1923,8 +1929,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         checkPINvalidation(hmapSwitchOfflinepin);
 
                     } else {
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Please check your Offline Access");
-                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                     }
                 }
 
@@ -2525,49 +2532,69 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 boolean ReaderStatusUI = false;
 
                 //LF reader status on UI
-                if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && AppConstants.showReaderStatus) {
-                    ReaderStatusUI = true;
-                    tv_lf_status.setVisibility(View.VISIBLE);
-                    if (Constants.LF_ReaderStatus.equals("LF Connected") || Constants.LF_ReaderStatus.equals("LF Discovered")) {
-                        tv_lf_status.setText(Constants.LF_ReaderStatus);
-                        tv_lf_status.setTextColor(Color.parseColor("#4CAF50"));
-                    } else {
-                        retryConnect();
-                        tv_lf_status.setText(Constants.LF_ReaderStatus);
-                        tv_lf_status.setTextColor(Color.parseColor("#ff0000"));
+                if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    if (!Constants.LF_ReaderStatus.equalsIgnoreCase(LFReaderStatus)) {
+                        LFReaderStatus = Constants.LF_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "LF Reader Status: " + Constants.LF_ReaderStatus);
                     }
-
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_lf_status.setVisibility(View.VISIBLE);
+                        if (Constants.LF_ReaderStatus.equals("LF Connected") || Constants.LF_ReaderStatus.equals("LF Discovered")) {
+                            tv_lf_status.setText(Constants.LF_ReaderStatus);
+                            tv_lf_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_lf_status.setText(Constants.LF_ReaderStatus);
+                            tv_lf_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
+                    }
                 } else {
                     tv_lf_status.setVisibility(View.GONE);
                 }
 
                 //Hf reader status on UI
-                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N") && AppConstants.showReaderStatus) {
-                    ReaderStatusUI = true;
-                    tv_hf_status.setVisibility(View.VISIBLE);
-                    if (Constants.HF_ReaderStatus.equals("HF Connected") || Constants.HF_ReaderStatus.equals("HF Discovered")) {
-                        tv_hf_status.setText(Constants.HF_ReaderStatus);
-                        tv_hf_status.setTextColor(Color.parseColor("#4CAF50"));
-                    } else {
-                        retryConnect();
-                        tv_hf_status.setText(Constants.HF_ReaderStatus);
-                        tv_hf_status.setTextColor(Color.parseColor("#ff0000"));
+                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    if (!Constants.HF_ReaderStatus.equalsIgnoreCase(HFReaderStatus)) {
+                        HFReaderStatus = Constants.HF_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "HF Reader Status: " + Constants.HF_ReaderStatus);
+                    }
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_hf_status.setVisibility(View.VISIBLE);
+                        if (Constants.HF_ReaderStatus.equals("HF Connected") || Constants.HF_ReaderStatus.equals("HF Discovered")) {
+                            tv_hf_status.setText(Constants.HF_ReaderStatus);
+                            tv_hf_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_hf_status.setText(Constants.HF_ReaderStatus);
+                            tv_hf_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
                     }
                 } else {
                     tv_hf_status.setVisibility(View.GONE);
                 }
 
                 //Magnetic reader status on UI
-                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && AppConstants.showReaderStatus) {
-                    ReaderStatusUI = true;
-                    tv_mag_status.setVisibility(View.VISIBLE);
-                    if (Constants.Mag_ReaderStatus.equals("Mag Connected") || Constants.Mag_ReaderStatus.equals("Mag Discovered")) {
-                        tv_mag_status.setText(Constants.Mag_ReaderStatus);
-                        tv_mag_status.setTextColor(Color.parseColor("#4CAF50"));
-                    } else {
-                        retryConnect();
-                        tv_mag_status.setText(Constants.Mag_ReaderStatus);
-                        tv_mag_status.setTextColor(Color.parseColor("#ff0000"));
+                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
+                        MagReaderStatus = Constants.Mag_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Mag Reader Status: " + Constants.Mag_ReaderStatus);
+                    }
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_mag_status.setVisibility(View.VISIBLE);
+                        if (Constants.Mag_ReaderStatus.equals("Mag Connected") || Constants.Mag_ReaderStatus.equals("Mag Discovered")) {
+                            tv_mag_status.setText(Constants.Mag_ReaderStatus);
+                            tv_mag_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_mag_status.setText(Constants.Mag_ReaderStatus);
+                            tv_mag_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
                     }
                 } else {
                     tv_mag_status.setVisibility(View.GONE);

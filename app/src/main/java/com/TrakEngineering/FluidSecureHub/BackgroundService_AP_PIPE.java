@@ -516,6 +516,8 @@ public class BackgroundService_AP_PIPE extends Service {
             }catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " URL: " + param[0]);
+                if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Exception " + e);
                 stopSelf();
             }
@@ -540,7 +542,7 @@ public class BackgroundService_AP_PIPE extends Service {
             } catch (Exception e) {
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Exception " + e);
+                    AppConstants.WriteinFile(TAG + "  CommandsPOST onPostExecute Exception " + e);
                 System.out.println(e);
                 stopSelf();
             }

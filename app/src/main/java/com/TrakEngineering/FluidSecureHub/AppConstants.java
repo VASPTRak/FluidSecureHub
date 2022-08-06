@@ -166,6 +166,7 @@ public class AppConstants {
     public static String OFF_ODO_Limit;
     public static String OFF_HRS_Limit;
 
+    public static boolean IsTransactionCompleted = false;
 
     public static String ESP32_update = "NO";
     public static String PIC_update = "NO";

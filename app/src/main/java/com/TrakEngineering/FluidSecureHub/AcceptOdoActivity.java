@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -455,6 +453,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
                         }
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                         //offline-------------------
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Offline Entered Odometer: " + editOdoTenths.getText());
@@ -555,10 +555,11 @@ public class AcceptOdoActivity extends AppCompatActivity {
                             }
 
                         } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptOdoActivity.this, "Message", "Unable to connect server");
                             Istimeout_Sec = true;
                             ResetTimeoutOdoScreen();
-                            //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptOdoActivity.this, "Message", "Please check your Offline Access");
                         }
                     }
                 }
