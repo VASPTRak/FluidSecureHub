@@ -545,7 +545,7 @@ public class BackgroundService_BTOne extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkOneData + ")");
             }
             stopTxtprocess = true;
-            AppConstants.goButtonClicked = false;
+            //AppConstants.goButtonClicked = false;
             Constants.FS_1STATUS = "FREE";
             Constants.FS_1Pulse = "00";
             CancelTimer();

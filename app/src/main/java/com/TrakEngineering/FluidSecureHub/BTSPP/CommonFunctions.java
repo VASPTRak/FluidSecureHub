@@ -32,7 +32,7 @@ public static boolean CheckIfPresentInPairedDeviceList(String SelMac){
         }
     }
     Log.i(TAG,"Selected link not in bluetooth pair devices list. HardwareAddress:"+SelMac);
-    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ "Selected link not in bluetooth pair devices list. HardwareAddress:"+SelMac);
+    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ " Selected link not in bluetooth pair devices list. HardwareAddress:"+SelMac);
     return false;
 }
 

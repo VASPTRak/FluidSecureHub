@@ -3439,7 +3439,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "  Relay_Status: " + status);
 
-
                         if (status.equalsIgnoreCase("1")) {
 
                             //unable to start (start never appeared): Potential Wifi Connection Issue = 6
@@ -4311,11 +4310,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             Istimeout_Sec = false;
             AppConstants.ClearEdittextFielsOnBack(DisplayMeterActivity.this);
 
+            CancelTimerScreenOut();
+
             Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
 
-            CancelTimerScreenOut();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "TerminateTransaction Exception " + e.getMessage());

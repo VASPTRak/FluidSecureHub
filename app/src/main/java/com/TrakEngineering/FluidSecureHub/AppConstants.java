@@ -200,7 +200,7 @@ public class AppConstants {
     public static boolean DisplayToastmaxlimit = false;
     public static String MaxlimitMessage = "";
     public static boolean IsSingleLink = false;
-    public static boolean goButtonClicked = false;
+    //public static boolean goButtonClicked = false;
 
     public static boolean FlickeringScreenOff;
     public static String NoSleepRespTime = "";

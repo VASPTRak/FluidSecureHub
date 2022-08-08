@@ -1590,42 +1590,50 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         qrcodebleServiceOn();
         //launchCamera();     //Calling camera activity for image capture on GO button click
 
-        if (AppConstants.IsSingleLink) {
-            if (!AppConstants.goButtonClicked) {
-                AppConstants.goButtonClicked = true;
+        if (serverSSIDList != null && serverSSIDList.size() == 1) {
+            AppConstants.IsSingleLink = true;
+            SelectedItemPos = 0;
 
-                if (serverSSIDList != null && serverSSIDList.size() == 1) {
-                    String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
-                    String selSiteId = serverSSIDList.get(0).get("SiteId");
-                    String hoseID = serverSSIDList.get(0).get("HoseId");
-                    String IsUpgrade = serverSSIDList.get(0).get("IsUpgrade");
-                    String FirmwareVersion = serverSSIDList.get(0).get("FirmwareVersion");
-                    AppConstants.UP_FilePath = serverSSIDList.get(0).get("UPFilePath");
+            if (view != null) { // GO button clicked.
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "GO button clicked.");
 
-                    if (LinkCommunicationType.equalsIgnoreCase("BT")) {
-                        AppConstants.IsBTLinkSelectedCurrently = true;
-                    } else {
-                        AppConstants.IsBTLinkSelectedCurrently = false;
-                    }
+                String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
+                String selSiteId = serverSSIDList.get(0).get("SiteId");
+                String hoseID = serverSSIDList.get(0).get("HoseId");
+                String IsUpgrade = serverSSIDList.get(0).get("IsUpgrade");
+                String FirmwareVersion = serverSSIDList.get(0).get("FirmwareVersion");
+                AppConstants.UP_FilePath = serverSSIDList.get(0).get("UPFilePath");
+                String selSSID = serverSSIDList.get(0).get("WifiSSId");
+                String selMacAddress = serverSSIDList.get(0).get("MacAddress");
+                String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
+                AppConstants.CURRENT_SELECTED_SSID = selSSID;
 
-                    if (hoseID == null) {
-                        hoseID = "0";
-                    }
-                    if (IsUpgrade == null) {
-                        IsUpgrade = "";
-                    }
-                    if (FirmwareVersion == null) {
-                        FirmwareVersion = "";
-                    }
+                if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                    AppConstants.IsBTLinkSelectedCurrently = true;
+                    AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
+                } else {
+                    AppConstants.IsBTLinkSelectedCurrently = false;
+                    AppConstants.SELECTED_MACADDRESS = selMacAddress;
+                }
 
-                    if (!IsUpgrade.isEmpty()) {
-                        SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
-                    }
+                if (hoseID == null) {
+                    hoseID = "0";
+                }
+                if (IsUpgrade == null) {
+                    IsUpgrade = "";
+                }
+                if (FirmwareVersion == null) {
+                    FirmwareVersion = "";
+                }
 
-                    if (LinkCommunicationType.equalsIgnoreCase("BT")) {
-                        CheckBTConnection(0, AppConstants.CURRENT_SELECTED_SSID, AppConstants.SELECTED_MACADDRESS);
-                        return;
-                    }
+                if (!IsUpgrade.isEmpty()) {
+                    SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                }
+
+                if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                    CheckBTConnection(0, selSSID, BTselMacAddress);
+                    return;
                 }
             }
         }
@@ -2650,7 +2658,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         AppConstants.colorToast(getApplicationContext(), "Please wait...", Color.BLACK);
 
-
                         goButtonAction(null);
 
                         break;
@@ -2848,7 +2855,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.UP_FilePath = UPFilePath;
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK: " + selSSID + " (position: " + (position + 1) + ")");
+                        AppConstants.WriteinFile(TAG + "Selected LINK: " + selSSID + " (position: " + (position + 1) + " of " + serverSSIDList.size() + ")");
 
                     if (IsTankEmpty != null && IsTankEmpty.equalsIgnoreCase("True")) {
 
@@ -10353,7 +10360,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         for (int i = 0; i < Requests.length(); i++) {
                             JSONObject c = Requests.getJSONObject(i);
 
-
                             String SiteId = c.getString("SiteId");
                             String SiteNumber = c.getString("SiteNumber");
                             String SiteName = c.getString("SiteName");
@@ -13367,7 +13373,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        AppConstants.goButtonClicked = true;
+        //AppConstants.goButtonClicked = true;
         goButtonAction(null);
 
 
