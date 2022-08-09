@@ -85,7 +85,7 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
  */
 public class CommonUtils {
 
-    private static String TAG = "CommonUtils";
+    private static String TAG = "CommonUtils ";
     private static File mypath; /*'---------------------------------------------------------------------------------------- Implemet logger functionality here....*/
     public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
     public static String PATH_BIN_FILE1 = "user1.2048.new.5.bin";
@@ -429,6 +429,15 @@ public class CommonUtils {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void showCustomMessageDilaog(final Activity context, String title, String message) {
 
+        String HoseUnavailableMessage = "";
+        try {
+            HoseUnavailableMessage = context.getResources().getString(R.string.HoseUnavailableMessage);
+        } catch (Exception ex) {
+            HoseUnavailableMessage = "";
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in showCustomMessageDilaog: " + ex.getMessage());
+        }
+
         final Dialog dialogBus = new Dialog(context);
         dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogBus.setCancelable(false);
@@ -442,11 +451,16 @@ public class CommonUtils {
         Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
         edt_message.setText(Html.fromHtml(newString));
 
+        String finalHoseUnavailableMessage = HoseUnavailableMessage;
         btnAllow.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 dialogBus.dismiss();
+
+                if (message.equalsIgnoreCase(finalHoseUnavailableMessage)) {
+                    AppConstants.GoButtonAlreadyClicked = false;
+                }
 
 //                editVehicleNumber.requestFocus();
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);

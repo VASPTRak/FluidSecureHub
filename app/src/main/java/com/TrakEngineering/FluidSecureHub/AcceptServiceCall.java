@@ -13,6 +13,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 
+import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTOne;
 import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
@@ -73,7 +74,7 @@ public class AcceptServiceCall {
                AppConstants.IsFirstTimeUse = "False";
                Log.e(TAG,"Activity started");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  ServerCall..");
+                AppConstants.WriteinFile(TAG + " Execute ServerCall..");
                new ServerCall().execute();
         }else{
             Log.e(TAG,"Activity skip call..");
@@ -120,45 +121,43 @@ public class AcceptServiceCall {
                 IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
                 IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
                 IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
-                IsGateHub = sharedPrefODO.getString(AppConstants.IsGateHub, "flase");
+                IsGateHub = sharedPrefODO.getString(AppConstants.IsGateHub, "false");
 
                 SharedPreferences sharedPrefGatehub = activity.getSharedPreferences(Constants.PREF_COLUMN_GATE_HUB, Context.MODE_PRIVATE);
-                IsGateHub = sharedPrefGatehub.getString(AppConstants.IsGateHub, "flase");
+                IsGateHub = sharedPrefGatehub.getString(AppConstants.IsGateHub, "false");
                 IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IsStayOpenGate, "");
 
                 if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True")){
 
                     //&& (Constants.GateHubPinNo.equalsIgnoreCase("") || Constants.GateHubvehicleNo.equalsIgnoreCase(""))
                     try {
-                        if (IsPersonnelPINRequire.equalsIgnoreCase("True") && Constants.GateHubPinNo.equalsIgnoreCase("")){
+                        if (IsPersonnelPINRequire.equalsIgnoreCase("True") && Constants.GateHubPinNo.equalsIgnoreCase("")) {
 
-                            if (Constants.AccPersonnelPIN_FS1 == null ){
+                            if (Constants.AccPersonnelPIN_FS1 == null) {
                                 Constants.GateHubPinNo = "";
-                            }else if (Constants.AccPersonnelPIN_FS1.equals("")){
+                            } else if (Constants.AccPersonnelPIN_FS1.equals("")) {
                                 //Do nothing
-                            }else{
+                            } else {
                                 Constants.GateHubPinNo = Constants.AccPersonnelPIN_FS1;
                             }
 
-                        }else{
-                            Constants.AccPersonnelPIN_FS1 = Constants.GateHubPinNo ;
+                        } else {
+                            Constants.AccPersonnelPIN_FS1 = Constants.GateHubPinNo;
                         }
-
 
                         //----------------------
 
-                        if (IsVehicleNumberRequire.equalsIgnoreCase("True") && Constants.GateHubvehicleNo.equalsIgnoreCase("")){
+                        if (IsVehicleNumberRequire.equalsIgnoreCase("True") && Constants.GateHubvehicleNo.equalsIgnoreCase("")) {
 
-                            if (Constants.AccVehicleNumber_FS1 == null ){
+                            if (Constants.AccVehicleNumber_FS1 == null) {
                                 Constants.GateHubvehicleNo = "";
-                            }else if (Constants.AccVehicleNumber_FS1.equals("")){
+                            } else if (Constants.AccVehicleNumber_FS1.equals("")) {
                                 //Do nothing
-                            }
-                            else{
+                            } else {
                                 Constants.GateHubvehicleNo = Constants.AccVehicleNumber_FS1;
                             }
 
-                        }else{
+                        } else {
                             Constants.AccVehicleNumber_FS1 = Constants.GateHubvehicleNo;
                         }
 
@@ -166,17 +165,16 @@ public class AcceptServiceCall {
                         e.printStackTrace();
                     }
 
-                }else if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True") && (!Constants.GateHubPinNo.equalsIgnoreCase("") || !Constants.GateHubvehicleNo.equalsIgnoreCase(""))){
+                } else if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True") && (!Constants.GateHubPinNo.equalsIgnoreCase("") || !Constants.GateHubvehicleNo.equalsIgnoreCase(""))) {
 
-                    Constants.AccPersonnelPIN_FS1 = Constants.GateHubPinNo ;
+                    Constants.AccPersonnelPIN_FS1 = Constants.GateHubPinNo;
                     Constants.AccVehicleNumber_FS1 = Constants.GateHubvehicleNo;
 
-                }else if (!IsGateHub.equalsIgnoreCase("True") && !IsStayOpenGate.equalsIgnoreCase("True")){
+                } else if (!IsGateHub.equalsIgnoreCase("True") && !IsStayOpenGate.equalsIgnoreCase("True")) {
 
                     Constants.GateHubPinNo = "";
                     Constants.GateHubvehicleNo = "";
                 }
-
 
                 if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                     pinNumber = Constants.AccPersonnelPIN_FS1;
@@ -367,85 +365,96 @@ public class AcceptServiceCall {
                             String SurchargeType_FS1 = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice_FS1 = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "templog MinLimit_FS1:"+MinLimit_FS1);
-
                             CommonUtils.SaveVehiFuelInPref_FS1(activity, TransactionId_FS1, VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1, PrintDate_FS1, Company_FS1, Location_FS1, PersonName_FS1, PrinterMacAddress_FS1, PrinterName_FS1, vehicleNumber, accOther, VehicleSum_FS1, DeptSum_FS1, VehPercentage_FS1, DeptPercentage_FS1, SurchargeType_FS1, ProductPrice_FS1, IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1,LimitReachedMessage_FS1,VehicleNumber_FS1,TransactionDateWithFormat_FS1,SiteId_FS1);
 
                             if (IsGateHub.equalsIgnoreCase("True")) {
 
-                                Log.e("GateSoftwareDelayIssue"," IsGatehub true");
+                                Log.e("GateSoftwareDelayIssue"," IsGateHub true");
                                 //System.out.println("Gate hub true skip display meter ancivity and start transiction ");
                                 //String macaddress = AppConstants.SELECTED_MACADDRESS;
                                 //String HTTP_URL = "";
-                                String IpAddress = "";
 
                                 if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() == 1) {
                                     try {
+                                        String IpAddress = "";
                                         String LinkCommunicationType = WelcomeActivity.serverSSIDList.get(0).get("LinkCommunicationType");
-                                        if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
-                                            String selSSID = WelcomeActivity.serverSSIDList.get(0).get("WifiSSId");
-                                            String selMacAddress = WelcomeActivity.serverSSIDList.get(0).get("MacAddress");
 
-                                            boolean isMacConnected = false;
-                                            if (AppConstants.DetailsListOfConnectedDevices != null) {
-                                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                        if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+                                            try {
+                                                String selSSID = WelcomeActivity.serverSSIDList.get(0).get("WifiSSId");
+                                                String selMacAddress = WelcomeActivity.serverSSIDList.get(0).get("MacAddress");
 
-                                                    if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
-                                                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                                                        isMacConnected = true;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            if (!isMacConnected) {
-                                                if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
-
+                                                boolean isMacConnected = false;
                                                 if (AppConstants.DetailsListOfConnectedDevices != null) {
                                                     for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
                                                         String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
 
-                                                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                                                        IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
-                                                        if (!IpAddress.trim().isEmpty()) {
+                                                        if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
                                                             if (AppConstants.GenerateLogs)
-                                                                AppConstants.WriteinFile("===================================================================");
+                                                                AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
+                                                            IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                                            isMacConnected = true;
                                                             break;
                                                         }
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile("===================================================================");
                                                     }
                                                 }
+
+                                                if (!isMacConnected) {
+                                                    if (AppConstants.GenerateLogs)
+                                                        AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
+
+                                                    if (AppConstants.DetailsListOfConnectedDevices != null) {
+                                                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                                            String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                            if (AppConstants.GenerateLogs)
+                                                                AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
+
+                                                            String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                                            IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
+                                                            if (!IpAddress.trim().isEmpty()) {
+                                                                if (AppConstants.GenerateLogs)
+                                                                    AppConstants.WriteinFile("===================================================================");
+                                                                break;
+                                                            }
+                                                            if (AppConstants.GenerateLogs)
+                                                                AppConstants.WriteinFile("===================================================================");
+                                                        }
+                                                    }
+                                                }
+                                            } catch (Exception e) {
+                                                IpAddress = "";
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
                                             }
+
+                                            if (!IpAddress.trim().isEmpty()) {
+                                                HTTP_URL = "http://" + IpAddress + ":80/";
+                                            }
+                                            Log.e("GateSoftwareDelayIssue","   GateHubStartTransaction HTTP_URl");
+
+                                            try {
+                                                //Info command commented
+                                                URL_INFO = HTTP_URL + "client?command=info";
+                                                new CommandsGET_Info().execute(URL_INFO);
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+
+                                        }  else if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    GateHubStartTransactionForBTLink();
+                                                }
+                                            }, 500);
+
                                         }
                                     } catch (Exception e) {
-                                        IpAddress = "";
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
+                                            AppConstants.WriteinFile(TAG + " Exception while accessing serverSSIDList from GateHub. " + e.getMessage());
                                     }
-                                }
-
-                                if (!IpAddress.trim().isEmpty()) {
-                                    HTTP_URL = "http://" + IpAddress + ":80/";
-                                }
-                                Log.e("GateSoftwareDelayIssue","   GateHubStartTransaction HTTP_URl");
-                                //GateHubStartTransaction(HTTP_URL);
-
-                                try {
-                                    //Info command commented
-                                    URL_INFO = HTTP_URL + "client?command=info";
-                                    new CommandsGET_Info().execute(URL_INFO);
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
 
                             } else {
@@ -878,6 +887,11 @@ public class AcceptServiceCall {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    SharedPreferences sharedPref = activity.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+
+                    editor.putString("HttpLinkOne", HTTP_URL);
+                    editor.apply();
 
                     Log.e("GateSoftwareDelayIssue","   Start Background Service ");
                     //Start Background Service
@@ -885,12 +899,8 @@ public class AcceptServiceCall {
                     serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                     serviceIntent.putExtra("sqlite_id", sqlite_id);
                     activity.startService(serviceIntent);
-                    //get back to welcome activity
 
-                    Intent i = new Intent(activity, WelcomeActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    activity.startActivity(i);
-
+                    BackToWelcomeActivity();
                 }
             }, 500);
 
@@ -1127,13 +1137,11 @@ public class AcceptServiceCall {
                 Log.d("Ex", e.getMessage());
             }
 
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String FSStatus) {
-
 
             try {
                 pd.dismiss();
@@ -1153,7 +1161,6 @@ public class AcceptServiceCall {
                         iot_version = jsonObject.getString("iot_version");
 
                         GateHubStartTransaction(HTTP_URL);
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1370,4 +1377,29 @@ public class AcceptServiceCall {
             }
         }
     }
+
+    public void GateHubStartTransactionForBTLink() {
+        try {
+
+            Log.e("GateSoftware"," Start Background Service ");
+            //Start Background Service
+            Intent serviceIntent = new Intent(activity, BackgroundService_BTOne.class);
+            serviceIntent.putExtra("SERVER_IP", "");
+            serviceIntent.putExtra("sqlite_id", sqlite_id);
+            activity.startService(serviceIntent);
+
+            BackToWelcomeActivity();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "  GateHubStartTransactionForBTLink Exception " + e.getMessage());
+        }
+    }
+
+    private void BackToWelcomeActivity() {
+        Intent i = new Intent(activity, WelcomeActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivity(i);
+    }
+
 }

@@ -258,7 +258,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         IsGateHub = sharedPrefGatehub.getString(AppConstants.IsGateHub, "");
         IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IsStayOpenGate, "");
 
-
         SharedPreferences sharedPref = AcceptVehicleActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_SITE, Context.MODE_PRIVATE);
         String dataSite = sharedPref.getString(Constants.PREF_COLUMN_SITE, "");
 
@@ -438,11 +437,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                 } else {
 
-                    if (IsGateHub.equalsIgnoreCase("False"))
+                    if (IsGateHub.equalsIgnoreCase("False")) {
                         checkFor10Seconds();
-
+                    }
                 }
-
             }
 
         };
@@ -2151,6 +2149,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         AppConstants.APDU_FOB_KEY = "";
         AppConstants.NonValidateVehicle_FOB_KEY = "";
         AppConstants.VehicleLocal_FOB_KEY = "";
+        if (IsGateHub.equalsIgnoreCase("True")) {
+            AppConstants.GoButtonAlreadyClicked = false;
+        }
         finish();
     }
 

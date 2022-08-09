@@ -1086,7 +1086,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        if (IsGateHub.equalsIgnoreCase("True")) {
+            AppConstants.GoButtonAlreadyClicked = false;
+        }
         // ActivityHandler.removeActivity(3);
         Istimeout_Sec = false;
         //AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity.this); //Clear EditText on move to welcome activity.

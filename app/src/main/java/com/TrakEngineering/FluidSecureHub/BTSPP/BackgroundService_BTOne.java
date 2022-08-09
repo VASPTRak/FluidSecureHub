@@ -331,20 +331,23 @@ public class BackgroundService_BTOne extends Service {
             //Execute transactionId Command
             Request = "";
             Response = "";
-            String transaction_id_cmd = BTConstants.transaction_id_cmd;
+            String transaction_id_cmd = BTConstants.transaction_id_cmd; //LK_COMM=txtnid:
 
             if (BTConstants.isNewVersionLinkOne) {
-                transaction_id_cmd = transaction_id_cmd.replace("txtnid:", ""); // For New version LK_COMM=T:XXXXX;D:XXXXX;V:XXXXXXXX;
                 TransactionDateWithFormat = BTConstants.parseDateForNewVersion(TransactionDateWithFormat);
+                transaction_id_cmd = transaction_id_cmd.replace("txtnid:", ""); // For New version LK_COMM=T:XXXXX;D:XXXXX;V:XXXXXXXX;
+                transaction_id_cmd = transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";";
+            } else {
+                transaction_id_cmd = transaction_id_cmd + transactionId;
             }
 
             if (IsThisBTTrnx) {
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send1(transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
+                btspp.send1(transaction_id_cmd);
             } else {
-                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";", SERVER_IP, this)).start();
+                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd, SERVER_IP, this)).start();
             }
-            Log.i(TAG, "BTLink 1: In Request>>" + transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
+            //Log.i(TAG, "BTLink 1: In Request>>" + transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
 
             new CountDownTimer(4000, 1000) {
 
@@ -545,9 +548,9 @@ public class BackgroundService_BTOne extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkOneData + ")");
             }
             stopTxtprocess = true;
-            //AppConstants.goButtonClicked = false;
             Constants.FS_1STATUS = "FREE";
             Constants.FS_1Pulse = "00";
+            AppConstants.GoButtonAlreadyClicked = false;
             CancelTimer();
             this.stopSelf();
         } catch (Exception e) {

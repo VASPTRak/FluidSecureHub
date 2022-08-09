@@ -331,20 +331,23 @@ public class BackgroundService_BTFour extends Service {
             //Execute transactionId Command
             Request = "";
             Response = "";
-            String transaction_id_cmd = BTConstants.transaction_id_cmd;
+            String transaction_id_cmd = BTConstants.transaction_id_cmd; //LK_COMM=txtnid:
 
             if (BTConstants.isNewVersionLinkFour) {
-                transaction_id_cmd = transaction_id_cmd.replace("txtnid:", ""); // For New version LK_COMM=T:XXXXX;D:XXXXX;V:XXXXXXXX;
                 TransactionDateWithFormat = BTConstants.parseDateForNewVersion(TransactionDateWithFormat);
+                transaction_id_cmd = transaction_id_cmd.replace("txtnid:", ""); // For New version LK_COMM=T:XXXXX;D:XXXXX;V:XXXXXXXX;
+                transaction_id_cmd = transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";";
+            } else {
+                transaction_id_cmd = transaction_id_cmd + transactionId;
             }
 
             if (IsThisBTTrnx) {
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send4(transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
+                btspp.send4(transaction_id_cmd);
             } else {
-                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";", SERVER_IP, this)).start();
+                new Thread(new ClientSendAndListenUDPOne(transaction_id_cmd, SERVER_IP, this)).start();
             }
-            Log.i(TAG, "BTLink 4: In Request>>" + transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
+            //Log.i(TAG, "BTLink 4: In Request>>" + transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";");
 
             new CountDownTimer(4000, 1000) {
 

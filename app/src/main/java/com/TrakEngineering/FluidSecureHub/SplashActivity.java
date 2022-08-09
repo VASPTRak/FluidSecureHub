@@ -783,11 +783,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
 
-            } catch (SocketTimeoutException e) {
-                e.printStackTrace();
-
             } catch (Exception e) {
                 e.printStackTrace();
+                AppConstants.WriteinFile(TAG + " Exception in CheckApproved: " + e.getMessage());
+
             }
             return resp;
         }
@@ -821,6 +820,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     }
 
                 } else {
+                    AppConstants.WriteinFile(TAG + "Server connection problem. server response: " + response);
                     RetryAlertDialogButtonClicked("Server connection problem...Please try it again");
                 }
 
