@@ -549,11 +549,15 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 onBackPressed();
                 return true;
             case R.id.mreconnect_ble_readers:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Reconnect BLE Readers");
                 AppConstants.showReaderStatus = true;
                 new ReconnectBleReaders().execute();
                 return true;
 
             case R.id.mshow_reader_status:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Show Reader Status");
                 AppConstants.showReaderStatus = true;
                 return true;
 
@@ -3323,7 +3327,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (!Constants.LF_ReaderStatus.equalsIgnoreCase(LFReaderStatus)) {
                         LFReaderStatus = Constants.LF_ReaderStatus;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "LF Reader Status: " + Constants.LF_ReaderStatus);
+                            AppConstants.WriteinFile(TAG + "LF Reader Status: " + LFReaderStatus);
+                    }
+                    if (Constants.LF_ReaderStatus.equals("LF Disconnected") && !AppConstants.showReaderStatus) {
+                        retryConnect();
                     }
                     if (AppConstants.showReaderStatus) {
                         ReaderStatusUI = true;
@@ -3346,7 +3353,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (!Constants.HF_ReaderStatus.equalsIgnoreCase(HFReaderStatus)) {
                         HFReaderStatus = Constants.HF_ReaderStatus;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "HF Reader Status: " + Constants.HF_ReaderStatus);
+                            AppConstants.WriteinFile(TAG + "HF Reader Status: " + HFReaderStatus);
+                    }
+                    if (Constants.HF_ReaderStatus.equals("HF Disconnected") && !AppConstants.showReaderStatus) {
+                        retryConnect();
                     }
                     if (AppConstants.showReaderStatus) {
                         ReaderStatusUI = true;
@@ -3369,7 +3379,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
                         MagReaderStatus = Constants.Mag_ReaderStatus;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Mag Reader Status: " + Constants.Mag_ReaderStatus);
+                            AppConstants.WriteinFile(TAG + "Mag Reader Status: " + MagReaderStatus);
+                    }
+                    if (Constants.Mag_ReaderStatus.equals("Mag Disconnected") && !AppConstants.showReaderStatus) {
+                        retryConnect();
                     }
                     if (AppConstants.showReaderStatus) {
                         ReaderStatusUI = true;
@@ -3656,6 +3669,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     private void retryConnect() {
 
         if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True")) {
+            AppConstants.WriteinFile(TAG + "Retry Connect...");
             sec_count = 0;
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
             recreate();

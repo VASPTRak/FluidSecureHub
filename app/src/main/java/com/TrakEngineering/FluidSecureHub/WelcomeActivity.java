@@ -9934,6 +9934,27 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         BackgroundServiceKeepDataTransferAlive.SSIDList.clear();//clear SSIDList
 
+                        //BLE upgrade
+                        String IsHFUpdate = jsonObject.getString("IsHFUpdate");
+                        String IsLFUpdate = jsonObject.getString("IsLFUpdate");
+                        String BLEVersion = jsonObject.getString("BLEVersion");
+                        String BLEType = "";
+                        if (IsHFUpdate.equals("Y")) {
+                            BLEType = "HF";
+                        } else if (IsLFUpdate.equals("Y")) {
+                            BLEType = "LF";
+                        }
+                        String BLEFileLocation = jsonObject.getString("BLEFileLocation");
+
+                        SharedPreferences sharedPref = getSharedPreferences("BLEUpgradeInfo", 0);
+                        SharedPreferences.Editor editor1 = sharedPref.edit();
+                        editor1.putString("IsLFUpdate", IsLFUpdate);
+                        editor1.putString("IsHFUpdate", IsHFUpdate);
+                        editor1.putString("BLEVersion", BLEVersion);
+                        editor1.putString("BLEType", BLEType);
+                        editor1.putString("BLEFileLocation", BLEFileLocation);
+                        editor1.commit();
+
                         JSONArray Requests = jsonObjectSite.getJSONArray(AppConstants.RES_DATA_SSID);
 
                         if (Requests.length() > 0) {
@@ -10473,7 +10494,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             map.put("TLDFirmwareFilePath", TLDFirmwareFilePath);
                             map.put("TLDFIrmwareVersion", TLDFIrmwareVersion);
                             map.put("PROBEMacAddress", PROBEMacAddress);
-                            map.put("IsTLDFirmwareUpgrade", IsTLDFirmwareUpgrade);
                             map.put("ScheduleTankReading", ScheduleTankReading);
                             map.put("LinkCommunicationType", LinkCommunicationType);
                             map.put("IsTankEmpty", IsTankEmpty);
