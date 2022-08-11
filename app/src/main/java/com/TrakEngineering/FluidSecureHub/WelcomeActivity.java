@@ -12350,7 +12350,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: retryConnect");
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12363,7 +12363,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: retryConnect");
+                            AppConstants.WriteinFile(TAG + " BTLink 2: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12376,7 +12376,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: retryConnect");
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12389,7 +12389,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: retryConnect");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;

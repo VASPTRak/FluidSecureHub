@@ -13,6 +13,8 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPPMain;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTOne;
 import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
@@ -64,7 +66,8 @@ public class AcceptServiceCall {
     String EMPTY_Val = "",IsFuelingStop = "0",IsLastTransaction = "1";
     DBController controller = new DBController(activity);
     ServerHandler serverHandler = new ServerHandler();
-
+    private int BTConnectionCounter = 0;
+    public String GateHUBTransactionId = "0";
 
     public void checkAllFields() {
 
@@ -326,6 +329,7 @@ public class AcceptServiceCall {
 
                             AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId_FS1 = jsonObjectRD.getString("TransactionId");
+                            GateHUBTransactionId = TransactionId_FS1;
                             String VehicleId_FS1 = jsonObjectRD.getString("VehicleId");
                             String VehicleNumber_FS1 = jsonObjectRD.getString("VehicleNumber");
                             String PhoneNumber_FS1 = jsonObjectRD.getString("PhoneNumber");
@@ -446,7 +450,15 @@ public class AcceptServiceCall {
                                             new Handler().postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    GateHubStartTransactionForBTLink();
+
+                                                    // check connection status of LINK
+                                                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
+                                                        if (AppConstants.GenerateLogs)
+                                                            AppConstants.WriteinFile(TAG + "BTLink is Disconnected.");
+                                                        RetryBTLinkConnection();
+                                                    } else {
+                                                        GateHubStartTransactionForBTLink();
+                                                    }
                                                 }
                                             }, 500);
 
@@ -1172,6 +1184,10 @@ public class AcceptServiceCall {
                     AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " CommandsGET_Info: info command response is empty. Redirecting to welcome activity.");
+
+                    if (IsGateHub.equalsIgnoreCase("True")) {
+                        CommonUtils.UpgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
+                    }
                     Intent intent = new Intent(activity, WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     activity.startActivity(intent);
@@ -1378,6 +1394,108 @@ public class AcceptServiceCall {
         }
     }
 
+    public void RetryBTLinkConnection() {
+        try {
+            Handler handler = new Handler();
+            int delay = 5000;
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    if (BTConnectionCounter == 0) {
+                        BTConnectionCounter++;
+
+                        RetryConnect();
+
+                        handler.postDelayed(this, delay);
+                    } else {
+
+                        if (CheckBTLinkStatus()) {
+                            GateHubStartTransactionForBTLink();
+                        } else {
+                            if (BTConnectionCounter < 2) {
+                                BTConnectionCounter++;
+
+                                RetryConnect();
+
+                                handler.postDelayed(this, delay);
+                            } else {
+                                BTConnectionCounter = 0;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "BTLink is Unavailable. Redirecting to welcome activity.");
+                                CommonUtils.UpgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
+                                /*Intent intent = new Intent(activity, WelcomeActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                activity.startActivity(intent);*/
+                                activity.onBackPressed();
+                            }
+                        }
+                    }
+                }
+            }, delay);
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " RetryBTLinkConnection Exception " + e.getMessage());
+        }
+    }
+
+    public void RetryConnect() {
+        try {
+            if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Retrying to Connect to LINK");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = activity;
+                btspp.connect1();
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink: RetryConnect Exception:>>" + e.getMessage());
+        }
+    }
+
+    private boolean CheckBTLinkStatus() {
+        boolean isConnected = false;
+        try {
+            if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                isConnected = true;
+            } else {
+                Thread.sleep(1000);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink : Check Connection Status (Attempt: 1)");
+                if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                    isConnected = true;
+                } else {
+                    Thread.sleep(2000);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink : Check Connection Status (Attempt: 2)");
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                        isConnected = true;
+                    } else {
+                        Thread.sleep(2000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink : Check Connection Status (Attempt: 3)");
+                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            isConnected = true;
+                        }
+                    }
+                }
+            }
+            if (isConnected) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Link is connected.");
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink : STATUS: " + BTConstants.BTStatusStrOne);
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " CheckBTLinkStatus Exception:>>" + e.getMessage());
+        }
+        return isConnected;
+    }
+
     public void GateHubStartTransactionForBTLink() {
         try {
 
@@ -1392,7 +1510,7 @@ public class AcceptServiceCall {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  GateHubStartTransactionForBTLink Exception " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " GateHubStartTransactionForBTLink Exception " + e.getMessage());
         }
     }
 

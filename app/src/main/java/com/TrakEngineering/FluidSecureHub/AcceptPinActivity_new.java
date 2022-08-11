@@ -163,6 +163,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     String FOLDER_PATH_BLE = null;
     HashMap<String, String> hmapSwitchOfflinepin = new HashMap<>();
     String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "";
+    public boolean PersonValidationInProgress = false;
 
     private static final int EXPIRE_TIMEOUT = 5000;
     private static final int EXPIRE_TASK_PERIOD = 1000;
@@ -204,6 +205,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         SharedPreferences sharedPrefGatehub = AcceptPinActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_GATE_HUB, Context.MODE_PRIVATE);
         IsGateHub = sharedPrefGatehub.getString(AppConstants.IsGateHub, "");
         IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IsStayOpenGate, "");
+
+        PersonValidationInProgress = false;
 
         /* site id is mismatching
         SharedPreferences sharedPref = AcceptPinActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_SITE, Context.MODE_PRIVATE);
@@ -1428,7 +1431,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         @Override
         protected void onPostExecute(String serverRes) {
 
-            pd.dismiss();
+            if (!PersonValidationInProgress) {
+                pd.dismiss();
+            }
 
             if (serverRes != null && !serverRes.isEmpty()) {
 
@@ -1468,6 +1473,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
 
                             barcodeReaderCall = true;
+                            PersonValidationInProgress = true;
                             AcceptServiceCall asc = new AcceptServiceCall();
                             asc.activity = AcceptPinActivity_new.this;
                             asc.checkAllFields();
@@ -1477,7 +1483,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         String ResponceText = jsonObject.getString("ResponceText");
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " PIN rejected:" + etPersonnelPin.getText().toString().trim() + " Error:" + ResponceText);
+                            AppConstants.WriteinFile(TAG + " PIN rejected: " + etPersonnelPin.getText().toString().trim() + " Error: " + ResponceText);
 
                         if (ValidationFailFor.equalsIgnoreCase("PinWithFob")) {
 
@@ -1788,6 +1794,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 public void run() {
 
                                     barcodeReaderCall = true;
+                                    PersonValidationInProgress = true;
                                     AcceptServiceCall asc = new AcceptServiceCall();
                                     asc.activity = AcceptPinActivity_new.this;
                                     asc.checkAllFields();
@@ -2149,6 +2156,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         } else {
 
             barcodeReaderCall = true;
+            PersonValidationInProgress = true;
             AcceptServiceCall asc = new AcceptServiceCall();
             asc.activity = AcceptPinActivity_new.this;
             asc.checkAllFields();
@@ -2961,8 +2969,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     private void retryConnect() {
 
-        if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True")) {
-            AppConstants.WriteinFile(TAG + "Retry Connect...");
+        if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True") && !PersonValidationInProgress) {
+            AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
             sec_count = 0;
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
             recreate();

@@ -184,6 +184,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     boolean bleHFUpdateSuccessFlag = false;
     HashMap<String, String> hmapSwitchOffline = new HashMap<>();
     String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "";
+    public boolean VehicleValidationInProgress = false;
 
     //-------------------------
     ConnectionDetector cd = new ConnectionDetector(AcceptVehicleActivity_new.this);
@@ -261,6 +262,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         SharedPreferences sharedPref = AcceptVehicleActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_SITE, Context.MODE_PRIVATE);
         String dataSite = sharedPref.getString(Constants.PREF_COLUMN_SITE, "");
 
+        VehicleValidationInProgress = false;
 
         //enable hotspot.
         Constants.hotspotstayOn = true;
@@ -1384,7 +1386,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             startActivity(intent);
 
                         } else {
-
+                            VehicleValidationInProgress = true;
                             AcceptServiceCall asc = new AcceptServiceCall();
                             asc.activity = AcceptVehicleActivity_new.this;
                             asc.checkAllFields();
@@ -1398,7 +1400,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Vehicle rejected:" + VehicleNumber + " Error:" + ResponceText);
+                            AppConstants.WriteinFile(TAG + " Vehicle rejected: " + VehicleNumber + " Error:" + ResponceText);
 
                         if (ResponceText.equalsIgnoreCase("New Barcode detected, please enter vehicle number.")) {
 
@@ -1496,7 +1498,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     }
                 }
 
-                pd.dismiss();
+                if (!VehicleValidationInProgress) {
+                    pd.dismiss();
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1649,6 +1653,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                     } else {
 
+                        VehicleValidationInProgress = true;
                         AcceptServiceCall asc = new AcceptServiceCall();
                         asc.activity = AcceptVehicleActivity_new.this;
                         asc.checkAllFields();
@@ -2004,6 +2009,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                                     } else {
 
+                                        VehicleValidationInProgress = true;
                                         AcceptServiceCall asc = new AcceptServiceCall();
                                         asc.activity = AcceptVehicleActivity_new.this;
                                         asc.checkAllFields();
@@ -3668,8 +3674,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     private void retryConnect() {
 
-        if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True")) {
-            AppConstants.WriteinFile(TAG + "Retry Connect...");
+        if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True") && !VehicleValidationInProgress) {
+            AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
             sec_count = 0;
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
             recreate();
