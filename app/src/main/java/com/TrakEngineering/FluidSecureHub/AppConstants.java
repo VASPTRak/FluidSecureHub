@@ -56,9 +56,9 @@ public class AppConstants {
 
     public static boolean selectHosePressed;
     public static ArrayList<String> offlineDownloadIds = new ArrayList<>();
-    public static int CONNECTION_TIMEOUT_SEC = 2;
-    public static int READ_TIMEOUT_SEC = 2;
-    public static int WRITE_TIMEOUT_SEC = 2;
+    public static int CONNECTION_TIMEOUT_SEC = 4; //2 (refer #1935)
+    public static int READ_TIMEOUT_SEC = 4; //2
+    public static int WRITE_TIMEOUT_SEC = 4; //2
 
     public static int ScreenResolutionYOffSet = 0;
     public static int COUNT_HOTSPOT_MAIL;

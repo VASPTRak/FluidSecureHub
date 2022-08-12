@@ -529,7 +529,6 @@ public class BackgroundService_AP_PIPE extends Service {
         @Override
         protected void onPostExecute(String result) {
 
-
             try {
                 AppConstants.WriteinFile(TAG + "  CommandsPOST onPostExecute result " + result);
                 if (jsonParam.equalsIgnoreCase(jsonRelayOff) && result.contains("relay_response")) {
@@ -778,7 +777,7 @@ public class BackgroundService_AP_PIPE extends Service {
                 }
 
             }
-        }, 0, 2000);
+        }, 0, 4000);
 
 
     }
@@ -886,7 +885,7 @@ public class BackgroundService_AP_PIPE extends Service {
                     GetPulsarAttemptFailCount = GetPulsarAttemptFailCount + 1;
                     CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " -Exception " + e.toString());
+                        AppConstants.WriteinFile(TAG + " -GETPulsarQuantity onFailure Exception: " + e.toString());
                     //stopTimer = false;
                     Constants.FS_1STATUS = "FREE";
                     clearEditTextFields();
@@ -933,14 +932,11 @@ public class BackgroundService_AP_PIPE extends Service {
                                 pulsarQtyLogic(result);
                         }
 
-
                     } catch (Exception e) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  ETPulsarQuantity onPostExecute Exception " + e);
+                            AppConstants.WriteinFile(TAG + " GETPulsarQuantity onPostExecute Exception " + e.getMessage());
                         System.out.println(e);
                     }
-
-
                 }
                 responseBody.close();
             }
@@ -995,9 +991,8 @@ public class BackgroundService_AP_PIPE extends Service {
                     convertCountToQuantity(counts);
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  Count recorded from the link: " + counts);
+                        AppConstants.WriteinFile(TAG + " pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
                 }
-
 
                 if (!pulsar_secure_status.trim().isEmpty()) {
                     secure_status = Integer.parseInt(pulsar_secure_status);
@@ -1058,7 +1053,6 @@ public class BackgroundService_AP_PIPE extends Service {
             //if quantity reach max limit
             if (!outputQuantity.trim().isEmpty()) {
                 try {
-
 
                     if (minFuelLimit > 0) {
                         if (fillqty >= minFuelLimit) {
@@ -1149,7 +1143,7 @@ public class BackgroundService_AP_PIPE extends Service {
                                         convertCountToQuantity(counts);
                                     } else {
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "  Count recorded from the link: " + counts);
+                                            AppConstants.WriteinFile(TAG + " Count from the link: " + counts);
                                     }
 
                                     /*if (i == 0)

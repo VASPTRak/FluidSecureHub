@@ -503,7 +503,6 @@ public class BackgroundService_FS_UNIT_4 extends Service {
         @Override
         protected void onPostExecute(String result) {
 
-
             try {
                 if (jsonParam.equalsIgnoreCase(jsonRelayOff) && result.contains("relay_response")) {
                     System.out.println(result);
@@ -628,7 +627,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
                 }
 
             }
-        }, 0, 2000);
+        }, 0, 4000);
 
 
     }
@@ -734,7 +733,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
                     GetPulsarAttemptFailCount = GetPulsarAttemptFailCount + 1;
                     CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " -Exception " + e.toString());
+                        AppConstants.WriteinFile(TAG + " -GETPulsarQuantity onFailure Exception: " + e.toString());
                     //stopTimer = false;
                     Constants.FS_4STATUS = "FREE";
                     clearEditTextFields();
@@ -843,7 +842,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
                     convertCountToQuantity(counts);
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  Count recorded from the link: " + counts);
+                        AppConstants.WriteinFile(TAG + " pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
                 }
 
 
@@ -1004,7 +1003,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
                                         convertCountToQuantity(counts);
                                     } else {
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "  Count recorded from the link: " + counts);
+                                            AppConstants.WriteinFile(TAG + "  Count from the link: " + counts);
                                     }
 
                                     /*if (i == 0)
