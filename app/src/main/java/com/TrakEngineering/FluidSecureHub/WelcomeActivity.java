@@ -2881,6 +2881,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.SITE_ID = selSiteId;
                     AppConstants.UP_FilePath = UPFilePath;
 
+                    if (IsUpgrade == null) {
+                        IsUpgrade = "";
+                    }
+                    if (FirmwareVersion == null) {
+                        FirmwareVersion = "";
+                    }
+
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Selected LINK: " + selSSID + " (position: " + (position + 1) + " of " + serverSSIDList.size() + ")");
 
@@ -2907,7 +2914,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         } else if (CommonFunctions.CheckIfPresentInPairedDeviceList(BTselMacAddress)) {
                             AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
                             OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", selSiteId, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"), "");
-                            SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+
+                            if (!IsUpgrade.isEmpty()) {
+                                SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                            }
 
                             CheckBTConnection(SelectedItemPos, selSSID, BTselMacAddress);
                         } else {
@@ -2990,7 +3000,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             /////////////////////////////////////////////////////
 
-                            SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                            if (!IsUpgrade.isEmpty()) {
+                                SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                            }
 
                             //Rename SSID while mac address updation
                             if (IsHoseNameReplaced.equalsIgnoreCase("Y")) {
@@ -13456,6 +13468,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 wifiApManager = new com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager(this);
                 wifiApManager.setWifiApEnabled(null, true); //one try for auto on
             }*/
+
+            if (!AppConstants.IsBTLinkSelectedCurrently) {
+                boolean isAllBTLinks = true;
+                if (serverSSIDList != null) {
+                    for (int i = 0; i < serverSSIDList.size(); i++) {
+                        String LinkCommunicationType = serverSSIDList.get(i).get("LinkCommunicationType");
+                        if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+                            isAllBTLinks = false;
+                            break;
+                        }
+                    }
+                }
+                if (isAllBTLinks) {
+                    AppConstants.IsBTLinkSelectedCurrently = true;
+                }
+            }
             if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && Constants.hotspotstayOn) {
                 HotspotEnableErrorCount++;
                 //AppConstants.WriteinFile(TAG + " Hotspot is Disabled. HotspotEnableErrorCount >> " + HotspotEnableErrorCount);
@@ -13463,18 +13491,18 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.IsProblemWhileEnableHotspot = true;
                 }
             }
-            ShowHostpotDisabledErrorMessage();
+            ShowHotspotDisabledErrorMessage();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void ShowHostpotDisabledErrorMessage() {
+    private void ShowHotspotDisabledErrorMessage() {
         if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && AppConstants.IsProblemWhileEnableHotspot && Constants.hotspotstayOn && !AppConstants.ManuallReconfigure) {
 
             AppConstants.IsProblemWhileEnableHotspot = false;
             HotspotEnableErrorCount = 0; // reset error Count
-            AppConstants.WriteinFile("Something issue occurred while enabling Hotspot.");
+            AppConstants.WriteinFile("Error occurred while enabling the hotspot.");
             CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Error Message", "HotSpot is disabled, please contact customer support.");
             stopService(new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class));
             Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);

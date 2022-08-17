@@ -3093,7 +3093,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         UpdateDiffStatusMessages("6");
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Link is unavailable>> Info url:" + infourl + " >>info cmd response:" + FSStatus + " StatusCode:" + StatusCOde);
+                            AppConstants.WriteinFile(TAG + " Link is unavailable>> Info url:" + infourl + " >>info cmd response:" + FSStatus + "; StatusCode:" + StatusCOde);
                         AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
@@ -3273,7 +3273,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(respp);
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  LAST TRANS RawData " + " LastTXNid" + LastTXNid + "Resp " + respp);
+                    AppConstants.WriteinFile(TAG + "  LAST TRANS RawData" + " LastTXNid: " + LastTXNid + "; Resp " + respp);
 
                 if (LastTXNid.equals("-1")) {
                     System.out.println(LastTXNid);
@@ -3315,7 +3315,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             System.out.println("TrazComp......" + jsonData);
                             String AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " LastTXNid:" + LastTXNid + " Qty:" + Lastqty + " Pulses" + Pulses + " AppInfo" + AppInfo);
+                                AppConstants.WriteinFile(TAG + " LastTXNid: " + LastTXNid + "; Qty: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo: " + AppInfo);
                             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LAST TRANS jsonData " + jsonData);
 
                             String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
@@ -3344,7 +3344,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                                 controller.insertTransactions(imap);
 
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "  LAST TRANS SAVED in sqlite");
+                                    AppConstants.WriteinFile(TAG + " LAST TRANS SAVED in sqlite");
                             }
 
 
@@ -3473,7 +3473,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     count_relayCmd = count_relayCmd + 1;
 
                     if (count_relayCmd > 1) {
-
+                        UpdateDiffStatusMessages("6");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "  Link Unavailable relay");
                         AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
@@ -3791,10 +3791,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (TransactionId_US != null && !TransactionId_US.isEmpty() && cd.isConnectingToInternet()) {
                 Log.i(TAG, "UpdateDiffStatusMessages sent: " + s + " TransactionId:" + TransactionId_US);
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages sent: " + s + "; TransactionId:" + TransactionId_US);
                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId_US, s, this);
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Not sent: " + s + " TransactionId:" + TransactionId_US);
+                    AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Not sent: " + s + "; TransactionId:" + TransactionId_US);
             }
 
         } catch (Exception e) {

@@ -134,10 +134,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private LinearLayout layout_reader_status;
     TextView tv_enter_pin_no, tv_ok, tv_hf_status, tv_lf_status, tv_mag_status, tv_reader_status;
     Button btnSave, btnCancel, btn_ReadFobAgain, btn_barcode;
-    String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub,IsOffvehicleScreenRequired = "",IsPersonPinAndFOBRequire = "",AllowAccessDeviceORManualEntry = "";
+    String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub, IsOffvehicleScreenRequired = "", IsPersonPinAndFOBRequire = "", AllowAccessDeviceORManualEntry = "";
     String TimeOutinMinute;
     Timer t, ScreenOutTime;
-    String IsNonValidatePerson = "";
+    String IsNonValidatePerson = "", IsNonValidateVehicle = "";
 
     ConnectionDetector cd = new ConnectionDetector(AcceptPinActivity_new.this);
     List<Timer> TimerList = new ArrayList<Timer>();
@@ -354,12 +354,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (!isFinishing()) {
 
                                 String epin = etPersonnelPin.getText().toString().trim();
-                                if (!epin.isEmpty()){
+                                if (!epin.isEmpty()) {
                                     new CallSaveButtonFunctionality().execute();//Press Enter fun
-                                }else{
+                                } else {
                                     if (mDisableFOBReadingForPin.equalsIgnoreCase("Y")) {
                                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error Message", "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
-                                    }else{
+                                    } else {
                                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error Message", "Please enter " + ScreenNameForPersonnel + " or present an Access Device. If you still have issues, please contact your Manager.");
                                     }
                                 }
@@ -958,8 +958,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                     IsNonValidatePerson = sharedPrefODO.getString(AppConstants.IsNonValidatePerson, "");
-                }
-                else {
+                } else {
+                    IsNonValidateVehicle = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidateVehicle;
                     IsNonValidatePerson = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidatePerson;
                 }
 
@@ -1124,6 +1124,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             if (IsPersonHasFob.trim().equalsIgnoreCase("y"))
                 IsPersonHasFob = "true";
 
+            IsNonValidateVehicle = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidateVehicle;
             IsNonValidatePerson = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidatePerson;
         }
 
@@ -1134,7 +1135,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             linearBarcode.setVisibility(View.VISIBLE);
         }*/
 
-        if (IsPersonPinAndFOBRequire.equalsIgnoreCase("true") || AllowAccessDeviceORManualEntry.equalsIgnoreCase("true")){
+        if (IsPersonPinAndFOBRequire.equalsIgnoreCase("true") || AllowAccessDeviceORManualEntry.equalsIgnoreCase("true")) {
 
             btnCancel.setVisibility(View.VISIBLE);
             btnSave.setVisibility(View.VISIBLE);
@@ -1151,7 +1152,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             tv_dont_have_fob.setVisibility(View.VISIBLE);
             tv_or.setVisibility(View.VISIBLE);
 
-        }else if (IsPersonHasFob.equalsIgnoreCase("true")) {
+        } else if (IsPersonHasFob.equalsIgnoreCase("true")) {
 
 
             btnCancel.setVisibility(View.VISIBLE);
@@ -2177,6 +2178,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             EntityHub obj = controller.getOfflineHubDetails(AcceptPinActivity_new.this);
             IsOffvehicleScreenRequired = obj.VehicleNumberRequired;
 
+            IsNonValidateVehicle = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidateVehicle;
 
             if (!Authorizedlinks.isEmpty() || Authorizedlinks.contains(",")) {
                 boolean isAllowed = false;
@@ -2193,13 +2195,18 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     boolean isAssigned = false;
 
-                    //#1550 (Eva) Issue with offline mode If vehicle screen is disable Dont check AssignedVehicles
-                    if (IsOffvehicleScreenRequired.equalsIgnoreCase("N")){
+                    if (IsNonValidateVehicle.equalsIgnoreCase("True")) { // Do not validate vehicles
 
                         Intent ii = new Intent(AcceptPinActivity_new.this, DisplayMeterActivity.class);
                         startActivity(ii);
 
-                    }else if (!AssignedVehicles.isEmpty() || AssignedVehicles.contains(",")) {
+                    } else if (IsOffvehicleScreenRequired.equalsIgnoreCase("N")) {
+
+                        //#1550 (Eva) Issue with offline mode If vehicle screen is disable Don't check AssignedVehicles
+                        Intent ii = new Intent(AcceptPinActivity_new.this, DisplayMeterActivity.class);
+                        startActivity(ii);
+
+                    } else if (!AssignedVehicles.isEmpty() || AssignedVehicles.contains(",")) {
 
                         if (AssignedVehicles.trim().equalsIgnoreCase("all")) {
                             isAssigned = true;
@@ -2219,16 +2226,15 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Vehicle is not assigned for this PIN");
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not assigned for this PIN");
+                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForVehicle + " not assigned for this PIN");
                             //AppConstants.colorToastBigFont(getApplicationContext(), "Vehicle is not assigned for this PIN", Color.RED);
                         }
 
 
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Vehicle");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Vehicle");
-                        //AppConstants.colorToastBigFont(getApplicationContext(), "Personnel is not allowed for selected Vehicle", Color.RED);
+                            AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Vehicle.");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " is not allowed for selected " + ScreenNameForVehicle);
                     }
 
 
@@ -2236,7 +2242,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Link");
                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Link");
-                    //AppConstants.colorToastBigFont(getApplicationContext(), "Personnel is not allowed for selected Link", Color.RED);
                 }
 
             }
@@ -2978,7 +2983,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         }
     }
 
-    private HashMap<String, String> getMagneticCardKey(String RawString1){
+    private HashMap<String, String> getMagneticCardKey(String RawString1) {
 
         //RawString1 = "d36a4ca21c14ec10d67f20ffd76a4ca21c14ec10d67f20ffd36a4ca21c14ec10d67f20";
         HashMap<String, String> hmap = new HashMap<>();
@@ -2995,29 +3000,29 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     return hmap;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return hmap;
     }
 
-    public String GetStringNormalLogic(boolean normal,String RawString1){
+    public String GetStringNormalLogic(boolean normal, String RawString1) {
 
         String Str_one = "";
         boolean Isstart = false, Isend = false;
         StringBuilder sb = new StringBuilder();
 
         try {
-            RawString1  = RawString1.toUpperCase();
-            if (RawString1.contains("FF")){
+            RawString1 = RawString1.toUpperCase();
+            if (RawString1.contains("FF")) {
 
-                String[] SplitedRawStr  = RawString1.split("FF");
-                if (SplitedRawStr.length > 1){
+                String[] SplitedRawStr = RawString1.split("FF");
+                if (SplitedRawStr.length > 1) {
 
-                    String raw_str =  "";
-                    if (normal){
+                    String raw_str = "";
+                    if (normal) {
                         raw_str = SplitedRawStr[1];
-                    }else{
+                    } else {
                         StringBuilder raw_reverse = new StringBuilder();
                         raw_reverse.append(SplitedRawStr[1]);
                         raw_reverse.reverse();
@@ -3027,52 +3032,52 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     // print reversed String
                     System.out.println(raw_str);
 
-                    for (char ch: raw_str.toCharArray()) {
+                    for (char ch : raw_str.toCharArray()) {
                         String binlen = HexToBinary(String.valueOf(ch));
                         int len = binlen.length();
-                        if (len == 4){
+                        if (len == 4) {
                             sb.append(binlen);
-                        }else{
-                            binlen =  leftPad(binlen,4,"0");
+                        } else {
+                            binlen = leftPad(binlen, 4, "0");
                             sb.append(binlen);
                         }
                     }
 
-                    Log.i(TAG,"Check binary data:"+sb);
+                    Log.i(TAG, "Check binary data:" + sb);
 
                     //1101011011010100100110010100010000111000001010011101100000100001101011001111111001000000
                     String CardReaderNumberInHex = "";
                     AtomicInteger splitCounter = new AtomicInteger(0);
                     Collection<String> splittedStrings = sb.toString()
                             .chars()
-                            .mapToObj(_char -> String.valueOf((char)_char))
+                            .mapToObj(_char -> String.valueOf((char) _char))
                             .collect(Collectors.groupingBy(stringChar -> splitCounter.getAndIncrement() / 5
-                                    ,Collectors.joining()))
+                                    , Collectors.joining()))
                             .values();
 
-                    for (String str:splittedStrings) {
+                    for (String str : splittedStrings) {
 
-                        if (str.equals("11010")){
+                        if (str.equals("11010")) {
                             Isstart = true;
                             continue;
-                        }else if (str.equals("10110")){
+                        } else if (str.equals("10110")) {
                             Isend = true;
                             break;
                         }
 
-                        if (Isstart){
+                        if (Isstart) {
                             String temp = "";
-                            if (str.length() <= 4){
-                                temp =  leftPad(str,4,"0");
-                            }else{
-                                temp =  str.substring(0,4);
+                            if (str.length() <= 4) {
+                                temp = leftPad(str, 4, "0");
+                            } else {
+                                temp = str.substring(0, 4);
                             }
 
                             String reverse_temp = new StringBuilder(new String(temp)).reverse().toString();
-                            String hex =  binaryToHex(reverse_temp);
+                            String hex = binaryToHex(reverse_temp);
                             if (hex.equalsIgnoreCase(""))
                                 hex = "0";
-                            CardReaderNumberInHex = CardReaderNumberInHex+hex;
+                            CardReaderNumberInHex = CardReaderNumberInHex + hex;
 
                         }
 
@@ -3080,16 +3085,16 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     Str_one = CardReaderNumberInHex;
 
-                }{
-                    Log.i(TAG,"Incomplete Raw string");
+                } else {
+                    Log.i(TAG, "Incomplete Raw string");
                 }
 
-            }else{
-                Log.i(TAG,"Magnnetic  card  raw  strinng  dosenot conntain FF");
+            } else {
+                Log.i(TAG, "Magnetic card raw string doesn't contain FF");
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -3097,9 +3102,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     }
 
     String HexToBinary(String Hex) {
-        String bin =  new BigInteger(Hex, 16).toString(2);
+        String bin = new BigInteger(Hex, 16).toString(2);
         int inb = Integer.parseInt(bin);
-        bin = String.format(Locale.getDefault(),"%08d", inb);
+        bin = String.format(Locale.getDefault(), "%08d", inb);
         return bin;
     }
 
@@ -3113,9 +3118,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         return decimalToHex(decimalValue);
     }
 
-    private static String decimalToHex(int decimal){
+    private static String decimalToHex(int decimal) {
         String hex = "";
-        while (decimal != 0){
+        while (decimal != 0) {
             int hexValue = decimal % 16;
             hex = toHexChar(hexValue) + hex;
             decimal = decimal / 16;
@@ -3125,13 +3130,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     private static char toHexChar(int hexValue) {
         if (hexValue <= 9 && hexValue >= 0)
-            return (char)(hexValue + '0');
+            return (char) (hexValue + '0');
         else
-            return (char)(hexValue - 10 + 'A');
+            return (char) (hexValue - 10 + 'A');
     }
 
-    public static String leftPad(String input, int length, String fill){
-        String pad = String.format("%"+length+"s", "").replace(" ", fill) + input.trim();
+    public static String leftPad(String input, int length, String fill) {
+        String pad = String.format("%" + length + "s", "").replace(" ", fill) + input.trim();
         return pad.substring(pad.length() - length, pad.length());
     }
 }

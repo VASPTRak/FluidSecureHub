@@ -3785,13 +3785,12 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                     Str_one = CardReaderNumberInHex;
 
-                }
-                {
+                } else {
                     Log.i(TAG, "Incomplete Raw string");
                 }
 
             } else {
-                Log.i(TAG, "Magnnetic  card  raw  strinng  dosenot conntain FF");
+                Log.i(TAG, "Magnetic card raw string doesn't contain FF");
             }
 
 

@@ -159,7 +159,7 @@ public class BackgroundService_BTFour extends Service {
                         CloseTransaction();
                         Log.i(TAG, "BTLink 4: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected. Please try again!");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected. Please try again! (Status: " + BTConstants.BTStatusStrFour + ")");
                         this.stopSelf();
                     }
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {

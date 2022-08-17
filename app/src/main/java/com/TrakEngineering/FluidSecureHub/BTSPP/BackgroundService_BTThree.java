@@ -159,7 +159,7 @@ public class BackgroundService_BTThree extends Service {
                         CloseTransaction();
                         Log.i(TAG, "BTLink 3: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected. Please try again!");
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected. Please try again! (Status: " + BTConstants.BTStatusStrThree + ")");
                         this.stopSelf();
                     }
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
