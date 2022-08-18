@@ -551,6 +551,7 @@ public class BackgroundService_BTOne extends Service {
             Constants.FS_1STATUS = "FREE";
             Constants.FS_1Pulse = "00";
             AppConstants.GoButtonAlreadyClicked = false;
+            AppConstants.IsTransactionCompleted = true;
             CancelTimer();
             this.stopSelf();
         } catch (Exception e) {

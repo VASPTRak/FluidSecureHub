@@ -144,6 +144,8 @@ public class BackgroundService_FS_UNIT_6 extends Service {
     int CNT_LAST = 0;
     Integer Pulses = 0;
     long sqliteID = 0;
+    boolean GETPulsarCallCompleted = false;
+
     ConnectivityManager connection_manager;
     String printReceipt = "", IsFuelingStop = "0", IsLastTransaction = "0";
     DBController controller = new DBController(BackgroundService_FS_UNIT_6.this);
@@ -510,7 +512,9 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             }catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsPOST doInBackground Exception " + e);
+                    AppConstants.WriteinFile(TAG + " URL: " + param[0]);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " CommandsPOST InBackground Exception " + e.getMessage());
                 stopSelf();
             }
 
@@ -594,7 +598,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
     public void startQuantityInterval() {
 
         CommonUtils.sharedPrefTxtnInterrupted(BackgroundService_FS_UNIT_6.this, TransactionId, true);
-
+        GETPulsarCallCompleted = true; // set as true for first attempt
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -605,12 +609,14 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
                         if (IsFsConnected(HTTP_URL)) {
                             AttemptCount = 0;
-                            //FS link is connected
+
                             //Synchronous okhttp call
                             //new GETPulsarQuantity().execute(URL_GET_PULSAR);
 
                             //Asynchronous okhttp call
-                            GETPulsarQuantityAsyncCall(URL_GET_PULSAR);
+                            if (GETPulsarCallCompleted) {
+                                GETPulsarQuantityAsyncCall(URL_GET_PULSAR);
+                            }
 
                         } else {
                             if (AttemptCount > 2) {
@@ -658,14 +664,13 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
         public String resp = "";
 
-
         protected String doInBackground(String... param) {
 
             try {
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(15, TimeUnit.SECONDS);
-                client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setConnectTimeout(4, TimeUnit.SECONDS);
+                client.setReadTimeout(4, TimeUnit.SECONDS);
                 Request request = new Request.Builder()
                         .url(param[0])
                         .build();
@@ -675,10 +680,9 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity doInBackground Exception " + e);
+                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity InBackground Exception " + e);
                 Log.d("Ex", e.getMessage());
             }
-
 
             return resp;
         }
@@ -710,14 +714,15 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Exception " + e);
+                    AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Exception " + e.getMessage());
                 System.out.println(e);
             }
-
         }
     }
 
     public void GETPulsarQuantityAsyncCall(String URL_GET_PULSAR) {
+
+        GETPulsarCallCompleted = false;
         OkHttpClient httpClient = new OkHttpClient();
         httpClient.setConnectTimeout(AppConstants.CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS);
         httpClient.setReadTimeout(AppConstants.READ_TIMEOUT_SEC, TimeUnit.SECONDS);
@@ -731,6 +736,8 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             @SuppressLint("LongLogTag")
             @Override
             public void onFailure(Request request, IOException e) {
+
+                GETPulsarCallCompleted = true;
                 Date date = new Date();   // given date
                 Calendar calendar = GregorianCalendar.getInstance();
                 calendar.setTime(date);
@@ -760,6 +767,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             @Override
             public void onResponse(Response response) throws IOException {
 
+                GETPulsarCallCompleted = true;
                 ResponseBody responseBody = response.body();
                 if (!response.isSuccessful()) {
                     throw new IOException("Error response " + response);
@@ -796,7 +804,6 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                             AppConstants.WriteinFile(TAG + "  GETPulsarQuantity onPostExecute Exception " + e);
                         System.out.println(e);
                     }
-
 
                 }
                 responseBody.close();
@@ -1137,7 +1144,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar doInBackground Exception " + e);
+                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar InBackground Exception " + e);
                 Log.d("Ex", e.getMessage());
             }
 
@@ -2129,20 +2136,14 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                             String macAddress = splitted[3];
                             System.out.println("IPAddress" + ipAddress);
 
-
                             if (ipAddress != null || macAddress != null) {
-
 
                                 listOfConnectedIP_UNIT_6.add("http://" + ipAddress + ":80/");
                                 System.out.println("Details Of Connected HotspotIP" + listOfConnectedIP_UNIT_6);
 
                             }
-
-
                         }
-
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (AppConstants.GenerateLogs)
@@ -2159,8 +2160,6 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             }
         });
         thread.start();
-
-
     }
 
     private void ExitBackgroundService() {

@@ -2932,8 +2932,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             map.put("TransactionId", parts[0]);
 
-
-            double cmqty = Double.parseDouble(parts[1]);
+            double cmqty = 0;
+            String qty = parts[1];
+            if (!qty.equalsIgnoreCase("N/A")) {
+                cmqty = Double.parseDouble(parts[1]);
+            }
 
             if (cmqty > 0) {
                 cmqty = cmqty;
@@ -3071,6 +3074,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             String[] raw_string = resp_value.trim().split("-");
                             String txnid = raw_string[0];
                             String count = raw_string[1];
+
+                            if (count.equalsIgnoreCase("N/A")) {
+                                count = "0";
+                            }
 
                             if (!txnid.equals("-1") && !txnid.equals("99999999")) {
                                 SaveLastTransactionToServer(txnid, count);
@@ -3706,7 +3713,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             System.out.println("TrazComp......" + jsonData);
             String AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE;
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer LastTXNid:" + txnid + " Qty:" + Lastqty + " Pulses" + Pulses + " AppInfo" + AppInfo);
+                AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer LastTXNid: " + txnid + " Qty: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo: " + AppInfo);
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LAST TRANS jsonData " + jsonData);
 
             String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
@@ -3729,7 +3736,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     }
                 }
             }
-
 
             if (isInsert && Lastqty > 0) {
                 controller.insertTransactions(imap);
@@ -3829,7 +3835,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
                 AppConstants.excption_caught = false;
-                //Toggle hotspot programatically
+                //Toggle hotspot programmatically
                 wifiApManager.setWifiApEnabled(null, false);
                 //wifiApManager.setWifiApEnabled(null, true);
                 wifiApManager.setWifiApEnabled(null, true);
