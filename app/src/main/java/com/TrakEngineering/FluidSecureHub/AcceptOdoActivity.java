@@ -381,21 +381,20 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
                         } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
-                            if (C_AccOdoMeter < PO) { // Must be greater than previous odometer.
-                                Istimeout_Sec = true;
-                                ResetTimeoutOdoScreen();
-                                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error", getResources().getString(R.string.lessThanPrevReadingMsg));
-
-                            } else if (LastTxtnQuantity > 10 && C_AccOdoMeter == PO) {
-                                // Must entered different reading if last transaction fuel quantity is greater than 10.
+                            if (LastTxtnQuantity > 10 && C_AccOdoMeter == PO && (cnt123 < 3)) {
+                                // Must entered different reading if the last transaction fuel quantity is greater than 10.
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Entered a reading that was previously entered");
+                                editOdoTenths.setText("");
                                 Istimeout_Sec = true;
                                 ResetTimeoutOdoScreen();
                                 CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", getResources().getString(R.string.prevReading));
 
+                                if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
+                                    cnt123 += 1;
+                                }
                             } else if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) { //Allow after 3 Incorrect Entries
 
-                                /*if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Odom Entered" + C_AccOdoMeter);*/
                                 if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
                                     //gooooo
                                     allValid();
@@ -414,33 +413,26 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                     } else {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Odometer Entered (" + C_AccOdoMeter + ") is not within the reasonability");
-
+                                            AppConstants.WriteinFile(TAG + " Entered Odometer (" + C_AccOdoMeter + ") is not within the reasonability");
                                         editOdoTenths.setText("");
-                                        CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                         Istimeout_Sec = true;
                                         ResetTimeoutOdoScreen();
-
+                                        CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     }
                                 }
-
                             } else {
 
                                 if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
-                                    /*if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter);*/
                                     ///gooooo
                                     allValid();
                                 } else {
                                     editOdoTenths.setText("");
                                     if (AppConstants.GenerateLogs) {
-                                        //ResetTimeoutOdoScreen();
-                                        AppConstants.WriteinFile(TAG + " Odometer Entered (" + C_AccOdoMeter + ") is not within the reasonability");
+                                        AppConstants.WriteinFile(TAG + " Entered Odometer (" + C_AccOdoMeter + ") is not within the reasonability");
                                     }
                                     Istimeout_Sec = true;
                                     ResetTimeoutOdoScreen();
                                     CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
-                                    //AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not within the reasonability", Color.RED);
                                 }
                             }
                         } else {
@@ -449,7 +441,6 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                 AppConstants.WriteinFile(TAG + " Odo Entered" + C_AccOdoMeter);*/
                             //comment By JB -it  must take ANY number they enter on the 4th try
                             allValid();
-
 
                         }
                     } else {
@@ -477,7 +468,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                         previous_odometer = Integer.parseInt(AppConstants.OFF_CURRENT_ODO);
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile("Offline Previous Odometer : " + previous_odometer);
+                                            AppConstants.WriteinFile(TAG + "Offline Previous Odometer : " + previous_odometer);
                                     }
 
                                     if (AppConstants.OFF_ODO_Limit != null && !AppConstants.OFF_ODO_Limit.isEmpty()) {
@@ -486,12 +477,12 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                         odo_limit = previous_odometer + (odo_limit) * 5;
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile("Offline Odometer limit * 5 : " + odo_limit);
+                                            AppConstants.WriteinFile(TAG + "Offline Odometer limit * 5 : " + odo_limit);
 
                                     }
                                 } catch (Exception e) {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile("Exception in odo saveButtonAction Offline mode. " + e.getMessage());
+                                        AppConstants.WriteinFile(TAG + "Exception in odo saveButtonAction Offline mode. " + e.getMessage());
                                 }
 
                                 if (entered_odometer == 0) { // Must be greater than 0.
@@ -502,12 +493,12 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                 } else if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile("Offline Odometer Reasonability : " + AppConstants.OFF_ODO_Reasonable);
+                                        AppConstants.WriteinFile(TAG + "Offline Odometer Reasonability : " + AppConstants.OFF_ODO_Reasonable);
 
                                     if (AppConstants.OFF_ODO_Conditions != null && AppConstants.OFF_ODO_Conditions.trim().equalsIgnoreCase("1")) {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile("Offline Odometer conditions : " + AppConstants.OFF_ODO_Conditions);
+                                            AppConstants.WriteinFile(TAG + "Offline Odometer conditions : " + AppConstants.OFF_ODO_Conditions);
 
                                         if (odo_limit == 0) {
 

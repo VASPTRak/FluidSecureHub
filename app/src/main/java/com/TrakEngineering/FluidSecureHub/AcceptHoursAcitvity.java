@@ -361,21 +361,20 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                         } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
-                            if (C_AccHours < PO) { // Must be greater than previous hours.
-                                Istimeout_Sec = true;
-                                ResetTimeoutHoursScreen();
-                                CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error", getResources().getString(R.string.lessThanPrevReadingMsg));
-
-                            } else if (LastTxtnQuantity > 10 && C_AccHours == PO) {
-                                // Must entered different reading if last transaction fuel quantity is greater than 10.
+                            if (LastTxtnQuantity > 10 && C_AccHours == PO && (cnt123 < 3)) {
+                                // Must entered different reading if the last transaction fuel quantity is greater than 10.
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Entered a reading that was previously entered");
+                                etHours.setText("");
                                 Istimeout_Sec = true;
                                 ResetTimeoutHoursScreen();
                                 CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", getResources().getString(R.string.prevReading));
 
+                                if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
+                                    cnt123 += 1;
+                                }
                             } else if (OdometerReasonabilityConditions.trim().equalsIgnoreCase("1")) {
 
-                                /*if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours);*/
                                 if (C_AccHours >= PO && C_AccHours <= OL) {
                                     //gooooo
                                     allValid();
@@ -388,25 +387,22 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                     } else {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Hours Entered (" + C_AccHours + ") is not within the reasonability");
+                                            AppConstants.WriteinFile(TAG + " Entered Hours (" + C_AccHours + ") are not within the reasonability");
                                         etHours.setText("");
-                                        CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                         Istimeout_Sec = true;
                                         ResetTimeoutHoursScreen();
+                                        CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     }
                                 }
-
                             } else {
 
                                 if (C_AccHours >= PO && C_AccHours <= OL) {
-                                    /*if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours);*/
                                     ///gooooo
                                     allValid();
                                 } else {
                                     etHours.setText("");
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Hours Entered (" + C_AccHours + ") is not within the reasonability");
+                                        AppConstants.WriteinFile(TAG + " Entered Hours (" + C_AccHours + ") are not within the reasonability");
                                     CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     Istimeout_Sec = true;
                                     ResetTimeoutHoursScreen();
@@ -418,7 +414,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                 AppConstants.WriteinFile(TAG + " Hours: Entered" + C_AccHours);*/
                             //comment By JB -it  must take ANY number they enter on the 4th try
                             allValid();
-
 
                         }
                     } else {
@@ -440,7 +435,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                     previous_hrs = Integer.parseInt(AppConstants.OFF_CURRENT_HOUR);
 
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile("Offline Previous Hours : " + previous_hrs);
+                                        AppConstants.WriteinFile(TAG + "Offline Previous Hours : " + previous_hrs);
                                 }
 
                                 if (AppConstants.OFF_HRS_Limit != null && !AppConstants.OFF_HRS_Limit.isEmpty()) {
@@ -449,12 +444,12 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                     hrs_limit = previous_hrs + (hrs_limit) * 5;
 
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile("Offline Hours limit * 5 : " + hrs_limit);
+                                        AppConstants.WriteinFile(TAG + "Offline Hours limit * 5 : " + hrs_limit);
 
                                 }
                             } catch (Exception e) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("Exception in Hours saveButtonAction Offline mode. " + e.getMessage());
+                                    AppConstants.WriteinFile(TAG + "Exception in Hours saveButtonAction Offline mode. " + e.getMessage());
                             }
 
                             if (entered_hrs == 0) { // Must be greater than 0.
@@ -465,12 +460,12 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                             } else if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
 
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("Offline Hours Reasonability : " + AppConstants.OFF_ODO_Reasonable);
+                                    AppConstants.WriteinFile(TAG + "Offline Hours Reasonability : " + AppConstants.OFF_ODO_Reasonable);
 
                                 if (AppConstants.OFF_ODO_Conditions != null && AppConstants.OFF_ODO_Conditions.trim().equalsIgnoreCase("1")) {
 
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile("Offline Hours conditions : " + AppConstants.OFF_ODO_Conditions);
+                                        AppConstants.WriteinFile(TAG + "Offline Hours conditions : " + AppConstants.OFF_ODO_Conditions);
 
                                     if (hrs_limit == 0) {
 
