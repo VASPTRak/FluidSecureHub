@@ -2177,8 +2177,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             EntityHub obj = controller.getOfflineHubDetails(AcceptPinActivity_new.this);
             IsOffvehicleScreenRequired = obj.VehicleNumberRequired;
-
-            IsNonValidateVehicle = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidateVehicle;
+            IsNonValidateVehicle = obj.IsNonValidateVehicle;
 
             if (!Authorizedlinks.isEmpty() || Authorizedlinks.contains(",")) {
                 boolean isAllowed = false;
@@ -2195,7 +2194,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     boolean isAssigned = false;
 
-                    if (IsNonValidateVehicle.equalsIgnoreCase("True")) { // Do not validate vehicles
+                    if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                        Intent intent = new Intent(AcceptPinActivity_new.this, AcceptOtherActivity.class);
+                        startActivity(intent);
+
+                    } else if (IsNonValidateVehicle.equalsIgnoreCase("True")) { // Do not validate vehicles
 
                         Intent ii = new Intent(AcceptPinActivity_new.this, DisplayMeterActivity.class);
                         startActivity(ii);
@@ -2244,6 +2247,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Link");
                 }
 
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "not assigned any links.");
             }
 
         } else {
@@ -2308,7 +2314,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 AppConstants.OFF_PERSON_PIN = PinNumber;
 
-                OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "", "");
 
                 OfflineConstants.storeFuelLimit(AcceptPinActivity_new.this, "", "", "", PersonId, FuelLimitPerTxn, FuelLimitPerDay);
             } else {
@@ -2338,7 +2344,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         AppConstants.OFF_PERSON_PIN = PinNumber;
 
-                        OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", "0", "", "", "");
+                        OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", "0", "", "", "", "");
 
                     } else {
                         if (AppConstants.GenerateLogs)

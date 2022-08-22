@@ -17,4 +17,5 @@ public class EntityOffTranz {
     public String PersonPin;
     public String OnlineTransactionId;
     public String VehicleNumber;
+    public String Other;
 }

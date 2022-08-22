@@ -24,7 +24,7 @@ public class OfflineConstants {
     public static final String TAG = OfflineConstants.class.getSimpleName();
 
     public static void storeCurrentTransaction(Context ctx, String HubId, String SiteId, String VehicleId, String CurrentOdometer, String CurrentHours, String PersonId,
-                                               String FuelQuantity, String TransactionDateTime, String VehicleNumber) {
+                                               String FuelQuantity, String TransactionDateTime, String VehicleNumber, String Other) {
 
         SharedPreferences pref = ctx.getSharedPreferences("storeCurrentTransaction", 0);
         SharedPreferences.Editor editor = pref.edit();
@@ -57,6 +57,9 @@ public class OfflineConstants {
         if (!VehicleNumber.trim().isEmpty())
             editor.putString("VehicleNumber", VehicleNumber);
 
+        if (!Other.trim().isEmpty())
+            editor.putString("Other", Other);
+
         // commit changes
         editor.apply();
     }
@@ -77,6 +80,7 @@ public class OfflineConstants {
         eot.FuelQuantity = sharedPref.getString("FuelQuantity", "");
         eot.TransactionDateTime = sharedPref.getString("TransactionDateTime", "");
         eot.VehicleNumber = sharedPref.getString("VehicleNumber", "");
+        eot.Other = sharedPref.getString("Other", "");
 
         return eot;
     }

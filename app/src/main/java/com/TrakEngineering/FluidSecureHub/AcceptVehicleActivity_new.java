@@ -2969,6 +2969,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                                 if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
                                     Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptPinActivity_new.class);//AcceptPinActivity
                                     startActivity(intent);
+                                } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                                    Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptOtherActivity.class);
+                                    startActivity(intent);
                                 } else {
                                     Intent intent = new Intent(AcceptVehicleActivity_new.this, DisplayMeterActivity.class);
                                     startActivity(intent);
@@ -3013,6 +3016,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     EntityHub obj = controller.getOfflineHubDetails(AcceptVehicleActivity_new.this);
                     if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
                         Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                        startActivity(intent);
+                    } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                        Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptOtherActivity.class);
                         startActivity(intent);
                     } else {
                         Intent intent = new Intent(AcceptVehicleActivity_new.this, DisplayMeterActivity.class);
@@ -3088,7 +3094,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 String OdoLimit = hmap.get("OdoLimit");
                 String HoursLimit = hmap.get("HoursLimit");
 
-                OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", VehicleId, "", "", "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", VehicleId, "", "", "", "", "", "", "");
 
                 OfflineConstants.storeFuelLimit(AcceptVehicleActivity_new.this, VehicleId, FuelLimitPerTxn, FuelLimitPerDay, "", "", "");
 
@@ -3144,7 +3150,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         AppConstants.WriteinFile(TAG + "Vehicle Number (Non-validate): " + VehicleNumber);
 
                     if (!VehicleNumber.isEmpty()) {
-                        OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", "", "", "", "", "", "", VehicleNumber);
+                        OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", "", "", "", "", "", "", VehicleNumber, "");
 
                         if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                             Constants.AccVehicleNumber_FS1 = VehicleNumber;

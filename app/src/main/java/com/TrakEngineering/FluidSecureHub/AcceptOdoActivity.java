@@ -349,7 +349,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                     C_AccOdoMeter = Constants.AccOdoMeter_FS6;
                 }
 
-                OfflineConstants.storeCurrentTransaction(AcceptOdoActivity.this, "", "", "", editOdoTenths.getText().toString().trim(), "", "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptOdoActivity.this, "", "", "", editOdoTenths.getText().toString().trim(), "", "", "", "", "", "");
 
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptOdoActivity.this)) {
                     //skip all validation in permanent offline mode
@@ -563,7 +563,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
 
         } catch (Exception ex) {
-            AppConstants.WriteinFile(TAG + " Exception occurred in saveButtonAction. " + ex.getMessage());
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception occurred in saveButtonAction. " + ex.getMessage());
             Log.e(TAG, ex.getMessage());
         }
     }
@@ -574,6 +575,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
             try {
                 controller.updateOdometerByVehicleId(AppConstants.OFF_VEHICLE_ID, editOdoTenths.getText().toString().trim());
             } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Exception occurred while updating odometer for vehicle in offline mode. " + e.getMessage());
             }
         }
 
@@ -584,6 +587,9 @@ public class AcceptOdoActivity extends AppCompatActivity {
             EntityHub obj = controller.getOfflineHubDetails(AcceptOdoActivity.this);
             if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
                 Intent intent = new Intent(AcceptOdoActivity.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                startActivity(intent);
+            } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                Intent intent = new Intent(AcceptOdoActivity.this, AcceptOtherActivity.class);
                 startActivity(intent);
             } else {
                 Intent intent = new Intent(AcceptOdoActivity.this, DisplayMeterActivity.class);

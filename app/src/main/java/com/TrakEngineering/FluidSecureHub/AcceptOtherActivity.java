@@ -21,6 +21,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
+import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
+
 
 public class AcceptOtherActivity extends AppCompatActivity {
 
@@ -33,7 +36,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
     boolean Istimeout_Sec = true;
     private ConnectionDetector cd = new ConnectionDetector(AcceptOtherActivity.this);
     private static final String TAG = AcceptOtherActivity.class.getSimpleName();
-
+    OffDBController controller = new OffDBController(AcceptOtherActivity.this);
 
     @Override
     protected void onResume() {
@@ -103,11 +106,16 @@ public class AcceptOtherActivity extends AppCompatActivity {
         IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
         IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
         IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        OtherLabel = sharedPrefODO.getString(AppConstants.OtherLabel, "Other");
+
+        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+            OtherLabel = sharedPrefODO.getString(AppConstants.OtherLabel, "Other");
+        } else {
+
+            OtherLabel = controller.getOfflineHubDetails(AcceptOtherActivity.this).OtherLabel;
+        }
 
         tv_otherlabel.setText(OtherLabel);
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
-
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
@@ -167,12 +175,19 @@ public class AcceptOtherActivity extends AppCompatActivity {
                         Constants.AccOther_FS6 = etOther.getText().toString().trim();
                     }
 
-                    AcceptServiceCall asc = new AcceptServiceCall();
-                    asc.activity = AcceptOtherActivity.this;
-                    asc.checkAllFields();
+                    OfflineConstants.storeCurrentTransaction(AcceptOtherActivity.this, "", "", "", "", "", "", "", "", "", etOther.getText().toString().trim());
+
+                    if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                        AcceptServiceCall asc = new AcceptServiceCall();
+                        asc.activity = AcceptOtherActivity.this;
+                        asc.checkAllFields();
+                    } else {
+                        Intent intent = new Intent(AcceptOtherActivity.this, DisplayMeterActivity.class);
+                        startActivity(intent);
+                    }
 
                 } else {
-                    CommonUtils.showMessageDilaog(AcceptOtherActivity.this, "Error Message", "Please enter Other, and try again.");
+                    CommonUtils.showMessageDilaog(AcceptOtherActivity.this, "Error Message", "Please enter " + OtherLabel + ", and try again.");
                 }
 
             }

@@ -29,7 +29,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public static String TBL_OFF_TLD = "tbl_off_tld";
 
     public OffDBController(Context applicationcontext) {
-        super(applicationcontext, "FSHubOffline.db", null, 5);
+        super(applicationcontext, "FSHubOffline.db", null, 6);
         Log.d(LOGCAT, "Created");
     }
 
@@ -49,7 +49,7 @@ public class OffDBController extends SQLiteOpenHelper {
         String query4 = "CREATE TABLE " + TBL_PERSONNEL + " ( Id INTEGER PRIMARY KEY, PersonId INTEGER, PinNumber TEXT, FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,Authorizedlinks TEXT,AssignedVehicles TEXT,MagneticCardReaderNumber TEXT,Barcode TEXT)";
         database.execSQL(query4);
 
-        String query5 = "CREATE TABLE " + TBL_TRANSACTION + " ( Id INTEGER PRIMARY KEY, HubId TEXT, SiteId TEXT, VehicleId INTEGER, CurrentOdometer TEXT, CurrentHours TEXT, PersonId TEXT, PersonPin TEXT, FuelQuantity TEXT, Pulses TEXT,TransactionDateTime TEXT,OfflineFakeTransactionId TEXT, VehicleNumber TEXT)";
+        String query5 = "CREATE TABLE " + TBL_TRANSACTION + " ( Id INTEGER PRIMARY KEY, HubId TEXT, SiteId TEXT, VehicleId INTEGER, CurrentOdometer TEXT, CurrentHours TEXT, PersonId TEXT, PersonPin TEXT, FuelQuantity TEXT, Pulses TEXT,TransactionDateTime TEXT,OfflineFakeTransactionId TEXT, VehicleNumber TEXT, Other TEXT)";
         database.execSQL(query5);
 
         String query6 = "CREATE TABLE " + TBL_OFF_TLD + " ( Id INTEGER PRIMARY KEY, PROBEMacAddress TEXT, Level TEXT, selSiteId INTEGER, TLDFirmwareVersion TEXT, IMEI_UDID TEXT, LSB TEXT, MSB TEXT, TLDTemperature TEXT, ReadingDateTime TEXT, Response_code TEXT, FromDirectTLD TEXT)";
@@ -68,22 +68,27 @@ public class OffDBController extends SQLiteOpenHelper {
             try {
                 database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN MagneticCardReaderNumber TEXT");
             } catch (Exception ex) {
-                Log.w(TAG, " Altering " + TBL_PERSONNEL + ": " + ex.getMessage());
+                Log.w(TAG, " Altering " + TBL_PERSONNEL + " for (MagneticCardReaderNumber) column: " + ex.getMessage());
             }
             try {
                 database.execSQL("ALTER TABLE " + TBL_PERSONNEL + " ADD COLUMN Barcode TEXT");
             } catch (Exception ex) {
-                Log.w(TAG, " Altering " + TBL_PERSONNEL + ": " + ex.getMessage());
+                Log.w(TAG, " Altering " + TBL_PERSONNEL + " for (Barcode) column: " + ex.getMessage());
             }
             try {
                 database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN MagneticCardReaderNumber TEXT");
             } catch (Exception ex) {
-                Log.w(TAG, " Altering " + TBL_VEHICLE + ": " + ex.getMessage());
+                Log.w(TAG, " Altering " + TBL_VEHICLE + " for (MagneticCardReaderNumber) column: " + ex.getMessage());
             }
             try {
                 database.execSQL("ALTER TABLE " + TBL_TRANSACTION + " ADD COLUMN VehicleNumber TEXT");
             } catch (Exception ex) {
-                Log.w(TAG, " Altering " + TBL_TRANSACTION + ": " + ex.getMessage());
+                Log.w(TAG, " Altering " + TBL_TRANSACTION + " for (VehicleNumber) column: " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_TRANSACTION + " ADD COLUMN Other TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_TRANSACTION + " for (Other) column: " + ex.getMessage());
             }
 
             ////
@@ -121,7 +126,8 @@ public class OffDBController extends SQLiteOpenHelper {
     public void storeOfflineHubDetails(Context ctx, String HubId, String AllowedLinks, String PersonnelPINNumberRequired, String VehicleNumberRequired, String PersonhasFOB,
                                        String VehiclehasFOB, String WiFiChannel, String BluetoothCardReader, String BluetoothCardReaderMacAddress, String LFBluetoothCardReader,
                                        String LFBluetoothCardReaderMacAddress, String PrinterMacAddress, String PrinterName, String EnablePrinter, String VehicleDataFilePath,
-                                       String PersonnelDataFilePath, String LinkDataFilePath, String IsNonValidateVehicle, String IsNonValidatePerson, String IsNonValidateODOM) {
+                                       String PersonnelDataFilePath, String LinkDataFilePath, String IsNonValidateVehicle, String IsNonValidatePerson, String IsNonValidateODOM,
+                                       String IsOtherRequire, String OtherLabel, String HUBType) {
 
         SharedPreferences pref = ctx.getSharedPreferences("storeOfflineHubDetails", 0);
         SharedPreferences.Editor editor = pref.edit();
@@ -147,6 +153,9 @@ public class OffDBController extends SQLiteOpenHelper {
         editor.putString("IsNonValidateVehicle", IsNonValidateVehicle);
         editor.putString("IsNonValidatePerson", IsNonValidatePerson);
         editor.putString("IsNonValidateODOM", IsNonValidateODOM);
+        editor.putString("IsOtherRequire", IsOtherRequire);
+        editor.putString("OtherLabel", OtherLabel);
+        editor.putString("HUBType", HUBType);
 
         // commit changes
         editor.apply();
@@ -177,6 +186,10 @@ public class OffDBController extends SQLiteOpenHelper {
         hub.IsNonValidateVehicle = sharedPref.getString("IsNonValidateVehicle", "");
         hub.IsNonValidatePerson = sharedPref.getString("IsNonValidatePerson", "");
         hub.IsNonValidateODOM = sharedPref.getString("IsNonValidateODOM", "");
+
+        hub.IsOtherRequire = sharedPref.getString("IsOtherRequire", "");
+        hub.OtherLabel = sharedPref.getString("OtherLabel", "Other");
+        hub.HUBType = sharedPref.getString("HUBType", "N");
 
         return hub;
 
@@ -316,6 +329,7 @@ public class OffDBController extends SQLiteOpenHelper {
             values.put("TransactionDateTime", eot.TransactionDateTime);
             values.put("OfflineFakeTransactionId", eot.OfflineFakeTransactionId);
             values.put("VehicleNumber", eot.VehicleNumber);
+            values.put("Other", eot.Other);
 
             insertedID = database.insert(TBL_TRANSACTION, null, values);
             database.close();
@@ -512,6 +526,7 @@ public class OffDBController extends SQLiteOpenHelper {
             hmObj.TransactionDateTime = cursor.getString(10);
             hmObj.OfflineFakeTransactionId = isNULL(cursor.getString(11));
             hmObj.VehicleNumber = isNULL(cursor.getString(12));
+            hmObj.Other = isNULL(cursor.getString(13));
 
         }
         return hmObj;
@@ -546,6 +561,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
                 hmObj.OfflineFakeTransactionId = isNULL(cursor.getString(11));
                 hmObj.VehicleNumber = isNULL(cursor.getString(12));
+                hmObj.Other = isNULL(cursor.getString(13));
 
                 // if(!hmObj.FuelQuantity.trim().isEmpty())
                 allData.add(hmObj);
@@ -597,11 +613,12 @@ public class OffDBController extends SQLiteOpenHelper {
                     hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
                     hmObj.OnlineTransactionId = isNULL(cursor.getString(11));
                     hmObj.VehicleNumber = isNULL(cursor.getString(12));
+                    hmObj.Other = isNULL(cursor.getString(13));
 
-                    String pu = isNULL(cursor.getString(9));
+                    String pulses = isNULL(cursor.getString(9));
 
                     //To get only nonempty transactions
-                    if (!pu.trim().isEmpty() && Integer.parseInt(pu) > 0) {
+                    if (!pulses.trim().isEmpty() && Integer.parseInt(pulses) > 0) {
                         counter++;
                         allData.add(hmObj);
                     }

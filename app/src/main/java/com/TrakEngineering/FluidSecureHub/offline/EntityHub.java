@@ -7,4 +7,5 @@ public class EntityHub {
     public String PrinterMacAddress, PrinterName, EnablePrinter;
     public String VehicleDataFilePath, PersonnelDataFilePath, LinkDataFilePath;
     public String IsNonValidateVehicle, IsNonValidatePerson, IsNonValidateODOM;
+    public String IsOtherRequire, OtherLabel, HUBType;
 }

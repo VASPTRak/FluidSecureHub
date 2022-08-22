@@ -356,7 +356,6 @@ public class OffBackgroundService extends Service {
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
-
                         JSONObject HubDataObj = jsonObject.getJSONObject("HubDataObj");
 
                         String AllowedLinks = HubDataObj.getString("AllowedLinks");
@@ -381,11 +380,14 @@ public class OffBackgroundService extends Service {
                         String IsNonValidateVehicle = HubDataObj.getString("IsNonValidateVehicle");
                         String IsNonValidatePerson = HubDataObj.getString("IsNonValidatePerson");
                         String IsNonValidateODOM = HubDataObj.getString("IsNonValidateODOM");
+                        String IsOtherRequire = HubDataObj.getString("IsOtherRequire");
+                        String OtherLabel = HubDataObj.getString("OtherLabel");
+                        String HUBType = HubDataObj.getString("HUBType");
 
                         controller.storeOfflineHubDetails(OffBackgroundService.this, HubId, AllowedLinks, PersonnelPINNumberRequired, VehicleNumberRequired, PersonhasFOB,
                                 VehiclehasFOB, WiFiChannel, BluetoothCardReader, BluetoothCardReaderMacAddress, LFBluetoothCardReader, LFBluetoothCardReaderMacAddress,
                                 PrinterMacAddress, PrinterName, EnablePrinter, VehicleDataFilePath, PersonnelDataFilePath, LinkDataFilePath, IsNonValidateVehicle,
-                                IsNonValidatePerson, IsNonValidateODOM);
+                                IsNonValidatePerson, IsNonValidateODOM, IsOtherRequire, OtherLabel, HUBType);
 
                         if (cd.isConnecting()) {
 

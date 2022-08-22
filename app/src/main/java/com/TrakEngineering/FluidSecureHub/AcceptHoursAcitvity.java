@@ -328,7 +328,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                     C_AccHours = Constants.AccHours_FS6;
                 }
 
-                OfflineConstants.storeCurrentTransaction(AcceptHoursAcitvity.this, "", "", "", "", etHours.getText().toString().trim(), "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptHoursAcitvity.this, "", "", "", "", etHours.getText().toString().trim(), "", "", "", "", "");
 
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptHoursAcitvity.this)) {
                     //skip all validation in permanent offline mode
@@ -585,6 +585,9 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
         EntityHub obj = controller.getOfflineHubDetails(AcceptHoursAcitvity.this);
         if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
             Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptPinActivity_new.class);//AcceptPinActivity
+            startActivity(intent);
+        } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+            Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptOtherActivity.class);
             startActivity(intent);
         } else {
             Intent intent = new Intent(AcceptHoursAcitvity.this, DisplayMeterActivity.class);
