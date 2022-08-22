@@ -1762,7 +1762,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         } else {
                             flagGoBtn = true;
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", "Unable to get Fluid Secure list from server");
+                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", "Unable to get hose list from server");
                         }
                     } else {
                         flagGoBtn = true;
@@ -1803,7 +1803,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     AppConstants.R_HOSE_ID = HoseId;
                                     AppConstants.R_SITE_ID = SiteId;
 
-
                                     if (obj.VehicleNumberRequired.equalsIgnoreCase("Y")) {
 
                                         btnGo.setClickable(false);
@@ -1833,9 +1832,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             } else {
                                 flagGoBtn = true;
-                                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", "Unable to get Fluid Secure list from server");
+                                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", "Unable to get hose list from server");
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Unable to get Fluid Secure list from server");
+                                    AppConstants.WriteinFile(TAG + "Unable to get hose list from server");
                             }
                         } else {
                             flagGoBtn = true;
@@ -1843,7 +1842,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Please select Hose");
                         }
-
 
                     } else {
                         flagGoBtn = true;
@@ -1853,7 +1851,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } catch (Exception ex) {
                     Log.e(TAG, ex.getMessage());
                 }
-
 
             } else {
                 AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
@@ -3282,7 +3279,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             try {
 
-
                                 try {
                                     IpAddress = "";
 
@@ -3324,9 +3320,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } catch (Exception e) {
                                     System.out.println(e);
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "  DetailsListOfConnectedDevices --Empty ");
+                                        AppConstants.WriteinFile(TAG + " Exception while checking hotspot connected devices in Offline mode.--Exception: " + e.getMessage());
                                 }
-
 
                                 if (IpAddress.equals("")) {
                                     if (AppConstants.GenerateLogs)

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BackgroundServiceMidNightTasks extends Service {
-    String TAG = "BackgroundServiceMidNightTasks";
+    String TAG = "BackgroundServiceMidNightTasks ";
     ConnectionDetector cd = new ConnectionDetector(BackgroundServiceMidNightTasks.this);
     OffDBController offcontroller = new OffDBController(BackgroundServiceMidNightTasks.this);
 
@@ -34,12 +34,14 @@ public class BackgroundServiceMidNightTasks extends Service {
             super.onStart(intent, startId);
 
             Log.e(TAG, "~~~~~start into BackgroundServiceMidNightTasks~~~~~");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Started.");
             SyncSqliteData();//Sync penting transactions
 
             this.stopSelf();
         } catch (NullPointerException e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  onStartCommand Execption " + e);
+                AppConstants.WriteinFile(TAG + "  onStartCommand Exception: " + e);
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
@@ -66,10 +68,10 @@ public class BackgroundServiceMidNightTasks extends Service {
                         startService(new Intent(BackgroundServiceMidNightTasks.this, OffTranzSyncService.class));
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " SyncSqliteData Exception: " + e);
                 }
             }
 
@@ -80,6 +82,8 @@ public class BackgroundServiceMidNightTasks extends Service {
                 ArrayList<HashMap<String, String>> uData = controller.getAllTransaction();
 
                 if (uData != null && uData.size() > 0) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Starting BackgroundService (sync online transaction)");
                     startService(new Intent(BackgroundServiceMidNightTasks.this, BackgroundService.class));
                     System.out.println("BackgroundService Start...");
                 } else {
