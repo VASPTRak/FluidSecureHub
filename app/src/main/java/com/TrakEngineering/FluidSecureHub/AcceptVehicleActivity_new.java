@@ -1427,7 +1427,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                             //AppConstants.colorToastBigFont(AcceptVehicleActivity_new.this, ResponceText, Color.RED);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  colorToastBigFont Vehicle Activity ValidationFor Pin" + ResponceText);
+                                AppConstants.WriteinFile(TAG + "  Vehicle Activity ValidationFor Pin" + ResponceText);
 
                             CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", ResponceText);
 

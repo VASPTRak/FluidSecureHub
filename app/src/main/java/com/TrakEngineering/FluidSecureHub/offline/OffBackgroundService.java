@@ -74,7 +74,7 @@ public class OffBackgroundService extends Service {
         try {
 
             if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
-
+                AppConstants.selectHosePressed = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " onStartCommand ------------------- _templog");
@@ -406,8 +406,14 @@ public class OffBackgroundService extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
-                                    startDownloadTimerTask();
+                                    if (!AppConstants.selectHosePressed) {
+                                        AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
+                                        startDownloadTimerTask();
+                                    } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + " Offline download canceled.");
+                                        stopSelf();
+                                    }
                                 }
                             }, 60000 * 3);
 
@@ -448,12 +454,15 @@ public class OffBackgroundService extends Service {
 
             repeatedTask = new TimerTask() {
                 public void run() {
+                    if (AppConstants.selectHosePressed) {
+                        repeatedTask.cancel();
+                    }
 
                     System.out.println("startDownloadTimerTask**********");
 
                     String status_v = getDownloadFileStatus("Vehicle");
 
-                    if (status_v.isEmpty() || status_v.equalsIgnoreCase("2")) {
+                    if ((status_v.isEmpty() || status_v.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
                         if (!VehicleDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(VehicleDataFilePath, "Vehicle");
                     }
@@ -461,7 +470,7 @@ public class OffBackgroundService extends Service {
 
                     String status_p = getDownloadFileStatus("Personnel");
 
-                    if (status_p.isEmpty() || status_p.equalsIgnoreCase("2")) {
+                    if ((status_p.isEmpty() || status_p.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
                         if (!PersonnelDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(PersonnelDataFilePath, "Personnel");
                     }
@@ -469,13 +478,13 @@ public class OffBackgroundService extends Service {
 
                     String status_l = getDownloadFileStatus("Link");
 
-                    if (status_l.isEmpty() || status_l.equalsIgnoreCase("2")) {
+                    if ((status_l.isEmpty() || status_l.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
                         if (!LinkDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(LinkDataFilePath, "Link");
                     }
 
 
-                    if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1")) {
+                    if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1") && !AppConstants.selectHosePressed) {
 
                         setSharedPrefOfflineData(getApplicationContext());
 
@@ -909,12 +918,19 @@ public class OffBackgroundService extends Service {
 
         Date currentDate = parseTime(CurrentHour + ":" + CurrentMinutes);
         Date savedOfflineDate = parseTime(HourOfDay + ":" + MinuteOfHour);
-        if (savedOfflineDate.equals(currentDate) || savedOfflineDate.before(currentDate)) { // checking offline access time is same or less than current time or not.
-            return true;
+
+        if (CurrentHour >= 0 && CurrentHour <= 3) { // Checking the time is in between 12 AM to 4 AM
+            if (savedOfflineDate.equals(currentDate) || savedOfflineDate.before(currentDate)) { // checking offline access time is same or less than current time or not.
+                return true;
+            } else {
+                Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+                return false;
+            }
         } else {
-            Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+                AppConstants.WriteinFile(TAG + " Skip Downloading.");
             return false;
         }
     }
@@ -975,8 +991,9 @@ public class OffBackgroundService extends Service {
 
                         insertDownloadFileStatus(fileName, "1");
 
-                        if (!AppConstants.selectHosePressed)
+                        if (!AppConstants.selectHosePressed) {
                             readEncryptedFileParseJsonInSqlite(fileName);
+                        }
                     }
 
                     @Override
@@ -1126,7 +1143,7 @@ public class OffBackgroundService extends Service {
                 AppConstants.offlineDownloadIds.clear();
             }
             deleteIncompleteOfflineDataFiles();
-            AppConstants.WriteinFile("WelAct- cancel offline Download...");
+            //AppConstants.WriteinFile("WelAct- cancel offline Download...");
 
         } catch (Exception e) {
         }

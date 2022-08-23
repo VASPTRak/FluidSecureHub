@@ -158,10 +158,12 @@ public class AcceptOtherActivity extends AppCompatActivity {
 
                 Istimeout_Sec = false;
 
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Entered " + OtherLabel + ": " + etOther.getText());
+
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
                     if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-
                         Constants.AccOther_FS1 = etOther.getText().toString().trim();
                     } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
                         Constants.AccOther = etOther.getText().toString().trim();

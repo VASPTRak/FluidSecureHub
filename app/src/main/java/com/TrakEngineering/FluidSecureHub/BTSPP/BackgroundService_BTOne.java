@@ -254,7 +254,8 @@ public class BackgroundService_BTOne extends Service {
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 1: InfoCommand Response success 1:>>" + Response);
+                                    AppConstants.WriteinFile(TAG + " BTLink 1: InfoCommand Response success 1:>>" + Response.trim());
+                                getFirmwareVersionByInfoCommand(Response.trim());
                             }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -291,7 +292,8 @@ public class BackgroundService_BTOne extends Service {
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 1: InfoCommand Response success 2:>>" + Response);
+                                    AppConstants.WriteinFile(TAG + " BTLink 1: InfoCommand Response success 2:>>" + Response.trim());
+                                getFirmwareVersionByInfoCommand(Response.trim());
                             }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -322,6 +324,36 @@ public class BackgroundService_BTOne extends Service {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: infoCommand Exception:>>" + e.getMessage());
+        }
+    }
+
+    public void getFirmwareVersionByInfoCommand(String result) {
+
+        try {
+            String version = "";
+
+            if (result.contains("BTMAC")) {
+                String[] split_res = result.split("\n");
+
+                if (split_res.length > 10) {
+                    for (int i = 0; i < split_res.length; i++) {
+                        String res = split_res[i];
+
+                        if (res.contains("version:")) {
+                            version = res.substring(res.indexOf(":") + 1).trim();
+                        }
+                    }
+                }
+            }
+            if (!version.isEmpty()) {
+                AppConstants.WriteinFile(TAG + " BTLink 1: LINK Version >> " + version);
+                storeUpgradeFSVersion(BackgroundService_BTOne.this, AppConstants.UP_HoseId_fs1, version);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: getFirmwareVersionByInfoCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -358,7 +390,7 @@ public class BackgroundService_BTOne extends Service {
                             //Info command success.
                             Log.i(TAG, "BTLink 1: transactionId Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 1: transactionId Command Response success 1:>>" + Response);
+                                AppConstants.WriteinFile(TAG + " BTLink 1: transactionId Command Response success 1:>>" + Response.trim());
                             relayOnCommand(); //RelayOn
                             cancel();
                         } else {
@@ -379,7 +411,7 @@ public class BackgroundService_BTOne extends Service {
                         //Info command success.
                         Log.i(TAG, "BTLink 1: transactionId Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: transactionId Command Response success 2:>>" + Response);
+                            AppConstants.WriteinFile(TAG + " BTLink 1: transactionId Command Response success 2:>>" + Response.trim());
                         relayOnCommand(); //RelayOn
                     } else {
 
@@ -776,7 +808,7 @@ public class BackgroundService_BTOne extends Service {
                     if (Response.contains("OFF")) {
                         RelayStatus = false;
                     } else if (Response.contains("ON")) {
-                        AppConstants.WriteinFile(TAG + " BTLink 1: onReceive Response:" + Response.trim() + "; ReadPulse: " + redpulseloop_on);
+                        //AppConstants.WriteinFile(TAG + " BTLink 1: onReceive Response:" + Response.trim() + "; ReadPulse: " + redpulseloop_on);
                         RelayStatus = true;
                         AppConstants.isRelayON_fs1 = true;
                         if (!redpulseloop_on)
@@ -1011,7 +1043,7 @@ public class BackgroundService_BTOne extends Service {
         }
     }
 
-    private void parseInfoCommandResponseForLast20txtn(String response){
+    private void parseInfoCommandResponseForLast20txtn(String response) {
 
         try{
 
@@ -1055,9 +1087,9 @@ public class BackgroundService_BTOne extends Service {
             ety.cmtxtnid_20_record = arrayList;
 
             String json20txn = gs.toJson(ety);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 1: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);
-            Log.i(TAG, "BTLink 1: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);
+            /*if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);*/
+            //Log.i(TAG, "BTLink 1: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);
 
             SharedPreferences sharedPref = BackgroundService_BTOne.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -1065,7 +1097,9 @@ public class BackgroundService_BTOne extends Service {
             editor.apply();
 
             JSONObject versionJsonArray = jsonObject.getJSONObject("version");
-            AppConstants.WriteinFile(TAG + " Version ==> " + versionJsonArray.getString("version"));
+            String version = versionJsonArray.getString("version");
+            AppConstants.WriteinFile(TAG + " BTLink 1: LINK Version >> " + version);
+            storeUpgradeFSVersion(BackgroundService_BTOne.this, AppConstants.UP_HoseId_fs1, version);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1343,8 +1377,8 @@ public class BackgroundService_BTOne extends Service {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("hoseid_bt1", hoseid);
         editor.putString("fsversion_bt1", fsversion);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Upgrade details saved. (" + hoseid + "==>" + fsversion + ")");
+        /*if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " Upgrade details saved locally. (Version => " + fsversion + ")");*/
         editor.commit();
     }
 
@@ -1364,7 +1398,7 @@ public class BackgroundService_BTOne extends Service {
 
                 Gson gson = new Gson();
                 String jsonData = gson.toJson(objUpgrade);
-                AppConstants.WriteinFile(TAG + " BTLink 1: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
+                //AppConstants.WriteinFile(TAG + " BTLink 1: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion");

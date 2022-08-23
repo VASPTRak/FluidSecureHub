@@ -283,7 +283,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 if (!isMacConnected) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
+                        AppConstants.WriteinFile(TAG + "(onResume) Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
 
                     if (AppConstants.DetailsListOfConnectedDevices != null) {
                         for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
