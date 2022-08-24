@@ -35,7 +35,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
     String TimeOutinMinute;
     boolean Istimeout_Sec = true;
     private ConnectionDetector cd = new ConnectionDetector(AcceptOtherActivity.this);
-    private static final String TAG = AcceptOtherActivity.class.getSimpleName();
+    private static final String TAG = "Other_Activity ";
     OffDBController controller = new OffDBController(AcceptOtherActivity.this);
 
     @Override
@@ -159,7 +159,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
                 Istimeout_Sec = false;
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Entered " + OtherLabel + ": " + etOther.getText());
+                    AppConstants.WriteinFile(TAG + "Entered " + OtherLabel + ": " + etOther.getText());
 
                 if (!etOther.getText().toString().trim().isEmpty()) {
 

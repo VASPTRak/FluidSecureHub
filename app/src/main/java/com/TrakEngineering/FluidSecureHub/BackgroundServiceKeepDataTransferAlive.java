@@ -62,7 +62,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
     String URL_RESET = HTTP_URL + "upgrade?command=reset";
     String URL_INFO = HTTP_URL + "client?command=info";
     String URL_WIFI = HTTP_URL + "config?command=wifi";//returns connected link information
-    private static final String TAG = "BS_KAL";
+    private static final String TAG = AppConstants.LOG_MAINTAIN + "-" + "BS_KeepAlive";
     public static ArrayList<HashMap<String, String>> SSIDList = new ArrayList<>();
     public static ArrayList<HashMap<String, String>> DetailslistOfConnectedIP_KDTA = new ArrayList<>();
     public static ArrayList<HashMap<String, String>> DefectiveLinks = new ArrayList<>();

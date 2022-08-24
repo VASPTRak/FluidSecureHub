@@ -77,7 +77,7 @@ public class OffBackgroundService extends Service {
                 AppConstants.selectHosePressed = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " onStartCommand ------------------- _templog");
+                    AppConstants.WriteinFile(AppConstants.LOG_MAINTAIN + "-" + TAG + " Started.");
 
                 OffDBController offcontroller = new OffDBController(this);
                 //HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();

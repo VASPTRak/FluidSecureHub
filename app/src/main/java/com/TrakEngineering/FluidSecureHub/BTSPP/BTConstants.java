@@ -47,6 +47,8 @@ public class BTConstants {
     public static boolean isNewVersionLinkThree = false;
     public static boolean isNewVersionLinkFour = false;
 
+    public static boolean isLinkDisconnected = false;
+
     //Rename BT link one
     public static boolean BT1NeedRename;
     public static String BT1REPLACEBLE_WIFI_NAME;

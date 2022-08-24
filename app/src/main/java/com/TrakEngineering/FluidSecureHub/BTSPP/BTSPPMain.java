@@ -28,7 +28,7 @@ import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.service4;
 public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialListenerThree , SerialListenerFour {
 
     public Activity activity;
-    private static final String TAG = BTSPPMain.class.getSimpleName();
+    private static final String TAG = AppConstants.LOG_TXTN_BT + "-"; //BTSPPMain.class.getSimpleName();
     private String newline = "\r\n";
     //private String deviceAddress1 = ""; //80:7D:3A:A4:67:22
     //private String deviceAddress2 = "";
@@ -129,7 +129,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             return;
         }
         try {
-            //Log commant sent:str
+            //Log command sent:str
             BTConstants.CurrentCommand_LinkOne = str;
             Log.i(TAG, "BTLink 1: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -283,7 +283,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             return;
         }
         try {
-            //Log commant sent:str
+            //Log command sent:str
             BTConstants.CurrentCommand_LinkTwo = str;
             Log.i(TAG, "BTLink 2: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -421,7 +421,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             return;
         }
         try {
-            //Log commant sent:str
+            //Log command sent:str
             BTConstants.CurrentCommand_LinkThree = str;
             Log.i(TAG, "BTLink 3: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -560,7 +560,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             return;
         }
         try {
-            //Log commant sent:str
+            //Log command sent:str
             BTConstants.CurrentCommand_LinkFour = str;
             Log.i(TAG, "BTLink 4: Requesting..." + str);
             byte[] data = (str + newline).getBytes();

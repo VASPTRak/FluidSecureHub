@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 public class OffDBController extends SQLiteOpenHelper {
     private static final String LOGCAT = null;
-    private static final String TAG = "OffDBController ";
+    private static final String TAG = AppConstants.LOG_MAINTAIN + "-" + "OffDBController ";
 
     public static String TBL_LINK = "tbl_off_link";
     public static String TBL_FUEL_TIMING = "tbl_off_fuel_timings";
@@ -311,7 +311,7 @@ public class OffDBController extends SQLiteOpenHelper {
     }
 
 
-    public long insertOfflineTransactions(EntityOffTranz eot) {
+    public long insertOfflineTransactions(EntityOffTranz eot, String LinkCommunicationType) {
         long insertedID = 0;
         try {
             SQLiteDatabase database = this.getWritableDatabase();
@@ -333,8 +333,22 @@ public class OffDBController extends SQLiteOpenHelper {
 
             insertedID = database.insert(TBL_TRANSACTION, null, values);
             database.close();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Transaction saved locally.");
+            if (LinkCommunicationType.isEmpty()) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Transaction saved locally.");
+            } else {
+
+                String txtnTypeForLog = "";
+                if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                    txtnTypeForLog = AppConstants.LOG_TXTN_BT;
+                } else {
+                    txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
+                }
+
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(txtnTypeForLog + "- Transaction saved locally.");
+            }
+
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " insertOfflineTransactions Exception: " + e.getMessage());

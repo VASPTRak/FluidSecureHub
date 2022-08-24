@@ -31,7 +31,7 @@ import java.util.TimerTask;
 
 public class AcceptOdoActivity extends AppCompatActivity {
 
-    private static final String TAG = "AcceptOdoActivity ";
+    private static final String TAG = "Odo_Activity ";
     private EditText editOdoTenths;
     private TextView tv_swipekeybord, tv_odo;
     private String vehicleNumber;

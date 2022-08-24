@@ -33,7 +33,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
     private NetworkReceiver receiver = new NetworkReceiver();
 
-    private static final String TAG = "AcceptHoursActivity ";
+    private static final String TAG = "Hours_Activity ";
     private EditText etHours;
     private TextView tv_swipekeybord, tv_hours;
     private String vehicleNumber;

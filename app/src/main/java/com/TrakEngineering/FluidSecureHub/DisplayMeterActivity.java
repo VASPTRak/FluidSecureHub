@@ -364,13 +364,21 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             offcontroller.insertOfflineTransactions(off);
         }*/
 
+        LinkCommunicationType = "";
+        try {
+            LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            LinkCommunicationType = "";
+        }
+
         //offline-----------start
         if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
             EntityOffTranz authEntityClass = OfflineConstants.getCurrentTransaction(DisplayMeterActivity.this);
             authEntityClass.PersonPin = AppConstants.OFF_PERSON_PIN;
             authEntityClass.OnlineTransactionId = "0";
 
-            sqlite_id = offcontroller.insertOfflineTransactions(authEntityClass);
+            sqlite_id = offcontroller.insertOfflineTransactions(authEntityClass, LinkCommunicationType);
 
             AppConstants.clearSharedPrefByName(DisplayMeterActivity.this, "storeCurrentTransaction");
         }
@@ -3797,12 +3805,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (TransactionId_US != null && !TransactionId_US.isEmpty() && cd.isConnectingToInternet()) {
                 Log.i(TAG, "UpdateDiffStatusMessages sent: " + s + " TransactionId:" + TransactionId_US);
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages sent: " + s + "; TransactionId:" + TransactionId_US);
+                    /*if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages sent: " + s + "; TransactionId:" + TransactionId_US);*/
                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId_US, s, this);
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Not sent: " + s + "; TransactionId:" + TransactionId_US);
+                /*if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Not sent: " + s + "; TransactionId:" + TransactionId_US);*/
             }
 
         } catch (Exception e) {
@@ -4195,14 +4203,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void proceedToPostResume() {
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " proceedToPostResume (" + LinkCommunicationType + ")");
-        if (LinkCommunicationType.equalsIgnoreCase("BT")) {
 
+        if (LinkCommunicationType.equalsIgnoreCase("BT")) {
             BtnStartStateChange(true);
-            Log.i(TAG, "BTLink CurrentTransactionIsBT: " + BTConstants.CurrentTransactionIsBT);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTLink CurrentTransactionIsBT: " + BTConstants.CurrentTransactionIsBT);
 
         } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
             //cHECK UDP INFO COMMAND HERE

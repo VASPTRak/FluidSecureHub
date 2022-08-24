@@ -35,7 +35,7 @@ public class BackgroundServiceMidNightTasks extends Service {
 
             Log.e(TAG, "~~~~~start into BackgroundServiceMidNightTasks~~~~~");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Started.");
+                AppConstants.WriteinFile(AppConstants.LOG_MAINTAIN + "-" + TAG + "Started.");
             SyncSqliteData();//Sync penting transactions
 
             this.stopSelf();

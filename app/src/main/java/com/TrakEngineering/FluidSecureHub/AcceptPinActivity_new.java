@@ -120,7 +120,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     int Count = 1, LF_ReaderConnectionCountPin = 0, sec_count = 0;
     private boolean barcodeReaderCall = true;
 
-    private static final String TAG = "DeviceControl_Pin ";
+    private static final String TAG = "Pin_Activity ";
     public static double CurrentLat = 0, CurrentLng = 0;
     RelativeLayout footer_keybord;
     LinearLayout Linear_layout_Save_back_buttons;

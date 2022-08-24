@@ -24,7 +24,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         ctx = context;
         boolean CurrentState;
-        final String TAG = "NetworkReceiver";
+        final String TAG = AppConstants.LOG_MAINTAIN + "-" + "NetworkReceiver ";
 
         NetworkInfo activeInfo = conn.getActiveNetworkInfo();
         boolean wifiConnected;

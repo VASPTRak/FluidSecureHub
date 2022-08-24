@@ -60,6 +60,10 @@ public class AppConstants {
     public static int READ_TIMEOUT_SEC = 4; //2
     public static int WRITE_TIMEOUT_SEC = 4; //2
 
+    public static final String LOG_TXTN_BT = "[TXTN-BT]";
+    public static final String LOG_TXTN_HTTP = "[TXTN-HTTP]";
+    public static final String LOG_MAINTAIN = "[Maintain]";
+
     public static int ScreenResolutionYOffSet = 0;
     public static int COUNT_HOTSPOT_MAIL;
     public static String sharedPref_AzureQueueDetails = "AzureQueueDetails";
@@ -756,7 +760,7 @@ public class AppConstants {
 
             FileWriter fileWritter = new FileWriter(gpxfile, true);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-            bufferWritter.write("\n" + UseDate + "--" + str + " ");
+            bufferWritter.write("\n" + UseDate + "-" + str + " ");
             bufferWritter.close();
 
         } catch (IOException e) {

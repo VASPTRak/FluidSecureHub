@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class OfflineConstants {
 
-    public static final String TAG = OfflineConstants.class.getSimpleName();
+    public static final String TAG = AppConstants.LOG_MAINTAIN + "-" + OfflineConstants.class.getSimpleName();
 
     public static void storeCurrentTransaction(Context ctx, String HubId, String SiteId, String VehicleId, String CurrentOdometer, String CurrentHours, String PersonId,
                                                String FuelQuantity, String TransactionDateTime, String VehicleNumber, String Other) {

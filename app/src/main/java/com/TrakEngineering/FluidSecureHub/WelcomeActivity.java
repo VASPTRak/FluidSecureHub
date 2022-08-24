@@ -1664,9 +1664,17 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 if (view != null) { // GO button clicked.
                     String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
+                    String selSSID = serverSSIDList.get(0).get("WifiSSId");
+
+                    String txtnTypeForLog = "";
+                    if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                        txtnTypeForLog = AppConstants.LOG_TXTN_BT;
+                    } else {
+                        txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
+                    }
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GO button clicked.");
+                        AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "Customer select hose: " + selSSID);
 
                     GoButtonFunctionalityForSingleLink(LinkCommunicationType);
                     if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -2016,9 +2024,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     private void startWelcomeActivity() {
 
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Selected hose: " + AppConstants.CURRENT_SELECTED_SSID);
-
         SharedPreferences sharedPrefODO = WelcomeActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
@@ -2309,7 +2314,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     Log.i(TAG, "BTLink 1: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 1: BTLink 1: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: BTLink 1: Stop button clicked");
                     Constants.FS_1STATUS = "FREE";
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
@@ -2384,7 +2389,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     Log.i(TAG, "BTLink 2: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 2: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Stop button clicked");
                     Constants.FS_2STATUS = "FREE";
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
@@ -2431,7 +2436,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     Log.i(TAG, "BTLink 3: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 3: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Stop button clicked");
                     Constants.FS_3STATUS = "FREE";
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
@@ -2460,7 +2465,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     Log.i(TAG, "BTLink 4: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 4: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Stop button clicked");
                     Constants.FS_4STATUS = "FREE";
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
@@ -2913,8 +2918,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         FirmwareVersion = "";
                     }
 
+                    String txtnTypeForLog = "";
+                    if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                        txtnTypeForLog = AppConstants.LOG_TXTN_BT;
+                    } else {
+                        txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
+                    }
+
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK: " + selSSID + " (position: " + (position + 1) + " of " + serverSSIDList.size() + ")");
+                        AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "Customer select hose: " + selSSID + " (position: " + (position + 1) + " of " + serverSSIDList.size() + ")");
 
                     if (IsTankEmpty != null && IsTankEmpty.equalsIgnoreCase("True")) {
 
@@ -12129,19 +12141,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         Thread.sleep(1000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 1)");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Check Connection Status (Attempt: 1)");
                         if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         } else {
                             Thread.sleep(2000);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 2)");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Check Connection Status (Attempt: 2)");
                             if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                                 isConnected = true;
                             } else {
                                 Thread.sleep(2000);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 1: Check Connection Status (Attempt: 3)");
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Check Connection Status (Attempt: 3)");
                                 if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                                     isConnected = true;
                                 }
@@ -12150,10 +12162,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                     if (isConnected) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: Link is connected.");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Link is connected.");
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: STATUS: " + BTConstants.BTStatusStrOne);
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: STATUS: " + BTConstants.BTStatusStrOne);
                     }
                     break;
                 case 2:
@@ -12162,19 +12174,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         Thread.sleep(1000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 1)");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Check Connection Status (Attempt: 1)");
                         if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         } else {
                             Thread.sleep(2000);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 2)");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Check Connection Status (Attempt: 2)");
                             if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
                                 isConnected = true;
                             } else {
                                 Thread.sleep(2000);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 2: Check Connection Status (Attempt: 3)");
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Check Connection Status (Attempt: 3)");
                                 if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
                                     isConnected = true;
                                 }
@@ -12183,10 +12195,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                     if (isConnected) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: Link is connected.");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Link is connected.");
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: STATUS: " + BTConstants.BTStatusStrTwo);
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: STATUS: " + BTConstants.BTStatusStrTwo);
                     }
                     break;
                 case 3:
@@ -12195,19 +12207,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         Thread.sleep(1000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 1)");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Check Connection Status (Attempt: 1)");
                         if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         } else {
                             Thread.sleep(2000);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 2)");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Check Connection Status (Attempt: 2)");
                             if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
                                 isConnected = true;
                             } else {
                                 Thread.sleep(2000);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 3: Check Connection Status (Attempt: 3)");
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Check Connection Status (Attempt: 3)");
                                 if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
                                     isConnected = true;
                                 }
@@ -12216,10 +12228,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                     if (isConnected) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Link is connected.");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Link is connected.");
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: STATUS: " + BTConstants.BTStatusStrThree);
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: STATUS: " + BTConstants.BTStatusStrThree);
                     }
                     break;
                 case 4:
@@ -12228,19 +12240,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         Thread.sleep(1000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 1)");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Check Connection Status (Attempt: 1)");
                         if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         } else {
                             Thread.sleep(2000);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 2)");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Check Connection Status (Attempt: 2)");
                             if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
                                 isConnected = true;
                             } else {
                                 Thread.sleep(2000);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 3)");
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Check Connection Status (Attempt: 3)");
                                 if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
                                     isConnected = true;
                                 }
@@ -12249,17 +12261,17 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                     if (isConnected) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Link is connected.");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Link is connected.");
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: STATUS: " + BTConstants.BTStatusStrFour);
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: STATUS: " + BTConstants.BTStatusStrFour);
                     }
                     break;
             }
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink " + position + ": checkBTLinkStatus Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink " + position + ": checkBTLinkStatus Exception:>>" + e.getMessage());
         }
         return isConnected;
     }
@@ -12272,7 +12284,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: Retrying to Connect");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12285,7 +12297,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: Retrying to Connect");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12298,7 +12310,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Retrying to Connect");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12311,7 +12323,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         BTConstants.CurrentTransactionIsBT = false;
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Retrying to Connect");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
@@ -12323,13 +12335,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink " + position + ": retryConnect Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink " + position + ": retryConnect Exception:>>" + e.getMessage());
         }
     }
 
     private void CheckBTConnection(int selectedItemPos, String selSSID, String selMacAddress) {
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Check BT connection for Link: " + selSSID);
 
         switch (selectedItemPos) {
 
@@ -13532,10 +13542,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public void SetUpgradeFirmwareDetails(int position, String IsUpgrade, String FirmwareVersion, String selSiteId, String hoseID) {
         try {
             //Firmware upgrade
-            System.out.println("IsUpgrade: " + IsUpgrade + " ;Is BT Link: " + AppConstants.IsBTLinkSelectedCurrently);
             AppConstants.UP_FirmwareVersion = FirmwareVersion;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SetUpgradeFirmwareDetails => IsUpgrade: " + IsUpgrade + ";Is BT Link: " + AppConstants.IsBTLinkSelectedCurrently);
+            /*if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "SetUpgradeFirmwareDetails => IsUpgrade: " + IsUpgrade + ";Is BT Link: " + AppConstants.IsBTLinkSelectedCurrently);*/
             if (IsUpgrade.trim().equalsIgnoreCase("Y")) {
                 AppConstants.UP_Upgrade = true;
                 AppConstants.UP_Upgrade_File_name = "user1.2048.new.5." + FirmwareVersion + ".bin";
