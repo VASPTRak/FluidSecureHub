@@ -3008,9 +3008,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             try {
 
                 OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(4, TimeUnit.SECONDS);
-                client.setReadTimeout(4, TimeUnit.SECONDS);
-                client.setWriteTimeout(4, TimeUnit.SECONDS);
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
                         .url(param[0])

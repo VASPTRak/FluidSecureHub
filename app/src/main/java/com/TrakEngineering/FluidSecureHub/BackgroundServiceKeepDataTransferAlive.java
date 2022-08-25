@@ -324,7 +324,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                            if (Sendmail){
                                setSharedPrefDefectiveLink(BackgroundServiceKeepDataTransferAlive.this,link_name);
                                Log.i(TAG, "Defective links email sent to: "+link_name+" Message: "+Message+" TDifferance: "+Differance);
-                               if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Defective links email sent to: "+link_name+" Message: "+Message+" TDifferance: "+Differance);
+                               if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Defective links email sent to: "+link_name+" Message: "+Message+" TDifference: "+Differance);
                                SendDefectiveLinkInfoEmailAsyncCall(link_name);
                            }
                         }

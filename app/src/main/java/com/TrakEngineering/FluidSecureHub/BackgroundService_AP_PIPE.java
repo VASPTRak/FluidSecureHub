@@ -1161,8 +1161,9 @@ public class BackgroundService_AP_PIPE extends Service {
                                             public void run() {
                                                 finalLastStep();
                                             }
-                                        }, 500); //1000
+                                        }, 2000); //1000
                                     }
+                                    Thread.sleep(2000);
                                 }
                             }
                         } catch (Exception e) {

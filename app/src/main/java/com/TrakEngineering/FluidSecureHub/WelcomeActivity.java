@@ -263,6 +263,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public static boolean IsUpgradeInprogress_FS5 = false;
     public static boolean IsUpgradeInprogress_FS6 = false;
 
+    public static int CountOfReconnectRelay1 = 0;
+    public static int CountOfReconnectRelay2 = 0;
+    public static int CountOfReconnectRelay3 = 0;
+    public static int CountOfReconnectRelay4 = 0;
+
     public static boolean FA_DebugWindow = false;
 
     private static final int EXPIRE_TIMEOUT = 5000;
@@ -5494,8 +5499,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Completed")) {
+                            BTConstants.isUpgradeInProgress_BT1 = false;
                             showUpgradeSpinnerMessage = false;
-                            AppConstants.WriteinFile(TAG + " BTLink 1 Upgrade Completed. Connecting to LINK. (" + BTConstants.deviceAddress1 + ")");
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 1: Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress1 + ")");
                             BTConstants.UpgradeStatusBT1 = "";
 
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("Connecting to LINK.\nPlease wait several seconds... "));
@@ -5512,8 +5519,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Incomplete")) {
+                            BTConstants.isUpgradeInProgress_BT1 = false;
                             showUpgradeSpinnerMessage = false;
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("LINK connection lost.\nPlease try again later!"));
+
+                            startBTSppMain(1);
+
                             BTConstants.UpgradeStatusBT1 = "";
                             if (pdUpgradeProcess != null) {
                                 new Handler().postDelayed(new Runnable() {
@@ -5537,8 +5548,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Completed")) {
+                            BTConstants.isUpgradeInProgress_BT2 = false;
                             showUpgradeSpinnerMessage = false;
-                            AppConstants.WriteinFile(TAG + " BTLink 2 Upgrade Completed. Connecting to LINK. (" + BTConstants.deviceAddress2 + ")");
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 2: Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress2 + ")");
                             BTConstants.UpgradeStatusBT2 = "";
 
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("Connecting to LINK.\nPlease wait several seconds... "));
@@ -5555,9 +5568,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Incomplete")) {
+                            BTConstants.isUpgradeInProgress_BT2 = false;
                             showUpgradeSpinnerMessage = false;
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("LINK connection lost.\nPlease try again later!"));
                             BTConstants.UpgradeStatusBT2 = "";
+
+                            startBTSppMain(2);
+
                             if (pdUpgradeProcess != null) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
@@ -5580,8 +5597,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Completed")) {
+                            BTConstants.isUpgradeInProgress_BT3 = false;
                             showUpgradeSpinnerMessage = false;
-                            AppConstants.WriteinFile(TAG + " BTLink 3 Upgrade Completed. Connecting to LINK. (" + BTConstants.deviceAddress3 + ")");
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 3: Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress3 + ")");
                             BTConstants.UpgradeStatusBT3 = "";
 
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("Connecting to LINK.\nPlease wait several seconds... "));
@@ -5598,9 +5617,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Incomplete")) {
+                            BTConstants.isUpgradeInProgress_BT3 = false;
                             showUpgradeSpinnerMessage = false;
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("LINK connection lost.\nPlease try again later!"));
                             BTConstants.UpgradeStatusBT3 = "";
+
+                            startBTSppMain(3);
+
                             if (pdUpgradeProcess != null) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
@@ -5623,8 +5646,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Completed")) {
+                            BTConstants.isUpgradeInProgress_BT4 = false;
                             showUpgradeSpinnerMessage = false;
-                            AppConstants.WriteinFile(TAG + " BTLink 4 Upgrade Completed. Connecting to LINK. (" + BTConstants.deviceAddress4 + ")");
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 4 Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress4 + ")");
                             BTConstants.UpgradeStatusBT4 = "";
 
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("Connecting to LINK.\nPlease wait several seconds... "));
@@ -5641,9 +5666,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             }
                         }
                         if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Incomplete")) {
+                            BTConstants.isUpgradeInProgress_BT4 = false;
                             showUpgradeSpinnerMessage = false;
                             pdUpgradeProcess.setMessage(GetSpinnerMessage("LINK connection lost.\nPlease try again later!"));
                             BTConstants.UpgradeStatusBT4 = "";
+
+                            startBTSppMain(4);
+
                             if (pdUpgradeProcess != null) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
@@ -5661,7 +5690,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } catch (Exception e) {
             Log.e("Error: ", e.getMessage());
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception in ManageBTLinkUpgrade: " + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "Exception in ManageBTLinkUpgrade: " + e.getMessage());
             if (pdUpgradeProcess != null) {
                 pdUpgradeProcess.dismiss();
             }
@@ -5709,6 +5738,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             Fs1_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs1Cnt5Sec = 0;
+            CountOfReconnectRelay1 = 0;
 
             //Update FA Message on dashboard
             tv_FA_message.setText(Constants.FA_Message);
@@ -5764,6 +5794,23 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs1Cnt5Sec++;
             }
 
+            if (CountOfReconnectRelay1 >= 5) {
+                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkOneStatus) {
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT1 && !BTConstants.isReconnectCalled1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
+                        BTConstants.isRelayOnAfterReconnect1 = false;
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect1();
+                        BTConstants.isReconnectCalled1 = true;
+                    }
+                }
+            } else {
+                CountOfReconnectRelay1++;
+            }
+
             //----------------------------------------
             tv_fs1_Qty.setText(Constants.FS_1Gallons);
             tv_fs1_Pulse.setText(Constants.FS_1Pulse);
@@ -5796,6 +5843,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             Fs2_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs2Cnt5Sec = 0;
+            CountOfReconnectRelay2 = 0;
 
             tv_fs2_Qty.setText(Constants.FS_2Gallons);
             tv_fs2_Pulse.setText(Constants.FS_2Pulse);
@@ -5848,6 +5896,23 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs2Cnt5Sec++;
             }
 
+            if (CountOfReconnectRelay2 >= 5) {
+                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkTwoStatus) {
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT2 && !BTConstants.isReconnectCalled2) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
+                        BTConstants.isRelayOnAfterReconnect2 = false;
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect2();
+                        BTConstants.isReconnectCalled2 = true;
+                    }
+                }
+            } else {
+                CountOfReconnectRelay2++;
+            }
+
             tv_fs2_Qty.setText(Constants.FS_2Gallons);
             tv_fs2_Pulse.setText(Constants.FS_2Pulse);
             linear_fs_2.setBackgroundResource(R.color.colorPrimary);
@@ -5878,6 +5943,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             Fs3_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs3Cnt5Sec = 0;
+            CountOfReconnectRelay3 = 0;
 
             tv_fs3_Qty.setText(Constants.FS_3Gallons);
             tv_fs3_Pulse.setText(Constants.FS_3Pulse);
@@ -5933,6 +5999,23 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs3Cnt5Sec++;
             }
 
+            if (CountOfReconnectRelay3 >= 5) {
+                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkThreeStatus) {
+                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT3 && !BTConstants.isReconnectCalled3) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
+                        BTConstants.isRelayOnAfterReconnect3 = false;
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect3();
+                        BTConstants.isReconnectCalled3 = true;
+                    }
+                }
+            } else {
+                CountOfReconnectRelay3++;
+            }
+
             tv_fs3_Qty.setText(Constants.FS_3Gallons);
             tv_fs3_Pulse.setText(Constants.FS_3Pulse);
             linear_fs_3.setBackgroundResource(R.color.colorPrimary);
@@ -5963,7 +6046,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             Fs4_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs4Cnt5Sec = 0;
-
+            CountOfReconnectRelay4 = 0;
 
             tv_fs4_Qty.setText(Constants.FS_4Gallons);
             tv_fs4_Pulse.setText(Constants.FS_4Pulse);
@@ -6016,6 +6099,23 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 Fs4_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_4.setVisibility(View.GONE);
                 fs4Cnt5Sec++;
+            }
+
+            if (CountOfReconnectRelay4 >= 5) {
+                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFourStatus) {
+                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT4 && !BTConstants.isReconnectCalled4) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
+                        BTConstants.isRelayOnAfterReconnect4 = false;
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect4();
+                        BTConstants.isReconnectCalled4= true;
+                    }
+                }
+            } else {
+                CountOfReconnectRelay4++;
             }
 
             tv_fs4_Qty.setText(Constants.FS_4Gallons);

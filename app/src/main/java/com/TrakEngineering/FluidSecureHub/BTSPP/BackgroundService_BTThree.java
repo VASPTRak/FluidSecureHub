@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
@@ -157,9 +158,10 @@ public class BackgroundService_BTThree extends Service {
                     } else {
                         IsThisBTTrnx = false;
                         CloseTransaction();
+                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTThree.this);
                         Log.i(TAG, " BTLink 3: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected. Please try again! (Status: " + BTConstants.BTStatusStrThree + ")");
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
                         this.stopSelf();
                     }
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
@@ -181,6 +183,28 @@ public class BackgroundService_BTThree extends Service {
         }
 
         return Service.START_NOT_STICKY;
+    }
+
+    public void proceedToInfoCommand(boolean proceedAfterUpgrade) {
+        try {
+            if (proceedAfterUpgrade) {
+                if (checkBTLinkStatus()) {
+                    infoCommand();
+                } else {
+                    IsThisBTTrnx = false;
+                    CloseTransaction();
+                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTThree.this);
+                    Log.i(TAG, " BTLink 3: Link not connected. Please try again!");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
+                    this.stopSelf();
+                }
+            } else {
+                infoCommand();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean checkBTLinkStatus() {
@@ -239,10 +263,10 @@ public class BackgroundService_BTThree extends Service {
                 new Thread(new ClientSendAndListenUDPOne(BTConstants.info_cmd, SERVER_IP, this)).start();
             }
 
-            new CountDownTimer(4000, 1000) {
+            new CountDownTimer(5000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
-                    long attempt = (4 - (millisUntilFinished / 1000));
+                    long attempt = (5 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
                         if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
                             //Info command success.
@@ -289,13 +313,13 @@ public class BackgroundService_BTThree extends Service {
                         if (!TransactionId.isEmpty()) {
                             if (Response.contains("records") && Response.contains("mac_address")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 3: Info command Response. Attempt: 5; Response: true");
+                                    AppConstants.WriteinFile(TAG + " BTLink 3: Info command Response. Attempt: 6; Response: true");
                                 BTConstants.isNewVersionLinkThree = true;
                                 parseInfoCommandResponseForLast20txtn(Response);
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 3: Info command Response. Attempt: 5; Response:>>" + Response.trim());
+                                    AppConstants.WriteinFile(TAG + " BTLink 3: Info command Response. Attempt: 6; Response:>>" + Response.trim());
                                 getFirmwareVersionByInfoCommand(Response.trim());
                             }
                             new Handler().postDelayed(new Runnable() {
@@ -313,10 +337,10 @@ public class BackgroundService_BTThree extends Service {
                     } else {
 
                         //UpgradeTransaction Status info command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6",BackgroundService_BTThree.this);
+                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTThree.this);
                         Log.i(TAG, "BTLink 3: Failed to get infoCommand Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 3: Info command Response. Attempt: 5; Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Info command Response. Attempt: 6; Response: false");
                         CloseTransaction();
                     }
                 }
@@ -396,7 +420,7 @@ public class BackgroundService_BTThree extends Service {
                                 Log.i(TAG, "BTLink 3: transactionId Command Response success 1:>>" + Response);
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 3: transactionId command Response. Attempt: " + (attempt) + "; Response:>>" + Response.trim());
-                                relayOnCommand(); //RelayOn
+                                relayOnCommand(false); //RelayOn
                                 cancel();
                             } else {
                                 Log.i(TAG, "BTLink 3: Waiting for transactionId Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
@@ -418,11 +442,11 @@ public class BackgroundService_BTThree extends Service {
                         Log.i(TAG, "BTLink 3: transactionId Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 3: transactionId command Response. Attempt: 5; Response:>>" + Response.trim());
-                        relayOnCommand(); //RelayOn
+                        relayOnCommand(false); //RelayOn
                     } else {
 
                         //UpgradeTransaction Status Transactionid command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(transactionId, "6",BackgroundService_BTThree.this);
+                        CommonUtils.UpgradeTransactionStatusToSqlite(transactionId, "6", BackgroundService_BTThree.this);
                         Log.i(TAG, "BTLink 3: Failed to get transactionId Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 3: transactionId command Response. Attempt: 5; Response: false");
@@ -438,8 +462,11 @@ public class BackgroundService_BTThree extends Service {
         }
     }
 
-    private void relayOnCommand() {
+    private void relayOnCommand(boolean isAfterReconnect) {
         try {
+            if (isAfterReconnect) {
+                BTConstants.isRelayOnAfterReconnect3 = true;
+            }
             //Execute relayOn Command
             Request = "";
             Response = "";
@@ -484,7 +511,7 @@ public class BackgroundService_BTThree extends Service {
                     } else {
 
                         //UpgradeTransaction Status RelayON command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6",BackgroundService_BTThree.this);
+                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTThree.this);
                         Log.i(TAG, "BTLink 3: Failed to get relayOn Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 3: relayOn command Response. Attempt: 5; Response: false");
@@ -711,6 +738,26 @@ public class BackgroundService_BTThree extends Service {
                     checkPulses = "pulse:";
                 }
 
+                if (BTConstants.isReconnectCalled3 && !BTConstants.isRelayOnAfterReconnect3) {
+                    CancelTimer();
+                    if (checkBTLinkStatus()) {
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                relayOnCommand(true);
+                            }
+                        }, 2000);
+                    } else {
+                        IsThisBTTrnx = false;
+                        CloseTransaction();
+                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTThree.this);
+                        Log.i(TAG, " BTLink 3: Link not connected. Please try again!");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
+                    }
+                    return;
+                }
+
                 CheckResponse(checkPulses);
 
                 if (Response.contains(checkPulses) && RelayStatus) {
@@ -764,6 +811,8 @@ public class BackgroundService_BTThree extends Service {
                 }
             }
 
+            outputQuantity = addStoredQtyToCurrentQty(outputQuantity);
+
             Pulses = Integer.parseInt(outputQuantity);
             fillqty = Double.parseDouble(outputQuantity);
             fillqty = fillqty / numPulseRatio;//convert to gallons
@@ -771,6 +820,10 @@ public class BackgroundService_BTThree extends Service {
             DecimalFormat precision = new DecimalFormat("0.00");
             Constants.FS_3Gallons = (precision.format(fillqty));
             Constants.FS_3Pulse = outputQuantity;
+
+            if (!BTConstants.isRelayOnAfterReconnect3) {
+                SaveLastQtyInSharedPref();
+            }
 
             if (cd.isConnectingToInternet()) {
                 UpdatetransactionToSqlite(outputQuantity);
@@ -788,6 +841,43 @@ public class BackgroundService_BTThree extends Service {
             e.printStackTrace();
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 3: pulse count Exception>>" + e.getMessage());
         }
+    }
+
+    private String addStoredQtyToCurrentQty(String outputQuantity) {
+        String newQty = outputQuantity;
+        try {
+
+            if (BTConstants.isRelayOnAfterReconnect3) {
+                SharedPreferences sharedPrefLastQty = this.getSharedPreferences("LastQuantity_BT3", Context.MODE_PRIVATE);
+                long storedPulsesCount = sharedPrefLastQty.getLong("Last_Quantity", 0);
+
+                long quantity = Integer.parseInt(outputQuantity);
+
+                long add_count = storedPulsesCount + quantity;
+
+                outputQuantity = Long.toString(add_count);
+
+                newQty = outputQuantity;
+
+            }
+
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: addStoredQtyToCurrentQty Exception:" + ex.getMessage());
+        }
+        return newQty;
+    }
+
+    public void SaveLastQtyInSharedPref() {
+
+        SharedPreferences sharedPrefLastQty = this.getSharedPreferences("LastQuantity_BT3", Context.MODE_PRIVATE);
+
+        long current_count = Long.parseLong(String.valueOf(Pulses));
+
+        SharedPreferences.Editor editorQty = sharedPrefLastQty.edit();
+        editorQty.putLong("Last_Quantity", current_count);
+        editorQty.commit();
+
     }
 
     public class BroadcastBlueLinkThreeData extends BroadcastReceiver {
@@ -1229,21 +1319,22 @@ public class BackgroundService_BTThree extends Service {
                 File file = new File(LocalPath);
                 if (file.exists() && AppConstants.UP_Upgrade_File_name.startsWith("BT_")) {
                     BTConstants.UpgradeStatusBT3 = "Started";
+                    BTConstants.isUpgradeInProgress_BT3 = true;
                     new BTLinkUpgradeFunctionality().execute();
 
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 3: BTLinkUpgradeCommand - File (" + AppConstants.UP_Upgrade_File_name + ") Not found.");
-                    infoCommand();
+                    proceedToInfoCommand(false);
                 }
             } else {
-                infoCommand();
+                proceedToInfoCommand(false);
             }
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 3: BTLinkUpgradeCommand Exception:>>" + e.getMessage());
-            infoCommand();
+            proceedToInfoCommand(false);
         }
     }
 
@@ -1328,7 +1419,7 @@ public class BackgroundService_BTThree extends Service {
             } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 3: BTLinkUpgradeFunctionality doInBackground Exception: " + e.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink 3: BTLinkUpgradeFunctionality InBackground Exception: " + e.getMessage());
             }
 
             return null;
@@ -1351,17 +1442,18 @@ public class BackgroundService_BTThree extends Service {
                         if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
                             counter = 0;
                             handler.removeCallbacksAndMessages(null);
-                            infoCommand();
+                            proceedToInfoCommand(true);
                         } else {
                             counter++;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 3: Reconnecting... attempt (" + counter + ")");
+                                AppConstants.WriteinFile(TAG + " BTLink 3: Waiting to reconnect... (Attempt: " + counter + ")");
                             if (counter < 3) {
                                 handler.postDelayed(this, delay);
                             } else {
-                                Log.i(TAG, "BTLink 3: Failed to connecting to link.");
+                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTThree.this);
+                                Log.i(TAG, "BTLink 3: Failed to connect to the link.");
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 3: Failed to connecting to link. (" + BTConstants.BTStatusStrThree + ")");
+                                    AppConstants.WriteinFile(TAG + " BTLink 3: Failed to connect to the link. (Status: " + BTConstants.BTStatusStrThree + ")");
                                 IsThisBTTrnx = false;
                                 CloseTransaction();
                             }
@@ -1370,7 +1462,12 @@ public class BackgroundService_BTThree extends Service {
                 }, delay);
 
             } else {
-                infoCommand();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        proceedToInfoCommand(true);
+                    }
+                }, 3000);
             }
         }
     }

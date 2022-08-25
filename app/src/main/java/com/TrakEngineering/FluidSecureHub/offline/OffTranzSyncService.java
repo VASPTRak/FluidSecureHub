@@ -27,7 +27,7 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.JSON;
 public class OffTranzSyncService extends Service {
 
     OffDBController controller = new OffDBController(OffTranzSyncService.this);
-    String TAG = "OffTranzSyncService";
+    public static String TAG = AppConstants.LOG_MAINTAIN + "-" + "OffTranzSyncService";
     ConnectionDetector cd = new ConnectionDetector(OffTranzSyncService.this);
 
 
@@ -46,7 +46,7 @@ public class OffTranzSyncService extends Service {
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
 
             System.out.println("OffTranzSyncService started " + new Date());
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile("OffTranzSyncService started " + new Date());
+            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Started: " + new Date());
             //if (cd.isConnectingToInternet())
             //    new GetAPIToken().execute();
 

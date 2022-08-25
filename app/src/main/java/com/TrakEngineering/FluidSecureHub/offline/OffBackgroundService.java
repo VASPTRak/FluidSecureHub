@@ -53,7 +53,7 @@ public class OffBackgroundService extends Service {
     OffDBController controller = new OffDBController(OffBackgroundService.this);
 
     ConnectionDetector cd = new ConnectionDetector(OffBackgroundService.this);
-    private static final String TAG = OffBackgroundService.class.getSimpleName();
+    private static final String TAG = AppConstants.LOG_MAINTAIN + "-" + OffBackgroundService.class.getSimpleName();
 
     Timer timer;
     TimerTask repeatedTask;
@@ -77,7 +77,7 @@ public class OffBackgroundService extends Service {
                 AppConstants.selectHosePressed = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_MAINTAIN + "-" + TAG + " Started.");
+                    AppConstants.WriteinFile(TAG + " Started.");
 
                 OffDBController offcontroller = new OffDBController(this);
                 //HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();
