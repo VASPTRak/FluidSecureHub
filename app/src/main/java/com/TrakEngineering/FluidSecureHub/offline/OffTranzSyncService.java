@@ -27,7 +27,7 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.JSON;
 public class OffTranzSyncService extends Service {
 
     OffDBController controller = new OffDBController(OffTranzSyncService.this);
-    public static String TAG = AppConstants.LOG_MAINTAIN + "-" + "OffTranzSyncService";
+    public static String TAG = AppConstants.LOG_BACKGROUND + "-" + "OffTranzSyncService";
     ConnectionDetector cd = new ConnectionDetector(OffTranzSyncService.this);
 
 

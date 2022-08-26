@@ -53,7 +53,7 @@ public class OffBackgroundService extends Service {
     OffDBController controller = new OffDBController(OffBackgroundService.this);
 
     ConnectionDetector cd = new ConnectionDetector(OffBackgroundService.this);
-    private static final String TAG = AppConstants.LOG_MAINTAIN + "-" + OffBackgroundService.class.getSimpleName();
+    private static final String TAG = AppConstants.LOG_BACKGROUND + "-" + OffBackgroundService.class.getSimpleName();
 
     Timer timer;
     TimerTask repeatedTask;

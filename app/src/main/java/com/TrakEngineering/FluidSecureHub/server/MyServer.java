@@ -44,8 +44,8 @@ public class MyServer extends NanoHTTPD {
         start();
         Log.i(TAG, " \nRunning! Point your browers to http://localhost:8085/ \n");
         AppConstants.Server_mesage = "Server Running..!!!";
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " http server up and running");
+        //if (AppConstants.GenerateLogs)
+        //    AppConstants.WriteinFile(TAG + " http server up and running");
 
     }
 

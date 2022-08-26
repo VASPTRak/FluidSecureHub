@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 public class OffDBController extends SQLiteOpenHelper {
     private static final String LOGCAT = null;
-    private static final String TAG = AppConstants.LOG_MAINTAIN + "-" + "OffDBController ";
+    private static final String TAG = AppConstants.LOG_BACKGROUND + "-" + "OffDBController ";
 
     public static String TBL_LINK = "tbl_off_link";
     public static String TBL_FUEL_TIMING = "tbl_off_fuel_timings";
@@ -335,7 +335,7 @@ public class OffDBController extends SQLiteOpenHelper {
             database.close();
             if (LinkCommunicationType.isEmpty()) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Transaction saved locally.");
+                    AppConstants.WriteinFile(TAG + "Transaction saved in local DB.");
             } else {
 
                 String txtnTypeForLog = "";
@@ -346,7 +346,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 }
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(txtnTypeForLog + "- Transaction saved locally.");
+                    AppConstants.WriteinFile(txtnTypeForLog + "- Transaction saved in local DB.");
             }
 
         } catch (Exception e) {

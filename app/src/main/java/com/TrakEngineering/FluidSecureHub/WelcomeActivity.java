@@ -1766,7 +1766,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                     cd = new ConnectionDetector(WelcomeActivity.this);
                                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-                                        new ChangeBusyStatusOnGoButton().execute();
+                                        new ChangeBusyStatusOnGoButton().execute(LinkCommunicationType);
                                     } else {
                                         flagGoBtn = true;//Enable go button
                                         CommonUtils.showNoInternetDialog(WelcomeActivity.this);
@@ -1903,9 +1903,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class handleGetAndroidSSID extends AsyncTask<String, Void, String> {
 
-
         ProgressDialog pd;
-
+        public String LinkCommType = "";
 
         @Override
         protected void onPreExecute() {
@@ -1925,6 +1924,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             String resp = "";
             String selectedSSID = params[0];
+            LinkCommType = params[1];
             try {
 
                 UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(WelcomeActivity.this);
@@ -1971,7 +1971,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             try {
 
-
                 if (siteResponse != null && !siteResponse.isEmpty()) {
 
 
@@ -2010,8 +2009,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                 } else {
                     Log.i(TAG, "HandleGetAndroidSSID SiteResponse Empty!");
+
+                    String txtnTypeForLog = "";
+                    if (LinkCommType.equalsIgnoreCase("BT")) {
+                        txtnTypeForLog = AppConstants.LOG_TXTN_BT;
+                    } else {
+                        txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
+                    }
+
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "HandleGetAndroidSSID SiteResponse Empty!");
+                        AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "HandleGetAndroidSSID SiteResponse Empty!");
                 }
 
             } catch (JSONException e) {
@@ -2121,7 +2128,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         String selMacAddress = serverSSIDList.get(0).get("MacAddress");
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Link 1: " + selSSID + ". Stop button pressed");
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_1 = sharedPref.getString("HttpLinkOne", "");
@@ -2134,11 +2141,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (HTTP_URL_FS_1.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link 1: " + selSSID + ": HTTP URL is empty.");
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". HTTP URL is empty.");
         }
 
         stopService(new Intent(WelcomeActivity.this, BackgroundService_AP_PIPE.class));
-        stopButtonFunctionality_FS1();
+        stopButtonFunctionality_FS1(selSSID);
         if (Constants.BusyVehicleNumberList != null) {
             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
         }
@@ -2154,7 +2161,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Link 2: " + selSSID + ". Stop button pressed");
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_2 = sharedPref.getString("HttpLinkTwo", "");
@@ -2166,11 +2173,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (HTTP_URL_FS_2.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link 2: " + selSSID + ": HTTP URL is empty.");
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". HTTP URL is empty.");
         }
 
         stopService(new Intent(WelcomeActivity.this, BackgroundService_AP.class));
-        stopButtonFunctionality_FS2();
+        stopButtonFunctionality_FS2(selSSID);
         if (Constants.BusyVehicleNumberList != null) {
             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
         }
@@ -2186,7 +2193,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Link 3: " + selSSID + ". Stop button pressed");
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_3 = sharedPref.getString("HttpLinkThree", "");
@@ -2198,11 +2205,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (HTTP_URL_FS_3.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link 3: " + selSSID + ": HTTP URL is empty.");
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". HTTP URL is empty.");
         }
 
         stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_3.class));
-        stopButtonFunctionality_FS3();
+        stopButtonFunctionality_FS3(selSSID);
         if (!Constants.BusyVehicleNumberList.equals(null)) {
             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
         }
@@ -2218,7 +2225,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Link 4: " + selSSID + ". Stop button pressed");
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_4 = sharedPref.getString("HttpLinkFour", "");
@@ -2230,11 +2237,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (HTTP_URL_FS_4.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link 4: " + selSSID + ": HTTP URL is empty.");
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". HTTP URL is empty.");
         }
 
         stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_4.class));
-        stopButtonFunctionality_FS4();
+        stopButtonFunctionality_FS4(selSSID);
         if (Constants.BusyVehicleNumberList != null) {
             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS4);
         }
@@ -2250,7 +2257,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Link 5: " + selSSID + ". Stop button pressed");
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_5 = sharedPref.getString("HttpLinkFive", "");
@@ -2262,11 +2269,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (HTTP_URL_FS_5.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link 5: " + selSSID + ": HTTP URL is empty.");
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". HTTP URL is empty.");
         }
 
         stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_5.class));
-        stopButtonFunctionality_FS5();
+        stopButtonFunctionality_FS5(selSSID);
         if (Constants.BusyVehicleNumberList != null) {
             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS5);
         }
@@ -2282,7 +2289,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IpAddress = null;
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " Link 6: " + selSSID + ". Stop button pressed");
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
 
         SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
         HTTP_URL_FS_6 = sharedPref.getString("HttpLinkSix", "");
@@ -2294,11 +2301,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (HTTP_URL_FS_6.isEmpty()) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link 6: " + selSSID + ": HTTP URL is empty.");
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "LINK: " + selSSID + ". HTTP URL is empty.");
         }
 
         stopService(new Intent(WelcomeActivity.this, BackgroundService_FS_UNIT_6.class));
-        stopButtonFunctionality_FS6();
+        stopButtonFunctionality_FS6(selSSID);
         if (Constants.BusyVehicleNumberList != null) {
             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS6);
         }
@@ -2310,6 +2317,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             case R.id.tv_fs1_stop:
 
+                String selSSID = serverSSIDList.get(0).get("WifiSSId");
                 String LinkCommunicationType = serverSSIDList.get(0).get("LinkCommunicationType");
                 if (Integer.parseInt(Constants.FS_1Pulse) <= 0) {
                     UpdateDiffStatusMessages("0");
@@ -2317,10 +2325,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
 
-                    Log.i(TAG, "BTLink 1: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: BTLink 1: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "LINK: " + selSSID + ". Stop button pressed");
                     Constants.FS_1STATUS = "FREE";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Sending relayOff command to Link: " + selSSID);
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
                     btspp.send1(BTConstants.relay_off_cmd);
@@ -2328,7 +2337,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
 
                     try {
-                        String selSSID = WelcomeActivity.serverSSIDList.get(0).get("WifiSSId");
                         String MacAddress = WelcomeActivity.serverSSIDList.get(0).get("MacAddress");
                         String Serverip = "";
 
@@ -2385,6 +2393,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             case R.id.tv_fs2_stop:
 
+                String selSSID2 = serverSSIDList.get(1).get("WifiSSId");
                 String LType2 = serverSSIDList.get(1).get("LinkCommunicationType");
                 if (Integer.parseInt(Constants.FS_2Pulse) <= 0) {
                     UpdateDiffStatusMessages("1");
@@ -2392,10 +2401,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 if (LType2.equalsIgnoreCase("BT")) {
 
-                    Log.i(TAG, "BTLink 2: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "LINK: " + selSSID2 + ". Stop button pressed");
                     Constants.FS_2STATUS = "FREE";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Sending relayOff command to Link: " + selSSID2);
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
                     btspp.send2(BTConstants.relay_off_cmd);
@@ -2432,6 +2442,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             case R.id.tv_fs3_stop:
 
+                String selSSID3 = serverSSIDList.get(2).get("WifiSSId");
                 String LType3 = serverSSIDList.get(2).get("LinkCommunicationType");
                 if (Integer.parseInt(Constants.FS_3Pulse) <= 0) {
                     UpdateDiffStatusMessages("2");
@@ -2439,10 +2450,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 if (LType3.equalsIgnoreCase("BT")) {
 
-                    Log.i(TAG, "BTLink 3: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "LINK: " + selSSID3 + ". Stop button pressed");
                     Constants.FS_3STATUS = "FREE";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Sending relayOff command to Link: " + selSSID3);
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
                     btspp.send3(BTConstants.relay_off_cmd);
@@ -2461,6 +2473,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             case R.id.tv_fs4_stop:
 
+                String selSSID4 = serverSSIDList.get(3).get("WifiSSId");
                 String LType4 = serverSSIDList.get(3).get("LinkCommunicationType");
                 if (Integer.parseInt(Constants.FS_4Pulse) <= 0) {
                     UpdateDiffStatusMessages("3");
@@ -2468,10 +2481,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 if (LType4.equalsIgnoreCase("BT")) {
 
-                    Log.i(TAG, "BTLink 4: Stop button clicked");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Stop button clicked");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "LINK: " + selSSID4 + ". Stop button pressed");
                     Constants.FS_4STATUS = "FREE";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Sending relayOff command to Link: " + selSSID4);
                     BTSPPMain btspp = new BTSPPMain();
                     btspp.activity = WelcomeActivity.this;
                     btspp.send4(BTConstants.relay_off_cmd);
@@ -4399,11 +4413,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     //=========================Stop button functionality for each hose==============
 
     //=======FS UNIT 1 =========
-    public void stopButtonFunctionality_FS1() {
+    public void stopButtonFunctionality_FS1(String LinkName) {
 
         //it stops pulsar logic------
         stopTimer = false;
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS1().execute(URL_RELAY_FS1, jsonRelayOff);
 
         new Handler().postDelayed(new Runnable() {
@@ -4413,7 +4428,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         String result = new GETFINALPulsar_FS1().execute(URL_GET_PULSAR_FS1).get();
 
@@ -4427,15 +4442,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             convertCountToQuantity_fs1(counts);
 
-                            if (i == 2) {
+                            if (i == 1) {
 
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finalLastStep_fs1();
                                     }
-                                }, 1000);
+                                }, 500);
                             }
+                            Thread.sleep(1000);
                         }
                     }
                 } catch (Exception e) {
@@ -4578,11 +4594,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     //=======FS UNIT 2 =========
-    public void stopButtonFunctionality_FS2() {
+    public void stopButtonFunctionality_FS2(String LinkName) {
 
         //it stops pulsar logic------
         stopTimer = false;
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS2().execute(URL_RELAY_FS2, jsonRelayOff);
 
         new Handler().postDelayed(new Runnable() {
@@ -4592,7 +4609,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         String result = new GETFINALPulsar_FS2().execute(URL_GET_PULSAR_FS2).get();
 
@@ -4612,8 +4629,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     public void run() {
                                         finalLastStep_fs2();
                                     }
-                                }, 1000);
+                                }, 500);
                             }
+                            Thread.sleep(1000);
                         }
                     }
                 } catch (Exception e) {
@@ -4757,11 +4775,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     //=======FS UNIT 3 =========
-    public void stopButtonFunctionality_FS3() {
+    public void stopButtonFunctionality_FS3(String LinkName) {
 
         //it stops pulsar logic------
         stopTimer = false;
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS3().execute(URL_RELAY_FS3, jsonRelayOff);
 
         new Handler().postDelayed(new Runnable() {
@@ -4771,7 +4790,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         String result = new GETFINALPulsar_FS3().execute(URL_GET_PULSAR_FS3).get();
 
@@ -4785,14 +4804,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             convertCountToQuantity_fs3(counts);
 
-                            if (i == 2) {
+                            if (i == 1) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finalLastStep_fs3();
                                     }
-                                }, 1000);
+                                }, 500);
                             }
+                            Thread.sleep(1000);
                         }
                     }
                 } catch (Exception e) {
@@ -4936,11 +4956,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     //=======FS UNIT 4 =========
-    public void stopButtonFunctionality_FS4() {
+    public void stopButtonFunctionality_FS4(String LinkName) {
 
         //it stops pulsar logic------
         stopTimer = false;
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS4().execute(URL_RELAY_FS4, jsonRelayOff);
 
         new Handler().postDelayed(new Runnable() {
@@ -4950,7 +4971,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         String result = new GETFINALPulsar_FS4().execute(URL_GET_PULSAR_FS4).get();
 
@@ -4964,14 +4985,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             convertCountToQuantity_fs4(counts);
 
-                            if (i == 2) {
+                            if (i == 1) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finalLastStep_fs4();
                                     }
-                                }, 1000);
+                                }, 500);
                             }
+                            Thread.sleep(1000);
                         }
                     }
                 } catch (Exception e) {
@@ -5115,11 +5137,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     //=======FS UNIT 5 =========
-    public void stopButtonFunctionality_FS5() {
+    public void stopButtonFunctionality_FS5(String LinkName) {
 
         //it stops pulsar logic------
         stopTimer = false;
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS5().execute(URL_RELAY_FS5, jsonRelayOff);
 
         new Handler().postDelayed(new Runnable() {
@@ -5129,7 +5152,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         String result = new GETFINALPulsar_FS5().execute(URL_GET_PULSAR_FS5).get();
 
@@ -5143,14 +5166,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             convertCountToQuantity_fs5(counts);
 
-                            if (i == 2) {
+                            if (i == 1) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finalLastStep_fs5();
                                     }
-                                }, 1000);
+                                }, 500);
                             }
+                            Thread.sleep(1000);
                         }
                     }
                 } catch (Exception e) {
@@ -5295,11 +5319,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
 
     //=======FS UNIT 6 =========
-    public void stopButtonFunctionality_FS6() {
+    public void stopButtonFunctionality_FS6(String LinkName) {
 
         //it stops pulsar logic------
         stopTimer = false;
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS6().execute(URL_RELAY_FS6, jsonRelayOff);
 
         new Handler().postDelayed(new Runnable() {
@@ -5309,7 +5334,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         String result = new GETFINALPulsar_FS6().execute(URL_GET_PULSAR_FS6).get();
 
@@ -5323,14 +5348,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             convertCountToQuantity_fs6(counts);
 
-                            if (i == 2) {
+                            if (i == 1) {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         finalLastStep_fs6();
                                     }
-                                }, 1000);
+                                }, 500);
                             }
+                            Thread.sleep(1000);
                         }
                     }
                 } catch (Exception e) {
@@ -6371,9 +6397,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class ChangeBusyStatusOnGoButton extends AsyncTask<String, Void, String> {
 
-
         ProgressDialog pd;
-
+        public String LinkCommType = "";
 
         @Override
         protected void onPreExecute() {
@@ -6392,6 +6417,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         protected String doInBackground(String... params) {
 
             String resp = "";
+            LinkCommType = params[0];
 
             String userEmail = CommonUtils.getCustomerDetails(WelcomeActivity.this).PersonEmail;
 
@@ -6400,10 +6426,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             RenameHose rhose = new RenameHose();
             rhose.SiteId = AppConstants.CURRENT_SELECTED_SITEID;
 
-
             Gson gson = new Gson();
             String jsonData = gson.toJson(rhose);
-
 
             try {
                 OkHttpClient client = new OkHttpClient();
@@ -6448,10 +6472,18 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         flagGoBtn = true;//Enable go button
                         // AppConstants.colorToastBigFont(WelcomeActivity.this, "Hose in use", Color.RED);
                         CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", "Hose In Use. Please retry once the ongoing transaction has been completed.");
+
+                        String txtnTypeForLog = "";
+                        if (LinkCommType.equalsIgnoreCase("BT")) {
+                            txtnTypeForLog = AppConstants.LOG_TXTN_BT;
+                        } else {
+                            txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
+                        }
+
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Hose In Use. Please retry once the ongoing transaction has been completed.");
+                            AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + " Hose In Use. Please retry once the ongoing transaction has been completed.");
                     } else {
-                        new handleGetAndroidSSID().execute(AppConstants.LAST_CONNECTED_SSID);//AppConstants.LAST_CONNECTED_SSID = selectedSSID
+                        new handleGetAndroidSSID().execute(AppConstants.LAST_CONNECTED_SSID, LinkCommType);//AppConstants.LAST_CONNECTED_SSID = selectedSSID
                         //startWelcomeActivity();
                     }
 
@@ -11448,30 +11480,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 WifiManager wifiManager = (WifiManager) WelcomeActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                                 String ssid = "";
                                 if (wifiManager.isWifiEnabled()) {
-                                    try {
-                                        StringBuilder str = new StringBuilder("");
-                                        String availableWifi = "";
-                                        List<ScanResult> availableWifiConnections = wifiManager.getScanResults();
-                                        if (availableWifiConnections.size() > 0) {
-                                            for (ScanResult res : availableWifiConnections) {
-                                                str.append(res.SSID).append(",");
-                                            }
-                                        }
-                                        availableWifi = str.toString();
-                                        if (availableWifi.length() > 0) {
-                                            availableWifi = availableWifi.substring(0, availableWifi.length() - 1);
-                                        }
-                                        AppConstants.WriteinFile(TAG + " Available Wifi Connections (Step1 onTick) ==> [" + availableWifi + "]");
-                                    } catch (Exception ex) {
-                                        Log.i(TAG, "Link ReConfiguration process -Step 1 onTick Exception" + ex);
-                                    }
-
                                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                                     ssid = wifiInfo.getSSID().trim().replace("\"", "");
                                 }
 
-                                ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                                NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                                /*ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                                NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);*/
 
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + ssid + " =--= " + AppConstants.SELECTED_SSID_FOR_MANUALL); //+" IsWifi Connected: "+mWifi.isConnected()
@@ -11483,24 +11497,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 WifiManager wifiManager = (WifiManager) WelcomeActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                                 String ssid = "";
                                 if (wifiManager.isWifiEnabled()) {
-                                    try {
-                                        StringBuilder str = new StringBuilder("");
-                                        String availableWifi = "";
-                                        List<ScanResult> availableWifiConnections = wifiManager.getScanResults();
-                                        if (availableWifiConnections.size() > 0) {
-                                            for (ScanResult res : availableWifiConnections) {
-                                                str.append(res.SSID).append(",");
-                                            }
-                                        }
-                                        availableWifi = str.toString();
-                                        if (availableWifi.length() > 0) {
-                                            availableWifi = availableWifi.substring(0, availableWifi.length() - 1);
-                                        }
-                                        AppConstants.WriteinFile(TAG + " Available Wifi Connections (Step1 onFinish) ==> [" + availableWifi + "]");
-                                    } catch (Exception ex) {
-                                        Log.i(TAG, "Link ReConfiguration process -Step 1 onFinish Exception" + ex);
-                                    }
-
                                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                                     ssid = wifiInfo.getSSID().trim().replace("\"", "");
                                 }
@@ -12012,8 +12008,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     ssid = wifiInfo.getSSID().trim().replace("\"", "");
                                 }
 
-                                ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                                NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                                /*ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                                NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);*/
 
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + ssid + " === " + AppConstants.SELECTED_SSID_FOR_MANUALL); //+" IsWifi Connected: "+mWifi.isConnected()

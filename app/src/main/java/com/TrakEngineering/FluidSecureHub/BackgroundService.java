@@ -47,7 +47,7 @@ public class BackgroundService extends Service {
 
     ServerHandler serverHandler = new ServerHandler();
     DBController controller = new DBController(BackgroundService.this);
-    public static String TAG = AppConstants.LOG_MAINTAIN + "-" + "BackgroundService ";
+    public static String TAG = AppConstants.LOG_BACKGROUND + "-" + "BackgroundService ";
 
     @Nullable
     @Override
