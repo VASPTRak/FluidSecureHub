@@ -171,8 +171,6 @@ public class AppConstants {
     public static String OFF_ODO_Limit;
     public static String OFF_HRS_Limit;
 
-    public static boolean IsTransactionCompleted = false;
-
     public static String ESP32_update = "NO";
     public static String PIC_update = "NO";
     public static boolean GenerateLogs;
@@ -206,6 +204,14 @@ public class AppConstants {
     public static String MaxlimitMessage = "";
     public static boolean IsSingleLink = false;
     public static boolean GoButtonAlreadyClicked = false;
+    public static boolean IsTransactionCompleted = false;
+
+    public static boolean IsTransactionFailed1 = false;
+    public static boolean IsTransactionFailed2 = false;
+    public static boolean IsTransactionFailed3 = false;
+    public static boolean IsTransactionFailed4 = false;
+    public static boolean IsTransactionFailed5 = false;
+    public static boolean IsTransactionFailed6 = false;
 
     public static boolean FlickeringScreenOff;
     public static String NoSleepRespTime = "";

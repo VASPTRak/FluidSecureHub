@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.drm.ProcessedData;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
@@ -54,6 +55,7 @@ import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
 import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
+import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.android.gms.common.ConnectionResult;
@@ -66,6 +68,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -172,7 +175,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     boolean pulsarConnected = false;
 
     ConnectivityManager connection_manager;
-
+    public ProgressDialog pdMain;
 
     public static boolean BRisWiFiConnected;
 
@@ -210,7 +213,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     ArrayList<HashMap<String, String>> arrayList;
 
     ConnectionDetector cd = new ConnectionDetector(DisplayMeterActivity.this);
-
+    OffDBController offlineController = new OffDBController(DisplayMeterActivity.this);
 
     long sqlite_id = 0;
 
@@ -257,7 +260,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         getIpOverOSVersion();
-
+        ShowLoader();
         //UDP Connection..!!
         SERVERIP = "";
         String IpAddress = "";
@@ -646,7 +649,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             public void run() {
 
                                 if (btnStart.isClickable()) {
-                                    //did not press start (start appeared, was never pressed):  User did not Press Start = 7
+                                    //did not press start (start appeared, was never pressed): User did not Press Start = 7
                                     UpdateDiffStatusMessages("7");
                                 }
 
@@ -916,16 +919,22 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         }
                     }
                 }
+                if (pdMain != null) {
+                    pdMain.dismiss();
+                }
                 break;
 
             case R.id.btnCancel:
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " Cancel button clicked.");
                 if (btnStart.isClickable() && cd.isConnectingToInternet()) {
-                    //did not press start (start appeared, was never pressed):  User did not Press Start = 7
+                    //did not press start (start appeared, was never pressed): User did not Press Start = 7
                     UpdateDiffStatusMessages("7");
                 }
 
+                if (pdMain != null) {
+                    pdMain.dismiss();
+                }
                 Istimeout_Sec = false;
                 onBackPressed();
                 break;
@@ -956,6 +965,18 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 break;
 
         }
+    }
+
+    public void ShowLoader() {
+
+        String s = "Please wait...";
+        SpannableString ss2 = new SpannableString(s);
+        ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
+        ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+        pdMain = new ProgressDialog(DisplayMeterActivity.this);
+        pdMain.setMessage(ss2);
+        pdMain.setCancelable(false);
+
     }
 
     @SuppressLint("ResourceAsColor")
@@ -1043,6 +1064,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             //Check if Hose connected to hotspot or not
             try {
                 //Info command commented
+                Thread.sleep(1000);
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending INFO command to Link: " + LinkName);
                 new CommandsGET_Info().execute(URL_INFO).get();
@@ -1055,7 +1077,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } else {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + AppConstants.CURRENT_SELECTED_SSID + ") is unavailable.");
-            TerminateTransaction();
+            TerminateTransaction("HTTP");
         }
     }
 
@@ -1278,6 +1300,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void GetLastTransaction() {
         try {
+            Thread.sleep(1000);
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending LASTTXTNID command to Link: " + LinkName);
             new CommandsGET_TxnId().execute(URL_GET_TXNID);
@@ -1306,7 +1329,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         stopTimer = false;
 
 
-        new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
+        new CommandsPOST().execute(URL_RELAY, jsonRelayOff, "");
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -1336,7 +1359,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                     consoleString += "RENAME:\n" + jsonRename;
 
-                    new CommandsPOST().execute(URL_WIFI, jsonRename);
+                    new CommandsPOST().execute(URL_WIFI, jsonRename, "");
 
                 }
             }
@@ -1894,6 +1917,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     public class CommandsPOST extends AsyncTask<String, Void, String> {
 
         public String resp = "";
+        public String calledFor = "";
 
         ProgressDialog pd;
 
@@ -1913,6 +1937,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             System.out.println("url" + HTTP_URL);
             try {
+                calledFor = param[2];
 
                 MediaType JSON = MediaType.parse("application/json");
 
@@ -1952,6 +1977,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 //tvConsole.setText(consoleString);
 
                 System.out.println(result);
+                if (calledFor.equalsIgnoreCase("sampling_time")) {
+                    checkFirmwareUpdateMain(); //StorePumpOffTimeForLink();
+                }
+                /*else if (calledFor.equalsIgnoreCase("pulsar_off_time")) {
+                    checkFirmwareUpdateMain();
+                }*/
 
             } catch (Exception e) {
 
@@ -3053,7 +3084,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         protected void onPostExecute(String FSStatus) {
 
             try {
-                pd.dismiss();
                 if (FSStatus.trim().isEmpty()) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Info command response is empty.");
@@ -3063,6 +3093,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 if (FSStatus.startsWith("{") && FSStatus.contains("Version")) {
+                    pd.dismiss();
 
                     try {
 
@@ -3107,14 +3138,18 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     } else {
                         //Current transaction is offline dont save
                     }
-                    if (AppConstants.GenerateLogs)
+                    Thread.sleep(1000);
+                    /*if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
-                    new CommandsGET_RelayResp().execute(URL_RELAY);
+                    new CommandsGET_RelayResp().execute(URL_RELAY);*/
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
+                    //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
+                    new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
 
                     //Info command else commented
                 } else {
                     count_InfoCmd = count_InfoCmd + 1;
-                    //AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link Unavailable Refreshing network try again.." + count_InfoCmd, Color.RED);
                     if (count_InfoCmd > 1) {
 
                         //unable to start (start never appeared): Potential Wifi Connection Issue = 6
@@ -3122,21 +3157,23 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Link is unavailable>> Info url:" + infourl + "; info cmd response:" + FSStatus + "; StatusCode:" + StatusCOde);
-                        AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
+                        //AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
                         AppConstants.ClearEdittextFielsOnBack(DisplayMeterActivity.this); //Clear EditText on move to welcome activity.
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "back to home screen.");
+                        SetFailedTransactionFlag("HTTP");
+                        PostTransactionBackgroundTasks();
                         Intent intent = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
 
                     } else {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Link is unavailable. InfoCmd Retry attempt: " + count_InfoCmd);
-                        AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link is Unavailable. Retry attempt" + count_InfoCmd, Color.RED);
+                        //AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link is Unavailable. Retry attempt" + count_InfoCmd, Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
                         getListOfConnectedDevice();
@@ -3145,7 +3182,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             public void run() {
                                 CompleteTasksbeforeStartbuttonClick(); //retry
                             }
-                        }, 3000);
+                        }, 2000);
 
                     }
                 }
@@ -3226,6 +3263,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 if (LastTXNid.equalsIgnoreCase("99999999")) {
                     System.out.println("Offline last transaction not saved in sqlite OffLastTXNid:" + LastTXNid);
                 } else {
+                    Thread.sleep(1000);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RECORD10_PULSAR command to Link: " + LinkName);
                     new CommandsGET_Record10().execute(URL_RECORD10_PULSAR, LastTXNid);
@@ -3402,7 +3440,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         public String resp = "";
 
-
         ProgressDialog pd;
 
         @Override
@@ -3418,7 +3455,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             pd.show();
 
         }
-
 
         protected String doInBackground(String... param) {
 
@@ -3453,10 +3489,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                pd.dismiss();
-
-                System.out.println(Relay_result);
-
                 if (Relay_result.trim().startsWith("{") && Relay_result.trim().contains("relay_response")) {
 
                     try {
@@ -3470,7 +3502,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Relay_Status: " + status);*/
 
                         if (status.equalsIgnoreCase("1")) {
-
+                            pd.dismiss();
                             //unable to start (start never appeared): Potential Wifi Connection Issue = 6
                             UpdateDiffStatusMessages("6");
                             AppConstants.colorToastBigFont(DisplayMeterActivity.this, "The link is busy, please try after some time.", Color.RED);
@@ -3479,6 +3511,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             AppConstants.ClearEdittextFielsOnBack(DisplayMeterActivity.this); //Clear EditText on move to welcome activity.
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "back to home screen.");
+                            SetFailedTransactionFlag("HTTP");
+                            PostTransactionBackgroundTasks();
                             Intent intent = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
@@ -3487,10 +3521,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         } else {
 
                             if (status.equalsIgnoreCase("0")) {
+                                Thread.sleep(1000);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
                                 //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
-                                new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}");
+                                new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
                             }
-                            checkFirmwareUpdateMain();
+                            //checkFirmwareUpdateMain();
                         }
 
 
@@ -3501,14 +3538,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     }
 
                 } else {
-
+                    pd.dismiss();
                     count_relayCmd = count_relayCmd + 1;
 
                     if (count_relayCmd > 1) {
                         UpdateDiffStatusMessages("6");
+
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Link Unavailable relay");
-                        AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Link is unavailable while checking relay status.");
+                        //AppConstants.colorToastBigFont(DisplayMeterActivity.this, " Link is unavailable", Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
 
@@ -3516,6 +3554,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         BackgroundServiceKeepDataTransferAlive.IstoggleRequired_DA = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "back to home screen.");
+                        SetFailedTransactionFlag("HTTP");
+                        PostTransactionBackgroundTasks();
                         Intent intent = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -3523,12 +3563,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     } else {
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Link Unavailable relay Retry attempt: " + count_InfoCmd);
-                        AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link is unavailable Retry attempt" + count_relayCmd, Color.RED);
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Link is unavailable. relay status Retry attempt: " + count_InfoCmd);
+                        //AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Link is unavailable Retry attempt" + count_relayCmd, Color.RED);
                         Istimeout_Sec = true;
                         ResetTimeoutDisplayMeterScreen();
                         new Handler().postDelayed(new Runnable() {
-
                             @Override
                             public void run() {
                                 CompleteTasksbeforeStartbuttonClick(); //retry
@@ -3536,13 +3575,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         }, 2000);
 
                     }
-
                 }
-
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " CommandsGET_RelayResp onPostExecute Exception " + e.getMessage());
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "CommandsGET_RelayResp onPostExecute Exception " + e.getMessage());
                 System.out.println(e);
             }
 
@@ -3741,7 +3778,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             String AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE;
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SaveLastTransactionToServer LastTXNid: " + txnid + " Qty: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo:" + AppInfo);
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  LAST TRANS jsonData " + jsonData);
 
             String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
 
@@ -3766,14 +3802,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             if (isInsert && Lastqty > 0) {
                 controller.insertTransactions(imap);
-
-                /*if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  LAST TRANS SAVED in sqlite");*/
             }
 
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SaveLastTransactionToServer  LAST TRANS Exception " + ex.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SaveLastTransactionToServer Exception: " + ex.getMessage());
         }
 
 
@@ -3835,7 +3868,42 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Ex:" + e.toString());
+                AppConstants.WriteinFile(TAG + "UpdateDiffStatusMessages Ex:" + e.getMessage());
+        }
+
+    }
+
+    private void SetFailedTransactionFlag(String CommType) {
+
+        try {
+
+            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+            if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("0")) {
+                AppConstants.IsTransactionFailed1 = true;
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("1")) {
+                AppConstants.IsTransactionFailed2 = true;
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("2")) {
+                AppConstants.IsTransactionFailed3 = true;
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("3")) {
+                AppConstants.IsTransactionFailed4 = true;
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("4")) {
+                AppConstants.IsTransactionFailed5 = true;
+            } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("5")) {
+                AppConstants.IsTransactionFailed6 = true;
+            } else {
+                //Something went wrong in link selection
+                Log.i(TAG, "Something went wrong in link selection");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (CommType.equalsIgnoreCase("HTTP")) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SetFailedTransactionFlag Exception: " + e.getMessage());
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "SetFailedTransactionFlag Exception: " + e.getMessage());
+            }
         }
 
     }
@@ -3903,22 +3971,34 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public void checkFirmwareUpdateMain() {
+    /*public void StorePumpOffTimeForLink() {
+        try {
 
+            //storing pumpOfftime for link
+            SharedPreferences sharedPrefpo = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_LINK_pumpofftime, Context.MODE_PRIVATE);
+            long storedOfftime = sharedPrefpo.getLong(AppConstants.FS_selected, 99);
 
-        //storing pumpOfftime for link
-        SharedPreferences sharedPrefpo = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_LINK_pumpofftime, Context.MODE_PRIVATE);
-        long storedOfftime = sharedPrefpo.getLong(AppConstants.FS_selected, 99);
+            if (storedOfftime != stopAutoFuelSeconds) {
 
-        if (storedOfftime != stopAutoFuelSeconds) {
+                Thread.sleep(1000);
+                long pulsar_off_time = (stopAutoFuelSeconds * 1000) + 3000;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (pulsar_off_time) command to Link: " + LinkName);
+                new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"pulsar_off_time\":" + pulsar_off_time + "}}", "pulsar_off_time");
 
-            long pulsar_off_time = (stopAutoFuelSeconds * 1000) + 3000;
-            new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"pulsar_off_time\":" + pulsar_off_time + "}}");
-
-            SharedPreferences.Editor editorpo = sharedPrefpo.edit();
-            editorpo.putLong(AppConstants.FS_selected, stopAutoFuelSeconds);
-            editorpo.commit();
+                SharedPreferences.Editor editorpo = sharedPrefpo.edit();
+                editorpo.putLong(AppConstants.FS_selected, stopAutoFuelSeconds);
+                editorpo.commit();
+            } else {
+                checkFirmwareUpdateMain();
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile( TAG+"  LAST TRANS Exception " + ex.getMessage());
         }
+    }*/
+
+    public void checkFirmwareUpdateMain() {
 
         if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
 
@@ -4163,8 +4243,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } else {
             //Something went wrong in selecting link please check
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Selected BT LINK (" + AppConstants.CURRENT_SELECTED_SSID + ") is unavailable.");
-            TerminateTransaction();
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Selected BT LINK (" + AppConstants.CURRENT_SELECTED_SSID + ") is unavailable.");
+            TerminateTransaction("BT");
         }
     }
 
@@ -4208,7 +4288,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             btnStart.setText("Please wait..");
             btnStart.setEnabled(false);
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
-            AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Connecting to hotspot, please wait", Color.RED);
+            //AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Connecting to hotspot, please wait", Color.RED);
 
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -4332,7 +4412,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public void TerminateTransaction() {
+    public void TerminateTransaction(String CommType) {
         try {
 
             //Link not connected to hotspot: Potential Wifi Connection Issue = 6
@@ -4341,7 +4421,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             AppConstants.ClearEdittextFielsOnBack(DisplayMeterActivity.this);
 
             CancelTimerScreenOut();
-
+            SetFailedTransactionFlag(CommType);
+            PostTransactionBackgroundTasks();
             Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
@@ -4350,6 +4431,51 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "TerminateTransaction Exception " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void SyncOfflineData() {
+
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+
+            if (cd.isConnecting()) {
+
+                try {
+                    //sync offline transactions
+                    String off_json = offlineController.getAllOfflineTransactionJSON(DisplayMeterActivity.this);
+                    JSONObject jsonObj = new JSONObject(off_json);
+                    String offTransactionArray = jsonObj.getString("TransactionsModelsObj");
+                    JSONArray jArray = new JSONArray(offTransactionArray);
+
+                    if (jArray.length() > 0) {
+                        startService(new Intent(DisplayMeterActivity.this, OffTranzSyncService.class));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void PostTransactionBackgroundTasks() {
+        try {
+            if (cd.isConnectingToInternet()) {
+
+                boolean BSRunning = CommonUtils.checkServiceRunning(DisplayMeterActivity.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
+                if (!BSRunning) {
+                    startService(new Intent(this, BackgroundService.class));
+                }
+            }
+
+            if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this))
+                SyncOfflineData();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BackgroundTasksPostTransaction Exception: " + e.getMessage());
         }
     }
 

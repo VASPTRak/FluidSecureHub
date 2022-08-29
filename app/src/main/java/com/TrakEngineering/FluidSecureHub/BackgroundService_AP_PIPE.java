@@ -986,14 +986,14 @@ public class BackgroundService_AP_PIPE extends Service {
                     pulsarConnected = false;
                     if (!pulsarConnected) {
 
-                        this.stopSelf();
-
                         if (!Constants.BusyVehicleNumberList.equals(null)) {
                             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
                         }
 
                         IsFuelingStop = "1";
                         stopButtonFunctionality(); //temp on #574 Server Update
+                        this.stopSelf();
+                        return;
                     }
                 }
 
@@ -1300,7 +1300,7 @@ public class BackgroundService_AP_PIPE extends Service {
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar InBackground Exception " + e);
+                    AppConstants.WriteinFile(TAG + "GETFINALPulsar InBackground Exception " + e);
 
             }
 
@@ -1777,10 +1777,10 @@ public class BackgroundService_AP_PIPE extends Service {
 
             }
 
-            boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_AP_PIPE.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
+            /*boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_AP_PIPE.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
             if (!BSRunning) {
                 startService(new Intent(this, BackgroundService.class));
-            }
+            }*/
 
         } else {
             //offline---------------------------
@@ -1819,9 +1819,27 @@ public class BackgroundService_AP_PIPE extends Service {
 
         AppConstants.BUSY_STATUS = true;
 
-        if (OfflineConstants.isOfflineAccess(BackgroundService_AP_PIPE.this))
-            SyncOfflineData();
+        PostTransactionBackgroundTasks();
 
+    }
+
+    private void PostTransactionBackgroundTasks() {
+        try {
+            if (cd.isConnectingToInternet()) {
+
+                boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_AP_PIPE.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
+                if (!BSRunning) {
+                    startService(new Intent(this, BackgroundService.class));
+                }
+            }
+
+            if (OfflineConstants.isOfflineAccess(BackgroundService_AP_PIPE.this))
+                SyncOfflineData();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "BackgroundTasksPostTransaction Exception: " + e.getMessage());
+        }
     }
 
     public void TankMonitorReading() {
@@ -2068,7 +2086,7 @@ public class BackgroundService_AP_PIPE extends Service {
                     @Override
                     public void run() {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  SAVE TRANS locally");
+                            AppConstants.WriteinFile(TAG + "SAVE TRANS locally");
                         TransactionCompleteFunction();
 
                     }
@@ -2463,6 +2481,7 @@ public class BackgroundService_AP_PIPE extends Service {
         new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
         Constants.FS_1STATUS = "FREE";
         clearEditTextFields();
+        PostTransactionBackgroundTasks();
         stopSelf();
     }
 
@@ -2478,6 +2497,7 @@ public class BackgroundService_AP_PIPE extends Service {
         new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
         Constants.FS_1STATUS = "FREE";
         clearEditTextFields();
+        PostTransactionBackgroundTasks();
         stopSelf();
     }
 

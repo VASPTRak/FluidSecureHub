@@ -263,10 +263,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public static boolean IsUpgradeInprogress_FS5 = false;
     public static boolean IsUpgradeInprogress_FS6 = false;
 
-    public static int CountOfReconnectRelay1 = 0;
-    public static int CountOfReconnectRelay2 = 0;
-    public static int CountOfReconnectRelay3 = 0;
-    public static int CountOfReconnectRelay4 = 0;
+    public static int CountBeforeReconnectRelay1 = 0;
+    public static int CountBeforeReconnectRelay2 = 0;
+    public static int CountBeforeReconnectRelay3 = 0;
+    public static int CountBeforeReconnectRelay4 = 0;
 
     public static boolean FA_DebugWindow = false;
 
@@ -5753,18 +5753,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 btnGo.setVisibility(View.VISIBLE);
             }
 
-            /*if (!cd.isConnectingToInternet() && AppConstants.IsTransactionCompleted) {
-                AppConstants.IsTransactionCompleted = false;
-                if (serverSSIDList != null && serverSSIDList.size() == 1) {
-                    tvSSIDName.setText("Tap here to select hose");
-                    SelectedItemPos = -1;
-                    btnGo.setVisibility(View.VISIBLE);
+            if (AppConstants.IsTransactionFailed1) {
+                AppConstants.IsTransactionFailed1 = false;
+                if (BTConstants.CurrentTransactionIsBT) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Hose is Unavailable.");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: Hose is Unavailable.");
                 }
-            }*/
+
+                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+            }
 
             Fs1_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs1Cnt5Sec = 0;
-            CountOfReconnectRelay1 = 0;
+            CountBeforeReconnectRelay1 = 0;
 
             //Update FA Message on dashboard
             tv_FA_message.setText(Constants.FA_Message);
@@ -5820,8 +5824,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs1Cnt5Sec++;
             }
 
-            if (CountOfReconnectRelay1 >= 5) {
-                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkOneStatus) {
+            if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkOneStatus) {
+                if (CountBeforeReconnectRelay1 >= 5) {
                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT1 && !BTConstants.isReconnectCalled1) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
@@ -5832,9 +5836,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         btspp.connect1();
                         BTConstants.isReconnectCalled1 = true;
                     }
+                } else {
+                    CountBeforeReconnectRelay1++;
                 }
-            } else {
-                CountOfReconnectRelay1++;
             }
 
             //----------------------------------------
@@ -5866,10 +5870,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 btnGo.setVisibility(View.VISIBLE);
             }
 
+            if (AppConstants.IsTransactionFailed2) {
+                AppConstants.IsTransactionFailed2 = false;
+                if (BTConstants.CurrentTransactionIsBT) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Hose is Unavailable.");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: Hose is Unavailable.");
+                }
+                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+            }
 
             Fs2_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs2Cnt5Sec = 0;
-            CountOfReconnectRelay2 = 0;
+            CountBeforeReconnectRelay2 = 0;
 
             tv_fs2_Qty.setText(Constants.FS_2Gallons);
             tv_fs2_Pulse.setText(Constants.FS_2Pulse);
@@ -5922,8 +5937,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs2Cnt5Sec++;
             }
 
-            if (CountOfReconnectRelay2 >= 5) {
-                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkTwoStatus) {
+            if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkTwoStatus) {
+                if (CountBeforeReconnectRelay2 >= 5) {
                     if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT2 && !BTConstants.isReconnectCalled2) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
@@ -5934,9 +5949,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         btspp.connect2();
                         BTConstants.isReconnectCalled2 = true;
                     }
+                } else {
+                    CountBeforeReconnectRelay2++;
                 }
-            } else {
-                CountOfReconnectRelay2++;
             }
 
             tv_fs2_Qty.setText(Constants.FS_2Gallons);
@@ -5967,9 +5982,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 btnGo.setVisibility(View.VISIBLE);
             }
 
+            if (AppConstants.IsTransactionFailed3) {
+                AppConstants.IsTransactionFailed3 = false;
+                if (BTConstants.CurrentTransactionIsBT) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Hose is Unavailable.");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: Hose is Unavailable.");
+                }
+                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+            }
+
             Fs3_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs3Cnt5Sec = 0;
-            CountOfReconnectRelay3 = 0;
+            CountBeforeReconnectRelay3 = 0;
 
             tv_fs3_Qty.setText(Constants.FS_3Gallons);
             tv_fs3_Pulse.setText(Constants.FS_3Pulse);
@@ -6025,8 +6052,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs3Cnt5Sec++;
             }
 
-            if (CountOfReconnectRelay3 >= 5) {
-                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkThreeStatus) {
+            if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkThreeStatus) {
+                if (CountBeforeReconnectRelay3 >= 5) {
                     if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT3 && !BTConstants.isReconnectCalled3) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
@@ -6037,9 +6064,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         btspp.connect3();
                         BTConstants.isReconnectCalled3 = true;
                     }
+                } else {
+                    CountBeforeReconnectRelay3++;
                 }
-            } else {
-                CountOfReconnectRelay3++;
             }
 
             tv_fs3_Qty.setText(Constants.FS_3Gallons);
@@ -6070,9 +6097,21 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 btnGo.setVisibility(View.VISIBLE);
             }
 
+            if (AppConstants.IsTransactionFailed4) {
+                AppConstants.IsTransactionFailed4 = false;
+                if (BTConstants.CurrentTransactionIsBT) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Hose is Unavailable.");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: Hose is Unavailable.");
+                }
+                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+            }
+
             Fs4_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs4Cnt5Sec = 0;
-            CountOfReconnectRelay4 = 0;
+            CountBeforeReconnectRelay4 = 0;
 
             tv_fs4_Qty.setText(Constants.FS_4Gallons);
             tv_fs4_Pulse.setText(Constants.FS_4Pulse);
@@ -6115,7 +6154,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             }
 
-
         } else {
 
             if ((fs4Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_4Pulse) >= 1) && AppConstants.isRelayON_fs4) {
@@ -6127,8 +6165,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs4Cnt5Sec++;
             }
 
-            if (CountOfReconnectRelay4 >= 5) {
-                if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFourStatus) {
+            if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFourStatus) {
+                if (CountBeforeReconnectRelay4 >= 5) {
                     if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT4 && !BTConstants.isReconnectCalled4) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
@@ -6139,9 +6177,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         btspp.connect4();
                         BTConstants.isReconnectCalled4= true;
                     }
+                } else {
+                    CountBeforeReconnectRelay4++;
                 }
-            } else {
-                CountOfReconnectRelay4++;
             }
 
             tv_fs4_Qty.setText(Constants.FS_4Gallons);
@@ -6173,9 +6211,20 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 btnGo.setVisibility(View.VISIBLE);
             }
 
+            if (AppConstants.IsTransactionFailed5) {
+                AppConstants.IsTransactionFailed5 = false;
+                if (BTConstants.CurrentTransactionIsBT) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Hose is Unavailable.");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: Hose is Unavailable.");
+                }
+                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+            }
+
             Fs5_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs5Cnt5Sec = 0;
-
 
             tv_fs5_Qty.setText(Constants.FS_5Gallons);
             tv_fs5_Pulse.setText(Constants.FS_5Pulse);
@@ -6258,9 +6307,20 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 btnGo.setVisibility(View.VISIBLE);
             }
 
+            if (AppConstants.IsTransactionFailed6) {
+                AppConstants.IsTransactionFailed6 = false;
+                if (BTConstants.CurrentTransactionIsBT) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Hose is Unavailable.");
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: Hose is Unavailable.");
+                }
+                CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
+            }
+
             Fs6_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs6Cnt5Sec = 0;
-
 
             tv_fs6_Qty.setText(Constants.FS_6Gallons);
             tv_fs6_Pulse.setText(Constants.FS_6Pulse);
@@ -10511,7 +10571,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             //sync online transaction
             if (cd.isConnecting()) {
-
                 DBController controller = new DBController(WelcomeActivity.this);
                 ArrayList<HashMap<String, String>> uData = controller.getAllTransaction();
 

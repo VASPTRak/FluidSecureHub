@@ -408,7 +408,7 @@ public class AcceptServiceCall {
 
                                                         if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
                                                             if (AppConstants.GenerateLogs)
-                                                                AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
+                                                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
                                                             IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
                                                             isMacConnected = true;
                                                             break;
@@ -424,7 +424,7 @@ public class AcceptServiceCall {
                                                         for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
                                                             String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
                                                             if (AppConstants.GenerateLogs)
-                                                                AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
+                                                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
 
                                                             String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
 
@@ -442,7 +442,7 @@ public class AcceptServiceCall {
                                             } catch (Exception e) {
                                                 IpAddress = "";
                                                 if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
+                                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
                                             }
 
                                             if (!IpAddress.trim().isEmpty()) {
@@ -459,7 +459,7 @@ public class AcceptServiceCall {
                                                 e.printStackTrace();
                                             }
 
-                                        }  else if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                                        } else if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                                             new Handler().postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -467,7 +467,7 @@ public class AcceptServiceCall {
                                                     // check connection status of LINK
                                                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
                                                         if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile(TAG + "BTLink is Disconnected.");
+                                                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink is Disconnected.");
                                                         RetryBTLinkConnection();
                                                     } else {
                                                         GateHubStartTransactionForBTLink();
@@ -1434,7 +1434,7 @@ public class AcceptServiceCall {
                             } else {
                                 BTConnectionCounter = 0;
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "BTLink is Unavailable. Redirecting to welcome activity.");
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink is Unavailable. Redirecting to welcome activity.");
                                 CommonUtils.UpgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
                                 /*Intent intent = new Intent(activity, WelcomeActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1448,7 +1448,7 @@ public class AcceptServiceCall {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " RetryBTLinkConnection Exception " + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " RetryBTLinkConnection Exception " + e.getMessage());
         }
     }
 
@@ -1456,7 +1456,7 @@ public class AcceptServiceCall {
         try {
             if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Retrying to Connect to LINK");
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Retrying to Connect to LINK");
                 //Retrying to connect to link
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.activity = activity;
@@ -1464,7 +1464,7 @@ public class AcceptServiceCall {
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink: RetryConnect Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink: RetryConnect Exception:>>" + e.getMessage());
         }
     }
 
@@ -1476,19 +1476,19 @@ public class AcceptServiceCall {
             } else {
                 Thread.sleep(1000);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink : Check Connection Status (Attempt: 1)");
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Check Connection Status (Attempt: 1)");
                 if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                     isConnected = true;
                 } else {
                     Thread.sleep(2000);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink : Check Connection Status (Attempt: 2)");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Check Connection Status (Attempt: 2)");
                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                     } else {
                         Thread.sleep(2000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink : Check Connection Status (Attempt: 3)");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Check Connection Status (Attempt: 3)");
                         if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         }
@@ -1497,14 +1497,14 @@ public class AcceptServiceCall {
             }
             if (isConnected) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Link is connected.");
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Link is connected.");
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink : STATUS: " + BTConstants.BTStatusStrOne);
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : STATUS: " + BTConstants.BTStatusStrOne);
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " CheckBTLinkStatus Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " CheckBTLinkStatus Exception:>>" + e.getMessage());
         }
         return isConnected;
     }
@@ -1523,7 +1523,7 @@ public class AcceptServiceCall {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " GateHubStartTransactionForBTLink Exception " + e.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " GateHubStartTransactionForBTLink Exception " + e.getMessage());
         }
     }
 
