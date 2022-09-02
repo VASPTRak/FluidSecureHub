@@ -2922,6 +2922,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     String IsUpgrade = serverSSIDList.get(SelectedItemPos).get("IsUpgrade");
                     String UPFilePath = serverSSIDList.get(SelectedItemPos).get("UPFilePath");
                     String FirmwareVersion = serverSSIDList.get(SelectedItemPos).get("FirmwareVersion");
+                    AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
                     if (ReconfigureLink == null) {
                         ReconfigureLink = "";
                     }
@@ -3048,6 +3049,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             String PulserTimingAd = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
                             IsDefective = serverSSIDList.get(SelectedItemPos).get("IsDefective");
                             AppConstants.PulserTimingAdjust = PulserTimingAd;
+                            AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
 
                             //tld is upgrade
                             String IsTLDFirmwareUpgrade = serverSSIDList.get(SelectedItemPos).get("IsTLDFirmwareUpgrade");
@@ -6658,6 +6660,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         String LinkFlaggedMessage = serverSSIDList.get(SelectedItemPos).get("LinkFlaggedMessage");
         String LinkCommunicationType = serverSSIDList.get(SelectedItemPos).get("LinkCommunicationType");
         AppConstants.UP_FilePath = serverSSIDList.get(SelectedItemPos).get("UPFilePath");
+        AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
 
         if (IsHoseNameReplaced == null) {
             IsHoseNameReplaced = "";
@@ -9288,6 +9291,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 String IsTankEmpty = c.getString("IsTankEmpty");
                                 String IsLinkFlagged = c.getString("IsLinkFlagged");
                                 String LinkFlaggedMessage = c.getString("LinkFlaggedMessage");
+                                String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
 
                                 SetBTLinksMacAddress(i, BTMacAddress);
 
@@ -9394,6 +9398,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 map.put("IsTankEmpty", IsTankEmpty);
                                 map.put("IsLinkFlagged", IsLinkFlagged);
                                 map.put("LinkFlaggedMessage", LinkFlaggedMessage);
+                                map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -10282,6 +10287,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 String IsTankEmpty = c.getString("IsTankEmpty");
                                 String IsLinkFlagged = c.getString("IsLinkFlagged");
                                 String LinkFlaggedMessage = c.getString("LinkFlaggedMessage");
+                                String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
 
                                 AppConstants.UP_FilePath = FilePath;
 
@@ -10323,6 +10329,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 map.put("IsTankEmpty", IsTankEmpty);
                                 map.put("IsLinkFlagged", IsLinkFlagged);
                                 map.put("LinkFlaggedMessage", LinkFlaggedMessage);
+                                map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -10740,6 +10747,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             String IsTankEmpty = c.getString("IsTankEmpty");
                             String IsLinkFlagged = c.getString("IsLinkFlagged");
                             String LinkFlaggedMessage = c.getString("LinkFlaggedMessage");
+                            String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
 
                             ///tld upgrade
                             String IsTLDFirmwareUpgrade = c.getString("IsTLDFirmwareUpgrade");
@@ -10788,6 +10796,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             map.put("IsTankEmpty", IsTankEmpty);
                             map.put("IsLinkFlagged", IsLinkFlagged);
                             map.put("LinkFlaggedMessage", LinkFlaggedMessage);
+                            map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
 
                             System.out.println("WifiSSId-" + WifiSSId);
                             System.out.println("IsTLDFirmwareUpgrade-" + IsTLDFirmwareUpgrade);

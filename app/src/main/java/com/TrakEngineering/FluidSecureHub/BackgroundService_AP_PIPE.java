@@ -284,7 +284,7 @@ public class BackgroundService_AP_PIPE extends Service {
                             new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + TransactionId + "}");
 
                         }
-                    }, 500);
+                    }, 1000);
 
                     ////////////////////////////////////////////
                     String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(BackgroundService_AP_PIPE.this).PersonEmail;

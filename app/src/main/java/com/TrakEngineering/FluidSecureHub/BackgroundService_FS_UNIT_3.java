@@ -280,7 +280,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                             new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + TransactionId + "}");
 
                         }
-                    }, 500);
+                    }, 1000);
 
                     ////////////////////////////////////////////
                     String userEmail = CommonUtils.getCustomerDetails_backgroundService_FS3(BackgroundService_FS_UNIT_3.this).PersonEmail;

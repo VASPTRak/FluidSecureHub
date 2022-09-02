@@ -684,7 +684,7 @@ public class BackgroundService_BTFour extends Service {
         SharedPreferences pref;
 
         SharedPreferences.Editor editor;
-        pref = context.getSharedPreferences("storeIsRenameFlagFS1", 0);
+        pref = context.getSharedPreferences("storeIsRenameFlagFS4", 0);
         editor = pref.edit();
 
         // Storing
@@ -782,7 +782,7 @@ public class BackgroundService_BTFour extends Service {
                         pulseCount();
                         Log.i(TAG, "BTLink 4: Check pulse");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Check pulse");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Check pulse >> Response: " + Response.trim());
                     }
                 }
             }

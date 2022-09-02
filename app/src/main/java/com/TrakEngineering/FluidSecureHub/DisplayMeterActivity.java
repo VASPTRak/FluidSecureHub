@@ -51,6 +51,7 @@ import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTTwo;
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.enity.SocketErrorEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.enity.SwitchTimeBounce;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
 import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
@@ -1978,6 +1979,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 System.out.println(result);
                 if (calledFor.equalsIgnoreCase("sampling_time")) {
+
+                    AppConstants.IsResetSwitchTimeBounce = "0";
+                    UpdateSwitchTimeBounceForLink();
                     checkFirmwareUpdateMain(); //StorePumpOffTimeForLink();
                 }
                 /*else if (calledFor.equalsIgnoreCase("pulsar_off_time")) {
@@ -1989,6 +1993,112 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(e);
             }
 
+        }
+    }
+
+    private void UpdateSwitchTimeBounceForLink() {
+        try {
+            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).Email;
+
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "UpdateSwitchTimeBounceForLink");
+
+            SwitchTimeBounce switchTimeBounce = new SwitchTimeBounce();
+            switchTimeBounce.SiteId = AppConstants.SITE_ID;
+            switchTimeBounce.IsResetSwitchTimeBounce = "0";
+
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(switchTimeBounce);
+
+            storeSwitchTimeBounceFlag(DisplayMeterActivity.this, jsonData, authString);
+
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "UpdateSwitchTimeBounceForLink Exception: " + ex.getMessage());
+        }
+    }
+
+    public void storeSwitchTimeBounceFlag(Context context, String jsonData, String authString) {
+        try {
+            SharedPreferences pref;
+            SharedPreferences.Editor editor;
+
+            switch (WelcomeActivity.SelectedItemPos) {
+
+                case 0://Link 1
+
+                    pref = context.getSharedPreferences("storeSwitchTimeBounceFlag1", 0);
+                    editor = pref.edit();
+
+                    // Storing
+                    editor.putString("jsonData", jsonData);
+                    editor.putString("authString", authString);
+
+                    // commit changes
+                    editor.commit();
+                    break;
+                case 1://Link 2
+
+                    pref = context.getSharedPreferences("storeSwitchTimeBounceFlag2", 0);
+                    editor = pref.edit();
+
+                    // Storing
+                    editor.putString("jsonData", jsonData);
+                    editor.putString("authString", authString);
+
+                    // commit changes
+                    editor.commit();
+                    break;
+                case 2://Link 3
+
+                    pref = context.getSharedPreferences("storeSwitchTimeBounceFlag3", 0);
+                    editor = pref.edit();
+
+                    // Storing
+                    editor.putString("jsonData", jsonData);
+                    editor.putString("authString", authString);
+
+                    // commit changes
+                    editor.commit();
+                    break;
+                case 3://Link 4
+
+                    pref = context.getSharedPreferences("storeSwitchTimeBounceFlag4", 0);
+                    editor = pref.edit();
+
+                    // Storing
+                    editor.putString("jsonData", jsonData);
+                    editor.putString("authString", authString);
+
+                    // commit changes
+                    editor.commit();
+                    break;
+                case 4://Link 5
+
+                    pref = context.getSharedPreferences("storeSwitchTimeBounceFlag5", 0);
+                    editor = pref.edit();
+
+                    // Storing
+                    editor.putString("jsonData", jsonData);
+                    editor.putString("authString", authString);
+
+                    // commit changes
+                    editor.commit();
+                    break;
+                case 5://Link 6
+
+                    pref = context.getSharedPreferences("storeSwitchTimeBounceFlag6", 0);
+                    editor = pref.edit();
+
+                    // Storing
+                    editor.putString("jsonData", jsonData);
+                    editor.putString("authString", authString);
+
+                    // commit changes
+                    editor.commit();
+                    break;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -3191,15 +3301,23 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void SET_PULSAR_Command() {
         try {
+            if (AppConstants.IsResetSwitchTimeBounce != null) {
+                if (AppConstants.IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1")) {
+                    Thread.sleep(1000);
+                    /*if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
+                    new CommandsGET_RelayResp().execute(URL_RELAY);*/
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
+                    //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
+                    new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
 
-            Thread.sleep(1000);
-            /*if (AppConstants.GenerateLogs)
-                  AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
-            new CommandsGET_RelayResp().execute(URL_RELAY);*/
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
-            //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
-            new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
+                } else {
+                    checkFirmwareUpdateMain();
+                }
+            } else {
+                checkFirmwareUpdateMain();
+            }
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)

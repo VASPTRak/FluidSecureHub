@@ -784,7 +784,7 @@ public class BackgroundService_BTOne extends Service {
                         pulseCount();
                         Log.i(TAG, "BTLink 1: Check pulse");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 1: Check pulse");
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Check pulse >> Response: " + Response.trim());
                     }
                 }
             }

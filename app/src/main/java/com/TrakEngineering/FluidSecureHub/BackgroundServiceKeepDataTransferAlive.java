@@ -304,7 +304,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 // Log.e(TAG, "~~~~~Second for end~~~~~");
             } else {
                 Log.i(TAG, "SSID List Empty");
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "  SSID List Empty");
+                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " SSID List Empty");
             }
             if (IsHoseBusyCheckLocally()) {
                 int s = DefectiveLinks.size();
@@ -324,7 +324,9 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                            if (Sendmail){
                                setSharedPrefDefectiveLink(BackgroundServiceKeepDataTransferAlive.this,link_name);
                                Log.i(TAG, "Defective links email sent to: "+link_name+" Message: "+Message+" TDifferance: "+Differance);
-                               if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Defective links email sent to: "+link_name+" Message: "+Message+" TDifference: "+Differance);
+                               if (AppConstants.GenerateLogs)
+                                   //AppConstants.WriteinFile(TAG + "Defective links email sent to: "+link_name+" Message: "+Message+" TDifference: "+Differance);
+                                   AppConstants.WriteinFile(TAG + " LINK (" + link_name + ") did not respond to KeepAlive");
                                SendDefectiveLinkInfoEmailAsyncCall(link_name);
                            }
                         }

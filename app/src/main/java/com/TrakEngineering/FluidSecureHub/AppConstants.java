@@ -227,6 +227,7 @@ public class AppConstants {
     public static String PrinterMacAddress;
     public static String BT_READER_NAME;
     public static String PulserTimingAdjust;
+    public static String IsResetSwitchTimeBounce;
 
     public static String UP_FirmwareVersion;
     public static String UP_FilePath;

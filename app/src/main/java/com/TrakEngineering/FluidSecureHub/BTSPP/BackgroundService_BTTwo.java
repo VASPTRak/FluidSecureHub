@@ -780,10 +780,10 @@ public class BackgroundService_BTTwo extends Service {
 
                     } else {
                         pulseCount++;
-                        pulseCount();
                         Log.i(TAG, "BTLink 2: Check pulse");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: Check pulse");
+                            AppConstants.WriteinFile(TAG + " BTLink 2: Check pulse >> Response: " + Response.trim());
+                        pulseCount();
                     }
                 }
             }
