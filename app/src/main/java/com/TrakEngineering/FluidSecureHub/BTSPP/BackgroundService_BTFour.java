@@ -621,6 +621,8 @@ public class BackgroundService_BTFour extends Service {
             Constants.FS_4STATUS = "FREE";
             Constants.FS_4Pulse = "00";
             CancelTimer();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 4: Transaction stopped.");
             this.stopSelf();
         } catch (Exception e) {
             e.printStackTrace();
@@ -667,6 +669,9 @@ public class BackgroundService_BTFour extends Service {
             String jsonData = gson.toJson(rhose);
 
             storeIsRenameFlag(this,BTConstants.BT4NeedRename, jsonData, authString);
+
+            Thread.sleep(1000);
+            PostTransactionBackgroundTasks();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -765,9 +770,9 @@ public class BackgroundService_BTFour extends Service {
                     if (pulseCount > 1) { // pulseCount > 4
                         //Stop transaction
                         pulseCount();
-                        Log.i(TAG, "BTLink 4: Transaction stopped.");
+                        /*Log.i(TAG, "BTLink 4: Transaction stopped.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Transaction stopped.");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Transaction stopped.");*/
                         cancel();
                         TransactionCompleteFunction();
                         CloseTransaction();
@@ -829,7 +834,7 @@ public class BackgroundService_BTFour extends Service {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(" Offline >> BTLink 4:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
+                    AppConstants.WriteinFile(TAG + " Offline >> BTLink 4:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
             }
 
             reachMaxLimit();
@@ -1034,15 +1039,18 @@ public class BackgroundService_BTFour extends Service {
 
         if (cd.isConnectingToInternet()) {
             if (BTConstants.BT4NeedRename) {
-                new Handler().postDelayed(new Runnable() {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         renameOnCommand();
                     }
                 }, 1000);
+            } else {
+                PostTransactionBackgroundTasks();
             }
+        } else {
+            PostTransactionBackgroundTasks();
         }
-        PostTransactionBackgroundTasks();
 
     }
 
@@ -1197,7 +1205,7 @@ public class BackgroundService_BTFour extends Service {
                 AppConstants.WriteinFile(TAG + " BTLink 4: Sending FD_check command to Link: " + LinkName);
             if (IsThisBTTrnx) {
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send2(BTConstants.fdcheckcommand);
+                btspp.send4(BTConstants.fdcheckcommand);
             }
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)

@@ -192,7 +192,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     List<Timer> DisplayMScreeTimerlist = new ArrayList<Timer>();
     GoogleApiClient mGoogleApiClient;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
-
+    public OkHttpClient client = new OkHttpClient();
 
     double CurrentLat = 0, CurrentLng = 0;
 
@@ -260,7 +260,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         getIpOverOSVersion();
-        ShowLoader();
+
         //UDP Connection..!!
         SERVERIP = "";
         String IpAddress = "";
@@ -515,7 +515,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         BRisWiFiConnected = false;
 
-
+        ShowLoader();
         //--------------------------------------------------
 
         //temp code
@@ -1633,7 +1633,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -1689,7 +1689,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -1870,7 +1870,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -1941,7 +1941,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 MediaType JSON = MediaType.parse("application/json");
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3051,7 +3051,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             infourl = param[0];
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3131,23 +3131,16 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             }
 
                             if (!txnid.equals("-1") && !txnid.equals("99999999")) {
-                                SaveLastTransactionToServer(txnid, count);
+                                SaveLastTransactionInLocalDB(txnid, count);
                             }
+                            SET_PULSAR_Command();
                         }
 
                     } else {
-                        //Current transaction is offline dont save
+                        //Current transaction is offline dont save, CONTINUE
+                        SET_PULSAR_Command();
                     }
-                    Thread.sleep(1000);
-                    /*if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
-                    new CommandsGET_RelayResp().execute(URL_RELAY);*/
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
-                    //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
-                    new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
 
-                    //Info command else commented
                 } else {
                     count_InfoCmd = count_InfoCmd + 1;
                     if (count_InfoCmd > 1) {
@@ -3196,6 +3189,24 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
+    public void SET_PULSAR_Command() {
+        try {
+
+            Thread.sleep(1000);
+            /*if (AppConstants.GenerateLogs)
+                  AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
+            new CommandsGET_RelayResp().execute(URL_RELAY);*/
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
+            //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
+            new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SET_PULSAR_Command Exception: " + e.getMessage());
+        }
+    }
+
     public class CommandsGET_TxnId extends AsyncTask<String, Void, String> {
 
         public String resp = "";
@@ -3222,7 +3233,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3245,7 +3256,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "CommandsGET_TxnId InBackground " + e.getMessage());
             }
 
-
             return resp;
         }
 
@@ -3261,14 +3271,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("OfflineLastTransactionID_DisplayMeterAct" + LastTXNid);
 
                 if (LastTXNid.equalsIgnoreCase("99999999")) {
-                    System.out.println("Offline last transaction not saved in sqlite OffLastTXNid:" + LastTXNid);
+                    SET_PULSAR_Command();
                 } else {
                     Thread.sleep(1000);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RECORD10_PULSAR command to Link: " + LinkName);
                     new CommandsGET_Record10().execute(URL_RECORD10_PULSAR, LastTXNid);
                 }
-
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
@@ -3308,7 +3317,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             try {
                 LastTXNid = param[1];
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3427,6 +3436,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     }
                 }
 
+                SET_PULSAR_Command();
 
             } catch (Exception e) {
 
@@ -3460,7 +3470,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3600,7 +3610,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3708,7 +3718,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
@@ -3750,7 +3760,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    private void SaveLastTransactionToServer(String txnid, String counts) {
+    private void SaveLastTransactionInLocalDB(String txnid, String counts) {
 
         try {
 
@@ -3777,7 +3787,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             System.out.println("TrazComp......" + jsonData);
             String AppInfo = " Version:" + CommonUtils.getVersionCode(DisplayMeterActivity.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE;
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SaveLastTransactionToServer LastTXNid: " + txnid + " Qty: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo:" + AppInfo);
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Last Transaction saved in local DB. LastTXNid: " + txnid + " Qty: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo:" + AppInfo);
 
             String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
 
@@ -3806,7 +3816,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SaveLastTransactionToServer Exception: " + ex.getMessage());
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SaveLastTransactionInLocalDB Exception: " + ex.getMessage());
         }
 
 
@@ -4550,7 +4560,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         protected String doInBackground(String... param) {
             try {
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 Request request = new Request.Builder()

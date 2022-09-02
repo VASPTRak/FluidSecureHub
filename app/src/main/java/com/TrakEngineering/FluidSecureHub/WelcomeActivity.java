@@ -393,6 +393,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public ProgressDialog pdOnResume;
     public ProgressDialog pdUpgradeProcess;
     public boolean showUpgradeSpinnerMessage = true;
+    public Handler BTConnectionHandler = new Handler(Looper.getMainLooper());
+    public int delayMillis = 100;
+    public String st = "Connecting";
 
     //============ Bluetooth reader Gatt end==============
 
@@ -12536,6 +12539,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } else {
 
                                     if (checkBTLinkStatus(1)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
                                         RedirectBtLinkOneToNextScreen(selSSID);
                                     } else {
                                         if (BTL1counter < 2) {
@@ -12547,6 +12553,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         } else {
                                             BTL1counter = 0;
                                             BTConstants.CurrentTransactionIsBT = false;
+                                            if (BTConnectionHandler != null) {
+                                                BTConnectionHandler.removeCallbacksAndMessages(null);
+                                            }
                                             RedirectBtLinkOneToNextScreen(selSSID);
                                             /*RestrictHoseSelection("Hose not connected");
                                             if (AppConstants.GenerateLogs)
@@ -12618,6 +12627,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } else {
 
                                     if (checkBTLinkStatus(2)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
                                         RedirectBtLinkTwoToNextScreen(selSSID);
                                     } else {
                                         if (BTL2counter < 2) {
@@ -12629,6 +12641,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         } else {
                                             BTL2counter = 0;
                                             BTConstants.CurrentTransactionIsBT = false;
+                                            if (BTConnectionHandler != null) {
+                                                BTConnectionHandler.removeCallbacksAndMessages(null);
+                                            }
                                             RedirectBtLinkTwoToNextScreen(selSSID);
                                             /*RestrictHoseSelection("Hose not connected");
                                             if (AppConstants.GenerateLogs)
@@ -12701,6 +12716,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } else {
 
                                     if (checkBTLinkStatus(3)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
                                         RedirectBtLinkThreeToNextScreen(selSSID);
                                     } else {
                                         if (BTL3counter < 2) {
@@ -12712,6 +12730,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         } else {
                                             BTL3counter = 0;
                                             BTConstants.CurrentTransactionIsBT = false;
+                                            if (BTConnectionHandler != null) {
+                                                BTConnectionHandler.removeCallbacksAndMessages(null);
+                                            }
                                             RedirectBtLinkThreeToNextScreen(selSSID);
                                             /*RestrictHoseSelection("Hose not connected");
                                             if (AppConstants.GenerateLogs)
@@ -12785,6 +12806,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } else {
 
                                     if (checkBTLinkStatus(4)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
                                         RedirectBtLinkFourToNextScreen(selSSID);
                                     } else {
                                         if (BTL4counter < 2) {
@@ -12796,6 +12820,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         } else {
                                             BTL4counter = 0;
                                             BTConstants.CurrentTransactionIsBT = false;
+                                            if (BTConnectionHandler != null) {
+                                                BTConnectionHandler.removeCallbacksAndMessages(null);
+                                            }
                                             RedirectBtLinkFourToNextScreen(selSSID);
                                             /*RestrictHoseSelection("Hose not connected");
                                             if (AppConstants.GenerateLogs)
@@ -13247,10 +13274,39 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
+    public void ShowAnimatedStatus(String s) {
+        try {
+
+            //Handler handler = new Handler(Looper.getMainLooper());
+            BTConnectionHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if ((delayMillis / 4) == 100) {
+                        st = "Connecting";
+                        delayMillis = 100;
+                    } else {
+                        st = st + ".";
+                        delayMillis = delayMillis + 100;
+                    }
+                    tvSSIDName.setText(st);
+                    BTConnectionHandler.postDelayed(this, delayMillis);
+                }
+            }, delayMillis);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            tvSSIDName.setText(s);
+        }
+    }
+
     private void RestrictHoseSelection(String s) {
 
         try {
-            tvSSIDName.setText(s);
+            if (!s.equalsIgnoreCase("Connecting...")) {
+                tvSSIDName.setText(s);
+            } else {
+                ShowAnimatedStatus(s);
+            }
+            //tvSSIDName.setText(s); // uncomment this if the above code is not in use.
             btnGo.setVisibility(View.GONE);
 
             new Handler().postDelayed(new Runnable() {

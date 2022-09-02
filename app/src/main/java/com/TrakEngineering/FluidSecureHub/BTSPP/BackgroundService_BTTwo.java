@@ -621,6 +621,8 @@ public class BackgroundService_BTTwo extends Service {
             Constants.FS_2STATUS = "FREE";
             Constants.FS_2Pulse = "00";
             CancelTimer();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 2: Transaction stopped.");
             this.stopSelf();
         } catch (Exception e) {
             e.printStackTrace();
@@ -667,6 +669,9 @@ public class BackgroundService_BTTwo extends Service {
             String jsonData = gson.toJson(rhose);
 
             storeIsRenameFlag(this,BTConstants.BT2NeedRename, jsonData, authString);
+
+            Thread.sleep(1000);
+            PostTransactionBackgroundTasks();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -766,9 +771,9 @@ public class BackgroundService_BTTwo extends Service {
                     if (pulseCount > 1) { // pulseCount > 4
                         //Stop transaction
                         pulseCount();
-                        Log.i(TAG, "BTLink 2: Transaction stopped.");
+                        /*Log.i(TAG, "BTLink 2: Transaction stopped.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 2: Transaction stopped.");
+                            AppConstants.WriteinFile(TAG + " BTLink 2: Transaction stopped.");*/
                         cancel();
                         TransactionCompleteFunction();
                         CloseTransaction();
@@ -830,7 +835,7 @@ public class BackgroundService_BTTwo extends Service {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(" Offline >> BTLink 2:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
+                    AppConstants.WriteinFile(TAG + " Offline >> BTLink 2:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
             }
 
             reachMaxLimit();
@@ -1035,15 +1040,18 @@ public class BackgroundService_BTTwo extends Service {
 
         if (cd.isConnectingToInternet()) {
             if (BTConstants.BT2NeedRename) {
-                new Handler().postDelayed(new Runnable() {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         renameOnCommand();
                     }
                 }, 1000);
+            } else {
+                PostTransactionBackgroundTasks();
             }
+        } else {
+            PostTransactionBackgroundTasks();
         }
-        PostTransactionBackgroundTasks();
 
     }
 

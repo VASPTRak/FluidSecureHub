@@ -143,6 +143,7 @@ public class BackgroundService_AP extends Service {
     Integer Pulses = 0;
     long sqliteID = 0;
     boolean GETPulsarCallCompleted = false;
+    public OkHttpClient client = new OkHttpClient();
 
     String printReceipt = "", IsFuelingStop = "0", IsLastTransaction = "0";
     DBController controller = new DBController(BackgroundService_AP.this);
@@ -376,25 +377,27 @@ public class BackgroundService_AP extends Service {
                 AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 1)");
             IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn).get(); //Relay ON First Attempt
 
-            JSONObject jsonObject = new JSONObject(IsRelayOn);
-            String relay_status1 = jsonObject.getString("relay_response");
+            if (IsRelayOn != null && !IsRelayOn.equalsIgnoreCase("")) {
+                JSONObject jsonObject = new JSONObject(IsRelayOn);
+                String relay_status1 = jsonObject.getString("relay_response");
 
-            if (!relay_status1.equalsIgnoreCase("{\"status\":1}")) {
-
-                Thread.sleep(1000);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 2)");
-                IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn).get(); //Relay ON Second attempt
-
-                JSONObject jsonObjectSite = new JSONObject(IsRelayOn);
-                String relay_status2 = jsonObjectSite.getString("relay_response");
-
-                if (!relay_status2.equalsIgnoreCase("{\"status\":1}")) {
+                if (!relay_status1.equalsIgnoreCase("{\"status\":1}")) {
 
                     Thread.sleep(1000);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 3)");
-                    IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn).get(); //Relay ON Third attempt
+                        AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 2)");
+                    IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn).get(); //Relay ON Second attempt
+
+                    JSONObject jsonObjectSite = new JSONObject(IsRelayOn);
+                    String relay_status2 = jsonObjectSite.getString("relay_response");
+
+                    if (!relay_status2.equalsIgnoreCase("{\"status\":1}")) {
+
+                        Thread.sleep(1000);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 3)");
+                        IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn).get(); //Relay ON Third attempt
+                    }
                 }
             }
 
@@ -476,7 +479,7 @@ public class BackgroundService_AP extends Service {
 
                 MediaType JSON = MediaType.parse("application/json");
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 RequestBody body = RequestBody.create(JSON, jsonParam);
@@ -537,7 +540,7 @@ public class BackgroundService_AP extends Service {
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 Request request = new Request.Builder()
@@ -670,7 +673,7 @@ public class BackgroundService_AP extends Service {
                                 //FS Link DisConnected
                                 System.out.println("FS Link not connected" + listOfConnectedIP_AP);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "  Link not connected");
+                                    AppConstants.WriteinFile(TAG + "Link not connected");
                                 stopTimer = false;
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);
@@ -718,7 +721,7 @@ public class BackgroundService_AP extends Service {
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(4, TimeUnit.SECONDS);
                 client.setReadTimeout(4, TimeUnit.SECONDS);
                 Request request = new Request.Builder()
@@ -773,16 +776,16 @@ public class BackgroundService_AP extends Service {
     public void GETPulsarQuantityAsyncCall(String URL_GET_PULSAR) {
 
         GETPulsarCallCompleted = false;
-        OkHttpClient httpClient = new OkHttpClient();
-        httpClient.setConnectTimeout(AppConstants.CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS);
-        httpClient.setReadTimeout(AppConstants.READ_TIMEOUT_SEC, TimeUnit.SECONDS);
-        httpClient.setWriteTimeout(AppConstants.WRITE_TIMEOUT_SEC, TimeUnit.SECONDS);
+        //OkHttpClient httpClient = new OkHttpClient();
+        client.setConnectTimeout(AppConstants.CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS);
+        client.setReadTimeout(AppConstants.READ_TIMEOUT_SEC, TimeUnit.SECONDS);
+        client.setWriteTimeout(AppConstants.WRITE_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         Request request = new Request.Builder()
                 .url(URL_GET_PULSAR)
                 .build();
 
-        httpClient.newCall(request).enqueue(new Callback() {
+        client.newCall(request).enqueue(new Callback() {
             @SuppressLint("LongLogTag")
             @Override
             public void onFailure(Request request, IOException e) {
@@ -882,20 +885,19 @@ public class BackgroundService_AP extends Service {
                     pulsarConnected = true;
                 } else if (pulsar_status.trim().equalsIgnoreCase("0")) {
 
-
                     pulsarConnected = false;
-                    if (!pulsarConnected) {
 
-                        if (!Constants.BusyVehicleNumberList.equals(null)) {
-                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
-                        }
-
-                        IsFuelingStop = "1";
-                        stopButtonFunctionality(); //temp on #574 Server Update
-                        this.stopSelf();
-                        return;
-
+                    if (!Constants.BusyVehicleNumberList.equals(null)) {
+                        Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
                     }
+
+                    IsFuelingStop = "1";
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Link:" + LinkName + "; Pulsar status: " + pulsar_status); // some txns stopped unexpectedly, so added log here.
+                    stopButtonFunctionality(); //temp on #574 Server Update
+                    this.stopSelf();
+                    return;
+
                 }
 
 
@@ -949,7 +951,7 @@ public class BackgroundService_AP extends Service {
                         IsFuelingStop = "1";
                         System.out.println("APFS33 Auto Stop! Count down timer completed");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop! Count down timer completed");
+                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
                         AppConstants.colorToastBigFont(this, AppConstants.FS2_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                         this.stopSelf();
@@ -985,7 +987,7 @@ public class BackgroundService_AP extends Service {
                             IsFuelingStop = "1";
                             System.out.println("APFS33 Auto Stop!You reached MAX fuel limit.");
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
+                                AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
                             AppConstants.DisplayToastmaxlimit = true;
                             AppConstants.MaxlimitMessage = LimitReachedMessage;
                             stopButtonFunctionality();
@@ -1000,7 +1002,7 @@ public class BackgroundService_AP extends Service {
                         IsFuelingStop = "1";
                         System.out.println("APFS33 Auto Stop!You reached MAX fuel limit.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
+                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
                         AppConstants.DisplayToastmaxlimit = true;
                         AppConstants.MaxlimitMessage = LimitReachedMessage;
                         stopButtonFunctionality();
@@ -1199,7 +1201,7 @@ public class BackgroundService_AP extends Service {
 
             try {
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 Request request = new Request.Builder()
@@ -1285,7 +1287,7 @@ public class BackgroundService_AP extends Service {
                                 //qty is same for some time
                                 System.out.println("APFS33 Auto Stop!Quantity is same for last");
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " Auto Stop!Quantity is same for last");
+                                    AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!Quantity is same for last");
                                 //AppConstants.colorToastBigFont(this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
                                 stopButtonFunctionality();
                                 stopTimer = false;
@@ -1893,7 +1895,7 @@ public class BackgroundService_AP extends Service {
 
                 MediaType contentype = MediaType.parse(Localcontenttype);
 
-                OkHttpClient client = new OkHttpClient();
+                //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 RequestBody body = RequestBody.create(contentype, readBytesFromFile(LocalPath));
