@@ -323,6 +323,10 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             if (!res.trim().isEmpty()) {
                 sb2.append(res.trim());
             }
+            /*if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase(BTConstants.info_cmd)) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 2: Info Command Response: \n" + sb2.toString());
+            }*/
             sendBroadcastIntentFromLinkTwo(sb2.toString());
             sb2.setLength(0);
         } else {

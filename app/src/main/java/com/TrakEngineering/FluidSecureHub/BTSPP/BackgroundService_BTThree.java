@@ -276,7 +276,7 @@ public class BackgroundService_BTThree extends Service {
             } else {
                 new Thread(new ClientSendAndListenUDPOne(BTConstants.info_cmd, SERVER_IP, this)).start();
             }
-            Thread.sleep(1000);
+            //Thread.sleep(1000);
             new CountDownTimer(5000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
@@ -982,7 +982,7 @@ public class BackgroundService_BTThree extends Service {
         }
     }
 
-    private void SaveLastBTTransactionToServer(String txnId, String counts) {
+    private void SaveLastBTTransactionInLocalDB(String txnId, String counts) {
 
         try {
             double lastCnt = Double.parseDouble(counts);
@@ -1003,7 +1003,7 @@ public class BackgroundService_BTThree extends Service {
             String jsonData = gson.toJson(authEntityClass);
 
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 3: SaveLastBTTransactionToServer LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty);
+                AppConstants.WriteinFile(TAG + " BTLink 3: Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty);
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTThree.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTThree.this) + ":" + userEmail + ":" + "TransactionComplete");
@@ -1338,7 +1338,7 @@ public class BackgroundService_BTThree extends Service {
                                     pulse = removeLastChar(pulse.trim());
 
                                     if (!txn_id.isEmpty() && !txn_id.equalsIgnoreCase("0")) {
-                                        SaveLastBTTransactionToServer(txn_id, pulse);
+                                        SaveLastBTTransactionInLocalDB(txn_id, pulse);
                                     }
                                 }
                             } catch (Exception e) {

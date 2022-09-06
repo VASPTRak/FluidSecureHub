@@ -4429,8 +4429,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                try {
+                AppConstants.IsTransactionCompleted = true;
+                /*try {
                     String cntA = "0", cntB = "0", cntC = "0";
 
                     for (int i = 0; i < 2; i++) {
@@ -4463,7 +4463,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     System.out.println(e);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " stopButtonFunctionality_FS1 Exception " + e.getMessage());
-                }
+                }*/
             }
         }, 1000);
     }
@@ -4607,7 +4607,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS2().execute(URL_RELAY_FS2, jsonRelayOff);
 
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -4645,7 +4645,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(TAG + " stopButtonFunctionality_FS2 Exception " + e.getMessage());
                 }
             }
-        }, 1000);
+        }, 1000);*/
     }
 
     public class CommandsPOST_FS2 extends AsyncTask<String, Void, String> {
@@ -4788,7 +4788,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS3().execute(URL_RELAY_FS3, jsonRelayOff);
 
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -4826,7 +4826,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(TAG + " stopButtonFunctionality_FS3 Exception " + e.getMessage());
                 }
             }
-        }, 1000);
+        }, 1000);*/
     }
 
     public class CommandsPOST_FS3 extends AsyncTask<String, Void, String> {
@@ -4969,7 +4969,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS4().execute(URL_RELAY_FS4, jsonRelayOff);
 
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -5007,7 +5007,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(TAG + " stopButtonFunctionality_FS4 Exception " + e.getMessage());
                 }
             }
-        }, 1000);
+        }, 1000);*/
     }
 
     public class CommandsPOST_FS4 extends AsyncTask<String, Void, String> {
@@ -5150,7 +5150,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS5().execute(URL_RELAY_FS5, jsonRelayOff);
 
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -5188,7 +5188,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(TAG + " stopButtonFunctionality_FS5 Exception " + e.getMessage());
                 }
             }
-        }, 1000);
+        }, 1000);*/
     }
 
     public class CommandsPOST_FS5 extends AsyncTask<String, Void, String> {
@@ -5332,7 +5332,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST_FS6().execute(URL_RELAY_FS6, jsonRelayOff);
 
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -5370,7 +5370,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(TAG + " stopButtonFunctionality_FS6 Exception " + e.getMessage());
                 }
             }
-        }, 1000);
+        }, 1000);*/
     }
 
     public class CommandsPOST_FS6 extends AsyncTask<String, Void, String> {
@@ -12312,13 +12312,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         } else {
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Check Connection Status (Attempt: 2)");
                             if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                                 isConnected = true;
                             } else {
-                                Thread.sleep(2000);
+                                Thread.sleep(1000);
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Check Connection Status (Attempt: 3)");
                                 if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
@@ -12537,60 +12537,28 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                //if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress1)) {
 
-                                if (BTL1counter == 0) {
-                                    BTL1counter++;
-
-                                    retryConnect(1);
-
-                                    handler.postDelayed(this, delay);
+                                if (checkBTLinkStatus(1)) {
+                                    if (BTConnectionHandler != null) {
+                                        BTConnectionHandler.removeCallbacksAndMessages(null);
+                                    }
+                                    RedirectBtLinkOneToNextScreen(selSSID);
                                 } else {
+                                    if (BTL1counter == 0) {
+                                        BTL1counter++;
 
-                                    if (checkBTLinkStatus(1)) {
+                                        retryConnect(1);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        BTL1counter = 0;
+                                        BTConstants.CurrentTransactionIsBT = false;
                                         if (BTConnectionHandler != null) {
                                             BTConnectionHandler.removeCallbacksAndMessages(null);
                                         }
                                         RedirectBtLinkOneToNextScreen(selSSID);
-                                    } else {
-                                        if (BTL1counter < 2) {
-                                            BTL1counter++;
-
-                                            retryConnect(1);
-
-                                            handler.postDelayed(this, delay);
-                                        } else {
-                                            BTL1counter = 0;
-                                            BTConstants.CurrentTransactionIsBT = false;
-                                            if (BTConnectionHandler != null) {
-                                                BTConnectionHandler.removeCallbacksAndMessages(null);
-                                            }
-                                            RedirectBtLinkOneToNextScreen(selSSID);
-                                            /*RestrictHoseSelection("Hose not connected");
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "BTLink 1: Hose is Unavailable.");
-                                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));*/
-                                        }
                                     }
                                 }
-                                /*} else {
-
-                                    if (BTL1State < 2) { //BTL1State == 0
-                                        BTL1State++; //BTL1State = 1
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 1: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
-                                    } else {
-                                        BTL1State = 0; //BTL1State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 1: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
-                                    }
-                                }*/
                             }
                         }, delay);
 
@@ -12625,60 +12593,28 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                //if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress2)) {
 
-                                if (BTL2counter == 0) {
-                                    BTL2counter++;
-
-                                    retryConnect(2);
-
-                                    handler.postDelayed(this, delay);
+                                if (checkBTLinkStatus(2)) {
+                                    if (BTConnectionHandler != null) {
+                                        BTConnectionHandler.removeCallbacksAndMessages(null);
+                                    }
+                                    RedirectBtLinkTwoToNextScreen(selSSID);
                                 } else {
+                                    if (BTL2counter == 0) {
+                                        BTL2counter++;
 
-                                    if (checkBTLinkStatus(2)) {
+                                        retryConnect(2);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        BTL2counter = 0;
+                                        BTConstants.CurrentTransactionIsBT = false;
                                         if (BTConnectionHandler != null) {
                                             BTConnectionHandler.removeCallbacksAndMessages(null);
                                         }
                                         RedirectBtLinkTwoToNextScreen(selSSID);
-                                    } else {
-                                        if (BTL2counter < 2) {
-                                            BTL2counter++;
-
-                                            retryConnect(2);
-
-                                            handler.postDelayed(this, delay);
-                                        } else {
-                                            BTL2counter = 0;
-                                            BTConstants.CurrentTransactionIsBT = false;
-                                            if (BTConnectionHandler != null) {
-                                                BTConnectionHandler.removeCallbacksAndMessages(null);
-                                            }
-                                            RedirectBtLinkTwoToNextScreen(selSSID);
-                                            /*RestrictHoseSelection("Hose not connected");
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "BTLink 2: Hose is Unavailable.");
-                                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));*/
-                                        }
                                     }
                                 }
-                                /*} else {
-
-                                    if (BTL2State < 2) { //BTL2State == 0
-                                        BTL2State++; //BTL2State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 2: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
-                                    } else {
-                                        BTL2State = 0; //BTL2State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 2: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
-                                    }
-                                }*/
                             }
                         }, delay);
 
@@ -12714,60 +12650,28 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                //if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress3)) {
 
-                                if (BTL3counter == 0) {
-                                    BTL3counter++;
-
-                                    retryConnect(3);
-
-                                    handler.postDelayed(this, delay);
+                                if (checkBTLinkStatus(3)) {
+                                    if (BTConnectionHandler != null) {
+                                        BTConnectionHandler.removeCallbacksAndMessages(null);
+                                    }
+                                    RedirectBtLinkThreeToNextScreen(selSSID);
                                 } else {
+                                    if (BTL3counter == 0) {
+                                        BTL3counter++;
 
-                                    if (checkBTLinkStatus(3)) {
+                                        retryConnect(3);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        BTL3counter = 0;
+                                        BTConstants.CurrentTransactionIsBT = false;
                                         if (BTConnectionHandler != null) {
                                             BTConnectionHandler.removeCallbacksAndMessages(null);
                                         }
                                         RedirectBtLinkThreeToNextScreen(selSSID);
-                                    } else {
-                                        if (BTL3counter < 2) {
-                                            BTL3counter++;
-
-                                            retryConnect(3);
-
-                                            handler.postDelayed(this, delay);
-                                        } else {
-                                            BTL3counter = 0;
-                                            BTConstants.CurrentTransactionIsBT = false;
-                                            if (BTConnectionHandler != null) {
-                                                BTConnectionHandler.removeCallbacksAndMessages(null);
-                                            }
-                                            RedirectBtLinkThreeToNextScreen(selSSID);
-                                            /*RestrictHoseSelection("Hose not connected");
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "BTLink 3: Hose is Unavailable.");
-                                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));*/
-                                        }
                                     }
                                 }
-                                /*} else {
-
-                                    if (BTL3State < 2) { //BTL3State == 0
-                                        BTL3State++; //BTL3State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 3: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
-                                    } else {
-                                        BTL3State = 0; //BTL3State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 3: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
-                                    }
-                                }*/
                             }
                         }, delay);
 
@@ -12804,60 +12708,28 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                //if (HoseAvailabilityCheckTwoAttempts(NearByBTDevices, BTConstants.deviceAddress4)) {
 
-                                if (BTL4counter == 0) {
-                                    BTL4counter++;
-
-                                    retryConnect(4);
-
-                                    handler.postDelayed(this, delay);
+                                if (checkBTLinkStatus(4)) {
+                                    if (BTConnectionHandler != null) {
+                                        BTConnectionHandler.removeCallbacksAndMessages(null);
+                                    }
+                                    RedirectBtLinkFourToNextScreen(selSSID);
                                 } else {
+                                    if (BTL4counter == 0) {
+                                        BTL4counter++;
 
-                                    if (checkBTLinkStatus(4)) {
+                                        retryConnect(4);
+
+                                        handler.postDelayed(this, delay);
+                                    } else {
+                                        BTL4counter = 0;
+                                        BTConstants.CurrentTransactionIsBT = false;
                                         if (BTConnectionHandler != null) {
                                             BTConnectionHandler.removeCallbacksAndMessages(null);
                                         }
                                         RedirectBtLinkFourToNextScreen(selSSID);
-                                    } else {
-                                        if (BTL4counter < 2) {
-                                            BTL4counter++;
-
-                                            retryConnect(4);
-
-                                            handler.postDelayed(this, delay);
-                                        } else {
-                                            BTL4counter = 0;
-                                            BTConstants.CurrentTransactionIsBT = false;
-                                            if (BTConnectionHandler != null) {
-                                                BTConnectionHandler.removeCallbacksAndMessages(null);
-                                            }
-                                            RedirectBtLinkFourToNextScreen(selSSID);
-                                            /*RestrictHoseSelection("Hose not connected");
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "BTLink 4: Hose is Unavailable.");
-                                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));*/
-                                        }
                                     }
                                 }
-                                /*} else {
-
-                                    if (BTL4State < 2) { //BTL4State == 0
-                                        BTL4State++; //BTL4State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 4: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.HoseUnavailableMessage));
-                                    } else {
-                                        BTL4State = 0; //BTL4State = 1;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        RestrictHoseSelection("Hose not connected");
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "BTLink 4: Hose is Unavailable.");
-                                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", "Please call Customer Support for further Assistance");
-                                    }
-                                }*/
                             }
                         }, delay);
 
