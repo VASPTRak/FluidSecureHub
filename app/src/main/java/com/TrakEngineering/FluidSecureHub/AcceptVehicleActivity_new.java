@@ -1253,10 +1253,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "ServerCallFirst  STE1 " + e);
-                GetBackToWelcomeActivity();
                 if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
+                GetBackToWelcomeActivity();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -2141,10 +2141,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "GetVehicleNuOnFobKeyDetection OnPost Ex:" + e.getMessage() + " ");
-                GetBackToWelcomeActivity();
                 if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
+                GetBackToWelcomeActivity();
             }
 
         }
@@ -2509,10 +2509,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 ex.printStackTrace();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "GetVehicleByFSTagMacAddress  STE1 " + ex);
-                GetBackToWelcomeActivity();
                 if (OfflineConstants.isOfflineAccess(AcceptVehicleActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
+                GetBackToWelcomeActivity();
 
             } catch (Exception e) {
                 pd.dismiss();
@@ -2698,7 +2698,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     public void GetBackToWelcomeActivity() {
 
 
-        AppConstants.colorToast(getApplicationContext(), "Something went wrong, Please try again", Color.RED);
+        //AppConstants.colorToast(getApplicationContext(), "Something went wrong, Please try again", Color.RED);
 
         Istimeout_Sec = false;
         AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity_new.this);

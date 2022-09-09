@@ -275,5 +275,6 @@ If the link is not in the list please click the button "Pair new LINK"  which wi
     <string name="peHour0">Please enter hours greater than 0.</string>
     <string name="peOdo0">Please enter odometer greater than 0.</string>
     <string name="lessThanPrevReadingMsg">You have entered a reading that is less than previously entered. Please check and try again.</string>
+    <string name="UnableToConnectToHoseMessage">We apologize for the inconvenience, we were unable to establish a connection with the LINK. Please retry.</string>
     <string name="HoseUnavailableMessage">Hose is Unavailable. Please reset power to the dispenser that the hose is controlling. This can be done by tripping the main breaker or Emergency Stop. Once power is reset, wait 30 seconds and try again.</string>
 </resources>

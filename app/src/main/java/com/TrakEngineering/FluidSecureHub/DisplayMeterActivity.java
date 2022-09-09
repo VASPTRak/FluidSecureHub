@@ -44,6 +44,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
+import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPPMain;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTFour;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTOne;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTThree;
@@ -260,7 +261,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //Hide keyboard
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        getIpOverOSVersion();
+        //getIpOverOSVersion();
 
         //UDP Connection..!!
         SERVERIP = "";
@@ -273,7 +274,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 String selSSID = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
                 String selMacAddress = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
 
-                boolean isMacConnected = false;
+                //boolean isMacConnected = false;
                 if (AppConstants.DetailsListOfConnectedDevices != null) {
                     for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
                         String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
@@ -282,13 +283,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "(onResume) Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
                             IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                            isMacConnected = true;
+                            //isMacConnected = true;
                             break;
                         }
                     }
                 }
 
-                if (!isMacConnected) {
+                /*if (!isMacConnected) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "(onResume) Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
 
@@ -310,7 +311,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                                 AppConstants.WriteinFile("===================================================================");
                         }
                     }
-                }
+                }*/
             } catch (Exception e) {
                 IpAddress = "";
                 if (AppConstants.GenerateLogs)
@@ -320,6 +321,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (!IpAddress.trim().isEmpty()) {
                 HTTP_URL = "http://" + IpAddress + ":80/";
                 SERVERIP = IpAddress;
+            } else {
+                getIpOverOSVersion();
             }
         }
 
@@ -997,55 +1000,57 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
         LinkName = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
 
-        /*try {
-            if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
-                String selSSID = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
-                String selMacAddress = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
+        if (IpAddress.trim().isEmpty()) {
+            try {
+                if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
+                    String selSSID = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
+                    String selMacAddress = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
 
-                boolean isMacConnected = false;
-                if (AppConstants.DetailsListOfConnectedDevices != null) {
-                    for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                        String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-
-                        if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
-                            IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                            isMacConnected = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!isMacConnected) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
-
+                    boolean isMacConnected = false;
                     if (AppConstants.DetailsListOfConnectedDevices != null) {
                         for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
                             String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
 
-                            String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                            IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
-                            if (!IpAddress.trim().isEmpty()) {
+                            if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile("===================================================================");
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
+                                IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                isMacConnected = true;
                                 break;
                             }
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile("===================================================================");
+                        }
+                    }
+
+                    if (!isMacConnected) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
+
+                        if (AppConstants.DetailsListOfConnectedDevices != null) {
+                            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                                String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
+
+                                String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                                IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
+                                if (!IpAddress.trim().isEmpty()) {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile("===================================================================");
+                                    break;
+                                }
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile("===================================================================");
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                IpAddress = "";
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
             }
-        } catch (Exception e) {
-            IpAddress = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
-        }*/
+        }
 
         if (!IpAddress.trim().isEmpty()) {
             HTTP_URL = "http://" + IpAddress + ":80/";
@@ -4004,19 +4009,23 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     private void SetFailedTransactionFlag(String CommType) {
 
         try {
-
-            SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
             if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("0")) {
+                AppConstants.TxnFailedCount1++;
                 AppConstants.IsTransactionFailed1 = true;
             } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("1")) {
+                AppConstants.TxnFailedCount2++;
                 AppConstants.IsTransactionFailed2 = true;
             } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("2")) {
+                AppConstants.TxnFailedCount3++;
                 AppConstants.IsTransactionFailed3 = true;
             } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("3")) {
+                AppConstants.TxnFailedCount4++;
                 AppConstants.IsTransactionFailed4 = true;
             } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("4")) {
+                AppConstants.TxnFailedCount5++;
                 AppConstants.IsTransactionFailed5 = true;
             } else if (AppConstants.FS_selected != null && AppConstants.FS_selected.equalsIgnoreCase("5")) {
+                AppConstants.TxnFailedCount6++;
                 AppConstants.IsTransactionFailed6 = true;
             } else {
                 //Something went wrong in link selection
@@ -4432,7 +4441,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     private void proceedToPostResume() {
 
         if (LinkCommunicationType.equalsIgnoreCase("BT")) {
-            BtnStartStateChange(true);
+            new CheckBTConnection().execute();
 
         } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
             //cHECK UDP INFO COMMAND HERE
@@ -4443,6 +4452,94 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             //Something went wrong in hose selection.
         }
 
+    }
+
+    public class CheckBTConnection extends AsyncTask<String, Void, String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+
+            String s = "Please wait...";
+            SpannableString ss2 = new SpannableString(s);
+            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
+            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+            pd = new ProgressDialog(DisplayMeterActivity.this);
+            pd.setMessage(ss2);
+            pd.setCancelable(false);
+            pd.show();
+
+        }
+
+        protected String doInBackground(String... param) {
+
+            try {
+                switch (WelcomeActivity.SelectedItemPos) {
+                    case 0:
+                        if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
+                            //Retrying to connect to link
+                            BTSPPMain btspp = new BTSPPMain();
+                            btspp.activity = DisplayMeterActivity.this;
+                            btspp.connect1();
+                        }
+                        break;
+                    case 1:
+                        if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
+                            //Retrying to connect to link
+                            BTSPPMain btspp = new BTSPPMain();
+                            btspp.activity = DisplayMeterActivity.this;
+                            btspp.connect2();
+                        }
+                        break;
+                    case 2:
+                        if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
+                            //Retrying to connect to link
+                            BTSPPMain btspp = new BTSPPMain();
+                            btspp.activity = DisplayMeterActivity.this;
+                            btspp.connect3();
+                        }
+                        break;
+                    case 3:
+                        if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
+                            //Retrying to connect to link
+                            BTSPPMain btspp = new BTSPPMain();
+                            btspp.activity = DisplayMeterActivity.this;
+                            btspp.connect4();
+                        }
+                        break;
+                }
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " CheckBTConnection Exception: " + e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String FSStatus) {
+
+            try {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //pd.dismiss();
+                        BtnStartStateChange(true);
+                    }
+                }, 1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void firstTimeUseWarningDilaog(final Activity context) {

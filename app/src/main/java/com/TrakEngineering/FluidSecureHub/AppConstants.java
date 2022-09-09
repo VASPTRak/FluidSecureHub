@@ -213,6 +213,13 @@ public class AppConstants {
     public static boolean IsTransactionFailed5 = false;
     public static boolean IsTransactionFailed6 = false;
 
+    public static int TxnFailedCount1 = 0;
+    public static int TxnFailedCount2 = 0;
+    public static int TxnFailedCount3 = 0;
+    public static int TxnFailedCount4 = 0;
+    public static int TxnFailedCount5 = 0;
+    public static int TxnFailedCount6 = 0;
+
     public static boolean FlickeringScreenOff;
     public static String NoSleepRespTime = "";
     public static String NoSleepCurrentTime = "";

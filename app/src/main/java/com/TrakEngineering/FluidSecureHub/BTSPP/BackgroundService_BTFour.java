@@ -153,7 +153,7 @@ public class BackgroundService_BTFour extends Service {
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
 
-                    if (checkBTLinkStatus()) { //BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")
+                    if (checkBTLinkStatus(false)) { //BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")
                         BTLinkUpgradeCheck(); //infoCommand();
                     } else {
                         IsThisBTTrnx = false;
@@ -161,6 +161,7 @@ public class BackgroundService_BTFour extends Service {
                         Log.i(TAG, " BTLink 4: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected.");
+                        AppConstants.TxnFailedCount4++;
                         AppConstants.IsTransactionFailed4 = true;
                         PostTransactionBackgroundTasks();
                         CloseTransaction();
@@ -190,7 +191,7 @@ public class BackgroundService_BTFour extends Service {
     public void proceedToInfoCommand(boolean proceedAfterUpgrade) {
         try {
             if (proceedAfterUpgrade) {
-                if (checkBTLinkStatus()) {
+                if (checkBTLinkStatus(false)) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -203,6 +204,7 @@ public class BackgroundService_BTFour extends Service {
                     Log.i(TAG, " BTLink 4: Link not connected. Please try again!");
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected.");
+                    AppConstants.TxnFailedCount4++;
                     AppConstants.IsTransactionFailed4 = true;
                     PostTransactionBackgroundTasks();
                     CloseTransaction();
@@ -221,7 +223,7 @@ public class BackgroundService_BTFour extends Service {
         }
     }
 
-    private boolean checkBTLinkStatus() {
+    private boolean checkBTLinkStatus(boolean isAfterRelayOn) {
         boolean isConnected = false;
         try {
             if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
@@ -229,21 +231,28 @@ public class BackgroundService_BTFour extends Service {
             } else {
                 Thread.sleep(1000);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 1)");
+                    AppConstants.WriteinFile(TAG + " BTLink 4: Checking Connection Status...");
                 if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
                     isConnected = true;
                 } else {
                     Thread.sleep(2000);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 2)");
+                        AppConstants.WriteinFile(TAG + " BTLink 4: Checking Connection Status...");
                     if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                     } else {
                         Thread.sleep(2000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Check Connection Status (Attempt: 3)");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking Connection Status...");
                         if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
                             isConnected = true;
+                        } else if (isAfterRelayOn) {
+                            Thread.sleep(2000);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Checking Connection Status...");
+                            if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                                isConnected = true;
+                            }
                         }
                     }
                 }
@@ -265,6 +274,7 @@ public class BackgroundService_BTFour extends Service {
             if (BTConstants.IsFileUploadCompleted) {
                 BTConstants.IsFileUploadCompleted = false;
             }
+            AppConstants.TxnFailedCount4 = 0;
             //Execute info command
             Request = "";
             Response = "";
@@ -463,7 +473,7 @@ public class BackgroundService_BTFour extends Service {
     private void relayOnCommand(boolean isAfterReconnect) {
         try {
             if (isAfterReconnect) {
-                BTConstants.isRelayOnAfterReconnect4 = true;
+                BTConstants.isReconnectCalled2 = false;
             }
             //Execute relayOn Command
             Request = "";
@@ -477,7 +487,9 @@ public class BackgroundService_BTFour extends Service {
                 new Thread(new ClientSendAndListenUDPOne(BTConstants.relay_on_cmd, SERVER_IP, this)).start();
             }
 
-            InsertInitialTransactionToSqlite();//Insert empty transaction into sqlite
+            if (!isAfterReconnect) {
+                InsertInitialTransactionToSqlite();//Insert empty transaction into sqlite
+            }
 
             Thread.sleep(1000);
             new CountDownTimer(4000, 1000) {
@@ -487,6 +499,7 @@ public class BackgroundService_BTFour extends Service {
                     long attempt = (4 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
                         if (RelayStatus) {
+                            BTConstants.isRelayOnAfterReconnect4 = isAfterReconnect;
                             //Info command success.
                             Log.i(TAG, "BTLink 4: relayOn Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
@@ -503,6 +516,7 @@ public class BackgroundService_BTFour extends Service {
                 public void onFinish() {
 
                     if (RelayStatus) {
+                        BTConstants.isRelayOnAfterReconnect4 = isAfterReconnect;
                         //RelayOff command success.
                         Log.i(TAG, "BTLink 4: relayOn Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
@@ -618,6 +632,9 @@ public class BackgroundService_BTFour extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 4: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkFourData + ")");
             }
             stopTxtprocess = true;
+            BTConstants.isRelayOnAfterReconnect4 = false;
+            AppConstants.clearSharedPrefByName(BackgroundService_BTFour.this, "LastQuantity_BT4");
+            CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);
             Constants.FS_4STATUS = "FREE";
             Constants.FS_4Pulse = "00";
             CancelTimer();
@@ -740,10 +757,11 @@ public class BackgroundService_BTFour extends Service {
 
                 if (BTConstants.isReconnectCalled4 && !BTConstants.isRelayOnAfterReconnect4) {
                     CancelTimer();
-                    if (checkBTLinkStatus()) {
+                    if (checkBTLinkStatus(true)) {
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                stopCount = 0;
                                 relayOnCommand(true);
                             }
                         }, 2000);
@@ -823,10 +841,6 @@ public class BackgroundService_BTFour extends Service {
             Constants.FS_4Gallons = (precision.format(fillqty));
             Constants.FS_4Pulse = outputQuantity;
 
-            if (!BTConstants.isRelayOnAfterReconnect4) {
-                SaveLastQtyInSharedPref();
-            }
-
             if (cd.isConnectingToInternet()) {
                 UpdatetransactionToSqlite(outputQuantity);
             } else {
@@ -870,18 +884,6 @@ public class BackgroundService_BTFour extends Service {
         return newQty;
     }
 
-    public void SaveLastQtyInSharedPref() {
-
-        SharedPreferences sharedPrefLastQty = this.getSharedPreferences("LastQuantity_BT4", Context.MODE_PRIVATE);
-
-        long current_count = Long.parseLong(String.valueOf(Pulses));
-
-        SharedPreferences.Editor editorQty = sharedPrefLastQty.edit();
-        editorQty.putLong("Last_Quantity", current_count);
-        editorQty.commit();
-
-    }
-
     public class BroadcastBlueLinkFourData extends BroadcastReceiver {
 
         @Override
@@ -895,10 +897,13 @@ public class BackgroundService_BTFour extends Service {
                     Request = notificationData.getString("Request");
                     Response = notificationData.getString("Response");
 
-
                     if (Request.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
                         FDRequest = Request;
                         FDResponse = Response;
+                    }
+                    if (AppConstants.isRelayON_fs4 && Response.trim().isEmpty()) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 4: No Response from Broadcast.");
                     }
 
                     //Used only for debug
@@ -1179,11 +1184,16 @@ public class BackgroundService_BTFour extends Service {
 
             if (!Response.contains(checkPulses)) {
                 stopCount++;
-                //int pumpOnpoint = Integer.parseInt(PumpOnTime);
-                if (stopCount >= stopAutoFuelSeconds) {
+                if (!Response.contains("OFF")) {
                     Log.i(TAG, " BTLink 4: No response from link>>" + stopCount);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 4: No response from link.");
+                        AppConstants.WriteinFile(TAG + " BTLink 4: No response from link. Response >> " + Response.trim());
+                }
+                //int pumpOnpoint = Integer.parseInt(PumpOnTime);
+                if (stopCount >= stopAutoFuelSeconds) {
+                    if (Pulses <= 0) {
+                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTFour.this);
+                    }
                     stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();

@@ -1411,10 +1411,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " CallSaveButtonFunctionality  STE2 " + e);
-                GetBackToWelcomeActivity();
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
+                GetBackToWelcomeActivity();
 
 
             } catch (Exception e) {
@@ -1672,10 +1672,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " GetPinNuOnFobKeyDetection  STEP1 " + e);
-                GetBackToWelcomeActivity();
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
+                GetBackToWelcomeActivity();
 
 
             } catch (Exception ex) {
@@ -2366,7 +2366,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     public void GetBackToWelcomeActivity() {
 
 
-        AppConstants.colorToast(getApplicationContext(), "Something went wrong, Please try again", Color.RED);
+        //AppConstants.colorToast(getApplicationContext(), "Something went wrong, Please try again", Color.RED);
 
         Istimeout_Sec = false;
         AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this);
