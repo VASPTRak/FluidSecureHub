@@ -174,7 +174,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 1: Request>>" + BTConstants.CurrentCommand_LinkOne);
         Log.i(TAG, "BTLink 1: Response>>" + spn.toString());
-
+        /*if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " BTLink 1: Received Response: " + Response);*/
         //==========================================
         if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkOne = true;
@@ -313,7 +314,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 2: Request>>" + BTConstants.CurrentCommand_LinkTwo);
         Log.i(TAG, "BTLink 2: Response>>" + spn.toString());
-
+        /*if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " BTLink 2: Received Response: " + Response);*/
         //==========================================
         if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkTwo = true;
@@ -455,7 +457,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 3: Request>>" + BTConstants.CurrentCommand_LinkThree);
         Log.i(TAG, "BTLink 3: Response>>" + spn.toString());
-
+        /*if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " BTLink 3: Received Response: " + Response);*/
         //==========================================
         if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkThree = true;
@@ -594,7 +597,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
         Log.i(TAG, "BTLink 4: Request>>" + BTConstants.CurrentCommand_LinkFour);
         Log.i(TAG, "BTLink 4: Response>>" + spn.toString());
-
+        /*if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " BTLink 4: Received Response: " + Response);*/
         //==========================================
         if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
             BTConstants.isNewVersionLinkFour = true;

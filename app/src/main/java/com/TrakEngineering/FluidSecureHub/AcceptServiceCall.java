@@ -1476,19 +1476,19 @@ public class AcceptServiceCall {
             } else {
                 Thread.sleep(1000);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Check Connection Status (Attempt: 1)");
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
                 if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                     isConnected = true;
                 } else {
                     Thread.sleep(2000);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Check Connection Status (Attempt: 2)");
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                     } else {
                         Thread.sleep(2000);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Check Connection Status (Attempt: 3)");
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
                         if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         }

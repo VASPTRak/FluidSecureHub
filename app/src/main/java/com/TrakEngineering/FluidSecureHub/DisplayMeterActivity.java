@@ -225,7 +225,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     protected void onPostResume() {
         super.onPostResume();
 
-        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.IsBTLinkSelectedCurrently) {
+        /*if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.IsBTLinkSelectedCurrently) {
 
             btnStart.setText("Please wait..");
             btnStart.setEnabled(false);
@@ -241,7 +241,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
             }, 10000);
 
-        }
+        }*/ // 1982
 
     }
 

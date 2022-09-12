@@ -273,7 +273,7 @@ public class BackgroundService extends Service {
         }
     }
 
-   void ReplaceHoseNameFlagSynToServer(){
+    void ReplaceHoseNameFlagSynToServer() {
         try {
             //For Hose One......1
             SharedPreferences FS1Pref = this.getSharedPreferences("storeIsRenameFlagFS1", 0);
@@ -282,8 +282,8 @@ public class BackgroundService extends Service {
             String authString1 = FS1Pref.getString("authString", "");
 
             if (pflag1 && !jsonData1.trim().isEmpty() && !authString1.trim().isEmpty()) {
-                Log.i("SharedPreferences_check1 ",pflag1+">>"+jsonData1);
-                new SetHoseNameReplacedFlag().execute(jsonData1, authString1,"storeIsRenameFlagFS1");
+                Log.i("SharedPreferences_check1 ", pflag1 + ">>" + jsonData1);
+                new SetHoseNameReplacedFlag().execute(jsonData1, authString1, "storeIsRenameFlagFS1");
             }
 
             //For Hose Two....2
@@ -293,8 +293,8 @@ public class BackgroundService extends Service {
             String authString2 = FS2Pref.getString("authString", "");
 
             if (pflag2 && !jsonData2.trim().isEmpty() && !authString2.trim().isEmpty()) {
-                Log.i("SharedPreferences_check2 ",pflag2+">>"+jsonData2);
-                new SetHoseNameReplacedFlag().execute(jsonData2, authString2,"storeIsRenameFlagFS2");
+                Log.i("SharedPreferences_check2 ", pflag2 + ">>" + jsonData2);
+                new SetHoseNameReplacedFlag().execute(jsonData2, authString2, "storeIsRenameFlagFS2");
             }
 
             //For Hose Three..3
@@ -304,8 +304,8 @@ public class BackgroundService extends Service {
             String authString3 = FS3Pref.getString("authString", "");
 
             if (pflag3 && !jsonData3.trim().isEmpty() && !authString3.trim().isEmpty()) {
-                Log.i("SharedPreferences_check3 ",pflag3+">>"+jsonData3);
-                new SetHoseNameReplacedFlag().execute(jsonData3, authString3,"storeIsRenameFlagFS3");
+                Log.i("SharedPreferences_check3 ", pflag3 + ">>" + jsonData3);
+                new SetHoseNameReplacedFlag().execute(jsonData3, authString3, "storeIsRenameFlagFS3");
             }
 
 
@@ -316,8 +316,8 @@ public class BackgroundService extends Service {
             String authString4 = FS4Pref.getString("authString", "");
 
             if (pflag4 && !jsonData4.trim().isEmpty() && !authString4.trim().isEmpty()) {
-                Log.i("SharedPreferences_check4 ",pflag4+">>"+jsonData4);
-                new SetHoseNameReplacedFlag().execute(jsonData4, authString4,"storeIsRenameFlagFS4");
+                Log.i("SharedPreferences_check4 ", pflag4 + ">>" + jsonData4);
+                new SetHoseNameReplacedFlag().execute(jsonData4, authString4, "storeIsRenameFlagFS4");
             }
 
 
@@ -328,7 +328,7 @@ public class BackgroundService extends Service {
             String authString5 = FS5Pref.getString("authString", "");
 
             if (pflag5 && !jsonData5.trim().isEmpty() && !authString5.trim().isEmpty()) {
-                new SetHoseNameReplacedFlag().execute(jsonData5, authString5,"storeIsRenameFlagFS5");
+                new SetHoseNameReplacedFlag().execute(jsonData5, authString5, "storeIsRenameFlagFS5");
             }
 
             //For Hose 6
@@ -338,7 +338,7 @@ public class BackgroundService extends Service {
             String authString6 = FS6Pref.getString("authString", "");
 
             if (pflag6 && !jsonData6.trim().isEmpty() && !authString6.trim().isEmpty()) {
-                new SetHoseNameReplacedFlag().execute(jsonData6, authString6,"storeIsRenameFlagFS6");
+                new SetHoseNameReplacedFlag().execute(jsonData6, authString6, "storeIsRenameFlagFS6");
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)

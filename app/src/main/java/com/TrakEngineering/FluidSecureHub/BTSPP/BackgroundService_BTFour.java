@@ -197,7 +197,7 @@ public class BackgroundService_BTFour extends Service {
                         public void run() {
                             infoCommand();
                         }
-                    }, 1000);
+                    }, 2000);
                 } else {
                     IsThisBTTrnx = false;
                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFour.this);
@@ -216,7 +216,7 @@ public class BackgroundService_BTFour extends Service {
                     public void run() {
                         infoCommand();
                     }
-                }, 1000);
+                }, 2000);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -299,13 +299,13 @@ public class BackgroundService_BTFour extends Service {
                             if (!TransactionId.isEmpty()) {
                                 if (Response.contains("records") && Response.contains("mac_address")) {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink 4: Info command Response. Attempt: " + (attempt) + "; Response: true");
+                                        AppConstants.WriteinFile(TAG + " BTLink 4: Checking Info command response. Response: true");
                                     BTConstants.isNewVersionLinkFour = true;
                                     parseInfoCommandResponseForLast20txtn(Response); // parse last 20 Txtn
                                     Response = "";
                                 } else {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink 4: Info command Response. Attempt: " + (attempt) + "; Response:>>" + Response.trim());
+                                        AppConstants.WriteinFile(TAG + " BTLink 4: Checking Info command response. Response:>>" + Response.trim());
                                     parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                                 }
                                 new Handler().postDelayed(new Runnable() {
@@ -323,7 +323,7 @@ public class BackgroundService_BTFour extends Service {
                         } else {
                             Log.i(TAG, "BTLink 4: Waiting for infoCommand Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: Info command Response. Attempt: " + (attempt) + "; Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Checking Info command response. Response: false");
                         }
                     }
                 }
@@ -337,13 +337,13 @@ public class BackgroundService_BTFour extends Service {
                         if (!TransactionId.isEmpty()) {
                             if (Response.contains("records") && Response.contains("mac_address")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 4: Info command Response. Attempt: 6; Response: true");
+                                    AppConstants.WriteinFile(TAG + " BTLink 4: Checking Info command response. Response: true");
                                 BTConstants.isNewVersionLinkFour = true;
                                 parseInfoCommandResponseForLast20txtn(Response); // parse last 20 Txtn
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 4: Info command Response. Attempt: 6; Response:>>" + Response.trim());
+                                    AppConstants.WriteinFile(TAG + " BTLink 4: Checking Info command response. Response:>>" + Response.trim());
                                 parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                             }
                             new Handler().postDelayed(new Runnable() {
@@ -364,7 +364,7 @@ public class BackgroundService_BTFour extends Service {
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFour.this);
                         Log.i(TAG, "BTLink 4: Failed to get infoCommand Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: Info command Response. Attempt: 6; Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking Info command response. Response: false");
                         AppConstants.IsTransactionFailed4 = true;
                         PostTransactionBackgroundTasks();
                         CloseTransaction();
@@ -416,7 +416,7 @@ public class BackgroundService_BTFour extends Service {
                                 //Info command success.
                                 Log.i(TAG, "BTLink 4: transactionId Command Response success 1:>>" + Response);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 4: transactionId command Response. Attempt: " + (attempt) + "; Response:>>" + Response.trim());
+                                    AppConstants.WriteinFile(TAG + " BTLink 4: Checking transactionId command response. Response:>>" + Response.trim());
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -427,12 +427,12 @@ public class BackgroundService_BTFour extends Service {
                             } else {
                                 Log.i(TAG, "BTLink 4: Waiting for transactionId Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 4: transactionId command Response. Attempt: " + (attempt) + "; Response: false");
+                                    AppConstants.WriteinFile(TAG + " BTLink 4: Checking transactionId command response. Response: false");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: transactionId command Exception. Attempt: " + (attempt) + "; Response: false. Exception: " + e.getMessage());
+                                AppConstants.WriteinFile(TAG + " BTLink 4: transactionId command Exception. Exception: " + e.getMessage());
                         }
                     }
                 }
@@ -443,7 +443,7 @@ public class BackgroundService_BTFour extends Service {
                         //Info command success.
                         Log.i(TAG, "BTLink 4: transactionId Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: transactionId command Response. Attempt: 5; Response:>>" + Response.trim());
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking transactionId command response. Response:>>" + Response.trim());
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -456,7 +456,7 @@ public class BackgroundService_BTFour extends Service {
                         CommonUtils.UpgradeTransactionStatusToSqlite(transactionId, "6", BackgroundService_BTFour.this);
                         Log.i(TAG, "BTLink 4: Failed to get transactionId Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: transactionId command Response. Attempt: 5; Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking transactionId command response. Response: false");
                         PostTransactionBackgroundTasks();
                         CloseTransaction();
                     }
@@ -503,12 +503,12 @@ public class BackgroundService_BTFour extends Service {
                             //Info command success.
                             Log.i(TAG, "BTLink 4: relayOn Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: relayOn command Response. Attempt: " + (attempt) + "; Response: ON");
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOn command response. Response: ON");
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink 4: Waiting for relayOn Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: relayOn command Response. Attempt: " + (attempt) + "; Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOn command response. Response: false");
                         }
                     }
                 }
@@ -520,14 +520,14 @@ public class BackgroundService_BTFour extends Service {
                         //RelayOff command success.
                         Log.i(TAG, "BTLink 4: relayOn Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: relayOn command Response. Attempt: 5; Response: ON");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOn command response. Response: ON");
                     } else {
 
                         //UpgradeTransaction Status RelayON command fail.
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFour.this);
                         Log.i(TAG, "BTLink 4: Failed to get relayOn Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: relayOn command Response. Attempt: 5; Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOn command response. Response: false");
                         relayOffCommand(); //RelayOff
                     }
                 }
@@ -579,12 +579,12 @@ public class BackgroundService_BTFour extends Service {
                             //relayOff command success.
                             Log.i(TAG, "BTLink 4: relayOff Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: relayOff command Response. Attempt: " + (attempt) + "; Response:>>" + Response.trim());
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOff command response. Response:>>" + Response.trim());
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink 4: Waiting for relayOff Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 4: relayOff command Response. Attempt: " + (attempt) + "; Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOff command response. Response: false");
                         }
                     }
                 }
@@ -595,11 +595,11 @@ public class BackgroundService_BTFour extends Service {
                         //Info command success.
                         Log.i(TAG, "BTLink 4: relayOff Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: relayOff command Response. Attempt: 5; Response:>>" + Response.trim());
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOff command response. Response:>>" + Response.trim());
                     } else {
                         Log.i(TAG, "BTLink 4: Failed to get relayOff Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 4: relayOff command Response. Attempt: 5; Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink 4: Checking relayOff command response. Response: false");
                         PostTransactionBackgroundTasks();
                         CloseTransaction();
                     }
@@ -685,7 +685,7 @@ public class BackgroundService_BTFour extends Service {
             Gson gson = new Gson();
             String jsonData = gson.toJson(rhose);
 
-            storeIsRenameFlag(this,BTConstants.BT4NeedRename, jsonData, authString);
+            storeIsRenameFlag(this, BTConstants.BT4NeedRename, jsonData, authString);
 
             Thread.sleep(1000);
             PostTransactionBackgroundTasks();

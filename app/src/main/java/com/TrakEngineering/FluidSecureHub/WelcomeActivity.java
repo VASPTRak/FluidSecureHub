@@ -843,7 +843,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         //Enable Background service to check hotspot
-        EnableHotspotBackgService();
+        //EnableHotspotBackgService(); //1982
 
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(WelcomeActivity.this);
@@ -1113,7 +1113,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);
         PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 60000, pintent); //60000
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 60000 * 60, pintent); //60000 * 60 = 1 hour
         //scan and enable hotspot if OFF
         Constants.hotspotstayOn = true;
 
@@ -4309,7 +4309,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (WifiChannelToUse != val) {
                     wcFreq.setInt(wifiConfig, WifiChannelToUse); // channel 11
                     //Toggle Wifi..
-                    wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
+                    /*wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -4318,7 +4318,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             wifiApManager.setWifiApEnabled(null, true);
 
                         }
-                    }, 500);
+                    }, 500);*/ // 1982
 
                 }
 
@@ -4339,7 +4339,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
 
                 //Toggle Wifi..
-                wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
+                /*wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -4348,7 +4348,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         wifiApManager.setWifiApEnabled(null, true);
 
                     }
-                }, 500);
+                }, 500);*/ //1982
 
             }
 
@@ -6193,7 +6193,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             }
 
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFourStatus && AppConstants.isRelayON_fs4) {
-                if (CountBeforeReconnectRelay4 >= 5) {
+                if (CountBeforeReconnectRelay4 >= 1) {
                     if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT4) {
                         SaveLastQtyInSharedPref(4, Constants.FS_4Pulse);
                         if (AppConstants.GenerateLogs)
@@ -13554,7 +13554,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.IsProblemWhileEnableHotspot = true;
                 }
             }
-            ShowHotspotDisabledErrorMessage();
+            //ShowHotspotDisabledErrorMessage();
         } catch (Exception e) {
             e.printStackTrace();
         }

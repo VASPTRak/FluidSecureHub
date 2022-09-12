@@ -1079,15 +1079,15 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         ToggleExeTime = CommonUtils.getTodaysDateTemp();//Date Two (d2)
 
-        wifiApManager.setWifiApEnabled(null, false);  //Hotspot Disable
+        //wifiApManager.setWifiApEnabled(null, false);  //Hotspot Disable
 
-        try {
+        /*try {
             Thread.sleep(3000);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
-        wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
+        //wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled // 1982
 
         IstoggleRequired_KDTA = false;
         IstoggleRequired_DA = false;
