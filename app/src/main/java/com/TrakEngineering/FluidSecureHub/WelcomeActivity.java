@@ -843,7 +843,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         //Enable Background service to check hotspot
-        //EnableHotspotBackgService(); //1982
+        EnableHotspotBackgService();
 
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(WelcomeActivity.this);
@@ -13547,13 +13547,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.IsBTLinkSelectedCurrently = true;
                 }
             }
-            if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && Constants.hotspotstayOn) {
+            /*if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && Constants.hotspotstayOn) {
                 HotspotEnableErrorCount++;
                 //AppConstants.WriteinFile(TAG + " Hotspot is Disabled. HotspotEnableErrorCount >> " + HotspotEnableErrorCount);
                 if (HotspotEnableErrorCount > 9) {
                     AppConstants.IsProblemWhileEnableHotspot = true;
                 }
-            }
+            }*/
             //ShowHotspotDisabledErrorMessage();
         } catch (Exception e) {
             e.printStackTrace();

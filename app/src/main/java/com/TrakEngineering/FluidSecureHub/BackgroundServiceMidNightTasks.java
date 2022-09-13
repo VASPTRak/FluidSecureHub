@@ -34,8 +34,8 @@ public class BackgroundServiceMidNightTasks extends Service {
             super.onStart(intent, startId);
 
             Log.e(TAG, "~~~~~start into BackgroundServiceMidNightTasks~~~~~");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_BACKGROUND + "-" + TAG + "Started.");
+            /*if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_BACKGROUND + "-" + TAG + "Started.");*/
             SyncSqliteData();//Sync penting transactions
 
             this.stopSelf();

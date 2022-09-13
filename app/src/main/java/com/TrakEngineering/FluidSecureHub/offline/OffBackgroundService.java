@@ -76,8 +76,8 @@ public class OffBackgroundService extends Service {
             if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
                 AppConstants.selectHosePressed = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Started.");
+                /*if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Started.");*/
 
                 OffDBController offcontroller = new OffDBController(this);
                 //HashMap<String, String> linkmap = offcontroller.getAllLinksDetails();

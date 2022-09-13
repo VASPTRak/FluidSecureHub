@@ -59,8 +59,8 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Log.i(TAG, "BackgroundService is on....");
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Started.");
+        /*if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "Started.");*/
         //Log.e("Totaloffline_check","Online data BackgroundService");
         //If all hoses are free cleare
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
