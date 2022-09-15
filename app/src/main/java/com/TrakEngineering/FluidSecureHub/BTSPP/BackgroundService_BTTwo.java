@@ -910,7 +910,8 @@ public class BackgroundService_BTTwo extends Service {
                     //Used only for debug
                     Log.i(TAG, "BTLink 2: Link Request>>" + Request);
                     Log.i(TAG, "BTLink 2: Link Response>>" + Response);
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 2: Link Response>>" + Response);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 2: Response from Link >>" + Response);
 
                     //Set Relay status.
                     if (Response.contains("OFF")) {

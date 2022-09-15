@@ -169,7 +169,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         } else {
 
             //Enable hotspot
-            //wifiApManager.setWifiApEnabled(null, true); //1982
+            wifiApManager.setWifiApEnabled(null, true);
 
             //Enable bluetooth
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

@@ -1046,7 +1046,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         mIntentFilter = new IntentFilter("android.net.wifi.WIFI_AP_STATE_CHANGED");
         registerReceiver(wifiApReciver, mIntentFilter);
 
-        CallJobSchedular();//Job Scheduler hotspot check
+        //CallJobSchedular();//Job Scheduler hotspot check
 
         AppConstants.enableHotspotManuallyWindow = true;
         if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && Constants.hotspotstayOn && AppConstants.enableHotspotManuallyWindow) {
@@ -4309,7 +4309,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (WifiChannelToUse != val) {
                     wcFreq.setInt(wifiConfig, WifiChannelToUse); // channel 11
                     //Toggle Wifi..
-                    /*wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
+                    wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -4318,7 +4318,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             wifiApManager.setWifiApEnabled(null, true);
 
                         }
-                    }, 500);*/ // 1982
+                    }, 500);
 
                 }
 
@@ -4339,7 +4339,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
 
                 //Toggle Wifi..
-                /*wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
+                wifiApManager.setWifiApEnabled(null, false);  //Disable Hotspot
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -4348,7 +4348,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         wifiApManager.setWifiApEnabled(null, true);
 
                     }
-                }, 500);*/ //1982
+                }, 500);
 
             }
 
@@ -11707,9 +11707,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (mac_address.equals("")) {
 
                     AppConstants.colorToastBigFont(WelcomeActivity.this, "Reconfiguration process fail..\nCould not get mac address", Color.RED);
-                    Log.i(TAG, "Step2 Reconfiguration process fail.. Could not get mac address Info command resulet:" + result);
+                    Log.i(TAG, "Step2 Reconfiguration process fail.. Could not get mac address Info command result:" + result);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Step2 Reconfiguration process fail.. Could not get mac address Info command resulet:" + result);
+                        AppConstants.WriteinFile(TAG + "Step2 Reconfiguration process fail.. Could not get mac address Info command result:" + result);
 
                     Constants.hotspotstayOn = true;//Enable hotspot flag
                     //Disable wifi connection
@@ -12233,9 +12233,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (mac_address.equals("")) {
 
                     AppConstants.colorToastBigFont(WelcomeActivity.this, "Reconfiguration process fail..\nCould not get mac address", Color.RED);
-                    Log.i(TAG, "Step2 UDP Reconfiguration process fail.. Could not get mac address Info command resulet:" + info_result);
+                    Log.i(TAG, "Step2 UDP Reconfiguration process fail.. Could not get mac address Info command result:" + info_result);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Step2 UDP Reconfiguration process fail.. Could not get mac address Info command resulet:" + info_result);
+                        AppConstants.WriteinFile(TAG + "Step2 UDP Reconfiguration process fail.. Could not get mac address Info command result:" + info_result);
 
                     Constants.hotspotstayOn = true;//Enable hotspot flag
                     //Disable wifi connection

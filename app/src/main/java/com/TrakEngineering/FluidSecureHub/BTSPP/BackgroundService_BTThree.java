@@ -909,7 +909,8 @@ public class BackgroundService_BTThree extends Service {
                     //Used only for debug
                     Log.i(TAG, "BTLink 3: Link Request>>" + Request);
                     Log.i(TAG, "BTLink 3: Link Response>>" + Response);
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 3: Link Response>>" + Response);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Response from Link >>" + Response);
 
                     //Set Relay status.
                     if (Response.contains("OFF")) {

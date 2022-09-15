@@ -268,8 +268,8 @@ public class OfflineConstants {
 
         try {
             Log.i(TAG, " setAlarmManagerToStartDownloadOfflineData _templog");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " setAlarmManagerToStartDownloadOfflineData _templog");
+            /*if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " setAlarmManagerToStartDownloadOfflineData _templog");*/
 
             SharedPreferences sharedPref = ctx.getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
             String isOffline = sharedPref.getString("isOffline", "");

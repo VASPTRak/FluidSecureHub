@@ -65,13 +65,17 @@ public class NetworkReceiver extends BroadcastReceiver {
             System.out.println("Network not switched");
         } else {
             //NetworkSwitched
+            String MobileDataStatus = "";
             if (AppConstants.IS_MOBILE_ON) {
                 AppConstants.NETWORK_STRENGTH = true;
+                MobileDataStatus = "ON";
+            } else {
+                MobileDataStatus = "OFF";
             }
             AppConstants.PRE_STATE_MOBILEDATA = CurrentState;
             Log.i(TAG, "Network Switched:" + AppConstants.IS_MOBILE_ON + " CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Network Switched:" + AppConstants.IS_MOBILE_ON + " CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
+                AppConstants.WriteinFile(TAG + "Status >> Mobile_Data:" + MobileDataStatus + "; CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
             //AppConstants.colorToastBigFont(context, "Network Switched", Color.RED);
             //context.startService(new Intent(context, StopRunningTransactionBackgroundService.class));
         }
