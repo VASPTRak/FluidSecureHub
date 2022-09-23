@@ -151,9 +151,11 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     AppConstants.AddMagCard_FobKey = MagCard_FobKey;
                     AppConstants.AddBarcode_val = Barcode_val;
 
-                    if (cd.isConnectingToInternet()){
+                    if (cd.isConnectingToInternet()) {
                         new CheckPersonFobOnly(objEntityClass).execute();
-                    }else{
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " No Internet please check.");
                         CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                     }
 
@@ -403,9 +405,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
             if (Str_check.contains("FFFFFFFFFFFFFFFFFFFF") || Str_check.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Unable to read fob: " + Str_check);
+                    AppConstants.WriteinFile(TAG + " Unable to read fob: " + Str_check);
                 CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", "Unable to read fob.  Please Try again..");
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
 
@@ -440,10 +441,11 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                         objEntityClass.MagneticCardNumber = "";
                         objEntityClass.Barcode = "";
 
-                        if (cd.isConnectingToInternet()){
+                        if (cd.isConnectingToInternet()) {
                             new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
-                        }else{
-                            AppConstants.WriteinFile(TAG + "No Internet please check.");
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " No Internet please check.");
                             CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                         }
                         ///==================================================
@@ -473,8 +475,9 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
             if (!CommonUtils.ValidateFobkey(Str_check) || Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 MagCard_FobKey = "";
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Unable to read MagCard: " + Str_data);
                 CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", "Unable to read MagCard.  Please Try again..");
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Unable to read fob.  Please Try again..");
 
             } else if (Str_check.length() > 5) {
 
@@ -496,10 +499,11 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     objEntityClass.MagneticCardNumber = MagCard_FobKey;
                     objEntityClass.Barcode = "";
 
-                    if (cd.isConnectingToInternet()){
+                    if (cd.isConnectingToInternet()) {
                         new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
-                    }else{
-                        AppConstants.WriteinFile(TAG + "No Internet please check.");
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " No Internet please check.");
                         CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                     }
                     ///==================================================
@@ -701,23 +705,31 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         InitScreen();
                         //CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceText);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " " + ResponceText);
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceText);
-                    } else if (ResponceText.equalsIgnoreCase("success")){
+                    } else if (ResponceText.equalsIgnoreCase("success")) {
                         InitScreen();
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " " + ResponceMessage);
                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceMessage);
-                    } else{
+                    } else {
 
-                        if (ResponceMessage.equalsIgnoreCase("fail")){
+                        if (ResponceMessage.equalsIgnoreCase("fail")) {
                             String IsPINHavingAccessDevice = "n";
-                            if(jsonObject.has("IsPINHavingAccessDevice")) {
+                            if (jsonObject.has("IsPINHavingAccessDevice")) {
                                 IsPINHavingAccessDevice = jsonObject.getString("IsPINHavingAccessDevice");
                             }
-                            if (IsPINHavingAccessDevice.equalsIgnoreCase("y")){
+                            if (IsPINHavingAccessDevice.equalsIgnoreCase("y")) {
                                 InitScreen();
                                 String msg = "The " + ScreenNameForPersonnel + " you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + msg);
                                 CustomMessage2Input(AcceptPinActivity_FOB.this, "Message", msg);
-                            }else {
+                            } else {
                                 //CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceText);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + ResponceText);
                                 if (ResponceText.toLowerCase().contains("invalid")) {
                                     ResponceText = ResponceText + " Would you like to try again?";
                                     CustomMessageInvalidPINInput(AcceptPinActivity_FOB.this, "Message", ResponceText);
@@ -726,8 +738,10 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                                     CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceText);
                                 }
                             }
-                        }else{
+                        } else {
                             InitScreen();
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + ResponceMessage);
                             CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceMessage);
                         }
 
@@ -783,9 +797,11 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 objEntityClass.Barcode = AppConstants.AddBarcode_val;
                 objEntityClass.ReplaceAccessDevice = "y";
 
-                if (cd.isConnectingToInternet()){
+                if (cd.isConnectingToInternet()) {
                     new CheckPersonFobOnly(objEntityClass).execute();
-                }else{
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " No Internet please check.");
                     CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                 }
             }

@@ -770,7 +770,7 @@ public class AppConstants {
             }
 
             Calendar cal = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss.SSS");
             String UseDate = dateFormat.format(cal.getTime());
 
             FileWriter fileWritter = new FileWriter(gpxfile, true);

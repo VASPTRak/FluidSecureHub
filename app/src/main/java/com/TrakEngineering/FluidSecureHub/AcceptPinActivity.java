@@ -53,6 +53,7 @@ public class AcceptPinActivity extends AppCompatActivity {
     LinearLayout Linear_layout_Save_back_buttons;
     Timer t, ScreenOutTime;
 
+    private static final String TAG = "PinActivity ";
 
     @Override
     protected void onResume() {
@@ -205,6 +206,9 @@ public class AcceptPinActivity extends AppCompatActivity {
                 String pin = etPersonnelPin.getText().toString().trim();
                 String FKey = AppConstants.APDU_FOB_KEY;
 
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Entered Pin: " + etPersonnelPin.getText());
+
                 if (FKey.equalsIgnoreCase("")) {
 
                     CallSaveButtonFunctionality();//Press Enter fun
@@ -320,12 +324,10 @@ public class AcceptPinActivity extends AppCompatActivity {
 
             if (serverRes != null) {
 
-
                 JSONObject jsonObject = new JSONObject(serverRes);
 
                 String ResponceMessage = jsonObject.getString("ResponceMessage");
                 System.out.println("ResponceMessage..dt.." + ResponceMessage);
-
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -335,7 +337,6 @@ public class AcceptPinActivity extends AppCompatActivity {
                     tv_enter_pin_no.setText("Personnel Number:" + PersonPIN);
                     System.out.println("PersonFOBNumber.." + PersonFOBNumber + "PersonPin" + PersonPIN);
                     etPersonnelPin.setText(PersonPIN);
-
 
                     new Handler().postDelayed(new Runnable() {
                         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -347,6 +348,9 @@ public class AcceptPinActivity extends AppCompatActivity {
 
 
                 } else {
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceMessage);
 
                     Istimeout_Sec = true;
                     TimeoutPinScreen();
@@ -375,9 +379,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                     CommonUtils.showCustomMessageDilaog(AcceptPinActivity.this, "Message", ResponceMessage);
 
                 }
-
             }
-
         } catch (Exception ex) {
             Log.e("TAG", ex.getMessage());
         }
@@ -474,7 +476,6 @@ public class AcceptPinActivity extends AppCompatActivity {
 
                     System.out.println("ResponceMessage.." + ResponceMessage);
 
-
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
                         btnSave.setClickable(false);
@@ -504,7 +505,12 @@ public class AcceptPinActivity extends AppCompatActivity {
                         }
                     } else {
                         String ResponceText = jsonObject.getString("ResponceText");
+
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceText);
+
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
+
                         if (ValidationFailFor.equalsIgnoreCase("Pin")) {
                             AppConstants.colorToastBigFont(this, ResponceText, Color.RED);
                             etPersonnelPin.setText("");
@@ -537,6 +543,8 @@ public class AcceptPinActivity extends AppCompatActivity {
                         asc.checkAllFields();
                     }*/
         } else {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Please enter Personnel Pin, and try again.");
             CommonUtils.showMessageDilaog(AcceptPinActivity.this, "Error Message", "Please enter Personnel Pin, and try again.");
         }
 

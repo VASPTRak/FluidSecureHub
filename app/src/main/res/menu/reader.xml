@@ -67,6 +67,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/m_p_type"
+        android:orderInCategory="100"
+        android:title="p_type"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/mrestartapp"
         android:orderInCategory="100"
         android:title="Restart App"

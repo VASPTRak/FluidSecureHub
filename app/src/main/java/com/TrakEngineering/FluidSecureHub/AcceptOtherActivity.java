@@ -189,6 +189,8 @@ public class AcceptOtherActivity extends AppCompatActivity {
                     }
 
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Please enter " + OtherLabel + ", and try again.");
                     CommonUtils.showMessageDilaog(AcceptOtherActivity.this, "Error Message", "Please enter " + OtherLabel + ", and try again.");
                 }
 

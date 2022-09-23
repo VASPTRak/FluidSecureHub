@@ -89,7 +89,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.TrakEngineering.FluidSecureHub.CommonUtils.AutoCloseCustomMessageDilaog;
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 
 /**
@@ -317,7 +316,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 String pin = etPersonnelPin.getText().toString().trim();
                 String FKey = AppConstants.APDU_FOB_KEY;
 
-                AppConstants.WriteinFile(TAG + " Entered PIN num : " + pin + " -  Scanned Barcode:" + Barcode_pin_val);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Entered PIN num: " + pin + "; Scanned Barcode:" + Barcode_pin_val);
 
                 //////////common for online offline///////////////////////////////
                 HashMap<String, String> hmap = new HashMap<>();
@@ -358,8 +358,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                     new CallSaveButtonFunctionality().execute();//Press Enter fun
                                 } else {
                                     if (mDisableFOBReadingForPin.equalsIgnoreCase("Y")) {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
                                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error Message", "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForPersonnel + " or present an Access Device. If you still have issues, please contact your Manager.");
                                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error Message", "Please enter " + ScreenNameForPersonnel + " or present an Access Device. If you still have issues, please contact your Manager.");
                                     }
                                 }
@@ -1366,16 +1370,16 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     Log.i(TAG, "VehicleNumber: " + vehicleNumber);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " VehicleNumber: " + vehicleNumber);
+                        AppConstants.WriteinFile(TAG + "VehicleNumber: " + vehicleNumber);
 
                     if (AppConstants.APDU_FOB_KEY.equalsIgnoreCase("")) {
                         Log.i(TAG, "PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "  Fob:" + AppConstants.APDU_FOB_KEY);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "  Fob:" + AppConstants.APDU_FOB_KEY);
+                            AppConstants.WriteinFile(TAG + "PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "; Fob:" + AppConstants.APDU_FOB_KEY);
                     } else {
                         Log.i(TAG, "PIN FOB:" + AppConstants.APDU_FOB_KEY + "  PIN No: " + String.valueOf(etPersonnelPin.getText()));
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "PIN FOB:" + AppConstants.APDU_FOB_KEY + "  PIN No: " + String.valueOf(etPersonnelPin.getText()));
+                            AppConstants.WriteinFile(TAG + "PIN FOB:" + AppConstants.APDU_FOB_KEY + "; PIN No: " + String.valueOf(etPersonnelPin.getText()));
                     }
 
 
@@ -1446,7 +1450,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     System.out.println("ResponceMessage.." + ResponceMessage);
 
-
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
 
@@ -1482,9 +1485,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
 
                         String ResponceText = jsonObject.getString("ResponceText");
-                        String ValidationFailFor = jsonObject.getString("ValidationFailFor");
+
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " PIN rejected: " + etPersonnelPin.getText().toString().trim() + " Error: " + ResponceText);
+                            AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceText);
+
+                        String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 
                         if (ValidationFailFor.equalsIgnoreCase("PinWithFob")) {
 
@@ -1510,18 +1515,16 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             //AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.RED);
                             //CommonUtils.AlertDialogAutoClose(AcceptPinActivity_new.this, "Message", ResponceText);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  ValidateFor Pin" + ResponceText);
-
+                                AppConstants.WriteinFile(TAG + "ValidateFor Pin: " + ResponceText);
 
                             DilaogRecreate(AcceptPinActivity_new.this, "Message", ResponceText);
-
 
                         } else if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
 
                             AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.RED);
                             //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceText);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  ValidateFor Vehicle" + ResponceText);
+                                AppConstants.WriteinFile(TAG + "ValidateFor Vehicle: " + ResponceText);
 
                             AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this); //Clear EditText on move to welcome activity.
                             Intent intent = new Intent(AcceptPinActivity_new.this, WelcomeActivity.class);
@@ -1533,7 +1536,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             //AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.RED);
                             CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceText);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  ValidateFor Else" + ResponceText);
+                                AppConstants.WriteinFile(TAG + "ValidateFor Else: " + ResponceText);
 
                             /*AppConstants.colorToastBigFont(this, "Some thing went wrong Please try again..\n"+ResponceText, Color.RED);
                              if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG+" Some thing went wrong Please try again..(~else~)\n"+ResponceText);
@@ -1635,7 +1638,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 System.out.println(TAG + "Personnel PIN: Read FOB:" + AppConstants.APDU_FOB_KEY + "  PIN Number: " + String.valueOf(etPersonnelPin.getText()));
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Personnel FOB No:" + AppConstants.APDU_FOB_KEY + " PIN Number:" + String.valueOf(etPersonnelPin.getText()) + " Barcode_val:" + Barcode_pin_val + "MagCard_personnel:" + MagCard_personnel);
+                    AppConstants.WriteinFile(TAG + "Personnel FOB No:" + AppConstants.APDU_FOB_KEY + "; PIN Number:" + String.valueOf(etPersonnelPin.getText()) + "; Barcode_val:" + Barcode_pin_val + "; MagCard_personnel:" + MagCard_personnel);
 
                 ServerHandler serverHandler = new ServerHandler();
 
@@ -1733,7 +1736,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Pin Fob Fail: " + ResponceMessage);
+                            AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceMessage);
 
                         ////////////////
 
@@ -1742,6 +1745,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (MagCard_personnel != null && !MagCard_personnel.isEmpty()) {
                                 if (MagCard_personnel.equalsIgnoreCase(AppConstants.NonValidateVehicle_FOB_KEY)) {
                                     //error message
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "Wrong access device is presented. Please present different access device.");
                                     AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Wrong access device is presented. Please present different access device.");
                                 } else {
                                     if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
@@ -1764,6 +1769,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 String fob = AppConstants.APDU_FOB_KEY.replace(":", "").trim();
                                 if (fob.equalsIgnoreCase(AppConstants.NonValidateVehicle_FOB_KEY)) {
                                     //error message
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "Same access device is scanned again. Please check.");
                                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Same access device is scanned again. Please check.");
                                 } else {
 
@@ -2387,7 +2394,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         .setTitle(title)
                         .setMessage(message)
                         .setCancelable(false)
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // Whatever...
@@ -2561,7 +2568,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (!Constants.LF_ReaderStatus.equalsIgnoreCase(LFReaderStatus)) {
                         LFReaderStatus = Constants.LF_ReaderStatus;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "LF Reader Status: " + LFReaderStatus);
+                            AppConstants.WriteinFile(TAG + "<LF Reader Status: " + LFReaderStatus + ">");
                     }
                     if (Constants.LF_ReaderStatus.equals("LF Disconnected") && !AppConstants.showReaderStatus) {
                         retryConnect();
@@ -2587,7 +2594,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (!Constants.HF_ReaderStatus.equalsIgnoreCase(HFReaderStatus)) {
                         HFReaderStatus = Constants.HF_ReaderStatus;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "HF Reader Status: " + HFReaderStatus);
+                            AppConstants.WriteinFile(TAG + "<HF Reader Status: " + HFReaderStatus + ">");
                     }
                     if (Constants.HF_ReaderStatus.equals("HF Disconnected") && !AppConstants.showReaderStatus) {
                         retryConnect();
@@ -2613,7 +2620,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
                         MagReaderStatus = Constants.Mag_ReaderStatus;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Mag Reader Status: " + MagReaderStatus);
+                            AppConstants.WriteinFile(TAG + "<Mag Reader Status: " + MagReaderStatus + ">");
                     }
                     if (Constants.Mag_ReaderStatus.equals("Mag Disconnected") && !AppConstants.showReaderStatus) {
                         retryConnect();

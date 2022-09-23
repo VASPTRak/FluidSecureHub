@@ -143,10 +143,10 @@ public class BackgroundService_BTOne extends Service {
                 broadcastBlueLinkOneData = new BroadcastBlueLinkOneData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: Registering Receiver.");
+                    AppConstants.WriteinFile(TAG + " BTLink 1: <Registering Receiver.>");
                 registerReceiver(broadcastBlueLinkOneData, intentFilter);
                 isBroadcastReceiverRegistered = true;
-                AppConstants.WriteinFile(TAG + " BTLink 1: Registered successfully. (" + broadcastBlueLinkOneData + ")");
+                AppConstants.WriteinFile(TAG + " BTLink 1: <Registered successfully. (" + broadcastBlueLinkOneData + ")>");
 
                 AppConstants.isRelayON_fs1 = false;
                 LinkName = CommonUtils.getlinkName(0);
@@ -621,15 +621,15 @@ public class BackgroundService_BTOne extends Service {
                     unregisterReceiver(broadcastBlueLinkOneData);
                     isBroadcastReceiverRegistered = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 1: Receiver unregistered successfully. (" + broadcastBlueLinkOneData + ")");
+                        AppConstants.WriteinFile(TAG + " BTLink 1: <Receiver unregistered successfully. (" + broadcastBlueLinkOneData + ")>");
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 1: Receiver is not registered. (" + broadcastBlueLinkOneData + ")");
+                        AppConstants.WriteinFile(TAG + " BTLink 1: <Receiver is not registered. (" + broadcastBlueLinkOneData + ")>");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: Exception occurred while unregistering receiver:>>" + e.getMessage() + " (" + broadcastBlueLinkOneData + ")");
+                    AppConstants.WriteinFile(TAG + " BTLink 1: <Exception occurred while unregistering receiver: " + e.getMessage() + " (" + broadcastBlueLinkOneData + ")>");
             }
             stopTxtprocess = true;
             BTConstants.isRelayOnAfterReconnect1 = false;
@@ -903,10 +903,10 @@ public class BackgroundService_BTOne extends Service {
                         FDRequest = Request;
                         FDResponse = Response;
                     }
-                    if (AppConstants.isRelayON_fs1 && Response.trim().isEmpty()) {
+                    /*if (AppConstants.isRelayON_fs1 && Response.trim().isEmpty()) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 1: No Response from Broadcast.");
-                    }
+                    }*/
 
                     //Used only for debug
                     Log.i(TAG, "BTLink 1: Link Request>>" + Request);
@@ -1011,7 +1011,7 @@ public class BackgroundService_BTOne extends Service {
             String jsonData = gson.toJson(authEntityClass);
 
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 1: Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty);
+                AppConstants.WriteinFile(TAG + " BTLink 1: <Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty + ">");
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTOne.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTOne.this) + ":" + userEmail + ":" + "TransactionComplete");

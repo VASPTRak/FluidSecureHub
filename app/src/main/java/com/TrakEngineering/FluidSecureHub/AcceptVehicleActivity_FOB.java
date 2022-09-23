@@ -150,9 +150,11 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                     AppConstants.AddMagCard_FobKey = MagCard_FobKey;
                     AppConstants.AddBarcode_val = Barcode_val;
 
-                    if (cd.isConnectingToInternet()){
+                    if (cd.isConnectingToInternet()) {
                         new CheckVehicleFobOnly(objEntityClass).execute();
-                    }else{
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " No Internet please check.");
                         CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);
                     }
 
@@ -402,9 +404,8 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
             if (Str_check.contains("FFFFFFFFFFFFFFFFFFFF") || Str_check.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Unable to read fob: " + Str_check);
+                    AppConstants.WriteinFile(TAG + " Unable to read fob: " + Str_check);
                 CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", "Unable to read fob.  Please Try again..");
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
 
@@ -442,7 +443,8 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                         if (cd.isConnectingToInternet()){
                             new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
                         }else{
-                            AppConstants.WriteinFile(TAG + "No Internet please check.");
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " No Internet please check.");
                             CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);
                         }
                         ///==================================================
@@ -472,8 +474,9 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
             if (!CommonUtils.ValidateFobkey(Str_check) || Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 MagCard_FobKey = "";
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Unable to read MagCard: " + Str_data);
                 CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", "Unable to read MagCard.  Please Try again..");
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Unable to read fob.  Please Try again..");
 
             } else if (Str_check.length() > 5) {
 
@@ -495,10 +498,11 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                     objEntityClass.MagneticCardNumber = MagCard_FobKey;
                     objEntityClass.Barcode = "";
 
-                    if (cd.isConnectingToInternet()){
+                    if (cd.isConnectingToInternet()) {
                         new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
-                    }else{
-                        AppConstants.WriteinFile(TAG + "No Internet please check.");
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " No Internet please check.");
                         CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);
                     }
                     ///==================================================
@@ -700,16 +704,22 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                     InitScreen();
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         //CommonUtils.showCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " " + ResponceText);
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
                     } else {
                         String IsVehicleNumberHavingAccessDevice = "n";
                         if(jsonObject.has("IsVehicleNumberHavingAccessDevice")) {
                             IsVehicleNumberHavingAccessDevice = jsonObject.getString("IsVehicleNumberHavingAccessDevice");
                         }
-                        if (IsVehicleNumberHavingAccessDevice.equalsIgnoreCase("y")){
-                            String msg = "The "+ScreenNameForVehicle+" you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
+                        if (IsVehicleNumberHavingAccessDevice.equalsIgnoreCase("y")) {
+                            String msg = "The " + ScreenNameForVehicle + " you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + msg);
                             CustomMessage2Input(AcceptVehicleActivity_FOB.this, "Message", msg);
-                        }else{
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Access device rejected. Error: " + ResponceText);
                             CommonUtils.showCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
                         }
 
@@ -780,9 +790,11 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                 objEntityClass.Barcode = AppConstants.AddBarcode_val;
                 objEntityClass.ReplaceAccessDevice = "y";
 
-                if (cd.isConnectingToInternet()){
+                if (cd.isConnectingToInternet()) {
                     new CheckVehicleFobOnly(objEntityClass).execute();
-                }else{
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " No Internet please check.");
                     CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);
                 }
 

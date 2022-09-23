@@ -175,60 +175,67 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
                 Istimeout_Sec = false;
 
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Entered Vehicle Other Info: " + etOther.getText());
+
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
                     boolean isascii = isAllASCII(etOther.getText().toString());
 
                     if (!isascii) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Please enter Valid String.");
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleOtherInfo.this, "Message", "Please enter Valid String.");
                     } else {
-                    if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
+                        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
 
-                        Constants.AccVehicleOther_FS1 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                        Constants.AccVehicleOther = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                        Constants.AccVehicleOther_FS3 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                        Constants.AccVehicleOther_FS4 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                        Constants.AccVehicleOther_FS5 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                        Constants.AccVehicleOther_FS6 = etOther.getText().toString().trim();
+                            Constants.AccVehicleOther_FS1 = etOther.getText().toString().trim();
+                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
+                            Constants.AccVehicleOther = etOther.getText().toString().trim();
+                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
+                            Constants.AccVehicleOther_FS3 = etOther.getText().toString().trim();
+                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
+                            Constants.AccVehicleOther_FS4 = etOther.getText().toString().trim();
+                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+                            Constants.AccVehicleOther_FS5 = etOther.getText().toString().trim();
+                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+                            Constants.AccVehicleOther_FS6 = etOther.getText().toString().trim();
+                        }
+
+                        SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
+                        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
+                        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
+                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+                        String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
+                        String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
+
+
+                        if (IsPersonnelPINRequireForHub.equalsIgnoreCase("True")) {
+
+                            Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                            startActivity(intent);
+
+                        } else if (IsDepartmentRequire.equalsIgnoreCase("True")) {
+
+                            Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptDeptActivity.class);
+                            startActivity(intent);
+
+                        } else if (IsOtherRequire.equalsIgnoreCase("True")) {
+
+                            Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptOtherActivity.class);
+                            startActivity(intent);
+
+                        } else {
+
+                            AcceptServiceCall asc = new AcceptServiceCall();
+                            asc.activity = AcceptVehicleOtherInfo.this;
+                            asc.checkAllFields();
+                        }
                     }
-
-                    SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                    String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                    String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-                    String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                    String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-                    String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
-                    String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
-
-
-                    if (IsPersonnelPINRequireForHub.equalsIgnoreCase("True")) {
-
-                        Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptPinActivity_new.class);//AcceptPinActivity
-                        startActivity(intent);
-
-                    } else if (IsDepartmentRequire.equalsIgnoreCase("True")) {
-
-                        Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptDeptActivity.class);
-                        startActivity(intent);
-
-                    } else if (IsOtherRequire.equalsIgnoreCase("True")) {
-
-                        Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptOtherActivity.class);
-                        startActivity(intent);
-
-                    } else {
-
-                        AcceptServiceCall asc = new AcceptServiceCall();
-                        asc.activity = AcceptVehicleOtherInfo.this;
-                        asc.checkAllFields();
-                    }
-                }
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Please enter Other, and try again.");
                     CommonUtils.showMessageDilaog(AcceptVehicleOtherInfo.this, "Error Message", "Please enter Other, and try again.");
                 }
 

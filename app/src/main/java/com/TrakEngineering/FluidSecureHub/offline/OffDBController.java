@@ -335,7 +335,7 @@ public class OffDBController extends SQLiteOpenHelper {
             database.close();
             if (LinkCommunicationType.isEmpty()) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Transaction saved in local DB.");
+                    AppConstants.WriteinFile(TAG + "<Transaction saved in local DB.>");
             } else {
 
                 String txtnTypeForLog = "";
@@ -346,7 +346,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 }
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(txtnTypeForLog + "- Transaction saved in local DB.");
+                    AppConstants.WriteinFile(txtnTypeForLog + "- <Transaction saved in local DB.>");
             }
 
         } catch (Exception e) {

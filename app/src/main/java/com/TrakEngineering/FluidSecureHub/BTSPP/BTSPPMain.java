@@ -635,4 +635,5 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTStatusStrFour = str;
     }
     //endregion
+
 }

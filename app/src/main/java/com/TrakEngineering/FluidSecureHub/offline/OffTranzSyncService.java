@@ -76,7 +76,7 @@ public class OffTranzSyncService extends Service {
                 JSONArray jarrsy = new JSONArray(offtransactionArray);
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline transaction count: " + jarrsy.length());
+                    AppConstants.WriteinFile(TAG + " <Offline transaction count: " + jarrsy.length() + ">");
 
                 if (jarrsy.length() > 0) {
                     new AzureCall().execute(off_json_10_trans, "OFF");

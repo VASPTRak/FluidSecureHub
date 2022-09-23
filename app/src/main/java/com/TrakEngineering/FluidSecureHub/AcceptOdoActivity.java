@@ -377,6 +377,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                         if (C_AccOdoMeter == 0) { // Must be greater than 0.
                             Istimeout_Sec = true;
                             ResetTimeoutOdoScreen();
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + getResources().getString(R.string.peOdo0).replace("odometer", ScreenNameForOdometer.toLowerCase()));
                             CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error", getResources().getString(R.string.peOdo0).replace("odometer", ScreenNameForOdometer.toLowerCase()));
 
                         } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
@@ -384,7 +386,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                             if (LastTxtnQuantity > 10 && C_AccOdoMeter == PO && (cnt123 < 3)) {
                                 // Must entered different reading if the last transaction fuel quantity is greater than 10.
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Entered a reading that was previously entered");
+                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.prevReading));
                                 editOdoTenths.setText("");
                                 Istimeout_Sec = true;
                                 ResetTimeoutOdoScreen();
@@ -413,7 +415,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                     } else {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Entered Odometer (" + C_AccOdoMeter + ") is not within the reasonability");
+                                            AppConstants.WriteinFile(TAG + "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                         editOdoTenths.setText("");
                                         Istimeout_Sec = true;
                                         ResetTimeoutOdoScreen();
@@ -428,7 +430,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                 } else {
                                     editOdoTenths.setText("");
                                     if (AppConstants.GenerateLogs) {
-                                        AppConstants.WriteinFile(TAG + " Entered Odometer (" + C_AccOdoMeter + ") is not within the reasonability");
+                                        AppConstants.WriteinFile(TAG + "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     }
                                     Istimeout_Sec = true;
                                     ResetTimeoutOdoScreen();
@@ -488,6 +490,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                 if (entered_odometer == 0) { // Must be greater than 0.
                                     Istimeout_Sec = true;
                                     ResetTimeoutOdoScreen();
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.peOdo0).replace("odometer", ScreenNameForOdometer.toLowerCase()));
                                     CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", getResources().getString(R.string.peOdo0).replace("odometer", ScreenNameForOdometer.toLowerCase()));
 
                                 } else if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
@@ -519,6 +523,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                             } else {
                                                 Istimeout_Sec = true;
                                                 ResetTimeoutOdoScreen();
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForOdometer);
                                                 CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "Please enter Correct " + ScreenNameForOdometer);
                                                 //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer",Color.RED);
                                             }
@@ -535,6 +541,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                         } else {
                                             Istimeout_Sec = true;
                                             ResetTimeoutOdoScreen();
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForOdometer);
                                             CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "Please enter Correct " + ScreenNameForOdometer);
                                             //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer",Color.RED);
                                         }
@@ -558,6 +566,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
             } else {
                 Istimeout_Sec = true;
                 ResetTimeoutOdoScreen();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForOdometer + ", and try again.");
                 CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", "Please enter " + ScreenNameForOdometer + ", and try again.");
             }
 

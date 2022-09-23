@@ -396,6 +396,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public Handler BTConnectionHandler = new Handler(Looper.getMainLooper());
     public int delayMillis = 100;
     public String st = "Connecting";
+    public ProgressDialog pdP_Type;
 
     //============ Bluetooth reader Gatt end==============
 
@@ -1728,7 +1729,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             AppConstants.LAST_CONNECTED_SSID = selectedSSID;
 
                             if (IsTankEmpty.equalsIgnoreCase("True")) {
-
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
                                 CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
                                 tvSSIDName.setText("Tap here to select hose");
                                 btnGo.setVisibility(View.GONE);
@@ -1739,7 +1741,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 Toast.makeText(getApplicationContext(), "Link Configuration flag true. please check", Toast.LENGTH_LONG).show();
 
                             } else if (IsLinkFlagged != null && IsLinkFlagged.equalsIgnoreCase("True")) {
-
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "Flagged Link: " + LinkFlaggedMessage);
                                 CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", LinkFlaggedMessage);
                                 tvSSIDName.setText("Tap here to select hose");
                                 btnGo.setVisibility(View.GONE);
@@ -2952,7 +2955,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "Customer select hose: " + selSSID + " (position: " + (position + 1) + " of " + serverSSIDList.size() + ")");
 
                     if (IsTankEmpty != null && IsTankEmpty.equalsIgnoreCase("True")) {
-
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
                         CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
                         tvSSIDName.setText("Tap here to select hose");
                         btnGo.setVisibility(View.GONE);
@@ -2967,7 +2971,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             WelcomeActivity.this.startActivity(i);
 
                         } else if (IsLinkFlagged != null && IsLinkFlagged.equalsIgnoreCase("True")) {
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Flagged Link: " + LinkFlaggedMessage);
                             CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", LinkFlaggedMessage);
                             RestrictHoseSelection("Please try again later");
 
@@ -3097,7 +3102,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                             AppConstants.colorToastBigFont(getApplicationContext(), "Can't reconfigure hose is busy", Color.RED);
                                         }
                                     } else if (IsLinkFlagged != null && IsLinkFlagged.equalsIgnoreCase("True")) {
-
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Flagged Link: " + LinkFlaggedMessage);
                                         CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", LinkFlaggedMessage);
                                         RestrictHoseSelection("Please try again later");
 
@@ -6777,7 +6783,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             }
 
         } else if (IsLinkFlagged != null && IsLinkFlagged.equalsIgnoreCase("True")) {
-
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Flagged Link: " + LinkFlaggedMessage);
             CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", LinkFlaggedMessage);
             RestrictHoseSelection("Please try again later");
 
@@ -7463,6 +7470,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreload).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
+        menu.findItem(R.id.m_p_type).setVisible(true);
 
         if (cd.isConnectingToInternet()) {
 
@@ -7511,6 +7519,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             case R.id.mupgrade_normal_link:
                 ManualLinkUpgrade();
+                break;
+
+            case R.id.m_p_type:
+                Change_P_Type();
                 break;
 
         }
@@ -9532,6 +9544,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                 } else {
                                     errMsg = ResponceText;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationOnResume SSIDData (" + WifiSSId + "): " + ResponceText);
                                     AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                                 }
                             }
@@ -9748,9 +9762,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
 
                     } else if (ResponseMessageSite.equalsIgnoreCase("fail")) {
-
-
                         String ResponseTextSite = jsonObjectSite.getString(AppConstants.RES_TEXT);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationOnResume SSIDData response fail. Error: " + ResponseTextSite);
                         AppConstants.AlertDialogBox(WelcomeActivity.this, ResponseTextSite);
 
                     }
@@ -9759,7 +9773,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                         AppConstants.NETWORK_STRENGTH = false;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Temporary loss of cell service ~Switching to offline mode!!");
+                            AppConstants.WriteinFile(TAG + "Temporary loss of cell service ~Switching to offline mode!!");
                     }
                     new GetOfflineSSIDUsingLocation().execute();
                 }
@@ -10408,6 +10422,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     }
                                 } else {
                                     errMsg = ResponceText;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationGateHub SSIDData (" + WifiSSId + "): " + ResponceText);
                                     AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                                 }
                             }
@@ -10584,13 +10600,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         } catch (Exception e) {
                             System.out.println(e);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocationOnResume if only one hose autoselect   --Exception " + e);
+                                AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocationGateHub if only one hose autoselect   --Exception " + e);
                         }
 
 
                     } else if (ResponseMessageSite.equalsIgnoreCase("fail")) {
                         String ResponseTextSite = jsonObjectSite.getString(AppConstants.RES_TEXT);
-
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationGateHub SSIDData response fail. Error: " + ResponseTextSite);
                         AppConstants.AlertDialogBox(WelcomeActivity.this, ResponseTextSite);
 
                     }
@@ -10599,7 +10616,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                         AppConstants.NETWORK_STRENGTH = false;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Temporary loss of cell service ~Switching to offline mode 2"); // today**
+                            AppConstants.WriteinFile(TAG + "Temporary loss of cell service ~Switching to offline mode 2"); // today**
                     }
 
                     new GetOfflineSSIDUsingLocation().execute();
@@ -10608,9 +10625,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } catch (Exception e) {
 
-                CommonUtils.LogMessage(TAG, " GetSSIDUsingLocation :" + result, e);
+                CommonUtils.LogMessage(TAG, "GetSSIDUsingLocationGateHub :" + result, e);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocationOnResume --Exception " + e);
+                    AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationGateHub --Exception " + e);
                 if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -10734,6 +10751,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     //HoseList Alert
                     alertSelectHoseList(tvLatLng.getText().toString() + "\n" + "");
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Offline SSIDData is Empty. Error: " + R.string.conn_error);
                     AppConstants.AlertDialogBoxCanecl(WelcomeActivity.this, R.string.conn_error);
                 }
 
@@ -10881,6 +10900,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
                             } else {
                                 errMsg = ResponceText;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "SSIDData (" + WifiSSId + "): " + ResponceText);
                                 AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                             }
                         }
@@ -10888,6 +10909,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         //HoseList Alert
                         alertSelectHoseList(tvLatLng.getText().toString() + "\n" + errMsg);
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "SSIDData is Empty. Error: " + R.string.conn_error);
                         AppConstants.AlertDialogBoxCanecl(WelcomeActivity.this, R.string.conn_error);
                     }
 
@@ -10895,7 +10918,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 } else if (ResponseMessageSite.equalsIgnoreCase("fail")) {
                     String ResponseTextSite = jsonObjectSite.getString(AppConstants.RES_TEXT);
-
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "SSIDData response fail. Error: " + ResponseTextSite);
                     AppConstants.AlertDialogBox(WelcomeActivity.this, ResponseTextSite);
                 }
             } else {
@@ -10903,7 +10927,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  Temporary loss of cell service ~Switching to offline mode 3"); //today***
+                        AppConstants.WriteinFile(TAG + "Temporary loss of cell service ~Switching to offline mode 3"); //today***
 
                     new GetOfflineSSIDUsingLocation().execute();
                 }
@@ -10913,9 +10937,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         } catch (Exception e) {
 
-            CommonUtils.LogMessage(TAG, " GetSSIDUsingLocation :" + result, e);
+            CommonUtils.LogMessage(TAG, "GetSSIDUsingLocation :" + result, e);
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  GetSSIDUsingLocation onPostExecute --Exception " + e);
+                AppConstants.WriteinFile(TAG + "GetSSIDUsingLocation onPostExecute --Exception " + e);
         }
 
     }
@@ -13776,6 +13800,340 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.WriteinFile(TAG + "Exception in HoseAvailabilityTwoAttempts. " + ex.getMessage());
         }
         return isConnected;
+    }
+
+    private void Change_P_Type() {
+        try {
+            BTLinkList.clear();
+            if (serverSSIDList != null) {
+                for (int i = 0; i < serverSSIDList.size(); i++) {
+                    String WifiSSId = serverSSIDList.get(i).get("WifiSSId");
+                    String BTMacAddress = serverSSIDList.get(i).get("BTMacAddress");
+                    String LinkCommunicationType = serverSSIDList.get(i).get("LinkCommunicationType");
+
+                    if (BTMacAddress != null && !BTMacAddress.isEmpty() && LinkCommunicationType.equalsIgnoreCase("BT") && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)) {
+                        // Add into BT link list for Oscilloscope functionality
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put("WifiSSId", WifiSSId);
+                        map.put("item", WifiSSId);
+                        map.put("BTMacAddress", BTMacAddress);
+                        map.put("LinkPosition", String.valueOf(i));
+                        BTLinkList.add(map);
+                    }
+                }
+            }
+            if (BTLinkList != null) {
+                if (BTLinkList.size() > 0) {
+                    alertSelectBTLinkList();
+                } else {
+                    Toast.makeText(getApplicationContext(), "BT LINK not found.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "BT LINK not found.", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in OscilloscopeLinkSelection. " + ex.getMessage());
+        }
+    }
+
+    public void alertSelectBTLinkList() {
+        final Dialog dialog = new Dialog(WelcomeActivity.this);
+        dialog.setTitle("FluidSecureHubTest");
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_bt_link_list);
+
+        ListView lvBTHoseNames = (ListView) dialog.findViewById(R.id.lvHoseNames);
+        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
+        lvBTHoseNames.setVisibility(View.VISIBLE);
+
+        SimpleAdapter adapter = new SimpleAdapter(WelcomeActivity.this, BTLinkList, R.layout.item_hose, new String[]{"item"}, new int[]{R.id.tvSingleItem});
+        lvBTHoseNames.setAdapter(adapter);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        lvBTHoseNames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                try {
+                    dialog.dismiss();
+
+                    String WifiSSId = BTLinkList.get(position).get("WifiSSId");
+                    String BTMacAddress = BTLinkList.get(position).get("BTMacAddress");
+                    String LinkPosition = BTLinkList.get(position).get("LinkPosition");
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Selected LINK for p_type: " + WifiSSId);
+
+                    if (LinkPosition == null) {
+                        LinkPosition = "0";
+                    }
+
+                    String s = "Please wait...";
+                    SpannableString ss2 = new SpannableString(s);
+                    ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
+                    ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+                    pdP_Type = new ProgressDialog(WelcomeActivity.this);
+                    pdP_Type.setMessage(ss2);
+                    pdP_Type.setCancelable(true);
+                    pdP_Type.show();
+
+                    CheckBTConnectionForPType(LinkPosition, WifiSSId, BTMacAddress);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void CheckBTConnectionForPType(String selectedItemPos, String selSSID, String BTMacAddress) {
+        try {
+            switch (selectedItemPos) {
+
+                case "0":
+                    //Link one
+                    if (BTConstants.BTLinkOneStatus) {
+
+                        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
+
+                            RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+
+                        } else {
+                            BTL1State = 0;
+                            BTConstants.CurrentSelectedLinkBT = 0;
+                            RestrictHoseSelection("Hose in use.\nPlease try again later");
+                        }
+
+                    } else {
+
+                        if (!BTConstants.deviceAddress1.isEmpty()) {
+                            NearByBTDevices.clear();
+                            mBluetoothAdapter.startDiscovery();
+                            RestrictHoseSelection("Connecting...");
+
+                            Handler handler = new Handler();
+                            int delay = 1000;
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+
+                                    if (checkBTLinkStatus(1)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    } else {
+                                        retryConnect(1);
+
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    }
+                                }
+                            }, delay);
+
+                        } else {
+                            AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
+                        }
+                    }
+                    break;
+                case "1":
+                    //Link Two
+                    if (BTConstants.BTLinkTwoStatus) {
+                        if (Constants.FS_2STATUS.equalsIgnoreCase("FREE")) {
+
+                            RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+
+                        } else {
+                            BTL2State = 0;
+                            BTConstants.CurrentSelectedLinkBT = 0;
+                            RestrictHoseSelection("Hose in use.\nPlease try again later");
+                        }
+
+                    } else {
+
+                        if (!BTConstants.deviceAddress2.isEmpty()) {
+                            NearByBTDevices.clear();
+                            mBluetoothAdapter.startDiscovery();
+                            RestrictHoseSelection("Connecting...");
+
+                            Handler handler = new Handler();
+                            int delay = 1000;
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+
+                                    if (checkBTLinkStatus(2)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    } else {
+                                        retryConnect(2);
+
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    }
+                                }
+                            }, delay);
+
+                        } else {
+                            AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
+                        }
+                    }
+                    break;
+                case "2":
+
+                    //Link Three
+                    if (BTConstants.BTLinkThreeStatus) {
+                        if (Constants.FS_3STATUS.equalsIgnoreCase("FREE")) {
+
+                            RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+
+                        } else {
+                            BTL3State = 0;
+                            BTConstants.CurrentSelectedLinkBT = 0;
+                            RestrictHoseSelection("Hose in use.\nPlease try again later");
+                        }
+
+                    } else {
+
+                        if (!BTConstants.deviceAddress3.isEmpty()) {
+                            NearByBTDevices.clear();
+                            mBluetoothAdapter.startDiscovery();
+                            RestrictHoseSelection("Connecting...");
+
+                            Handler handler = new Handler();
+                            int delay = 1000;
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+
+                                    if (checkBTLinkStatus(3)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    } else {
+                                        retryConnect(3);
+
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    }
+                                }
+                            }, delay);
+
+                        } else {
+                            AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
+                        }
+                    }
+
+                    break;
+                case "3"://Link Four
+
+                    if (BTConstants.BTLinkFourStatus) {
+
+                        if (Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+
+                            RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+
+                        } else {
+                            BTL4State = 0;
+                            BTConstants.CurrentSelectedLinkBT = 0;
+                            RestrictHoseSelection("Hose in use.\nPlease try again later");
+                        }
+
+                    } else {
+
+                        if (!BTConstants.deviceAddress4.isEmpty()) {
+                            NearByBTDevices.clear();
+                            mBluetoothAdapter.startDiscovery();
+                            RestrictHoseSelection("Connecting...");
+
+                            Handler handler = new Handler();
+                            int delay = 1000;
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+
+                                    if (checkBTLinkStatus(4)) {
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    } else {
+                                        retryConnect(4);
+
+                                        if (BTConnectionHandler != null) {
+                                            BTConnectionHandler.removeCallbacksAndMessages(null);
+                                        }
+                                        RedirectToP_TypeSelection(selSSID, selectedItemPos, BTMacAddress);
+                                    }
+                                }
+                            }, delay);
+
+                        } else {
+                            AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
+                        }
+                    }
+                    break;
+            }
+            /*if (BTConstants.BTLinkP_TypeStatus) {
+
+                RedirectToP_TypeSelection(selSSID, BTMacAddress);
+
+            } else {
+
+                if (!BTConstants.deviceAddressP_Type.isEmpty()) {
+                    NearByBTDevices.clear();
+                    mBluetoothAdapter.startDiscovery();
+
+                    Handler handler = new Handler();
+                    int delay = 1000;
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+
+                            if (checkBTLinkStatus(7)) {
+                                RedirectToP_TypeSelection(selSSID, BTMacAddress);
+                            } else {
+                                retryConnect(7);
+
+                                RedirectToP_TypeSelection(selSSID, BTMacAddress);
+                            }
+                        }
+                    }, delay);
+
+                } else {
+                    AppConstants.colorToast(getApplicationContext(), "Please make sure BT mac is set.", Color.BLUE);
+                }
+            }*/
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
+    }
+
+    public void RedirectToP_TypeSelection(String WifiSSId, String LinkPosition, String BTMacAddress) {
+        if (pdP_Type != null) {
+            pdP_Type.dismiss();
+        }
+        Intent i = new Intent(WelcomeActivity.this, BT_Link_P_Type_Activity.class);
+        i.putExtra("WifiSSId", WifiSSId);
+        i.putExtra("BTMacAddress", BTMacAddress);
+        i.putExtra("LinkPosition", LinkPosition);
+        startActivity(i);
     }
 
 }

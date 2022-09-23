@@ -62,7 +62,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
     List<Timer> DeptScreenTimerlist = new ArrayList<Timer>();
     ConnectionDetector cd = new ConnectionDetector(AcceptDeptActivity.this);
 
-    private static final String TAG = "AcceptDept";
+    private static final String TAG = "AcceptDept ";
 
     @Override
     protected void onResume() {
@@ -123,41 +123,31 @@ public class AcceptDeptActivity extends AppCompatActivity {
             }
         });
 
-        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1"))
-        {
-            if(Constants.AccDepartmentNumber_FS1!=null)
-            {
+        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
+            if (Constants.AccDepartmentNumber_FS1 != null) {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS1);
             }
-
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")){
-            if(Constants.AccDepartmentNumber!=null)
-            {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
+            if (Constants.AccDepartmentNumber != null) {
                 etDeptNumber.setText(Constants.AccDepartmentNumber);
             }
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")){
-            if(Constants.AccDepartmentNumber_FS3!=null)
-            {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
+            if (Constants.AccDepartmentNumber_FS3 != null) {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS3);
             }
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")){
-            if(Constants.AccDepartmentNumber_FS4!=null)
-            {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
+            if (Constants.AccDepartmentNumber_FS4 != null) {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS4);
             }
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")){
-            if(Constants.AccDepartmentNumber_FS5!=null)
-            {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+            if (Constants.AccDepartmentNumber_FS5 != null) {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS5);
             }
-        }else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")){
-            if(Constants.AccDepartmentNumber_FS6!=null)
-            {
+        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+            if (Constants.AccDepartmentNumber_FS6 != null) {
                 etDeptNumber.setText(Constants.AccDepartmentNumber_FS6);
             }
         }
-
-
 
         SharedPreferences sharedPrefODO = AcceptDeptActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
@@ -197,18 +187,20 @@ public class AcceptDeptActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-
                 Istimeout_Sec=false;
+
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Entered Department : " + etDeptNumber.getText());
 
                 if (!etDeptNumber.getText().toString().trim().isEmpty()) {
 
                     new CallSaveButtonValidation().execute();
 
-
                 } else {
                     Istimeout_Sec = true;
                     ResetTimeoutDeptScreen();
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForDepartment + " Number, and try again.");
                     CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", "Please enter " + ScreenNameForDepartment + " Number, and try again.");
                 }
 
@@ -475,14 +467,19 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 response = client.newCall(request).execute();
                 resp = response.body().string();
                 System.out.println("response-----"+resp);
-            }catch (SocketTimeoutException e){
+            } catch (SocketTimeoutException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " CallSaveButtonFunctionality  STE2 " + e);
-                if(OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)){AppConstants.NETWORK_STRENGTH = false;}
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality  STE2 " + e);
+                if (OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)) {
+                    AppConstants.NETWORK_STRENGTH = false;
+                }
 
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-                if(OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)){AppConstants.NETWORK_STRENGTH = false;}
+                if (OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)) {
+                    AppConstants.NETWORK_STRENGTH = false;
+                }
             }
             return resp;
         }
@@ -502,9 +499,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                     System.out.println("ResponceMessage .." + ResponceMessage);
 
-
                     if (ResponceMessage.equalsIgnoreCase("success")) {
-
 
                         //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +" PIN Accepted:" + etPersonnelPin.getText().toString().trim());
 
@@ -528,25 +523,30 @@ public class AcceptDeptActivity extends AppCompatActivity {
                     } else {
 
                         String ResponceText = jsonObject.getString("ResponceText");
+
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Department number rejected. Error: " + ResponceText);
+
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 
-
-                        DilaogRecreate(AcceptDeptActivity.this,"Message",ResponceText);
-
+                        DialogRecreate(AcceptDeptActivity.this,"Message",ResponceText);
 
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
-                    if(OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)){AppConstants.NETWORK_STRENGTH = false;}
+                    if (OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)) {
+                        AppConstants.NETWORK_STRENGTH = false;
+                    }
                 }
-            }else{
-                Log.i(TAG,"CallSaveButtonValidation Server Response Empty!");
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "CallSaveButtonValidation  Server Response Empty!");
+            } else {
+                Log.i(TAG, "CallSaveButtonValidation Server Response Empty!");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "CallSaveButtonValidation  Server Response Empty!");
             }
 
         }
 
-        public void DilaogRecreate(final Activity context, final String title, final String message) {
+        public void DialogRecreate(final Activity context, final String title, final String message) {
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -556,7 +556,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                             .setTitle(title)
                             .setMessage(message)
                             .setCancelable(false)
-                            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // Whatever...

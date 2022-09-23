@@ -357,6 +357,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                         if (C_AccHours == 0) { // Must be greater than 0.
                             Istimeout_Sec = true;
                             ResetTimeoutHoursScreen();
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + getResources().getString(R.string.peHour0).replace("hours", ScreenNameForHours.toLowerCase()));
                             CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error", getResources().getString(R.string.peHour0).replace("hours", ScreenNameForHours.toLowerCase()));
 
                         } else if (CheckOdometerReasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
@@ -364,7 +366,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                             if (LastTxtnQuantity > 10 && C_AccHours == PO && (cnt123 < 3)) {
                                 // Must entered different reading if the last transaction fuel quantity is greater than 10.
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Entered a reading that was previously entered");
+                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.prevReading));
                                 etHours.setText("");
                                 Istimeout_Sec = true;
                                 ResetTimeoutHoursScreen();
@@ -387,7 +389,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                     } else {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Entered Hours (" + C_AccHours + ") are not within the reasonability");
+                                            AppConstants.WriteinFile(TAG + "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                         etHours.setText("");
                                         Istimeout_Sec = true;
                                         ResetTimeoutHoursScreen();
@@ -402,7 +404,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                 } else {
                                     etHours.setText("");
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Entered Hours (" + C_AccHours + ") are not within the reasonability");
+                                        AppConstants.WriteinFile(TAG + "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", "The " + ScreenNameForHours + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
                                     Istimeout_Sec = true;
                                     ResetTimeoutHoursScreen();
@@ -455,6 +457,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                             if (entered_hrs == 0) { // Must be greater than 0.
                                 Istimeout_Sec = true;
                                 ResetTimeoutHoursScreen();
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.peHour0).replace("hours", ScreenNameForHours.toLowerCase()));
                                 CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", getResources().getString(R.string.peHour0).replace("hours", ScreenNameForHours.toLowerCase()));
 
                             } else if (AppConstants.OFF_ODO_Reasonable != null && AppConstants.OFF_ODO_Reasonable.trim().toLowerCase().equalsIgnoreCase("true")) {
@@ -484,6 +488,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                             offlineValidHrs();
 
                                         } else {
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForHours);
                                             CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", "Please enter Correct " + ScreenNameForHours);
                                             //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
                                             Istimeout_Sec = true;
@@ -502,6 +508,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                         offlineValidHrs();
 
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForHours);
                                         CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", "Please enter Correct " + ScreenNameForHours);
                                         //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.RED);
                                         Istimeout_Sec = true;
@@ -523,6 +531,8 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                     }
                 }
             } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForHours);
                 CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Error Message", "Please enter " + ScreenNameForHours);
                 Istimeout_Sec = true;
                 ResetTimeoutHoursScreen();

@@ -24,7 +24,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
     LinearLayout linearOdo, linearDept, linearPerso, linearOther;
     EditText etOdometer, etDeptNumber, etPersonnelPin, etOther;
     Button btnSave, btnCancel;
-
+    private static final String TAG = "AcceptField_Activity ";
     private String vehicleNumber;
 
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "";
@@ -109,7 +109,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etOdometer.getText().toString().trim().isEmpty()) {
 
                             odo=false;
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Please enter odometer.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter odometer.");
                         }
 
@@ -118,7 +119,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etDeptNumber.getText().toString().trim().isEmpty()) {
 
                             dept=false;
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Please enter Department Number.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter Department Number.");
                         }
 
@@ -127,7 +129,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etPersonnelPin.getText().toString().trim().isEmpty()) {
 
                             pin=false;
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Please enter Personnel Pin.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter Personnel Pin.");
                         }
 
@@ -136,7 +139,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etOther.getText().toString().trim().isEmpty()) {
 
                             oth=false;
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Please enter Other.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter Other.");
                         }
                     }
@@ -294,6 +298,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
 
                                 } else if (ResponceMessage.equalsIgnoreCase("fail")) {
                                     String ResponceText = jsonObject.getString("ResponceText");
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "Error: " + ResponceText);
                                     CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Message", ResponceText);
                                 }
 

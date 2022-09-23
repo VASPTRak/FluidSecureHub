@@ -508,6 +508,10 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                     } else {
                         String ResponceText = jsonObject.getString("ResponceText");
+
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Vehicle rejected. Error: " + ResponceText);
+
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
                         if (ValidationFailFor.equalsIgnoreCase("Pin")) {
                             AppConstants.colorToastBigFont(this, ResponceText, Color.RED);
@@ -544,6 +548,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 }
 
                 btnSave.setEnabled(true);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Please enter vehicle number or use fob key.");
                 CommonUtils.showMessageDilaog(AcceptVehicleActivity.this, "Error Message", "Please enter vehicle number or use fob key.");
             }
 

@@ -480,7 +480,7 @@ public class CommonUtils {
                         .setTitle(title)
                         .setMessage(message)
                         .setCancelable(false)
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // Whatever...
@@ -1570,11 +1570,12 @@ public class CommonUtils {
         String QRCodeBluetoothMacAddressForBarcode = sharedPre2.getString("QRCodeBluetoothMacAddressForBarcode", ""); //
 
 
-        if (AppConstants.ACS_READER)
-        {
-            if (AppConstants.GenerateLogs && ACSDeviceAddress.contains(":"))AppConstants.WriteinFile("ACSReader Name:" + ACSDeviceName +" MacAddress:" + ACSDeviceAddress);
-        }else{
-            if (AppConstants.GenerateLogs && mDeviceAddress_hf_trak.contains(":")) AppConstants.WriteinFile("HFReader name:" + mDeviceName_hf_trak + " MacAddress: " + mDeviceAddress_hf_trak);
+        if (AppConstants.ACS_READER) {
+            if (AppConstants.GenerateLogs && ACSDeviceAddress.contains(":"))
+                AppConstants.WriteinFile("ACSReader Name:" + ACSDeviceName + " MacAddress:" + ACSDeviceAddress);
+        } else {
+            if (AppConstants.GenerateLogs && mDeviceAddress_hf_trak.contains(":"))
+                AppConstants.WriteinFile("HFReader name:" + mDeviceName_hf_trak + " MacAddress: " + mDeviceAddress_hf_trak);
         }
 
         //LfReader
