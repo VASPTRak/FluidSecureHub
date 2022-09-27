@@ -2300,7 +2300,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not found in offline db.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid Number");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid " + ScreenNameForPersonnel);
                     }
                 }
             }

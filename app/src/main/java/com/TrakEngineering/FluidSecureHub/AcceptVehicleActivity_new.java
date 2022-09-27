@@ -884,7 +884,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             tv_fobkey.setText(fob);
             CommonUtils.PlayBeep(this);
 
-            HashMap<String, String> hmap = getMagneticCardKey(MagCard_vehicle.trim());
+            HashMap<String, String> hmap = new HashMap<>();
+            if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
+                hmap = getMagneticCardKey(MagCard_vehicle.trim());
+            }
 
             hmapSwitchOffline = hmap;
             offlineVehicleInitialization(hmap);
@@ -925,7 +928,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             tv_fobkey.setText(fob);
             CommonUtils.PlayBeep(this);
 
-            HashMap<String, String> hmap = controller.getVehicleDetailsByFOBNumber(fob.trim());
+            HashMap<String, String> hmap = new HashMap<>();
+            if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
+                hmap = controller.getVehicleDetailsByFOBNumber(fob.trim());
+            }
             hmapSwitchOffline = hmap;
             offlineVehicleInitialization(hmap);
             AppConstants.NonValidateVehicle_FOB_KEY = fob;
@@ -1522,7 +1528,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         try {
             String V_Number = editVehicleNumber.getText().toString().trim();
             //////////common for online offline///////////////////////////////
-            HashMap<String, String> hmap = controller.getVehicleDetailsByVehicleNumber(V_Number);
+            HashMap<String, String> hmap = new HashMap<>();
+            if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
+                hmap = controller.getVehicleDetailsByVehicleNumber(V_Number);
+            }
             hmapSwitchOffline = hmap;
             offlineVehicleInitialization(hmap);
 
@@ -1595,7 +1604,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
             IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
             String V_Number = editVehicleNumber.getText().toString().trim();
-            HashMap<String, String> hmap = controller.getVehicleDetailsByVehicleNumber(V_Number);
+            HashMap<String, String> hmap = new HashMap<>();
+            if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
+                hmap = controller.getVehicleDetailsByVehicleNumber(V_Number);
+            }
             offlineVehicleInitialization(hmap);
 
             if (!V_Number.isEmpty() || !AppConstants.APDU_FOB_KEY.isEmpty() || !Barcode_val.isEmpty() || !MagCard_vehicle.isEmpty()) {

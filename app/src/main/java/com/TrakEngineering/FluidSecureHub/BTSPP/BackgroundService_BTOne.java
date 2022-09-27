@@ -1196,7 +1196,7 @@ public class BackgroundService_BTOne extends Service {
 
             if (!Response.contains(checkPulses)) {
                 stopCount++;
-                if (!Response.contains("OFF")) {
+                if (!Response.contains("ON") && !Response.contains("OFF")) {
                     Log.i(TAG, " BTLink 1: No response from link>>" + stopCount);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 1: No response from link. Response >> " + Response.trim());

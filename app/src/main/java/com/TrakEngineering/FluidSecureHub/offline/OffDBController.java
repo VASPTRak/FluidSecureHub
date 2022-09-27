@@ -791,7 +791,7 @@ public class OffDBController extends SQLiteOpenHelper {
         } catch (Exception e){
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getVehicleDetailsByVehicleNumber Exception" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " getVehicleDetailsByVehicleNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -800,47 +800,54 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
-        String dummyFOB = FOBNumber;
-        String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
-        if (asd.equalsIgnoreCase("9000")) {
-            dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+        try {
+            String dummyFOB = FOBNumber;
+            String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
+            if (asd.equalsIgnoreCase("9000")) {
+                dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+            }
+
+            String selectQuery = "SELECT * FROM tbl_off_vehicle WHERE FOBNumber <> ''  AND LOWER( " +
+                    " case when substr(FOBNumber, length(FOBNumber)-3, length(FOBNumber)) = '9000' then substr(FOBNumber, 0, length(FOBNumber)-3) " +
+                    " else FOBNumber end " +
+                    ")='" + dummyFOB.toLowerCase() + "'";
+
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("VehicleId", cursor.getString(1));
+                    map.put("VehicleNumber", cursor.getString(2));
+                    map.put("CurrentOdometer", cursor.getString(3));
+                    map.put("CurrentHours", cursor.getString(4));
+                    map.put("RequireOdometerEntry", cursor.getString(5));
+                    map.put("RequireHours", cursor.getString(6));
+                    map.put("FuelLimitPerTxn", cursor.getString(7));
+                    map.put("FuelLimitPerDay", cursor.getString(8));
+                    map.put("FOBNumber", cursor.getString(9));
+                    map.put("AllowedLinks", cursor.getString(10));
+                    map.put("Active", cursor.getString(11));
+                    map.put("CheckOdometerReasonable", cursor.getString(12));
+                    map.put("OdometerReasonabilityConditions", cursor.getString(13));
+                    map.put("OdoLimit", cursor.getString(14));
+                    map.put("HoursLimit", cursor.getString(15));
+                    map.put("MagneticCardReaderNumber", cursor.getString(19));
+
+                    System.out.println("***" + cursor.getString(1));
+
+                    wordList = map;
+
+
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " getVehicleDetailsByFOBNumber Exception: " + e.getMessage());
         }
 
-        String selectQuery = "SELECT * FROM tbl_off_vehicle WHERE FOBNumber <> ''  AND LOWER( " +
-                " case when substr(FOBNumber, length(FOBNumber)-3, length(FOBNumber)) = '9000' then substr(FOBNumber, 0, length(FOBNumber)-3) " +
-                " else FOBNumber end " +
-                ")='" + dummyFOB.toLowerCase() + "'";
-
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("VehicleId", cursor.getString(1));
-                map.put("VehicleNumber", cursor.getString(2));
-                map.put("CurrentOdometer", cursor.getString(3));
-                map.put("CurrentHours", cursor.getString(4));
-                map.put("RequireOdometerEntry", cursor.getString(5));
-                map.put("RequireHours", cursor.getString(6));
-                map.put("FuelLimitPerTxn", cursor.getString(7));
-                map.put("FuelLimitPerDay", cursor.getString(8));
-                map.put("FOBNumber", cursor.getString(9));
-                map.put("AllowedLinks", cursor.getString(10));
-                map.put("Active", cursor.getString(11));
-                map.put("CheckOdometerReasonable", cursor.getString(12));
-                map.put("OdometerReasonabilityConditions", cursor.getString(13));
-                map.put("OdoLimit", cursor.getString(14));
-                map.put("HoursLimit", cursor.getString(15));
-                map.put("MagneticCardReaderNumber", cursor.getString(19));
-
-                System.out.println("***" + cursor.getString(1));
-
-                wordList = map;
-
-
-            } while (cursor.moveToNext());
-        }
         return wordList;
     }
 
@@ -848,48 +855,55 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
-        String dummyFOB = MagneticCardReaderNumber;
-        String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
-        if (asd.equalsIgnoreCase("9000")) {
-            dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+        try {
+            String dummyFOB = MagneticCardReaderNumber;
+            String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
+            if (asd.equalsIgnoreCase("9000")) {
+                dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+            }
+
+            String selectQuery = "SELECT * FROM tbl_off_vehicle WHERE MagneticCardReaderNumber <> ''  AND LOWER( " +
+                    " case when substr(MagneticCardReaderNumber, length(MagneticCardReaderNumber)-3, length(MagneticCardReaderNumber)) = '9000' then substr(MagneticCardReaderNumber, 0, length(MagneticCardReaderNumber)-3) " +
+                    " else MagneticCardReaderNumber end " +
+                    ")='" + dummyFOB.toLowerCase() + "'";
+
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("VehicleId", cursor.getString(1));
+                    map.put("VehicleNumber", cursor.getString(2));
+                    map.put("CurrentOdometer", cursor.getString(3));
+                    map.put("CurrentHours", cursor.getString(4));
+                    map.put("RequireOdometerEntry", cursor.getString(5));
+                    map.put("RequireHours", cursor.getString(6));
+                    map.put("FuelLimitPerTxn", cursor.getString(7));
+                    map.put("FuelLimitPerDay", cursor.getString(8));
+                    map.put("FOBNumber", cursor.getString(9));
+                    map.put("AllowedLinks", cursor.getString(10));
+                    map.put("Active", cursor.getString(11));
+                    map.put("CheckOdometerReasonable", cursor.getString(12));
+                    map.put("OdometerReasonabilityConditions", cursor.getString(13));
+                    map.put("OdoLimit", cursor.getString(14));
+                    map.put("HoursLimit", cursor.getString(15));
+                    map.put("MagneticCardReaderNumber", cursor.getString(19));
+
+
+                    System.out.println("***" + cursor.getString(1));
+
+                    wordList = map;
+
+
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " getVehicleDetailsByMagNumber Exception: " + e.getMessage());
         }
 
-        String selectQuery = "SELECT * FROM tbl_off_vehicle WHERE MagneticCardReaderNumber <> ''  AND LOWER( " +
-                " case when substr(MagneticCardReaderNumber, length(MagneticCardReaderNumber)-3, length(MagneticCardReaderNumber)) = '9000' then substr(MagneticCardReaderNumber, 0, length(MagneticCardReaderNumber)-3) " +
-                " else MagneticCardReaderNumber end " +
-                ")='" + dummyFOB.toLowerCase() + "'";
-
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("VehicleId", cursor.getString(1));
-                map.put("VehicleNumber", cursor.getString(2));
-                map.put("CurrentOdometer", cursor.getString(3));
-                map.put("CurrentHours", cursor.getString(4));
-                map.put("RequireOdometerEntry", cursor.getString(5));
-                map.put("RequireHours", cursor.getString(6));
-                map.put("FuelLimitPerTxn", cursor.getString(7));
-                map.put("FuelLimitPerDay", cursor.getString(8));
-                map.put("FOBNumber", cursor.getString(9));
-                map.put("AllowedLinks", cursor.getString(10));
-                map.put("Active", cursor.getString(11));
-                map.put("CheckOdometerReasonable", cursor.getString(12));
-                map.put("OdometerReasonabilityConditions", cursor.getString(13));
-                map.put("OdoLimit", cursor.getString(14));
-                map.put("HoursLimit", cursor.getString(15));
-                map.put("MagneticCardReaderNumber", cursor.getString(19));
-
-
-                System.out.println("***" + cursor.getString(1));
-
-                wordList = map;
-
-
-            } while (cursor.moveToNext());
-        }
         return wordList;
     }
 
@@ -899,33 +913,37 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE PinNumber COLLATE NOCASE='" + PIN.trim() + "'";
 
-        String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE PinNumber COLLATE NOCASE='" + PIN.trim() + "'";
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("PersonId", cursor.getString(1));
+                    map.put("PinNumber", cursor.getString(2));
+                    map.put("FuelLimitPerTxn", cursor.getString(3));
+                    map.put("FuelLimitPerDay", cursor.getString(4));
+                    map.put("FOBNumber", cursor.getString(5));
+                    map.put("Authorizedlinks", cursor.getString(6));
+                    map.put("AssignedVehicles", cursor.getString(7));
+                    map.put("MagneticCardReaderNumber", cursor.getString(8));
+                    map.put("Barcode", cursor.getString(9));
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("PersonId", cursor.getString(1));
-                map.put("PinNumber", cursor.getString(2));
-                map.put("FuelLimitPerTxn", cursor.getString(3));
-                map.put("FuelLimitPerDay", cursor.getString(4));
-                map.put("FOBNumber", cursor.getString(5));
-                map.put("Authorizedlinks", cursor.getString(6));
-                map.put("AssignedVehicles", cursor.getString(7));
-                map.put("MagneticCardReaderNumber", cursor.getString(8));
-                map.put("Barcode", cursor.getString(9));
+                    System.out.println("***" + cursor.getString(1));
 
+                    wordList = map;
 
-                System.out.println("***" + cursor.getString(1));
-
-                wordList = map;
-
-
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " getPersonnelDetailsByPIN Exception: " + e.getMessage());
         }
+
         return wordList;
     }
 
@@ -933,40 +951,47 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
-        String dummyFOB = FOB;
-        String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
-        if (asd.equalsIgnoreCase("9000")) {
-            dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+        try {
+            String dummyFOB = FOB;
+            String asd = dummyFOB.substring(dummyFOB.length() - 4, dummyFOB.length());
+            if (asd.equalsIgnoreCase("9000")) {
+                dummyFOB = dummyFOB.substring(0, dummyFOB.length() - 4);
+            }
+
+            String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE FOBNumber <> ''  AND LOWER( " +
+                    " case when substr(FOBNumber, length(FOBNumber)-3, length(FOBNumber)) = '9000' then substr(FOBNumber, 0, length(FOBNumber)-3) " +
+                    " else FOBNumber end " +
+                    ")='" + dummyFOB.toLowerCase() + "'";
+
+
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("PersonId", cursor.getString(1));
+                    map.put("PinNumber", cursor.getString(2));
+                    map.put("FuelLimitPerTxn", cursor.getString(3));
+                    map.put("FuelLimitPerDay", cursor.getString(4));
+                    map.put("FOBNumber", cursor.getString(5));
+                    map.put("Authorizedlinks", cursor.getString(6));
+                    map.put("AssignedVehicles", cursor.getString(7));
+                    map.put("MagneticCardReaderNumber", cursor.getString(8));
+                    map.put("Barcode", cursor.getString(9));
+
+                    System.out.println("***" + cursor.getString(1));
+
+                    wordList = map;
+
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " getPersonnelDetailsByFOBnumber Exception: " + e.getMessage());
         }
 
-        String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE FOBNumber <> ''  AND LOWER( " +
-                " case when substr(FOBNumber, length(FOBNumber)-3, length(FOBNumber)) = '9000' then substr(FOBNumber, 0, length(FOBNumber)-3) " +
-                " else FOBNumber end " +
-                ")='" + dummyFOB.toLowerCase() + "'";
-
-
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("PersonId", cursor.getString(1));
-                map.put("PinNumber", cursor.getString(2));
-                map.put("FuelLimitPerTxn", cursor.getString(3));
-                map.put("FuelLimitPerDay", cursor.getString(4));
-                map.put("FOBNumber", cursor.getString(5));
-                map.put("Authorizedlinks", cursor.getString(6));
-                map.put("AssignedVehicles", cursor.getString(7));
-                map.put("MagneticCardReaderNumber", cursor.getString(8));
-                map.put("Barcode", cursor.getString(9));
-
-                System.out.println("***" + cursor.getString(1));
-
-                wordList = map;
-
-            } while (cursor.moveToNext());
-        }
         return wordList;
     }
 
@@ -1010,8 +1035,10 @@ public class OffDBController extends SQLiteOpenHelper {
                 } while (cursor.moveToNext());
             }
 
-        }catch (Exception  e){
+        } catch (Exception e){
             e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " getPersonnelDetailsByMagCardnumber Exception: " + e.getMessage());
         }
         return wordList;
     }
