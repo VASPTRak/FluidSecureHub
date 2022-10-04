@@ -200,9 +200,9 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 success = folder.mkdirs();
             }
 
-            if (BTConstants.CurrentTransactionIsBT) {
+            /*if (BTConstants.CurrentTransactionIsBT) {
                 AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
-            }
+            }*/
             String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
 
             File f = new File(LocalPath);

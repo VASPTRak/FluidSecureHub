@@ -1186,16 +1186,18 @@ public class BackgroundService_BTTwo extends Service {
 
             if (!Response.contains(checkPulses)) {
                 stopCount++;
-                if (!Response.contains("ON") && !Response.contains("OFF")) {
+                /*if (!Response.contains("ON") && !Response.contains("OFF")) {
                     Log.i(TAG, " BTLink 2: No response from link>>" + stopCount);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 2: No response from link. Response >> " + Response.trim());
-                }
+                }*/
                 //int pumpOnpoint = Integer.parseInt(PumpOnTime);
                 if (stopCount >= stopAutoFuelSeconds) {
                     if (Pulses <= 0) {
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTTwo.this);
                     }
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 2: Auto Stop Hit. Response >> " + Response.trim());
                     stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
@@ -1462,7 +1464,7 @@ public class BackgroundService_BTTwo extends Service {
 
                 String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
                 File file = new File(LocalPath);
-                if (file.exists() && AppConstants.UP_Upgrade_File_name.startsWith("BT_")) {
+                if (file.exists()) { // && AppConstants.UP_Upgrade_File_name.startsWith("BT_")
                     BTConstants.UpgradeStatusBT2 = "Started";
                     BTConstants.isUpgradeInProgress_BT2 = true;
                     new BTLinkUpgradeFunctionality().execute();

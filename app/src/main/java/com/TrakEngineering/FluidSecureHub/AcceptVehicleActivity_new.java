@@ -1870,10 +1870,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         editor.putString("OdoLimit", OdoLimit);
                         editor.putString("OdometerReasonabilityConditions", OdometerReasonabilityConditions);
                         editor.putString("CheckOdometerReasonable", CheckOdometerReasonable);
-                        editor.putString("PreviousOdo", PreviousOdo);
-                        editor.putString("OdoLimit", OdoLimit);
-                        editor.putString("OdometerReasonabilityConditions", OdometerReasonabilityConditions);
-                        editor.putString("CheckOdometerReasonable", CheckOdometerReasonable);
                         editor.putString("PreviousHours", PreviousHours);
                         editor.putString("HoursLimit", HoursLimit);
                         editor.putString("LastTransactionFuelQuantity", LastTransactionFuelQuantity);
@@ -2903,7 +2899,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Vehicle Barcode read success: " + Barcode_val);
 
-                    HashMap<String, String> hmap = controller.getVehicleDetailsByBarcodeNumber(Barcode_val);
+                    HashMap<String, String> hmap = new HashMap<>();
+                    if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
+                        hmap = controller.getVehicleDetailsByBarcodeNumber(Barcode_val);
+                    }
                     hmapSwitchOffline = hmap;
                     offlineVehicleInitialization(hmap);
 
@@ -3107,7 +3106,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 String Active = hmap.get("Active");//: "Y"
                 String IsExtraOther = hmap.get("IsExtraOther");
                 String ExtraOtherLabel = hmap.get("ExtraOtherLabel");
-
                 String CheckOdometerReasonable = hmap.get("CheckOdometerReasonable");
                 String OdometerReasonabilityConditions = hmap.get("OdometerReasonabilityConditions");
                 String OdoLimit = hmap.get("OdoLimit");
@@ -3216,9 +3214,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 success = folder.mkdirs();
             }
 
-            if (BTConstants.CurrentTransactionIsBT) {
+            /*if (BTConstants.CurrentTransactionIsBT) {
                 AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
-            }
+            }*/
             String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
 
             File f = new File(LocalPath);
@@ -3229,6 +3227,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             } else {
                 if (AppConstants.UP_FilePath != null) {
                     //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Downloading link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ")");
                     new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name);
                 } else {
                     Log.e(TAG, "Link upgrade File path null");
@@ -3537,7 +3537,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                         Barcode_val = newData.trim();
 
-                        HashMap<String, String> hmap = controller.getVehicleDetailsByBarcodeNumber(Barcode_val);
+                        HashMap<String, String> hmap = new HashMap<>();
+                        if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
+                            hmap = controller.getVehicleDetailsByBarcodeNumber(Barcode_val);
+                        }
                         hmapSwitchOffline = hmap;
                         offlineVehicleInitialization(hmap);
 

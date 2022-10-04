@@ -1625,6 +1625,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             String selSSID = serverSSIDList.get(0).get("WifiSSId");
             String selMacAddress = serverSSIDList.get(0).get("MacAddress");
             String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
+            String FirmwareFileName = serverSSIDList.get(0).get("FirmwareFileName");
             AppConstants.CURRENT_SELECTED_SSID = selSSID;
 
             if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -1644,9 +1645,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             if (FirmwareVersion == null) {
                 FirmwareVersion = "";
             }
+            if (FirmwareFileName == null) {
+                FirmwareFileName = "";
+            }
 
             if (!IsUpgrade.isEmpty()) {
-                SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
             }
 
             if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -2925,6 +2929,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     String IsUpgrade = serverSSIDList.get(SelectedItemPos).get("IsUpgrade");
                     String UPFilePath = serverSSIDList.get(SelectedItemPos).get("UPFilePath");
                     String FirmwareVersion = serverSSIDList.get(SelectedItemPos).get("FirmwareVersion");
+                    String FirmwareFileName = serverSSIDList.get(SelectedItemPos).get("FirmwareFileName");
                     AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
                     if (ReconfigureLink == null) {
                         ReconfigureLink = "";
@@ -2942,6 +2947,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
                     if (FirmwareVersion == null) {
                         FirmwareVersion = "";
+                    }
+                    if (FirmwareFileName == null) {
+                        FirmwareFileName = "";
                     }
 
                     String txtnTypeForLog = "";
@@ -2981,7 +2989,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", selSiteId, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"), "", "");
 
                             if (!IsUpgrade.isEmpty()) {
-                                SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                                SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
                             }
 
                             CheckBTConnection(SelectedItemPos, selSSID, BTselMacAddress);
@@ -3067,7 +3075,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             /////////////////////////////////////////////////////
 
                             if (!IsUpgrade.isEmpty()) {
-                                SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, selSiteId, hoseID);
+                                SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
                             }
 
                             //Rename SSID while mac address updation
@@ -9371,6 +9379,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 String IsLinkFlagged = c.getString("IsLinkFlagged");
                                 String LinkFlaggedMessage = c.getString("LinkFlaggedMessage");
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
+                                String FirmwareFileName = c.getString("FirmwareFileName");
 
                                 SetBTLinksMacAddress(i, BTMacAddress);
 
@@ -9478,6 +9487,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 map.put("IsLinkFlagged", IsLinkFlagged);
                                 map.put("LinkFlaggedMessage", LinkFlaggedMessage);
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
+                                map.put("FirmwareFileName", FirmwareFileName);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -10369,6 +10379,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 String IsLinkFlagged = c.getString("IsLinkFlagged");
                                 String LinkFlaggedMessage = c.getString("LinkFlaggedMessage");
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
+                                String FirmwareFileName = c.getString("FirmwareFileName");
 
                                 AppConstants.UP_FilePath = FilePath;
 
@@ -10411,6 +10422,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 map.put("IsLinkFlagged", IsLinkFlagged);
                                 map.put("LinkFlaggedMessage", LinkFlaggedMessage);
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
+                                map.put("FirmwareFileName", FirmwareFileName);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -10834,6 +10846,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             String IsLinkFlagged = c.getString("IsLinkFlagged");
                             String LinkFlaggedMessage = c.getString("LinkFlaggedMessage");
                             String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
+                            String FirmwareFileName = c.getString("FirmwareFileName");
 
                             ///tld upgrade
                             String IsTLDFirmwareUpgrade = c.getString("IsTLDFirmwareUpgrade");
@@ -10883,6 +10896,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             map.put("IsLinkFlagged", IsLinkFlagged);
                             map.put("LinkFlaggedMessage", LinkFlaggedMessage);
                             map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
+                            map.put("FirmwareFileName", FirmwareFileName);
 
                             System.out.println("WifiSSId-" + WifiSSId);
                             System.out.println("IsTLDFirmwareUpgrade-" + IsTLDFirmwareUpgrade);
@@ -13475,16 +13489,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 String FilePath = AppConstants.DetailsServerSSIDList.get(i).get("FilePath");
                 String IsUpgrade = AppConstants.DetailsServerSSIDList.get(i).get("IsUpgrade");
                 String FirmwareVersion = AppConstants.DetailsServerSSIDList.get(i).get("FirmwareVersion"); //"Y";
+                String FirmwareFileName = serverSSIDList.get(SelectedItemPos).get("FirmwareFileName");
+
+                if (IsUpgrade == null) {
+                    IsUpgrade = "";
+                }
+                if (FirmwareVersion == null) {
+                    FirmwareVersion = "";
+                }
+                if (FirmwareFileName == null) {
+                    FirmwareFileName = "";
+                }
 
                 if (IsUpgrade.trim().equalsIgnoreCase("Y")) {
                     AppConstants.UP_FilePath = FilePath;
                     AppConstants.UP_Upgrade = true;
-                    AppConstants.UP_Upgrade_File_name = "user1.2048.new.5." + FirmwareVersion + ".bin";
+                    //AppConstants.UP_Upgrade_File_name = "user1.2048.new.5." + FirmwareVersion + ".bin";
+                    if (FirmwareFileName.isEmpty()) {
+                        FirmwareFileName = FirmwareVersion + ".bin";
+                    }
+                    AppConstants.UP_Upgrade_File_name = FirmwareFileName;
                 } else {
                     AppConstants.UP_Upgrade = false;
                 }
-
-
 
                 for (int k = 0; k < AppConstants.DetailsListOfConnectedDevices.size(); k++) {
 
@@ -13698,7 +13725,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
-    public void SetUpgradeFirmwareDetails(int position, String IsUpgrade, String FirmwareVersion, String selSiteId, String hoseID) {
+    public void SetUpgradeFirmwareDetails(int position, String IsUpgrade, String FirmwareVersion, String FirmwareFileName, String selSiteId, String hoseID) {
         try {
             //Firmware upgrade
             AppConstants.UP_FirmwareVersion = FirmwareVersion;
@@ -13706,7 +13733,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.WriteinFile(TAG + "SetUpgradeFirmwareDetails => IsUpgrade: " + IsUpgrade + ";Is BT Link: " + AppConstants.IsBTLinkSelectedCurrently);*/
             if (IsUpgrade.trim().equalsIgnoreCase("Y")) {
                 AppConstants.UP_Upgrade = true;
-                AppConstants.UP_Upgrade_File_name = "user1.2048.new.5." + FirmwareVersion + ".bin";
+                //AppConstants.UP_Upgrade_File_name = "user1.2048.new.5." + FirmwareVersion + ".bin";
+                if (FirmwareFileName.isEmpty()) {
+                    FirmwareFileName = FirmwareVersion + ".bin";
+                }
+                AppConstants.UP_Upgrade_File_name = FirmwareFileName;
             } else {
                 AppConstants.UP_Upgrade = false;
             }

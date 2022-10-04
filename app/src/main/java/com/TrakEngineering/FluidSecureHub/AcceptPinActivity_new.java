@@ -2460,9 +2460,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 success = folder.mkdirs();
             }
 
-            if (BTConstants.CurrentTransactionIsBT) {
+            /*if (BTConstants.CurrentTransactionIsBT) {
                 AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
-            }
+            }*/
             String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
             File f = new File(LocalPath);
             if (f.exists()) {
@@ -2472,6 +2472,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             } else {
                 if (AppConstants.UP_FilePath != null) {
                     //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Downloading link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ")");
                     new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name);
                 } else {
                     Log.e(TAG, "Link upgrade File path null");

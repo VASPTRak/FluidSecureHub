@@ -62,7 +62,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, int version_old, int current_version) {
 
         Log.i(TAG,"InOnUpgrade.");
-        AppConstants.WriteinFile(TAG + " onUpgrade called.");
+        AppConstants.WriteinFile(TAG + "onUpgrade called.");
         // If you need to add a column
         if (current_version > version_old) {
             try {
@@ -96,7 +96,6 @@ public class OffDBController extends SQLiteOpenHelper {
             database.execSQL(query6);
         }
 
-
     }
 
     public void storeOfflineToken(Context ctx, String access_token, String token_type, String expires_in, String refresh_token) {
@@ -129,184 +128,233 @@ public class OffDBController extends SQLiteOpenHelper {
                                        String PersonnelDataFilePath, String LinkDataFilePath, String IsNonValidateVehicle, String IsNonValidatePerson, String IsNonValidateODOM,
                                        String IsOtherRequire, String OtherLabel, String HUBType) {
 
-        SharedPreferences pref = ctx.getSharedPreferences("storeOfflineHubDetails", 0);
-        SharedPreferences.Editor editor = pref.edit();
+        try {
 
-        // Storing
-        editor.putString("HubId", HubId);
-        editor.putString("AllowedLinks", AllowedLinks);
-        editor.putString("PersonnelPINNumberRequired", PersonnelPINNumberRequired);
-        editor.putString("VehicleNumberRequired", VehicleNumberRequired);
-        editor.putString("PersonhasFOB", PersonhasFOB);
-        editor.putString("VehiclehasFOB", VehiclehasFOB);
-        editor.putString("WiFiChannel", WiFiChannel);
-        editor.putString("BluetoothCardReader", BluetoothCardReader);
-        editor.putString("BluetoothCardReaderMacAddress", BluetoothCardReaderMacAddress);
-        editor.putString("LFBluetoothCardReader", LFBluetoothCardReader);
-        editor.putString("LFBluetoothCardReaderMacAddress", LFBluetoothCardReaderMacAddress);
-        editor.putString("PrinterMacAddress", PrinterMacAddress);
-        editor.putString("PrinterName", PrinterName);
-        editor.putString("EnablePrinter", EnablePrinter);
-        editor.putString("VehicleDataFilePath", VehicleDataFilePath);
-        editor.putString("PersonnelDataFilePath", PersonnelDataFilePath);
-        editor.putString("LinkDataFilePath", LinkDataFilePath);
-        editor.putString("IsNonValidateVehicle", IsNonValidateVehicle);
-        editor.putString("IsNonValidatePerson", IsNonValidatePerson);
-        editor.putString("IsNonValidateODOM", IsNonValidateODOM);
-        editor.putString("IsOtherRequire", IsOtherRequire);
-        editor.putString("OtherLabel", OtherLabel);
-        editor.putString("HUBType", HUBType);
+            SharedPreferences pref = ctx.getSharedPreferences("storeOfflineHubDetails", 0);
+            SharedPreferences.Editor editor = pref.edit();
 
-        // commit changes
-        editor.apply();
+            // Storing
+            editor.putString("HubId", HubId);
+            editor.putString("AllowedLinks", AllowedLinks);
+            editor.putString("PersonnelPINNumberRequired", PersonnelPINNumberRequired);
+            editor.putString("VehicleNumberRequired", VehicleNumberRequired);
+            editor.putString("PersonhasFOB", PersonhasFOB);
+            editor.putString("VehiclehasFOB", VehiclehasFOB);
+            editor.putString("WiFiChannel", WiFiChannel);
+            editor.putString("BluetoothCardReader", BluetoothCardReader);
+            editor.putString("BluetoothCardReaderMacAddress", BluetoothCardReaderMacAddress);
+            editor.putString("LFBluetoothCardReader", LFBluetoothCardReader);
+            editor.putString("LFBluetoothCardReaderMacAddress", LFBluetoothCardReaderMacAddress);
+            editor.putString("PrinterMacAddress", PrinterMacAddress);
+            editor.putString("PrinterName", PrinterName);
+            editor.putString("EnablePrinter", EnablePrinter);
+            editor.putString("VehicleDataFilePath", VehicleDataFilePath);
+            editor.putString("PersonnelDataFilePath", PersonnelDataFilePath);
+            editor.putString("LinkDataFilePath", LinkDataFilePath);
+            editor.putString("IsNonValidateVehicle", IsNonValidateVehicle);
+            editor.putString("IsNonValidatePerson", IsNonValidatePerson);
+            editor.putString("IsNonValidateODOM", IsNonValidateODOM);
+            editor.putString("IsOtherRequire", IsOtherRequire);
+            editor.putString("OtherLabel", OtherLabel);
+            editor.putString("HUBType", HUBType);
+
+            // commit changes
+            editor.apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "storeOfflineHubDetails Exception: " + e.getMessage());
+        }
     }
 
     public EntityHub getOfflineHubDetails(Context ctx) {
         SharedPreferences sharedPref = ctx.getSharedPreferences("storeOfflineHubDetails", Context.MODE_PRIVATE);
 
         EntityHub hub = new EntityHub();
-        hub.HubId = sharedPref.getString("HubId", "");
-        hub.AllowedLinks = sharedPref.getString("AllowedLinks", "");
-        hub.PersonnelPINNumberRequired = sharedPref.getString("PersonnelPINNumberRequired", "");
-        hub.VehicleNumberRequired = sharedPref.getString("VehicleNumberRequired", "");
-        hub.PersonhasFOB = sharedPref.getString("PersonhasFOB", "");
-        hub.VehiclehasFOB = sharedPref.getString("VehiclehasFOB", "");
-        hub.WiFiChannel = sharedPref.getString("WiFiChannel", "");
-        hub.BluetoothCardReader = sharedPref.getString("BluetoothCardReader", "");
-        hub.BluetoothCardReaderMacAddress = sharedPref.getString("BluetoothCardReaderMacAddress", "");
-        hub.LFBluetoothCardReader = sharedPref.getString("LFBluetoothCardReader", "");
-        hub.LFBluetoothCardReaderMacAddress = sharedPref.getString("LFBluetoothCardReaderMacAddress", "");
-        hub.PrinterMacAddress = sharedPref.getString("PrinterMacAddress", "");
-        hub.PrinterName = sharedPref.getString("PrinterName", "");
-        hub.EnablePrinter = sharedPref.getString("EnablePrinter", "");
 
-        hub.VehicleDataFilePath = sharedPref.getString("VehicleDataFilePath", "");
-        hub.PersonnelDataFilePath = sharedPref.getString("PersonnelDataFilePath", "");
-        hub.LinkDataFilePath = sharedPref.getString("LinkDataFilePath", "");
-        hub.IsNonValidateVehicle = sharedPref.getString("IsNonValidateVehicle", "");
-        hub.IsNonValidatePerson = sharedPref.getString("IsNonValidatePerson", "");
-        hub.IsNonValidateODOM = sharedPref.getString("IsNonValidateODOM", "");
+        try {
+            hub.HubId = sharedPref.getString("HubId", "");
+            hub.AllowedLinks = sharedPref.getString("AllowedLinks", "");
+            hub.PersonnelPINNumberRequired = sharedPref.getString("PersonnelPINNumberRequired", "");
+            hub.VehicleNumberRequired = sharedPref.getString("VehicleNumberRequired", "");
+            hub.PersonhasFOB = sharedPref.getString("PersonhasFOB", "");
+            hub.VehiclehasFOB = sharedPref.getString("VehiclehasFOB", "");
+            hub.WiFiChannel = sharedPref.getString("WiFiChannel", "");
+            hub.BluetoothCardReader = sharedPref.getString("BluetoothCardReader", "");
+            hub.BluetoothCardReaderMacAddress = sharedPref.getString("BluetoothCardReaderMacAddress", "");
+            hub.LFBluetoothCardReader = sharedPref.getString("LFBluetoothCardReader", "");
+            hub.LFBluetoothCardReaderMacAddress = sharedPref.getString("LFBluetoothCardReaderMacAddress", "");
+            hub.PrinterMacAddress = sharedPref.getString("PrinterMacAddress", "");
+            hub.PrinterName = sharedPref.getString("PrinterName", "");
+            hub.EnablePrinter = sharedPref.getString("EnablePrinter", "");
 
-        hub.IsOtherRequire = sharedPref.getString("IsOtherRequire", "");
-        hub.OtherLabel = sharedPref.getString("OtherLabel", "Other");
-        hub.HUBType = sharedPref.getString("HUBType", "N");
+            hub.VehicleDataFilePath = sharedPref.getString("VehicleDataFilePath", "");
+            hub.PersonnelDataFilePath = sharedPref.getString("PersonnelDataFilePath", "");
+            hub.LinkDataFilePath = sharedPref.getString("LinkDataFilePath", "");
+            hub.IsNonValidateVehicle = sharedPref.getString("IsNonValidateVehicle", "");
+            hub.IsNonValidatePerson = sharedPref.getString("IsNonValidatePerson", "");
+            hub.IsNonValidateODOM = sharedPref.getString("IsNonValidateODOM", "");
 
+            hub.IsOtherRequire = sharedPref.getString("IsOtherRequire", "");
+            hub.OtherLabel = sharedPref.getString("OtherLabel", "Other");
+            hub.HUBType = sharedPref.getString("HUBType", "N");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getOfflineHubDetails Exception: " + e.getMessage());
+        }
         return hub;
-
     }
 
     public long insertTLDReadings(String PROBEMacAddress, String Level, String selSiteId, String TLDFirmwareVersion,
-                                  String IMEI_UDID, String LSB, String MSB, String TLDTemperature, String ReadingDateTime, String Response_code, String FromDirectTLD
-    ) {
+                                  String IMEI_UDID, String LSB, String MSB, String TLDTemperature, String ReadingDateTime, String Response_code, String FromDirectTLD) {
 
+        long insertedID = 0;
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("PROBEMacAddress", PROBEMacAddress);
+            values.put("Level", Level);
+            values.put("selSiteId", selSiteId);
+            values.put("TLDFirmwareVersion", TLDFirmwareVersion);
+            values.put("IMEI_UDID", IMEI_UDID);
+            values.put("LSB", LSB);
+            values.put("MSB", MSB);
+            values.put("TLDTemperature", TLDTemperature);
+            values.put("ReadingDateTime", ReadingDateTime);
+            values.put("Response_code", Response_code);
+            values.put("FromDirectTLD", FromDirectTLD);
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("PROBEMacAddress", PROBEMacAddress);
-        values.put("Level", Level);
-        values.put("selSiteId", selSiteId);
-        values.put("TLDFirmwareVersion", TLDFirmwareVersion);
-        values.put("IMEI_UDID", IMEI_UDID);
-        values.put("LSB", LSB);
-        values.put("MSB", MSB);
-        values.put("TLDTemperature", TLDTemperature);
-        values.put("ReadingDateTime", ReadingDateTime);
-        values.put("Response_code", Response_code);
-        values.put("FromDirectTLD", FromDirectTLD);
+            insertedID = database.insert(TBL_OFF_TLD, null, values);
+            database.close();
 
-
-        long insertedID = database.insert(TBL_OFF_TLD, null, values);
-        database.close();
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "insertTLDReadings Exception: " + e.getMessage());
+        }
         return insertedID;
     }
 
     public long insertLinkDetails(String SiteId, String WifiSSId, String PumpOnTime, String PumpOffTime, String AuthorizedFuelingDays, String Pulserratio, String MacAddress, String IsTLDCall,String LinkCommunicationType,String APMacAddress,String BTMacAddress) {
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("SiteId", SiteId);
-        values.put("WifiSSId", WifiSSId);
-        values.put("PumpOnTime", PumpOnTime);
-        values.put("PumpOffTime", PumpOffTime);
-        values.put("AuthorizedFuelingDays", AuthorizedFuelingDays);
-        values.put("Pulserratio", Pulserratio);
-        values.put("MacAddress", MacAddress);
-        values.put("IsTLDCall", IsTLDCall);
-        values.put("LinkCommunicationType", LinkCommunicationType);
-        values.put("APMacAddress", APMacAddress);
-        values.put("BTMacAddress", BTMacAddress);
+        long insertedID = 0;
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("SiteId", SiteId);
+            values.put("WifiSSId", WifiSSId);
+            values.put("PumpOnTime", PumpOnTime);
+            values.put("PumpOffTime", PumpOffTime);
+            values.put("AuthorizedFuelingDays", AuthorizedFuelingDays);
+            values.put("Pulserratio", Pulserratio);
+            values.put("MacAddress", MacAddress);
+            values.put("IsTLDCall", IsTLDCall);
+            values.put("LinkCommunicationType", LinkCommunicationType);
+            values.put("APMacAddress", APMacAddress);
+            values.put("BTMacAddress", BTMacAddress);
 
-        long insertedID = database.insert(TBL_LINK, null, values);
-        database.close();
+            insertedID = database.insert(TBL_LINK, null, values);
+            database.close();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "insertLinkDetails Exception: " + e.getMessage());
+        }
         return insertedID;
     }
 
 
-    public long insertVehicleDetails(String VehicleId, String VehicleNumber, String CurrentOdometer, String CurrentHours, String RequireOdometerEntry, String RequireHours, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String AllowedLinks, String Active,
-                                     String CheckOdometerReasonable, String OdometerReasonabilityConditions, String OdoLimit, String HoursLimit, String BarcodeNumber, String IsExtraOther, String ExtraOtherLabel,String MagneticCardReaderNumber) {
+    public long insertVehicleDetails(String VehicleId, String VehicleNumber, String CurrentOdometer, String CurrentHours, String RequireOdometerEntry, String RequireHours,
+                                     String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String AllowedLinks, String Active, String CheckOdometerReasonable,
+                                     String OdometerReasonabilityConditions, String OdoLimit, String HoursLimit, String BarcodeNumber, String IsExtraOther,
+                                     String ExtraOtherLabel, String MagneticCardReaderNumber) {
+        long insertedID = 0;
+        try {
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("VehicleId", VehicleId);
-        values.put("VehicleNumber", VehicleNumber);
-        values.put("CurrentOdometer", CurrentOdometer);
-        values.put("CurrentHours", CurrentHours);
-        values.put("RequireOdometerEntry", RequireOdometerEntry);
-        values.put("RequireHours", RequireHours);
-        values.put("FuelLimitPerTxn", FuelLimitPerTxn);
-        values.put("FuelLimitPerDay", FuelLimitPerDay);
-        values.put("FOBNumber", FOBNumber);
-        values.put("AllowedLinks", AllowedLinks);
-        values.put("Active", Active);
-        values.put("CheckOdometerReasonable", CheckOdometerReasonable);
-        values.put("OdometerReasonabilityConditions", OdometerReasonabilityConditions);
-        values.put("OdoLimit", OdoLimit);
-        values.put("HoursLimit", HoursLimit);
-        values.put("BarcodeNumber", BarcodeNumber);
-        values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
+            SQLiteDatabase database = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("VehicleId", VehicleId);
+            values.put("VehicleNumber", VehicleNumber);
+            values.put("CurrentOdometer", CurrentOdometer);
+            values.put("CurrentHours", CurrentHours);
+            values.put("RequireOdometerEntry", RequireOdometerEntry);
+            values.put("RequireHours", RequireHours);
+            values.put("FuelLimitPerTxn", FuelLimitPerTxn);
+            values.put("FuelLimitPerDay", FuelLimitPerDay);
+            values.put("FOBNumber", FOBNumber);
+            values.put("AllowedLinks", AllowedLinks);
+            values.put("Active", Active);
+            values.put("CheckOdometerReasonable", CheckOdometerReasonable);
+            values.put("OdometerReasonabilityConditions", OdometerReasonabilityConditions);
+            values.put("OdoLimit", OdoLimit);
+            values.put("HoursLimit", HoursLimit);
+            values.put("BarcodeNumber", BarcodeNumber);
+            values.put("IsExtraOther", IsExtraOther);
+            values.put("ExtraOtherLabel", ExtraOtherLabel);
+            values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
 
+            insertedID = database.insert(TBL_VEHICLE, null, values);
+            database.close();
 
-        long insertedID = database.insert(TBL_VEHICLE, null, values);
-        database.close();
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "insertVehicleDetails Exception: " + e.getMessage());
+        }
         return insertedID;
     }
 
     public long insertPersonnelPinDetails(String PersonId, String PinNumber, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String Authorizedlinks, String AssignedVehicles,String MagneticCardReaderNumber,String Barcode) {
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("PersonId", PersonId);
-        values.put("PinNumber", PinNumber);
-        values.put("FuelLimitPerTxn", FuelLimitPerTxn);
-        values.put("FuelLimitPerDay", FuelLimitPerDay);
-        values.put("FOBNumber", FOBNumber);
-        values.put("Authorizedlinks", Authorizedlinks);
-        values.put("AssignedVehicles", AssignedVehicles);
-        values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
-        values.put("Barcode", Barcode);
+        long insertedID = 0;
+        try {
 
+            SQLiteDatabase database = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("PersonId", PersonId);
+            values.put("PinNumber", PinNumber);
+            values.put("FuelLimitPerTxn", FuelLimitPerTxn);
+            values.put("FuelLimitPerDay", FuelLimitPerDay);
+            values.put("FOBNumber", FOBNumber);
+            values.put("Authorizedlinks", Authorizedlinks);
+            values.put("AssignedVehicles", AssignedVehicles);
+            values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
+            values.put("Barcode", Barcode);
 
-        long insertedID = database.insert(TBL_PERSONNEL, null, values);
-        database.close();
+            insertedID = database.insert(TBL_PERSONNEL, null, values);
+            database.close();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "insertPersonnelPinDetails Exception: " + e.getMessage());
+        }
         return insertedID;
     }
 
     public long insertFuelTimings(String SiteId, String PersonId, String FromTime, String ToTime) {
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("SiteId", SiteId);
-        values.put("PersonId", PersonId);
-        values.put("FromTime", FromTime);
-        values.put("ToTime", ToTime);
+        long insertedID = 0;
+        try {
 
-        long insertedID = database.insert(TBL_FUEL_TIMING, null, values);
-        database.close();
+            SQLiteDatabase database = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("SiteId", SiteId);
+            values.put("PersonId", PersonId);
+            values.put("FromTime", FromTime);
+            values.put("ToTime", ToTime);
 
+            insertedID = database.insert(TBL_FUEL_TIMING, null, values);
+            database.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "insertFuelTimings Exception: " + e.getMessage());
+        }
         return insertedID;
     }
 
@@ -351,7 +399,7 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " insertOfflineTransactions Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "insertOfflineTransactions Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -432,33 +480,38 @@ public class OffDBController extends SQLiteOpenHelper {
 
     public ArrayList<HashMap<String, String>> getAllLinks() {
 
-        ArrayList<HashMap<String, String>> wordList;
-        wordList = new ArrayList<HashMap<String, String>>();
-        String selectQuery = "SELECT * FROM " + TBL_LINK;
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("SiteId", cursor.getString(1));
-                map.put("WifiSSId", cursor.getString(2));
-                map.put("item", cursor.getString(2));
-                map.put("PumpOnTime", cursor.getString(3));
-                map.put("PumpOffTime", cursor.getString(4));
-                map.put("AuthorizedFuelingDays", cursor.getString(5));
-                map.put("Pulserratio", cursor.getString(6));
-                map.put("MacAddress", cursor.getString(7));
-                map.put("IsTLDCall", cursor.getString(8));
-                map.put("LinkCommunicationType", cursor.getString(9));
-                map.put("APMacAddress", cursor.getString(10));
-                map.put("BTMacAddress", cursor.getString(11));
+        ArrayList<HashMap<String, String>> wordList = new ArrayList<HashMap<String, String>>();
+        try {
 
-                System.out.println("***" + cursor.getString(2));
+            String selectQuery = "SELECT * FROM " + TBL_LINK;
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("SiteId", cursor.getString(1));
+                    map.put("WifiSSId", cursor.getString(2));
+                    map.put("item", cursor.getString(2));
+                    map.put("PumpOnTime", cursor.getString(3));
+                    map.put("PumpOffTime", cursor.getString(4));
+                    map.put("AuthorizedFuelingDays", cursor.getString(5));
+                    map.put("Pulserratio", cursor.getString(6));
+                    map.put("MacAddress", cursor.getString(7));
+                    map.put("IsTLDCall", cursor.getString(8));
+                    map.put("LinkCommunicationType", cursor.getString(9));
+                    map.put("APMacAddress", cursor.getString(10));
+                    map.put("BTMacAddress", cursor.getString(11));
 
+                    System.out.println("***" + cursor.getString(2));
 
-                wordList.add(map);
-            } while (cursor.moveToNext());
+                    wordList.add(map);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getAllLinks Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -468,80 +521,94 @@ public class OffDBController extends SQLiteOpenHelper {
         getAllLinksDetails();
 
         HashMap<String, String> hmObj = new HashMap<String, String>();
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_LINK + " WHERE SiteId=" + SiteId;
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
 
-        String selectQuery = "SELECT * FROM " + TBL_LINK + " WHERE SiteId=" + SiteId;
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
+                hmObj.put("Id", cursor.getString(0));
+                hmObj.put("SiteId", cursor.getString(1));
+                hmObj.put("WifiSSId", cursor.getString(2));
 
-            hmObj.put("Id", cursor.getString(0));
-            hmObj.put("SiteId", cursor.getString(1));
-            hmObj.put("WifiSSId", cursor.getString(2));
+                hmObj.put("PumpOnTime", cursor.getString(3));
+                hmObj.put("PumpOffTime", cursor.getString(4));
+                hmObj.put("AuthorizedFuelingDays", cursor.getString(5));
+                hmObj.put("Pulserratio", cursor.getString(6));
+                hmObj.put("MacAddress", cursor.getString(7));
+                hmObj.put("IsTLDCall", cursor.getString(8));
 
-            hmObj.put("PumpOnTime", cursor.getString(3));
-            hmObj.put("PumpOffTime", cursor.getString(4));
-            hmObj.put("AuthorizedFuelingDays", cursor.getString(5));
-            hmObj.put("Pulserratio", cursor.getString(6));
-            hmObj.put("MacAddress", cursor.getString(7));
-            hmObj.put("IsTLDCall", cursor.getString(8));
-
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getLinksDetailsBySiteId Exception: " + e.getMessage());
         }
         return hmObj;
     }
 
-
     public HashMap<String, String> getAllLinksDetails() {
 
         HashMap<String, String> hmObj = new HashMap<String, String>();
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_LINK;
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
 
-        String selectQuery = "SELECT * FROM " + TBL_LINK;
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
+                hmObj.put("Id", cursor.getString(0));
+                hmObj.put("SiteId", cursor.getString(1));
+                hmObj.put("WifiSSId", cursor.getString(2));
 
-            hmObj.put("Id", cursor.getString(0));
-            hmObj.put("SiteId", cursor.getString(1));
-            hmObj.put("WifiSSId", cursor.getString(2));
+                hmObj.put("PumpOnTime", cursor.getString(3));
+                hmObj.put("PumpOffTime", cursor.getString(4));
+                hmObj.put("AuthorizedFuelingDays", cursor.getString(5));
+                hmObj.put("Pulserratio", cursor.getString(6));
+                hmObj.put("MacAddress", cursor.getString(7));
+                hmObj.put("IsTLDCall", cursor.getString(8));
 
-            hmObj.put("PumpOnTime", cursor.getString(3));
-            hmObj.put("PumpOffTime", cursor.getString(4));
-            hmObj.put("AuthorizedFuelingDays", cursor.getString(5));
-            hmObj.put("Pulserratio", cursor.getString(6));
-            hmObj.put("MacAddress", cursor.getString(7));
-            hmObj.put("IsTLDCall", cursor.getString(8));
+                System.out.println("wwwwww" + cursor.getString(1));
 
-            System.out.println("wwwwww" + cursor.getString(1));
-
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getAllLinksDetails Exception: " + e.getMessage());
         }
         return hmObj;
     }
 
     public EntityOffTranz getTransactionDetailsBySqliteId(long SqliteId) {
 
-
         EntityOffTranz hmObj = new EntityOffTranz();
 
-        String selectQuery = "SELECT * FROM " + TBL_TRANSACTION + " WHERE Id=" + SqliteId;
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_TRANSACTION + " WHERE Id=" + SqliteId;
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
 
-            hmObj.Id = cursor.getString(0);
-            hmObj.HubId = cursor.getString(1);
-            hmObj.SiteId = cursor.getString(2);
-            hmObj.VehicleId = cursor.getString(3);
-            hmObj.CurrentOdometer = cursor.getString(4);
-            hmObj.CurrentHours = cursor.getString(5);
-            hmObj.PersonId = cursor.getString(6);
-            hmObj.PersonPin = cursor.getString(7);
-            hmObj.FuelQuantity = cursor.getString(8);
-            hmObj.Pulses = cursor.getString(9);
-            hmObj.TransactionDateTime = cursor.getString(10);
-            hmObj.OfflineFakeTransactionId = isNULL(cursor.getString(11));
-            hmObj.VehicleNumber = isNULL(cursor.getString(12));
-            hmObj.Other = isNULL(cursor.getString(13));
+                hmObj.Id = cursor.getString(0);
+                hmObj.HubId = cursor.getString(1);
+                hmObj.SiteId = cursor.getString(2);
+                hmObj.VehicleId = cursor.getString(3);
+                hmObj.CurrentOdometer = cursor.getString(4);
+                hmObj.CurrentHours = cursor.getString(5);
+                hmObj.PersonId = cursor.getString(6);
+                hmObj.PersonPin = cursor.getString(7);
+                hmObj.FuelQuantity = cursor.getString(8);
+                hmObj.Pulses = cursor.getString(9);
+                hmObj.TransactionDateTime = cursor.getString(10);
+                hmObj.OfflineFakeTransactionId = isNULL(cursor.getString(11));
+                hmObj.VehicleNumber = isNULL(cursor.getString(12));
+                hmObj.Other = isNULL(cursor.getString(13));
 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getTransactionDetailsBySqliteId Exception: " + e.getMessage());
         }
         return hmObj;
     }
@@ -549,49 +616,52 @@ public class OffDBController extends SQLiteOpenHelper {
     public String getAllOfflineTransactionJSON(Context ctx) {
 
         String apiJSON = "";
-
         ArrayList<EntityOffTranz> allData = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + TBL_TRANSACTION;
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_TRANSACTION;
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
 
-            do {
-                EntityOffTranz hmObj = new EntityOffTranz();
-                hmObj.Id = isNULL(cursor.getString(0));
-                hmObj.HubId = isNULL(cursor.getString(1));
-                hmObj.SiteId = isNULL(cursor.getString(2));
-                hmObj.VehicleId = isNULL(cursor.getString(3));
-                hmObj.CurrentOdometer = isNULL(cursor.getString(4));
-                hmObj.CurrentHours = isNULL(cursor.getString(5));
-                hmObj.PersonId = isNULL(cursor.getString(6));
-                hmObj.PersonPin = isNULL(cursor.getString(7));
-                hmObj.FuelQuantity = isNULL(cursor.getString(8));
-                hmObj.Pulses = isNULL(cursor.getString(9));
-                hmObj.TransactionDateTime = isNULL(cursor.getString(10));
-                hmObj.TransactionFrom = "AP";
-                hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
-                hmObj.OfflineFakeTransactionId = isNULL(cursor.getString(11));
-                hmObj.VehicleNumber = isNULL(cursor.getString(12));
-                hmObj.Other = isNULL(cursor.getString(13));
+                do {
+                    EntityOffTranz hmObj = new EntityOffTranz();
+                    hmObj.Id = isNULL(cursor.getString(0));
+                    hmObj.HubId = isNULL(cursor.getString(1));
+                    hmObj.SiteId = isNULL(cursor.getString(2));
+                    hmObj.VehicleId = isNULL(cursor.getString(3));
+                    hmObj.CurrentOdometer = isNULL(cursor.getString(4));
+                    hmObj.CurrentHours = isNULL(cursor.getString(5));
+                    hmObj.PersonId = isNULL(cursor.getString(6));
+                    hmObj.PersonPin = isNULL(cursor.getString(7));
+                    hmObj.FuelQuantity = isNULL(cursor.getString(8));
+                    hmObj.Pulses = isNULL(cursor.getString(9));
+                    hmObj.TransactionDateTime = isNULL(cursor.getString(10));
+                    hmObj.TransactionFrom = "AP";
+                    hmObj.AppInfo = " Version:" + CommonUtils.getVersionCode(ctx) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ";
+                    hmObj.OfflineFakeTransactionId = isNULL(cursor.getString(11));
+                    hmObj.VehicleNumber = isNULL(cursor.getString(12));
+                    hmObj.Other = isNULL(cursor.getString(13));
 
-                // if(!hmObj.FuelQuantity.trim().isEmpty())
-                allData.add(hmObj);
+                    // if(!hmObj.FuelQuantity.trim().isEmpty())
+                    allData.add(hmObj);
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
 
+            EnityTranzSync ets = new EnityTranzSync();
+            ets.TransactionsModelsObj = allData;
+            Gson gson = new Gson();
+            apiJSON = gson.toJson(ets);
+
+            System.out.println("OfflineJSON-" + apiJSON);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getAllOfflineTransactionJSON Exception: " + e.getMessage());
         }
-
-
-        EnityTranzSync ets = new EnityTranzSync();
-        ets.TransactionsModelsObj = allData;
-        Gson gson = new Gson();
-        apiJSON = gson.toJson(ets);
-
-        System.out.println("OfflineJSON-" + apiJSON);
-
         return apiJSON;
     }
 
@@ -645,9 +715,7 @@ public class OffDBController extends SQLiteOpenHelper {
                     }
 
                 } while (cursor.moveToNext());
-
             }
-
 
             EnityTranzSync ets = new EnityTranzSync();
             ets.TransactionsModelsObj = allData;
@@ -656,9 +724,9 @@ public class OffDBController extends SQLiteOpenHelper {
 
             System.out.println("OfflineJSON-" + apiJSON);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile("getTop10OfflineTransactionJSON" + "SyncOffTrnx getTop10OfflineTransactionJSON Ex"+e.getMessage());
+                AppConstants.WriteinFile(TAG + "getTop10OfflineTransactionJSON Exception: " + e.getMessage());
         }
         return apiJSON;
     }
@@ -667,42 +735,45 @@ public class OffDBController extends SQLiteOpenHelper {
     public String getTLDOfflineTransactionJSON(Context ctx) {
 
         String apiJSON = "";
-
         ArrayList<TankMonitorEntity> allData = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + TBL_OFF_TLD;
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_OFF_TLD;
 
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        int counter = 0;
-        if (cursor.moveToFirst()) {
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            int counter = 0;
+            if (cursor.moveToFirst()) {
 
-            do {
+                do {
+                    TankMonitorEntity obj_entity = new TankMonitorEntity();
+                    obj_entity.TLD = isNULL(cursor.getString(1));
+                    obj_entity.Level = isNULL(cursor.getString(2));
+                    obj_entity.FromSiteId = Integer.parseInt(isNULL(cursor.getString(3)));
+                    obj_entity.CurrentTLDVersion = isNULL(cursor.getString(4));
+                    obj_entity.IMEI_UDID = isNULL(cursor.getString(5));
+                    obj_entity.LSB = isNULL(cursor.getString(6));
+                    obj_entity.MSB = isNULL(cursor.getString(7));
+                    obj_entity.TLDTemperature = isNULL(cursor.getString(8));
+                    obj_entity.ReadingDateTime = isNULL(cursor.getString(9));
+                    obj_entity.Response_code = isNULL(cursor.getString(10));
+                    obj_entity.FromDirectTLD = isNULL(cursor.getString(11));
 
-                TankMonitorEntity obj_entity = new TankMonitorEntity();
-                obj_entity.TLD = isNULL(cursor.getString(1));
-                obj_entity.Level = isNULL(cursor.getString(2));
-                obj_entity.FromSiteId = Integer.parseInt(isNULL(cursor.getString(3)));
-                obj_entity.CurrentTLDVersion = isNULL(cursor.getString(4));
-                obj_entity.IMEI_UDID = isNULL(cursor.getString(5));
-                obj_entity.LSB = isNULL(cursor.getString(6));
-                obj_entity.MSB = isNULL(cursor.getString(7));
-                obj_entity.TLDTemperature = isNULL(cursor.getString(8));
-                obj_entity.ReadingDateTime = isNULL(cursor.getString(9));
-                obj_entity.Response_code = isNULL(cursor.getString(10));
-                obj_entity.FromDirectTLD = isNULL(cursor.getString(11));
+                    allData.add(obj_entity);
 
-                allData.add(obj_entity);
+                } while (cursor.moveToNext());
+            }
 
-            } while (cursor.moveToNext());
+            Gson gson = new Gson();
+            apiJSON = gson.toJson(allData);
 
+            System.out.println("TLD-OfflineJSON-" + apiJSON);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getTLDOfflineTransactionJSON Exception: " + e.getMessage());
         }
-
-        Gson gson = new Gson();
-        apiJSON = gson.toJson(allData);
-
-        System.out.println("TLD-OfflineJSON-" + apiJSON);
-
         return apiJSON;
     }
 
@@ -717,37 +788,44 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
-        String selectQuery = "SELECT * FROM " + TBL_VEHICLE + " WHERE lower(BarcodeNumber)='" + BarcodeNumber.toLowerCase().trim() + "'";
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("VehicleId", cursor.getString(1));
-                map.put("VehicleNumber", cursor.getString(2));
-                map.put("CurrentOdometer", cursor.getString(3));
-                map.put("CurrentHours", cursor.getString(4));
-                map.put("RequireOdometerEntry", cursor.getString(5));
-                map.put("RequireHours", cursor.getString(6));
-                map.put("FuelLimitPerTxn", cursor.getString(7));
-                map.put("FuelLimitPerDay", cursor.getString(8));
-                map.put("FOBNumber", cursor.getString(9));
-                map.put("AllowedLinks", cursor.getString(10));
-                map.put("Active", cursor.getString(11));
-                map.put("CheckOdometerReasonable", cursor.getString(12));
-                map.put("OdometerReasonabilityConditions", cursor.getString(13));
-                map.put("OdoLimit", cursor.getString(14));
-                map.put("HoursLimit", cursor.getString(15));
-                map.put("BarcodeNumber", cursor.getString(16));
-                map.put("MagneticCardReaderNumber", cursor.getString(19));
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_VEHICLE + " WHERE lower(BarcodeNumber)='" + BarcodeNumber.toLowerCase().trim() + "'";
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("VehicleId", cursor.getString(1));
+                    map.put("VehicleNumber", cursor.getString(2));
+                    map.put("CurrentOdometer", cursor.getString(3));
+                    map.put("CurrentHours", cursor.getString(4));
+                    map.put("RequireOdometerEntry", cursor.getString(5));
+                    map.put("RequireHours", cursor.getString(6));
+                    map.put("FuelLimitPerTxn", cursor.getString(7));
+                    map.put("FuelLimitPerDay", cursor.getString(8));
+                    map.put("FOBNumber", cursor.getString(9));
+                    map.put("AllowedLinks", cursor.getString(10));
+                    map.put("Active", cursor.getString(11));
+                    map.put("CheckOdometerReasonable", cursor.getString(12));
+                    map.put("OdometerReasonabilityConditions", cursor.getString(13));
+                    map.put("OdoLimit", cursor.getString(14));
+                    map.put("HoursLimit", cursor.getString(15));
+                    map.put("BarcodeNumber", cursor.getString(16));
+                    map.put("IsExtraOther", cursor.getString(17));
+                    map.put("ExtraOtherLabel", cursor.getString(18));
+                    map.put("MagneticCardReaderNumber", cursor.getString(19));
 
-                System.out.println("***" + cursor.getString(1));
+                    System.out.println("***" + cursor.getString(1));
 
-                wordList = map;
+                    wordList = map;
 
-
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getVehicleDetailsByBarcodeNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -779,19 +857,21 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("OdometerReasonabilityConditions", cursor.getString(13));
                     map.put("OdoLimit", cursor.getString(14));
                     map.put("HoursLimit", cursor.getString(15));
+                    map.put("BarcodeNumber", cursor.getString(16));
+                    map.put("IsExtraOther", cursor.getString(17));
+                    map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
 
                     System.out.println("***" + cursor.getString(1));
 
                     wordList = map;
 
-
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getVehicleDetailsByVehicleNumber Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "getVehicleDetailsByVehicleNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -833,21 +913,22 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("OdometerReasonabilityConditions", cursor.getString(13));
                     map.put("OdoLimit", cursor.getString(14));
                     map.put("HoursLimit", cursor.getString(15));
+                    map.put("BarcodeNumber", cursor.getString(16));
+                    map.put("IsExtraOther", cursor.getString(17));
+                    map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
 
                     System.out.println("***" + cursor.getString(1));
 
                     wordList = map;
 
-
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getVehicleDetailsByFOBNumber Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "getVehicleDetailsByFOBNumber Exception: " + e.getMessage());
         }
-
         return wordList;
     }
 
@@ -888,6 +969,9 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("OdometerReasonabilityConditions", cursor.getString(13));
                     map.put("OdoLimit", cursor.getString(14));
                     map.put("HoursLimit", cursor.getString(15));
+                    map.put("BarcodeNumber", cursor.getString(16));
+                    map.put("IsExtraOther", cursor.getString(17));
+                    map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
 
 
@@ -895,19 +979,15 @@ public class OffDBController extends SQLiteOpenHelper {
 
                     wordList = map;
 
-
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getVehicleDetailsByMagNumber Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "getVehicleDetailsByMagNumber Exception: " + e.getMessage());
         }
-
         return wordList;
     }
-
-
 
     public HashMap<String, String> getPersonnelDetailsByPIN(String PIN) {
 
@@ -938,12 +1018,11 @@ public class OffDBController extends SQLiteOpenHelper {
 
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getPersonnelDetailsByPIN Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByPIN Exception: " + e.getMessage());
         }
-
         return wordList;
     }
 
@@ -963,7 +1042,6 @@ public class OffDBController extends SQLiteOpenHelper {
                     " else FOBNumber end " +
                     ")='" + dummyFOB.toLowerCase() + "'";
 
-
             SQLiteDatabase database = this.getWritableDatabase();
             Cursor cursor = database.rawQuery(selectQuery, null);
             if (cursor.moveToFirst()) {
@@ -986,12 +1064,11 @@ public class OffDBController extends SQLiteOpenHelper {
 
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getPersonnelDetailsByFOBnumber Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByFOBnumber Exception: " + e.getMessage());
         }
-
         return wordList;
     }
 
@@ -1011,7 +1088,6 @@ public class OffDBController extends SQLiteOpenHelper {
                     " else FOBNumber end " +
                     ")='" + dummyFOB.toLowerCase() + "'";
 
-
             SQLiteDatabase database = this.getWritableDatabase();
             Cursor cursor = database.rawQuery(selectQuery, null);
             if (cursor.moveToFirst()) {
@@ -1034,11 +1110,10 @@ public class OffDBController extends SQLiteOpenHelper {
 
                 } while (cursor.moveToNext());
             }
-
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getPersonnelDetailsByMagCardnumber Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByMagCardnumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1047,31 +1122,34 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_PERSONNEL;
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("PersonId", cursor.getString(1));
+                    map.put("PinNumber", cursor.getString(2));
+                    map.put("FuelLimitPerTxn", cursor.getString(3));
+                    map.put("FuelLimitPerDay", cursor.getString(4));
+                    map.put("FOBNumber", cursor.getString(5));
+                    map.put("Authorizedlinks", cursor.getString(6));
+                    map.put("AssignedVehicles", cursor.getString(7));
+                    map.put("MagneticCardReaderNumber", cursor.getString(8));
+                    map.put("Barcode", cursor.getString(9));
 
-        String selectQuery = "SELECT * FROM " + TBL_PERSONNEL;
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("PersonId", cursor.getString(1));
-                map.put("PinNumber", cursor.getString(2));
-                map.put("FuelLimitPerTxn", cursor.getString(3));
-                map.put("FuelLimitPerDay", cursor.getString(4));
-                map.put("FOBNumber", cursor.getString(5));
-                map.put("Authorizedlinks", cursor.getString(6));
-                map.put("AssignedVehicles", cursor.getString(7));
-                map.put("MagneticCardReaderNumber", cursor.getString(8));
-                map.put("Barcode", cursor.getString(9));
+                    System.out.println("***" + cursor.getString(1));
 
+                    wordList = map;
 
-                System.out.println("***" + cursor.getString(1));
-
-                wordList = map;
-
-
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getPersonnelDetailsALLL Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1080,57 +1158,65 @@ public class OffDBController extends SQLiteOpenHelper {
 
         HashMap<String, String> wordList = new HashMap<String, String>();
 
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE PersonId='" + PersonId.trim() + "'";
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("PersonId", cursor.getString(1));
+                    map.put("PinNumber", cursor.getString(2));
+                    map.put("FuelLimitPerTxn", cursor.getString(3));
+                    map.put("FuelLimitPerDay", cursor.getString(4));
+                    map.put("FOBNumber", cursor.getString(5));
+                    map.put("RequireHours", cursor.getString(6));
+                    map.put("Authorizedlinks", cursor.getString(7));
+                    map.put("AssignedVehicles", cursor.getString(8));
+                    map.put("MagneticCardReaderNumber", cursor.getString(9));
+                    map.put("Barcode", cursor.getString(10));
 
-        String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE PersonId='" + PersonId.trim() + "'";
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("PersonId", cursor.getString(1));
-                map.put("PinNumber", cursor.getString(2));
-                map.put("FuelLimitPerTxn", cursor.getString(3));
-                map.put("FuelLimitPerDay", cursor.getString(4));
-                map.put("FOBNumber", cursor.getString(5));
-                map.put("RequireHours", cursor.getString(6));
-                map.put("Authorizedlinks", cursor.getString(7));
-                map.put("AssignedVehicles", cursor.getString(8));
-                map.put("MagneticCardReaderNumber", cursor.getString(9));
-                map.put("Barcode", cursor.getString(10));
+                    System.out.println("***" + cursor.getString(1));
 
+                    wordList = map;
 
-                System.out.println("***" + cursor.getString(1));
-
-                wordList = map;
-
-
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByPersonId Exception: " + e.getMessage());
         }
         return wordList;
     }
 
     public ArrayList<HashMap<String, String>> getFuelTimingsBySiteId(String siteid) {
 
-        ArrayList<HashMap<String, String>> wordList;
-        wordList = new ArrayList<HashMap<String, String>>();
-        String selectQuery = "SELECT * FROM " + TBL_FUEL_TIMING + " where SiteId=" + siteid;
-        SQLiteDatabase database = this.getWritableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("Id", cursor.getString(0));
-                map.put("SiteId", cursor.getString(1));
-                map.put("PersonId", cursor.getString(2));
-                map.put("FromTime", cursor.getString(3));
-                map.put("ToTime", cursor.getString(4));
+        ArrayList<HashMap<String, String>> wordList = new ArrayList<HashMap<String, String>>();
 
-                System.out.println("***" + cursor.getString(2));
+        try {
+            String selectQuery = "SELECT * FROM " + TBL_FUEL_TIMING + " where SiteId=" + siteid;
+            SQLiteDatabase database = this.getWritableDatabase();
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("Id", cursor.getString(0));
+                    map.put("SiteId", cursor.getString(1));
+                    map.put("PersonId", cursor.getString(2));
+                    map.put("FromTime", cursor.getString(3));
+                    map.put("ToTime", cursor.getString(4));
 
+                    System.out.println("***" + cursor.getString(2));
 
-                wordList.add(map);
-            } while (cursor.moveToNext());
+                    wordList.add(map);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "getFuelTimingsBySiteId Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1139,30 +1225,34 @@ public class OffDBController extends SQLiteOpenHelper {
 
         String rowDetails = "";
 
-        SQLiteDatabase database = this.getWritableDatabase();
+        try {
+            SQLiteDatabase database = this.getWritableDatabase();
 
-        String selectQuery = "SELECT COUNT(*) FROM " + TBL_LINK;
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            String rowCount = cursor.getString(0);
-            rowDetails+="Links:"+rowCount+" ";
+            String selectQuery = "SELECT COUNT(*) FROM " + TBL_LINK;
+            Cursor cursor = database.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                String rowCount = cursor.getString(0);
+                rowDetails += "LINKS:" + rowCount + " ";
+            }
+
+            String selectQuery2 = "SELECT COUNT(*) FROM " + TBL_VEHICLE;
+            Cursor cursor2 = database.rawQuery(selectQuery2, null);
+            if (cursor2.moveToFirst()) {
+                String rowCount = cursor2.getString(0);
+                rowDetails += "Vehicle:" + rowCount + " ";
+            }
+
+            String selectQuery3 = "SELECT COUNT(*) FROM " + TBL_PERSONNEL;
+            Cursor cursor3 = database.rawQuery(selectQuery3, null);
+            if (cursor3.moveToFirst()) {
+                String rowCount = cursor3.getString(0);
+                rowDetails += "Personnel:" + rowCount + " ";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "selectRowCountOfDatabase Exception: " + e.getMessage());
         }
-
-        String selectQuery2 = "SELECT COUNT(*) FROM " + TBL_VEHICLE;
-        Cursor cursor2 = database.rawQuery(selectQuery2, null);
-        if (cursor2.moveToFirst()) {
-            String rowCount = cursor2.getString(0);
-            rowDetails+="Vehicle:"+rowCount+" ";
-        }
-
-        String selectQuery3 = "SELECT COUNT(*) FROM " + TBL_PERSONNEL;
-        Cursor cursor3 = database.rawQuery(selectQuery3, null);
-        if (cursor3.moveToFirst()) {
-            String rowCount = cursor3.getString(0);
-            rowDetails+="Personnel:"+rowCount+" ";
-        }
-
-
         return rowDetails;
     }
 
