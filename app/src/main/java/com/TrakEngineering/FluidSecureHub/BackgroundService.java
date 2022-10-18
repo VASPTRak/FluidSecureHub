@@ -80,8 +80,9 @@ public class BackgroundService extends Service {
                 System.out.println("resp...Transstatus transId:" + transId + " :"+transStatus);
                 /*if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "Update Transaction Status. TransactionId: " + transId + "; Status: " + transStatus);*/
-                new SetTransactionStatus().execute(Id, transId, transStatus);
-
+                if (transId != null && !transId.isEmpty()) {
+                    new SetTransactionStatus().execute(Id, transId, transStatus);
+                }
             }
 
         }

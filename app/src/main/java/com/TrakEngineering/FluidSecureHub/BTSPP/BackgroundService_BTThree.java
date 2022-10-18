@@ -771,6 +771,7 @@ public class BackgroundService_BTThree extends Service {
                         Log.i(TAG, " BTLink 3: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
+                        BTConstants.isReconnectCalled3 = false;
                         AppConstants.IsTransactionFailed3 = true;
                         PostTransactionBackgroundTasks();
                         CloseTransaction();
@@ -1281,7 +1282,8 @@ public class BackgroundService_BTThree extends Service {
 
             JSONObject versionJsonArray = jsonObject.getJSONObject("version");
             String version = versionJsonArray.getString("version");
-            AppConstants.WriteinFile(TAG + " BTLink 3: LINK Version >> " + version);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTThree.this, AppConstants.UP_HoseId_fs3, version);
 
         } catch (Exception e) {
@@ -1364,7 +1366,8 @@ public class BackgroundService_BTThree extends Service {
                                 version = res.substring(res.indexOf(":") + 1).trim();
                             }
                             if (!version.isEmpty()) {
-                                AppConstants.WriteinFile(TAG + " BTLink 3: LINK Version >> " + version);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 3: LINK Version >> " + version);
                                 storeUpgradeFSVersion(BackgroundService_BTThree.this, AppConstants.UP_HoseId_fs3, version);
                             }
                         }
@@ -1408,7 +1411,8 @@ public class BackgroundService_BTThree extends Service {
             EnablePrinter = offlineController.getOfflineHubDetails(BackgroundService_BTThree.this).EnablePrinter;
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_BTThree.this);
-
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: <Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);

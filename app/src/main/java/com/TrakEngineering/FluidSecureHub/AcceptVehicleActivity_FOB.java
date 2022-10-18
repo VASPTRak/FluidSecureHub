@@ -440,9 +440,9 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                         objEntityClass.MagneticCardNumber = "";
                         objEntityClass.Barcode = "";
 
-                        if (cd.isConnectingToInternet()){
+                        if (cd.isConnectingToInternet()) {
                             new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
-                        }else{
+                        } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " No Internet please check.");
                             CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);

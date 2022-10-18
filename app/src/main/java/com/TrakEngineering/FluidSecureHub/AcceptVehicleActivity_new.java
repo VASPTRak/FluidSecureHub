@@ -2951,6 +2951,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             String Active = hmap.get("Active");//: "Y"
             String IsExtraOther = hmap.get("IsExtraOther");
             String ExtraOtherLabel = hmap.get("ExtraOtherLabel");
+            String FuelLimitPerDay = hmap.get("FuelLimitPerDay");
+            String CheckFuelLimitPerMonth = hmap.get("CheckFuelLimitPerMonth");
+            String FuelLimitPerMonth = hmap.get("FuelLimitPerMonth");
 
             offlineVehicleInitialization(hmap);
 
@@ -2959,8 +2962,43 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             editor.putString(AppConstants.IsExtraOther, IsExtraOther);
             editor.putString(AppConstants.ExtraOtherLabel, ExtraOtherLabel);
 
-            if (Active != null)
+            if (Active != null) {
                 if (Active.trim().toLowerCase().equalsIgnoreCase("y")) {
+
+                    try {
+                        if (FuelLimitPerDay != null) {
+                            double vehicleLimitPerDay = Double.parseDouble(FuelLimitPerDay);
+                            if (vehicleLimitPerDay > 0) {
+                                double remainingLimitPerDay = OfflineConstants.getVehicleFuelLimitPerDay(AcceptVehicleActivity_new.this);
+                                if (remainingLimitPerDay <= 0) {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "This vehicle has exceeded the fuel limit for the day.");
+                                    CommonUtils.showCustomMessageDilaog(AcceptVehicleActivity_new.this, "Error", "This " + ScreenNameForVehicle + " has exceeded the fuel limit for the day. Please contact your Manager.");
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (CheckFuelLimitPerMonth != null) {
+                            if (CheckFuelLimitPerMonth.trim().equalsIgnoreCase("true")) {
+                                if (FuelLimitPerMonth != null) {
+                                    double vehicleLimitPerMonth = Double.parseDouble(FuelLimitPerMonth);
+                                    if (vehicleLimitPerMonth > 0) {
+                                        double remainingLimitPerMonth = OfflineConstants.getFuelLimitPerMonth(AcceptVehicleActivity_new.this);
+                                        if (remainingLimitPerMonth <= 0) {
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "This vehicle has exceeded the fuel limit for the month.");
+                                            CommonUtils.showCustomMessageDilaog(AcceptVehicleActivity_new.this, "Error", "This " + ScreenNameForVehicle + " has exceeded the fuel limit for the month. Please contact your Manager.");
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
                     if (!AllowedLinks.isEmpty() || AllowedLinks.contains(",")) {
                         boolean isAllowed = false;
 
@@ -3013,7 +3051,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", ScreenNameForVehicle + " is not active");
                     //AppConstants.colorToastBigFont(getApplicationContext(), "Vehicle is not active", Color.RED);
                 }
-
+            }
         } else {
 
             String validateVehicles = "Yes";
@@ -3110,10 +3148,13 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 String OdometerReasonabilityConditions = hmap.get("OdometerReasonabilityConditions");
                 String OdoLimit = hmap.get("OdoLimit");
                 String HoursLimit = hmap.get("HoursLimit");
+                String CheckFuelLimitPerMonth = hmap.get("CheckFuelLimitPerMonth");
+                String FuelLimitPerMonth = hmap.get("FuelLimitPerMonth");
+                String FuelQuantityOfVehiclePerMonth = hmap.get("FuelQuantityOfVehiclePerMonth");
 
                 OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", VehicleId, "", "", "", "", "", "", "");
 
-                OfflineConstants.storeFuelLimit(AcceptVehicleActivity_new.this, VehicleId, FuelLimitPerTxn, FuelLimitPerDay, "", "", "");
+                OfflineConstants.storeFuelLimit(AcceptVehicleActivity_new.this, VehicleId, FuelLimitPerTxn, FuelLimitPerDay, CheckFuelLimitPerMonth, FuelLimitPerMonth, FuelQuantityOfVehiclePerMonth, "", "", "");
 
                 AppConstants.OFF_VEHICLE_ID = VehicleId;
                 AppConstants.OFF_ODO_REQUIRED = RequireOdometerEntry;

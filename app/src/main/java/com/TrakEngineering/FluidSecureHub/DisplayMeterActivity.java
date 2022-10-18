@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.drm.ProcessedData;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
@@ -25,7 +24,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
@@ -225,7 +223,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     protected void onPostResume() {
         super.onPostResume();
 
-        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.IsBTLinkSelectedCurrently) {
+        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !BTConstants.CurrentTransactionIsBT) {
 
             btnStart.setText("Please wait..");
             btnStart.setEnabled(false);

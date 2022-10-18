@@ -771,6 +771,7 @@ public class BackgroundService_BTFour extends Service {
                         Log.i(TAG, " BTLink 4: Link not connected. Please try again!");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 4: Link not connected.");
+                        BTConstants.isReconnectCalled4 = false;
                         AppConstants.IsTransactionFailed4 = true;
                         PostTransactionBackgroundTasks();
                         CloseTransaction();
@@ -1281,7 +1282,8 @@ public class BackgroundService_BTFour extends Service {
 
             JSONObject versionJsonArray = jsonObject.getJSONObject("version");
             String version = versionJsonArray.getString("version");
-            AppConstants.WriteinFile(TAG + " BTLink 4: LINK Version >> " + version);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 4: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTFour.this, AppConstants.UP_HoseId_fs4, version);
 
         } catch (Exception e) {
@@ -1364,7 +1366,8 @@ public class BackgroundService_BTFour extends Service {
                                 version = res.substring(res.indexOf(":") + 1).trim();
                             }
                             if (!version.isEmpty()) {
-                                AppConstants.WriteinFile(TAG + " BTLink 4: LINK Version >> " + version);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 4: LINK Version >> " + version);
                                 storeUpgradeFSVersion(BackgroundService_BTFour.this, AppConstants.UP_HoseId_fs4, version);
                             }
                         }
@@ -1408,7 +1411,8 @@ public class BackgroundService_BTFour extends Service {
             EnablePrinter = offlineController.getOfflineHubDetails(BackgroundService_BTFour.this).EnablePrinter;
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_BTFour.this);
-
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 4: <Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);

@@ -699,7 +699,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                         }
 
                     } else {
-                        CommonUtils.showMessageDilaog(SplashActivity.this, "Error Message", "You are not Approved yet!");
+                        CommonUtils.showMessageDilaog(SplashActivity.this, "Error Message", "Your registration has not been approved. Please contact your Manager.");
                     }
 
 
@@ -719,7 +719,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 } else if (ResponceText.equalsIgnoreCase("notapproved")) {
 
-                    AlertDialogBox(SplashActivity.this, "Your Registration request is not approved yet.\nIt is marked Inactive in the Company Software.\nPlease contact your companyâ€™s administrator.");
+                    AlertDialogBox(SplashActivity.this, "Your Registration request is not approved yet.\nIt is marked Inactive in the Company Software.\nPlease contact your company administrator.");
 
                 } else if (ResponceText.equalsIgnoreCase("IMEI not exists")) {
 

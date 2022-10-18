@@ -2181,10 +2181,28 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             String Authorizedlinks = hmap.get("Authorizedlinks");
             String AssignedVehicles = hmap.get("AssignedVehicles");
+            String FuelLimitPerDay = hmap.get("FuelLimitPerDay");
 
             EntityHub obj = controller.getOfflineHubDetails(AcceptPinActivity_new.this);
             IsOffvehicleScreenRequired = obj.VehicleNumberRequired;
             IsNonValidateVehicle = obj.IsNonValidateVehicle;
+
+            try {
+                if (FuelLimitPerDay != null) {
+                    double personLimitPerDay = Double.parseDouble(FuelLimitPerDay);
+                    if (personLimitPerDay > 0) {
+                        double remainingLimitPerDay = OfflineConstants.getPersonFuelLimitPerDay(AcceptPinActivity_new.this);
+                        if (remainingLimitPerDay <= 0) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "You have exceeded your fuel limit for the day.");
+                            CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error", "You have exceeded your fuel limit for the day. Please contact your Manager.");
+                            return;
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
             if (!Authorizedlinks.isEmpty() || Authorizedlinks.contains(",")) {
                 boolean isAllowed = false;
@@ -2323,7 +2341,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "", "");
 
-                OfflineConstants.storeFuelLimit(AcceptPinActivity_new.this, "", "", "", PersonId, FuelLimitPerTxn, FuelLimitPerDay);
+                OfflineConstants.storeFuelLimit(AcceptPinActivity_new.this, "", "", "", "", "", "", PersonId, FuelLimitPerTxn, FuelLimitPerDay);
             } else {
 
                 String PinNumber = "";

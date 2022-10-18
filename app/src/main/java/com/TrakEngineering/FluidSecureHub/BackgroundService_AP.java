@@ -985,9 +985,9 @@ public class BackgroundService_AP extends Service {
                         if (fillqty >= minFuelLimit) {
 
                             IsFuelingStop = "1";
-                            System.out.println("APFS33 Auto Stop!You reached MAX fuel limit.");
+                            System.out.println("APFS33 Auto Stop! You reached MAX fuel limit.");
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
+                                AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! You reached MAX fuel limit.");
                             AppConstants.DisplayToastmaxlimit = true;
                             AppConstants.MaxlimitMessage = LimitReachedMessage;
                             stopButtonFunctionality();
@@ -1000,9 +1000,9 @@ public class BackgroundService_AP extends Service {
                         }
                     }else if (minFuelLimit == -1){
                         IsFuelingStop = "1";
-                        System.out.println("APFS33 Auto Stop!You reached MAX fuel limit.");
+                        System.out.println("APFS33 Auto Stop! You reached MAX fuel limit.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
+                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! You reached MAX fuel limit.");
                         AppConstants.DisplayToastmaxlimit = true;
                         AppConstants.MaxlimitMessage = LimitReachedMessage;
                         stopButtonFunctionality();
@@ -2389,8 +2389,8 @@ public class BackgroundService_AP extends Service {
             getipOverOSVersion();
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_AP.this);
-
-
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);

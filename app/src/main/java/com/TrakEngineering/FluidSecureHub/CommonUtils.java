@@ -655,6 +655,18 @@ public class CommonUtils {
         editor.commit();
     }
 
+    public static void SaveHotSpotDetailsInPref(Activity activity, String HotSpotSSID, String HotSpotPassword) {
+        try {
+            SharedPreferences prefHotSpot = activity.getSharedPreferences("HotSpotDetails", Context.MODE_PRIVATE);
+            SharedPreferences.Editor edHotSpot = prefHotSpot.edit();
+            edHotSpot.putString("HotSpotSSID", HotSpotSSID);
+            edHotSpot.putString("HotSpotPassword", HotSpotPassword);
+            edHotSpot.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void SaveDataInPref(Activity activity, String data, String valueType) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(PREF_COLUMN_SITE, Context.MODE_PRIVATE);
@@ -1592,13 +1604,18 @@ public class CommonUtils {
 
     public static void UpgradeTransactionStatusToSqlite(String TransactionId, String status, Context ctx) {
 
-        DBController controller = new DBController(ctx);
-        HashMap<String, String> mapsts = new HashMap<>();
-        mapsts.put("transId", TransactionId);
-        mapsts.put("transStatus", status);
+        try {
+            if (!TransactionId.isEmpty()) {
+                DBController controller = new DBController(ctx);
+                HashMap<String, String> mapsts = new HashMap<>();
+                mapsts.put("transId", TransactionId);
+                mapsts.put("transStatus", status);
 
-        controller.insertTransStatusWithOnConflict(mapsts);
-
+                controller.insertTransStatusWithOnConflict(mapsts);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void enableMobileHotspotmanuallyStartTimer(final Context context) {

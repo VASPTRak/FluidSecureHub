@@ -479,7 +479,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                         odo_limit = previous_odometer + (odo_limit) * 5;
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Offline Odometer limit * 5 : " + odo_limit);
+                                            AppConstants.WriteinFile(TAG + "Offline Odometer limit: " + odo_limit);
 
                                     }
                                 } catch (Exception e) {

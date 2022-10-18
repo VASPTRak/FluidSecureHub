@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
 
-import com.TrakEngineering.FluidSecureHub.AcceptVehicleActivity_new;
 import com.TrakEngineering.FluidSecureHub.Aes_Encryption;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
@@ -352,7 +351,7 @@ public class OffBackgroundService extends Service {
 
                     String ResponceMessage = jsonObject.getString("ResponceMessage");
 
-                    System.out.println("ResponceMessage:" + ResponceMessage);
+                    System.out.println("ResponseMessage:" + ResponceMessage);
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -568,17 +567,16 @@ public class OffBackgroundService extends Service {
 
                 String ResponceMessage = jsonObject.getString("ResponceMessage");
 
-                System.out.println("ResponceMessage:" + ResponceMessage);
+                System.out.println("ResponseMessage:" + ResponceMessage);
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
-
 
                     controller.deleteTableData(OffDBController.TBL_LINK);
 
                     JSONArray jsonArr = jsonObject.getJSONArray("LinkDataObj");
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPILinkDetails Json length=" + jsonArr.length());
+                        AppConstants.WriteinFile(TAG + " GetAPILinkDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -649,7 +647,6 @@ public class OffBackgroundService extends Service {
         protected String doInBackground(String... param) {
             String resp = "";
 
-
             try {
 
                 String api_token = controller.getOfflineToken(OffBackgroundService.this);
@@ -677,19 +674,14 @@ public class OffBackgroundService extends Service {
                     AppConstants.WriteinFile(TAG + " GetAPIVehicleDetails InBack Ex:" + e.toString());
 
             }
-
-
             return resp;
         }
 
-
         @Override
         protected void onPostExecute(String result) {
-
             return;
         }
     }
-
 
     public void vehicleJsonParsing(String result) {
         if (result != null && !result.isEmpty()) {
@@ -700,14 +692,16 @@ public class OffBackgroundService extends Service {
 
                 String ResponceMessage = jsonObject.getString("ResponceMessage");
 
-                System.out.println("ResponceMessage:" + ResponceMessage);
+                System.out.println("ResponseMessage:" + ResponceMessage);
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
-
 
                     controller.deleteTableData(OffDBController.TBL_VEHICLE);
 
                     JSONArray jsonArr = jsonObject.getJSONArray("VehicleDataObj");
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " GetAPIVehicleDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -733,10 +727,14 @@ public class OffBackgroundService extends Service {
                             String BarcodeNumber = jsonObj.getString("Barcode");
                             String IsExtraOther = jsonObj.getString("IsExtraOther");
                             String ExtraOtherLabel = jsonObj.getString("ExtraOtherLabel");
+                            String CheckFuelLimitPerMonth = jsonObj.getString("CheckFuelLimitPerMonth");
+                            String FuelLimitPerMonth = jsonObj.getString("FuelLimitPerMonth");
+                            String FuelQuantityOfVehiclePerMonth = jsonObj.getString("FuelQuantityOfVehiclePerMonth");
 
-
-                            InsertVD = controller.insertVehicleDetails(VehicleId, VehicleNumber, CurrentOdometer, CurrentHours, RequireOdometerEntry, RequireHours, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, AllowedLinks, Active,
-                                    CheckOdometerReasonable, OdometerReasonabilityConditions, OdoLimit, HoursLimit, BarcodeNumber, IsExtraOther, ExtraOtherLabel,MagneticCardReaderNumber);
+                            InsertVD = controller.insertVehicleDetails(VehicleId, VehicleNumber, CurrentOdometer, CurrentHours, RequireOdometerEntry, RequireHours,
+                                    FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, AllowedLinks, Active, CheckOdometerReasonable, OdometerReasonabilityConditions,
+                                    OdoLimit, HoursLimit, BarcodeNumber, IsExtraOther, ExtraOtherLabel, MagneticCardReaderNumber, CheckFuelLimitPerMonth, FuelLimitPerMonth,
+                                    FuelQuantityOfVehiclePerMonth);
 
                             if (InsertVD == -1)
                                 if (AppConstants.GenerateLogs)
@@ -750,7 +748,7 @@ public class OffBackgroundService extends Service {
 
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPIVehicleDetails InPost Responce fail" + result);
+                        AppConstants.WriteinFile(TAG + " GetAPIVehicleDetails InPost Response fail" + result);
                 }
 
             } catch (JSONException e) {
@@ -767,10 +765,8 @@ public class OffBackgroundService extends Service {
 
     public class GetAPIPersonnelPinDetails extends AsyncTask<String, Void, String> {
 
-
         protected String doInBackground(String... param) {
             String resp = "";
-
 
             try {
 
@@ -799,18 +795,13 @@ public class OffBackgroundService extends Service {
                     AppConstants.WriteinFile(TAG + " GetAPIPersonnelPinDetails InBack Ex:" + e.toString());
 
             }
-
-
             return resp;
         }
 
-
         @Override
         protected void onPostExecute(String result) {
-
             return;
         }
-
     }
 
     public void personnelJsonParsing(String result) {
@@ -824,14 +815,16 @@ public class OffBackgroundService extends Service {
 
                 String ResponceMessage = jsonObject.getString("ResponceMessage");
 
-                System.out.println("ResponceMessage:" + ResponceMessage);
+                System.out.println("ResponseMessage:" + ResponceMessage);
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
-
 
                     controller.deleteTableData(OffDBController.TBL_PERSONNEL);
 
                     JSONArray jsonArr = jsonObject.getJSONArray("PersonDataObj");
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " GetAPIPersonnelDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -861,7 +854,8 @@ public class OffBackgroundService extends Service {
                                 }
                             }
 
-                            InsertPD = controller.insertPersonnelPinDetails(PersonId, PinNumber, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, Authorizedlinks, AssignedVehicles,MagneticCardReaderNumber,Barcode);
+                            InsertPD = controller.insertPersonnelPinDetails(PersonId, PinNumber, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, Authorizedlinks,
+                                    AssignedVehicles, MagneticCardReaderNumber, Barcode);
 
                             if (InsertPD == -1)
                                 if (AppConstants.GenerateLogs)

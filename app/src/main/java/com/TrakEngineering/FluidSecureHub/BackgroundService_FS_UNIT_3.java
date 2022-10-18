@@ -962,9 +962,9 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                                 Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
                             }
                             IsFuelingStop = "1";
-                            System.out.println("APFS_PIPE Auto Stop!You reached MAX fuel limit.");
+                            System.out.println("APFS_PIPE Auto Stop! You reached MAX fuel limit.");
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!You reached MAX fuel limit.");
+                                AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! You reached MAX fuel limit.");
                             AppConstants.DisplayToastmaxlimit = true;
                             AppConstants.MaxlimitMessage = LimitReachedMessage;
                             stopButtonFunctionality();
@@ -975,9 +975,9 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
                         }
                         IsFuelingStop = "1";
-                        System.out.println("APFS_PIPE Auto Stop!You reached MAX fuel limit.");
+                        System.out.println("APFS_PIPE Auto Stop! You reached MAX fuel limit.");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!You reached MAX fuel limit**.");
+                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! You reached MAX fuel limit**.");
                         AppConstants.DisplayToastmaxlimit = true;
                         AppConstants.MaxlimitMessage = LimitReachedMessage;
                         stopButtonFunctionality();
@@ -2333,9 +2333,11 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             EnablePrinter = offcontroller.getOfflineHubDetails(BackgroundService_FS_UNIT_3.this).EnablePrinter;
 
+            getipOverOSVersion();
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_FS_UNIT_3.this);
-
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);

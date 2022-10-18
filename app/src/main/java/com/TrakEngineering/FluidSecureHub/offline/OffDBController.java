@@ -29,21 +29,21 @@ public class OffDBController extends SQLiteOpenHelper {
     public static String TBL_OFF_TLD = "tbl_off_tld";
 
     public OffDBController(Context applicationcontext) {
-        super(applicationcontext, "FSHubOffline.db", null, 6);
+        super(applicationcontext, "FSHubOffline.db", null, 7);
         Log.d(LOGCAT, "Created");
     }
 
     @Override
     public void onCreate(SQLiteDatabase database) {
 
-        Log.i(TAG,"InOnCreate.");
+        Log.i(TAG, "InOnCreate.");
         String query2 = "CREATE TABLE " + TBL_LINK + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, WifiSSId TEXT, PumpOnTime TEXT, PumpOffTime TEXT, AuthorizedFuelingDays TEXT, Pulserratio TEXT, MacAddress TEXT, IsTLDCall TEXT,LinkCommunicationType TEXT,APMacAddress TEXT,BTMacAddress TEXT)";
         database.execSQL(query2);
 
         String query21 = "CREATE TABLE " + TBL_FUEL_TIMING + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, PersonId INTEGER, FromTime TEXT, ToTime TEXT)";
         database.execSQL(query21);
 
-        String query3 = "CREATE TABLE " + TBL_VEHICLE + " ( Id INTEGER PRIMARY KEY, VehicleId INTEGER, VehicleNumber TEXT,CurrentOdometer TEXT,CurrentHours TEXT,RequireOdometerEntry TEXT,RequireHours TEXT,FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,AllowedLinks TEXT,Active TEXT, CheckOdometerReasonable TEXT,OdometerReasonabilityConditions TEXT,OdoLimit TEXT,HoursLimit TEXT,BarcodeNumber TEXT,IsExtraOther TEXT,ExtraOtherLabel TEXT,MagneticCardReaderNumber TEXT)";
+        String query3 = "CREATE TABLE " + TBL_VEHICLE + " ( Id INTEGER PRIMARY KEY, VehicleId INTEGER, VehicleNumber TEXT,CurrentOdometer TEXT,CurrentHours TEXT,RequireOdometerEntry TEXT,RequireHours TEXT,FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,AllowedLinks TEXT,Active TEXT, CheckOdometerReasonable TEXT,OdometerReasonabilityConditions TEXT,OdoLimit TEXT,HoursLimit TEXT,BarcodeNumber TEXT,IsExtraOther TEXT,ExtraOtherLabel TEXT,MagneticCardReaderNumber TEXT, CheckFuelLimitPerMonth TEXT, FuelLimitPerMonth TEXT, FuelQuantityOfVehiclePerMonth TEXT)";
         database.execSQL(query3);
 
         String query4 = "CREATE TABLE " + TBL_PERSONNEL + " ( Id INTEGER PRIMARY KEY, PersonId INTEGER, PinNumber TEXT, FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,Authorizedlinks TEXT,AssignedVehicles TEXT,MagneticCardReaderNumber TEXT,Barcode TEXT)";
@@ -54,7 +54,6 @@ public class OffDBController extends SQLiteOpenHelper {
 
         String query6 = "CREATE TABLE " + TBL_OFF_TLD + " ( Id INTEGER PRIMARY KEY, PROBEMacAddress TEXT, Level TEXT, selSiteId INTEGER, TLDFirmwareVersion TEXT, IMEI_UDID TEXT, LSB TEXT, MSB TEXT, TLDTemperature TEXT, ReadingDateTime TEXT, Response_code TEXT, FromDirectTLD TEXT)";
         database.execSQL(query6);
-
 
     }
 
@@ -79,6 +78,21 @@ public class OffDBController extends SQLiteOpenHelper {
                 database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN MagneticCardReaderNumber TEXT");
             } catch (Exception ex) {
                 Log.w(TAG, " Altering " + TBL_VEHICLE + " for (MagneticCardReaderNumber) column: " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN CheckFuelLimitPerMonth TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_VEHICLE + " for (CheckFuelLimitPerMonth) column: " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN FuelLimitPerMonth TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_VEHICLE + " for (FuelLimitPerMonth) column: " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_VEHICLE + " ADD COLUMN FuelQuantityOfVehiclePerMonth TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_VEHICLE + " for (FuelQuantityOfVehiclePerMonth) column: " + ex.getMessage());
             }
             try {
                 database.execSQL("ALTER TABLE " + TBL_TRANSACTION + " ADD COLUMN VehicleNumber TEXT");
@@ -270,7 +284,8 @@ public class OffDBController extends SQLiteOpenHelper {
     public long insertVehicleDetails(String VehicleId, String VehicleNumber, String CurrentOdometer, String CurrentHours, String RequireOdometerEntry, String RequireHours,
                                      String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String AllowedLinks, String Active, String CheckOdometerReasonable,
                                      String OdometerReasonabilityConditions, String OdoLimit, String HoursLimit, String BarcodeNumber, String IsExtraOther,
-                                     String ExtraOtherLabel, String MagneticCardReaderNumber) {
+                                     String ExtraOtherLabel, String MagneticCardReaderNumber, String CheckFuelLimitPerMonth, String FuelLimitPerMonth,
+                                     String FuelQuantityOfVehiclePerMonth) {
         long insertedID = 0;
         try {
 
@@ -295,6 +310,9 @@ public class OffDBController extends SQLiteOpenHelper {
             values.put("IsExtraOther", IsExtraOther);
             values.put("ExtraOtherLabel", ExtraOtherLabel);
             values.put("MagneticCardReaderNumber", MagneticCardReaderNumber);
+            values.put("CheckFuelLimitPerMonth", CheckFuelLimitPerMonth);
+            values.put("FuelLimitPerMonth", FuelLimitPerMonth);
+            values.put("FuelQuantityOfVehiclePerMonth", FuelQuantityOfVehiclePerMonth);
 
             insertedID = database.insert(TBL_VEHICLE, null, values);
             database.close();
@@ -815,6 +833,9 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("IsExtraOther", cursor.getString(17));
                     map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
+                    map.put("CheckFuelLimitPerMonth", cursor.getString(20));
+                    map.put("FuelLimitPerMonth", cursor.getString(21));
+                    map.put("FuelQuantityOfVehiclePerMonth", cursor.getString(22));
 
                     System.out.println("***" + cursor.getString(1));
 
@@ -861,6 +882,9 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("IsExtraOther", cursor.getString(17));
                     map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
+                    map.put("CheckFuelLimitPerMonth", cursor.getString(20));
+                    map.put("FuelLimitPerMonth", cursor.getString(21));
+                    map.put("FuelQuantityOfVehiclePerMonth", cursor.getString(22));
 
                     System.out.println("***" + cursor.getString(1));
 
@@ -917,6 +941,9 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("IsExtraOther", cursor.getString(17));
                     map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
+                    map.put("CheckFuelLimitPerMonth", cursor.getString(20));
+                    map.put("FuelLimitPerMonth", cursor.getString(21));
+                    map.put("FuelQuantityOfVehiclePerMonth", cursor.getString(22));
 
                     System.out.println("***" + cursor.getString(1));
 
@@ -973,7 +1000,9 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("IsExtraOther", cursor.getString(17));
                     map.put("ExtraOtherLabel", cursor.getString(18));
                     map.put("MagneticCardReaderNumber", cursor.getString(19));
-
+                    map.put("CheckFuelLimitPerMonth", cursor.getString(20));
+                    map.put("FuelLimitPerMonth", cursor.getString(21));
+                    map.put("FuelQuantityOfVehiclePerMonth", cursor.getString(22));
 
                     System.out.println("***" + cursor.getString(1));
 
