@@ -19,6 +19,30 @@
     <string name="server_connection_problem">The system has detected that you do not have cellular service and offline options are not enabled. Please contact your Manager.</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_fob_reader">FobReader</string>
+    <string name="selectHose">Tap here to select hose</string>
+    <string name="selectHoseToUse">Select hose to use</string>
+    <string name="HoseOutOfOrder">Hose out of order</string>
+    <string name="GO">GO</string>
+    <string name="Cancel">Cancel</string>
+    <string name="previousScreen">Previous Screen</string>
+    <string name="LinkIsConnecting">Connecting...</string>
+    <string name="EnterDeptNumber">Enter Department Number</string>
+    <string name="EnterOdoManually">Enter Odometer Manually</string>
+    <string name="PressFor123">Press for 123</string>
+    <string name="PressForABC">Press for ABC</string>
+    <string name="ReturnBtn">Return</string>
+    <string name="BeforeStartFueling">YOU MAY BEGIN FUELING</string>
+    <string name="OdometerEntry">Odometer Entry:</string>
+    <string name="StartBtn">START</string>
+    <string name="firstTimeUseMessage">This is the first time you are using the system. Please be sure the quantity shown on the display matches the final quantity on the dispenser. If not, please be sure to call in to Support</string>
+    <string name="TryAgainLater">Please try again later</string>
+    <string name="HoseInUseRetry">Hose In Use. Please retry once the ongoing transaction has been completed.</string>
+    <string name="RegistrationNotApproved">Your registration has not been approved. Please contact your Manager.</string>
+    <string name="MakeSureBTMacIsSet">Please make sure BT mac is set.</string>
+    <string name="PairNewLink">Pair new LINK</string>
+    <string name="DeviceName">Device Name</string>
+    <string name="DeviceMacAddress">Device Mac Address</string>
+    <string name="IMEIAlreadyExist">Your IMEI Number already EXISTS!</string>
 
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
@@ -227,9 +251,7 @@
     <string name="menu_connect">Connect</string>
     <string name="menu_disconnect">Disconnect</string>
 
-
     <!-- For wifi hotspot -->
-
     <string name="intent_action_turnon">com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_ON</string>
     <string name="intent_action_turnoff">com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_OFF</string>
 
@@ -251,10 +273,22 @@
     <string name="actions_note">Send an (Implicit )Intent with an actions below in bold. Note that in OREO this is no longer as trivial as it used to be. <a href="http://www.floatingintheclouds.com/app-wifi-hot-spot-on-oreo/">More info here</a>.</string>
     <string name="instructions"><a href="http://www.floatingintheclouds.com/app-wifi-hot-spot-on-oreo/">INSTRUCTIONS</a></string>
 
-
     <string name="Name">Name</string>
     <string name="Mobile">Mobile</string>
     <string name="Email">Email</string>
+    <string name="SiteName">Site Name:</string>
+    <string name="HUBName">HUB Name:</string>
+    <string name="HUBNumber">HUB Number:</string>
+    <string name="VersionHeading">Version</string>
+    <string name="ConnectingStatus">Connecting...</string>
+    <string name="HoseInUse">Hose in use.</string>
+    <string name="PairingMode">Pairing Mode...</string>
+    <string name="SelectHoseAlert">Please select Hose</string>
+    <string name="UnableToGetHoseList">Unable to get hose list from server</string>
+
+    <string name="Quantity">Quantity:</string>
+    <string name="Pulse">Pulse:</string>
+    <string name="StopBtn">STOP</string>
 
     <string name="BtnScanBarcode">Scan barcode</string>
     <string name="BtnReadAccessDevice">Present the access device to the reader</string>
@@ -267,8 +301,9 @@
     <string name="AccessDeviceAssignedToVehicle">You have presented a device that is already assigned to Vehicle %1$s. Please scan another device.</string>
 
     <string name="BTLinkPageMsg">The LINK you have selected is not configured. Please select the link from the following list. If the link is not in the list please click the button "Pair new LINK" which will advance to the Bluetooth page. Once you see the LINK name which you are attempting to select, select it on the next page and then click pair. If you do not see this LINK in the next page, reset power and try again. If after resetting power, you still do not see this LINK name, please call into Support.</string>
-    <string name="BTLinkNotInPairList">The LINK you have selected is not currently paired. We are advancing to the BlueTooth page. Once you see the LINK name which you are attempting to select, select it on the next page and then click pair. If you do not see this LINK in the next page, reset power and try again. If after resetting power, you still do not see this LINK name, please call into Support</string>
+    <string name="BTLinkNotInPairList">The LINK you have selected is not currently paired. We are advancing to the BlueTooth page. Once you see the LINK name which you are attempting to select, select it on the next page and then click pair. If you do not see this LINK in the next page, reset power and try again. If after resetting power, you still do not see this LINK name, please call into Support.</string>
     <string name="askreplacehub">"HUB Name is entered that already has an existing device assigned. Would you like to replace your existing device with this one. By pressing proceed here you will be replacing this HUB's existing device with this unit. This Action must be performed by someone who has Access to the Cloud. If you are someone with a CustomerAdmin profile in the Cloud, please enter the email and password you use to log into the Cloud below. Would you like to proceed?" </string>
+    <string name="conn_error">There was an error connecting to the LINK. Please click ok and make your selection again. If you continue to experience further issues, please call into Support.</string>
 
     <string name="prevReading">You have entered a reading that was previously entered. Please check and try again. If the issue persists, please contact your Manager.</string>
     <string name="peHour0">Please enter hours greater than 0.</string>
@@ -276,4 +311,99 @@
     <string name="lessThanPrevReadingMsg">You have entered a reading that is less than previously entered. Please check and try again.</string>
     <string name="UnableToConnectToHoseMessage">We apologize for the inconvenience, we were unable to establish a connection with the LINK. Please retry.</string>
     <string name="HoseUnavailableMessage">Hose is Unavailable. Please reset power to the dispenser that the hose is controlling. This can be done by tripping the main breaker or Emergency Stop. Once power is reset, wait 30 seconds and try again.</string>
+    <string name="HavingTroubleConnectingToLINK">We are having trouble connecting to the LINK that controls your dispenser. Please locate the power source / emergency stop to reset power to the dispenser. Once this is completed, please wait 30 seconds and try again. If you continue to have issues, please contact Support.</string>
+
+    <!-- Vehicle Screen -->
+    <string name="vehicleIdentification">VEHICLE IDENTIFICATION</string>
+    <string name="PresentVehicleAccessDevice">Present your vehicle Access Device Below</string>
+    <string name="OR">OR</string>
+    <string name="EnterVehicleId">Enter your vehicle in the green box below</string>
+    <string name="VehicleNumberHeading">Vehicle Number:</string>
+    <string name="EnterBtn">Enter</string>
+    <string name="UseFSTag">Use FSTag</string>
+    <string name="UseOnScreenBarcode">Tap to use On-Screen barcode</string>
+    <string name="PleaseWait">Please Wait...</string>
+    <string name="PleaseWaitForWifiConnect">Connecting to wifi. Please wait...</string>
+    <string name="ReadAccessDeviceAgain">Click to read Access Device again</string>
+    <string name="peVehicle">Please enter Vehicle. If you still have issues, please contact your Manager.</string>
+    <string name="peVehicleOrAccessDevice">Please enter Vehicle or present an Access Device. If you still have issues, please contact your Manager.</string>
+    <string name="VehiclePerDayLimitExceeded">This Vehicle has exceeded the fuel limit for the day. Please contact your Manager.</string>
+    <string name="VehiclePerMonthLimitExceeded">This Vehicle has exceeded the fuel limit for the month. Please contact your Manager.</string>
+    <string name="peVehicleOrUseFobKey">Please enter Vehicle or use fob key.</string>
+
+    <!-- Odometer Screen -->
+    <string name="EnterOdometerHeading">Enter Odometer (No Tenths)</string>
+    <string name="peOdo">Please enter Odometer, and try again.</string>
+    <string name="OdoNotInReasonability">The Odometer you have entered is not within the reasonability that has been set for this Vehicle. Please contact your Manager.</string>
+    <string name="IncorrectOdo">Please enter correct Odometer.</string>
+
+    <!-- Hours Screen -->
+    <string name="EnterHoursHeading">Enter Hours (No Tenths)</string>
+    <string name="peHours">Please enter Hours, and try again.</string>
+    <string name="HoursNotInReasonability">The Hours you have entered is not within the reasonability that has been set for this Vehicle. Please contact your Manager.</string>
+    <string name="IncorrectHours">Please enter correct Hours.</string>
+
+    <!-- PIN Screen -->
+    <string name="PersonnelIdentification">PERSONNEL IDENTIFICATION</string>
+    <string name="PresentPersonAccessDevice">Present your personnel Access Device Below</string>
+    <string name="EnterPersonnelId">Enter your PERSONNEL in the green box below</string>
+    <string name="PersonnelNumberHeading">Personnel Number:</string>
+    <string name="EnterBarcodeNumber">Enter Barcode number below</string>
+    <string name="pePersonnel">Please enter Personnel. If you still have issues, please contact your Manager.</string>
+    <string name="pePersonnelOrAccessDevice">Please enter Personnel or present an Access Device. If you still have issues, please contact your Manager.</string>
+    <string name="PerDayLimitExceeded">You have exceeded your fuel limit for the day. Please contact your Manager.</string>
+
+    <!-- Department Screen -->
+    <string name="RequireDeptNumber">Please enter Department Number, and try again.</string>
+    <string name="InvalidDept">Invalid Department. Please try again or contact your Manager.</string>
+    <string name="NotAuthorizedForDept">You are not authorized for this department.</string>
+
+    <!-- Other Screen -->
+    <string name="EnterHeading">Enter</string>
+    <string name="RequiredOther">Please enter Other, and try again.</string>
+
+    <!-- Registration Screen -->
+    <string name="RegisterBtn">Register</string>
+    <string name="SubmitBtn">Submit</string>
+    <string name="UserName">Username:</string>
+    <string name="UserPassword">Password:</string>
+    <string name="RequiredUserName">Please enter Username</string>
+    <string name="RequiredUserPassword">Please enter Password</string>
+    <string name="NewHUBRegistration">New HUB Registration</string>
+    <string name="HubNameHint">HINT: Your HUB Name will consist of the words HUB followed by 8 numbers.</string>
+    <string name="Example">Example</string>
+    <string name="HUBNameRequired">Please enter HUB Name</string>
+    <string name="regiThankYou">Thank you for registering.</string>
+    <string name="RegistrationSuccess">Thank you for registering. \n\nYour request has been sent for the approval. You will be able to proceed with the application after your request has been approved by the administrator.</string>
+    <string name="regiNotApproved">Your Registration request is not approved yet.\nIt is marked Inactive in the Company Software.\nPlease contact your company administrator.</string>
+
+    <!-- Access Device Assignment -->
+    <string name="CompanyName">Company Name:</string>
+    <string name="SaveBtn">Save</string>
+    <string name="EnterVehicle">Enter Vehicle ID</string>
+    <string name="BarcodeReadSuccessMessage">Barcode scanned successfully</string>
+    <string name="EnterPersonnelPIN">Enter Personnel PIN that was assigned to this user in the Cloud</string>
+    <string name="TryAgain">Would you like to try again?</string>
+    <string name="ExistingAccessDeviceReplace">The PERSONNEL you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement?</string>
+
+    <!-- LINK Configuration process -->
+    <string name="HotSpotSSIDCannotBeBlank">HotSpot SSID cannot be blank. Please contact Support.</string>
+    <string name="HotSpotPasswordCannotBeBlank">HotSpot Password cannot be blank. Please contact Support.</string>
+    <string name="CannotUpdateMac">Cannot update mac address, Hose is busy. Please try again later.</string>
+    <string name="HoseIsBusy">One of the hose is busy, please try again later.</string>
+    <string name="UnableToAutoConnect">Unable to auto connect to</string>
+    <string name="StartedManualProcess">Started manual process...</string>
+    <string name="EnableWifiManually">Enable Wifi Manually and Connect to</string>
+    <string name="UsingWifiList">using wifi list</string>
+    <string name="StartedReconfiguration">Started Reconfiguration process. Please wait...</string>
+    <string name="ConnectedToWifi">Connected to wifi</string>
+    <string name="ReconfigurationFailed">Reconfiguration process fail. Could not get mac address.</string>
+    <string name="SettingSSIDAndPASS">Setting SSID and PASSWORD to LINK</string>
+    <string name="ReconfigurationFailedRetry">Reconfiguration process fail. Please retry.</string>
+    <string name="MacAddressHeading">Mac address</string>
+    <string name="CheckInternet">Please check Internet Connection and retry.</string>
+    <string name="PartiallyCompleted">Link Re-configuration is partially completed. Please remove app from Recent Apps and start app again.</string>
+    <string name="MacAddressUpdated">Mac Address Updated</string>
+    <string name="MacAddressNotUpdated">MAC address could not be updated</string>
+
 </resources>

@@ -39,7 +39,7 @@
                     android:textStyle="bold"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textAllCaps="false"
-                    android:text="VEHICLE IDENTIFICATION"
+                    android:text="@string/vehicleIdentification"
                     android:textSize="@dimen/heading_text" />
 
 
@@ -52,7 +52,7 @@
                     android:textColor="@color/black"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textAllCaps="false"
-                    android:text="Present your Vehicle FOB  below"
+                    android:text="@string/PresentVehicleAccessDevice"
                     android:textSize="@dimen/go_button_text" />
 
                 <TextView
@@ -62,7 +62,7 @@
                     android:layout_margin="20dp"
                     android:textColor="@color/Red"
                     android:textStyle="bold"
-                    android:text="OR"
+                    android:text="@string/OR"
                     android:textSize="40sp" />
 
 
@@ -72,7 +72,7 @@
                     android:id="@+id/tv_dont_have_fob"
                     android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="Enter your vehicle ID in the green box below"
+                    android:text="@string/EnterVehicleId"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="@dimen/go_button_text" />
 
@@ -94,7 +94,7 @@
                     android:paddingRight="50dp"
                     android:layout_marginTop="25dp"
                     android:layout_marginBottom="20dp"
-                    android:text="Fob Read Successfully"
+                    android:text="@string/AccessDeviceReadSuccess"
                     android:textColor="@color/Red"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="35dp" />
@@ -108,7 +108,7 @@
                     android:layout_marginLeft="20dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:text="Vehicle Number:"
+                    android:text="@string/VehicleNumberHeading"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="35dp" />
 
@@ -168,7 +168,7 @@
                     android:onClick="cancelAction"
                     android:layout_weight="1"
                     android:background="@color/backbtn"
-                    android:text="Back"
+                    android:text="@string/previousScreen"
                     android:textColor="@color/black"
                     android:textSize="@dimen/go_button_text" />
 
@@ -181,7 +181,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorFluid"
                     android:onClick="saveButtonAction"
-                    android:text="Enter"
+                    android:text="@string/EnterBtn"
                     android:textColor="@color/white"
                     android:textSize="@dimen/go_button_text" />
             </LinearLayout>

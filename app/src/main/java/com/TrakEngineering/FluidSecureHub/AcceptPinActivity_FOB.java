@@ -178,11 +178,11 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 int InputTyp = editpinNumber.getInputType();
                 if (InputTyp == 2) {
                     editpinNumber.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     editpinNumber.setInputType(InputType.TYPE_CLASS_NUMBER);//| InputType.TYPE_CLASS_TEXT
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }
@@ -266,7 +266,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         } else if (FobKey != null && !FobKey.isEmpty()) {
             Log.i(TAG, "FobreadSuccess FobKey" + FobKey);
         } else {
-            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.RED);
+            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.BLUE);
         }
     }
 
@@ -571,7 +571,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         editpinNumber.setVisibility(View.VISIBLE);
         btnSave.setVisibility(View.VISIBLE);
         btnAccessDevice.setVisibility(View.INVISIBLE);
-        tv_pin_no_below.setText("Enter " + ScreenNameForPersonnel + " PIN that was assigned to this user in the Cloud");
+        tv_pin_no_below.setText(getResources().getString(R.string.EnterPersonnelPIN).replace("Personnel", ScreenNameForPersonnel));
 
         InputMethodManager inputMethodManager = (InputMethodManager) editpinNumber.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         editpinNumber.requestFocus();
@@ -598,7 +598,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
     private boolean ValidateData(){
 
         if (editpinNumber.getText().toString().isEmpty()){
-            editpinNumber.setError("Enter " + ScreenNameForPersonnel + " PIN");
+            editpinNumber.setError(getResources().getString(R.string.EnterHeading) + " " + ScreenNameForPersonnel + " PIN");
             return false;
         }else if (FobKey.isEmpty() && MagCard_FobKey.isEmpty() && Barcode_val.isEmpty()){
             Toast.makeText(this, "Access device value empty", Toast.LENGTH_SHORT).show();
@@ -621,7 +621,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                         Log.d(TAG, "Barcode read: " + data.getStringExtra("Barcode").trim());
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile("Vehicle Barcode read success: " + Barcode_val);
-                        tv_Display_msg.setText("Barcode scan successfully: "+Barcode_val);
+                        tv_Display_msg.setText(getResources().getString(R.string.BarcodeReadSuccessMessage) + ": " + Barcode_val);
                     } else {
 
                         InitScreen();
@@ -657,7 +657,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptPinActivity_FOB.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.show();
 
         }
@@ -722,7 +722,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                             }
                             if (IsPINHavingAccessDevice.equalsIgnoreCase("y")) {
                                 InitScreen();
-                                String msg = "The " + ScreenNameForPersonnel + " you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
+                                //String msg = "The " + ScreenNameForPersonnel + " you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
+                                String msg = getResources().getString(R.string.ExistingAccessDeviceReplace).replace("PERSONNEL", ScreenNameForPersonnel);
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + msg);
                                 CustomMessage2Input(AcceptPinActivity_FOB.this, "Message", msg);
@@ -731,7 +732,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + ResponceText);
                                 if (ResponceText.toLowerCase().contains("invalid")) {
-                                    ResponceText = ResponceText + " Would you like to try again?";
+                                    ResponceText = ResponceText + getResources().getString(R.string.TryAgain);
                                     CustomMessageInvalidPINInput(AcceptPinActivity_FOB.this, "Message", ResponceText);
                                 } else {
                                     InitScreen();
@@ -911,7 +912,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptPinActivity_FOB.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.show();
 
         }

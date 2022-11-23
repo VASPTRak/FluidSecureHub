@@ -67,7 +67,6 @@ public class OfflineConstants {
 
     public static EntityOffTranz getCurrentTransaction(Context ctx) {
 
-
         SharedPreferences sharedPref = ctx.getSharedPreferences("storeCurrentTransaction", Context.MODE_PRIVATE);
 
         EntityOffTranz eot = new EntityOffTranz();

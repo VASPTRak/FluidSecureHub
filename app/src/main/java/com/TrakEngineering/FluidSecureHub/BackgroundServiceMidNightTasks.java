@@ -65,7 +65,10 @@ public class BackgroundServiceMidNightTasks extends Service {
                     JSONArray jarrsy = new JSONArray(offtransactionArray);
 
                     if (jarrsy.length() > 0 && OfflineConstants.isOfflineAccess(BackgroundServiceMidNightTasks.this)) {
-                        startService(new Intent(BackgroundServiceMidNightTasks.this, OffTranzSyncService.class));
+                        boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundServiceMidNightTasks.this, AppConstants.PACKAGE_BS_OffTransSync);
+                        if (!BSRunning) {
+                            startService(new Intent(BackgroundServiceMidNightTasks.this, OffTranzSyncService.class));
+                        }
                     }
 
                 } catch (Exception e) {

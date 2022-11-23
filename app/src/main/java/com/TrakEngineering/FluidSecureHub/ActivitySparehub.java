@@ -47,9 +47,9 @@ public class ActivitySparehub extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AppConstants.GenerateLogs = true;
-        SharedPreferences sharedPref = ActivitySparehub.this.getSharedPreferences("storeLanguageSetLang", Context.MODE_PRIVATE);
-        String lang = sharedPref.getString("lang", "");
-        storeLanguageSetLang(ActivitySparehub.this, lang, false);
+        SharedPreferences sharedPref = ActivitySparehub.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+        String language = sharedPref.getString("language", "");
+        CommonUtils.StoreLanguageSettings(ActivitySparehub.this, language, false);
         setContentView(R.layout.activity_sparehub);
 
         SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
@@ -171,7 +171,7 @@ public class ActivitySparehub extends AppCompatActivity {
 
     }
 
-    public static void storeLanguageSetLang(Activity activity, String lang, boolean isRecreate) {
+    /*public static void storeLanguageSetLang(Activity activity, String lang, boolean isRecreate) {
 
         if (lang.trim().equalsIgnoreCase("es"))
             AppConstants.LANG_PARAM = ":es-ES";
@@ -198,6 +198,6 @@ public class ActivitySparehub extends AppCompatActivity {
 
         if (isRecreate)
             activity.recreate();
-    }
+    }*/
 
 }

@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Username"
+                android:text="@string/UserName"
                 android:textColor="#444"
                 android:textSize="25dp" />
 
@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Password"
+                android:text="@string/UserPassword"
                 android:textColor="#444"
                 android:textSize="25dp" />
 

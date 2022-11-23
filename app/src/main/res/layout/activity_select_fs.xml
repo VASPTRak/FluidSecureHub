@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:padding="2sp"
-                    android:text="Please select hose to use"
+                    android:text="@string/selectHoseToUse"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <LinearLayout
@@ -164,7 +164,7 @@
                     android:background="@drawable/btn_click"
                     android:clickable="true"
                     android:onClick="goButtonAction"
-                    android:text="GO"
+                    android:text="@string/GO"
                     android:textSize="@dimen/go_button_text" />
 
                 <Button

@@ -42,7 +42,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "";
     String PreviousOdo = "", OdoLimit = "", OdometerReasonabilityConditions = "", CheckOdometerReasonable = "", LastTransactionFuelQuantity = "0";
     String IsNonValidateVehicle = "";
-    String TimeOutinMinute, ScreenNameForOdometer = "odometer";
+    String TimeOutinMinute, ScreenNameForOdometer = "odometer",ScreenNameForPersonnel = "PERSONNEL", ScreenNameForVehicle = "VEHICLE";;
     boolean Istimeout_Sec = true;
     List<Timer> ScreenTimerlist = new ArrayList<Timer>();
 
@@ -94,6 +94,11 @@ public class AcceptOdoActivity extends AppCompatActivity {
             menu.findItem(R.id.mofline).setVisible(true);
         }
 
+        MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+        itemSp.setVisible(false);
+        itemEng.setVisible(false);
+
         return true;
     }
 
@@ -112,12 +117,16 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
         SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
         ScreenNameForOdometer = myPrefkb.getString("ScreenNameForOdometer", "odometer");
+        ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
+        ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Personnel");
 
         if (ScreenNameForOdometer.trim().isEmpty())
             ScreenNameForOdometer = "odometer";
 
-        tv_odo.setText("Enter " + ScreenNameForOdometer + " No Tenths");
-        editOdoTenths.setHint("Enter " + ScreenNameForOdometer + " No Tenths");
+        //tv_odo.setText("Enter " + ScreenNameForOdometer + " No Tenths");
+        String text = getResources().getString(R.string.EnterOdometerHeading).replace("Odometer", ScreenNameForOdometer);
+        tv_odo.setText(text);
+        editOdoTenths.setHint(text);
 
         /*SharedPreferences sharedPrefODO = AcceptOdoActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
@@ -193,11 +202,11 @@ public class AcceptOdoActivity extends AppCompatActivity {
                 int InputTyp = editOdoTenths.getInputType();
                 if (InputTyp == 2) {
                     editOdoTenths.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     editOdoTenths.setInputType(InputType.TYPE_CLASS_NUMBER);//| InputType.TYPE_CLASS_TEXT
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }
@@ -415,11 +424,11 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                     } else {
 
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
+                                            AppConstants.WriteinFile(TAG + "The " + ScreenNameForOdometer + " you have entered is not within the reasonability that has been set for this " + ScreenNameForVehicle + ". Please contact your Manager.");
                                         editOdoTenths.setText("");
                                         Istimeout_Sec = true;
                                         ResetTimeoutOdoScreen();
-                                        CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
+                                        CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", getResources().getString(R.string.OdoNotInReasonability).replace("Odometer", ScreenNameForOdometer).replace("Vehicle", ScreenNameForVehicle));
                                     }
                                 }
                             } else {
@@ -430,11 +439,11 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                 } else {
                                     editOdoTenths.setText("");
                                     if (AppConstants.GenerateLogs) {
-                                        AppConstants.WriteinFile(TAG + "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
+                                        AppConstants.WriteinFile(TAG + "The " + ScreenNameForOdometer + " you have entered is not within the reasonability that has been set for this " + ScreenNameForVehicle + ". Please contact your Manager.");
                                     }
                                     Istimeout_Sec = true;
                                     ResetTimeoutOdoScreen();
-                                    CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "The " + ScreenNameForOdometer + " entered is not within the reasonability your manager has assigned, please try again or contact your manager.");
+                                    CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", getResources().getString(R.string.OdoNotInReasonability).replace("Odometer", ScreenNameForOdometer).replace("Vehicle", ScreenNameForVehicle));
                                 }
                             }
                         } else {
@@ -525,8 +534,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                                 ResetTimeoutOdoScreen();
                                                 if (AppConstants.GenerateLogs)
                                                     AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForOdometer);
-                                                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "Please enter Correct " + ScreenNameForOdometer);
-                                                //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer",Color.RED);
+                                                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", getResources().getString(R.string.IncorrectOdo).replace("Odometer", ScreenNameForOdometer));
+                                                //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer", Color.BLUE);
                                             }
                                         }
                                     } else {
@@ -543,8 +552,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
                                             ResetTimeoutOdoScreen();
                                             if (AppConstants.GenerateLogs)
                                                 AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForOdometer);
-                                            CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", "Please enter Correct " + ScreenNameForOdometer);
-                                            //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer",Color.RED);
+                                            CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Message", getResources().getString(R.string.IncorrectOdo).replace("Odometer", ScreenNameForOdometer));
+                                            //AppConstants.colorToastBigFont(getApplicationContext(),"Please enter Correct Odometer", Color.BLUE);
                                         }
 
                                     }
@@ -568,7 +577,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                 ResetTimeoutOdoScreen();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForOdometer + ", and try again.");
-                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error Message", "Please enter " + ScreenNameForOdometer + ", and try again.");
+                CommonUtils.showMessageDilaog(AcceptOdoActivity.this, "Error", getResources().getString(R.string.peOdo).replace("Odometer", ScreenNameForOdometer));
             }
 
 
@@ -610,7 +619,6 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
     public void allValid() {
 
-
         SharedPreferences sharedPrefODO = AcceptOdoActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
         String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
@@ -635,7 +643,6 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
         } else if (IsDepartmentRequire.equalsIgnoreCase("True")) {
 
-
             Intent i = new Intent(AcceptOdoActivity.this, AcceptDeptActivity.class);
             startActivity(i);
 
@@ -650,10 +657,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
             asc.activity = AcceptOdoActivity.this;
             asc.checkAllFields();
         }
-
-
     }
-
 
     public class AuthTestAsynTask extends AsyncTask<Void, Void, Void> {
 
@@ -677,7 +681,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
 
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence");
+                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(AcceptOdoActivity.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 

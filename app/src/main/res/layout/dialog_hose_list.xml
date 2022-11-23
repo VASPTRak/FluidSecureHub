@@ -16,7 +16,7 @@
             android:background="@color/colorPrimary"
             android:gravity="center"
             android:padding="7sp"
-            android:text="Select hose to use"
+            android:text="@string/selectHoseToUse"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#fff"
             android:textSize="30dp" />
@@ -54,7 +54,7 @@
             android:layout_gravity="right"
 
             android:background="@color/backbtn"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textColor="@color/black"
             android:textSize="25dp" />
 

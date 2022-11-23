@@ -1,10 +1,7 @@
 package com.TrakEngineering.FluidSecureHub;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,8 +9,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.TrakEngineering.FluidSecureHub.enity.UpdateTransactionStatusClass;
-import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -23,8 +18,6 @@ import com.squareup.okhttp.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 public class BackgroundServiceUpgradeFirmware extends BackgroundService {
 

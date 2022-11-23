@@ -112,7 +112,7 @@ public class BatteryBackgroundService extends Service {
                 SharedPreferences sharedPref = classContext.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                 String PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
 
-                String parm1 = AppConstants.getIMEI(classContext) + ":" + PersonEmail + ":" + "SureMDMRebootDevice";
+                String parm1 = AppConstants.getIMEI(classContext) + ":" + PersonEmail + ":" + "SureMDMRebootDevice" + AppConstants.LANG_PARAM;
 
 
                 System.out.println("parm1----" + parm1);

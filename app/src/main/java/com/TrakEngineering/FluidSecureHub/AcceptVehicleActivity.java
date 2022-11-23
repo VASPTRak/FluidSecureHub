@@ -243,11 +243,11 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 int InputTyp = editVehicleNumber.getInputType();
                 if (InputTyp == 3) {
                     editVehicleNumber.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     editVehicleNumber.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }
@@ -315,7 +315,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         tv_enter_vehicle_no = (TextView) findViewById(R.id.tv_enter_vehicle_no);
         tv_dont_have_fob = (TextView) findViewById(R.id.tv_dont_have_fob);
 
-        String content = "Enter your <br><b>VEHICLE ID</b> in<br> the green box below";
+        //String content = "Enter your <br><b>VEHICLE ID</b> in<br> the green box below";
+        String content = getResources().getString(R.string.EnterVehicleId).replace("vehicle", "<br><b>VEHICLE ID</b><br>");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             tv_dont_have_fob.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
@@ -514,7 +515,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
                         if (ValidationFailFor.equalsIgnoreCase("Pin")) {
-                            AppConstants.colorToastBigFont(this, ResponceText, Color.RED);
+                            AppConstants.colorToastBigFont(this, ResponceText, Color.BLUE);
                             Intent i = new Intent(this, AcceptPinActivity.class);
                             startActivity(i);
 
@@ -641,7 +642,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                     editor.commit();
 
                     editVehicleNumber.setText(VehicleNumber);
-                    tv_vehicle_no_below.setText("Vehicle Number: " + VehicleNumber);
+                    tv_vehicle_no_below.setText(getResources().getString(R.string.VehicleNumberHeading) + " " + VehicleNumber);
                     tv_fob_number.setText("Fob No: " + AppConstants.APDU_FOB_KEY);
 
 
@@ -652,7 +653,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                     String ResponceText = jsonObject.getString("ResponceText");
                     String ValidationFailFor = jsonObject.getString("ValidationFailFor");
                     if (ValidationFailFor.equalsIgnoreCase("Pin")) {
-                        AppConstants.colorToastBigFont(this, ResponceText, Color.RED);
+                        AppConstants.colorToastBigFont(this, ResponceText, Color.BLUE);
                         Intent i = new Intent(this, AcceptPinActivity.class);
                         startActivity(i);
 
@@ -668,7 +669,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                         tv_vehicle_no_below.setVisibility(View.GONE);
                         tv_dont_have_fob.setVisibility(View.VISIBLE);
                         btnSave.setVisibility(View.VISIBLE);
-                        String content = "Enter your <br><b>VEHICLE ID</b> in<br> the green box below";
+                        //String content = "Enter your <br><b>VEHICLE ID</b> in<br> the green box below";
+                        String content = getResources().getString(R.string.EnterVehicleId).replace("vehicle", "<br><b>VEHICLE ID</b><br>");
 
                         int width = 350;
                         int height = 60;
@@ -723,7 +725,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence");
+                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(AcceptVehicleActivity.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
@@ -758,7 +760,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckVehicleRequireOdometerEntryAndRequireHourEntry");
+                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckVehicleRequireOdometerEntryAndRequireHourEntry" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(AcceptVehicleActivity.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 

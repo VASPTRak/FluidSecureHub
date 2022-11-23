@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.squareup.okhttp.Callback;

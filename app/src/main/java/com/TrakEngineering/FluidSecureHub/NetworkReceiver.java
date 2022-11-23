@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 
 import org.json.JSONObject;
@@ -76,7 +75,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             Log.i(TAG, "Network Switched:" + AppConstants.IS_MOBILE_ON + " CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Status >> Mobile_Data:" + MobileDataStatus + "; CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
-            //AppConstants.colorToastBigFont(context, "Network Switched", Color.RED);
+            //AppConstants.colorToastBigFont(context, "Network Switched", Color.BLUE);
             //context.startService(new Intent(context, StopRunningTransactionBackgroundService.class));
         }
 
@@ -104,7 +103,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 String userEmail = CommonUtils.getCustomerDetailsCC(ctx).PersonEmail;
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "UpdateMACAddress");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "UpdateMACAddress" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(ctx, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 

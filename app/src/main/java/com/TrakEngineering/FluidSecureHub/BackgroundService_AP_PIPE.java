@@ -288,7 +288,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
                     ////////////////////////////////////////////
                     String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(BackgroundService_AP_PIPE.this).PersonEmail;
-                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_AP_PIPE.this) + ":" + userEmail + ":" + "TransactionComplete");
+                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_AP_PIPE.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
                     HashMap<String, String> imap = new HashMap<>();
                     imap.put("jsonData", "");
@@ -1488,7 +1488,7 @@ public class BackgroundService_AP_PIPE extends Service {
                 AppConstants.WriteinFile(TAG + "ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + fillqty);
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(BackgroundService_AP_PIPE.this).PersonEmail;
-            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_AP_PIPE.this) + ":" + userEmail + ":" + "TransactionComplete");
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_AP_PIPE.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
 
             HashMap<String, String> imap = new HashMap<>();
@@ -1709,7 +1709,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
                 String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(this).PersonEmail;
 
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "TransactionComplete");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
                 HashMap<String, String> imap = new HashMap<>();
                 imap.put("jsonData", jsonData);
@@ -1766,7 +1766,7 @@ public class BackgroundService_AP_PIPE extends Service {
             if (AppConstants.NeedToRenameFS1) {
                 String userEmail = CommonUtils.getCustomerDetails_backgroundService_PIPE(this).PersonEmail;
 
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag" + AppConstants.LANG_PARAM);
 
                 RenameHose rhose = new RenameHose();
                 rhose.SiteId = AppConstants.UP_SiteId_fs1;//AppConstants.R_SITE_ID;
@@ -1802,7 +1802,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
                 String userEmail = CommonUtils.getCustomerDetailsCC(this).PersonEmail;
 
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "TransactionComplete");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
 
                 clearEditTextFields();
@@ -1983,7 +1983,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(authEntity.IMEIUDID + ":" + userEmail + ":" + "UpgradeTransactionStatus");
+                String authString = "Basic " + AppConstants.convertStingToBase64(authEntity.IMEIUDID + ":" + userEmail + ":" + "UpgradeTransactionStatus" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(BackgroundService_AP_PIPE.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
@@ -2234,7 +2234,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(objupgrade.IMEIUDID + ":" + objupgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion");
+                String authString = "Basic " + AppConstants.convertStingToBase64(objupgrade.IMEIUDID + ":" + objupgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(BackgroundService_AP_PIPE.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
@@ -2287,7 +2287,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEI_UDID + ":" + userEmail + ":" + "SaveTankMonitorReading");
+                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEI_UDID + ":" + userEmail + ":" + "SaveTankMonitorReading" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(BackgroundService_AP_PIPE.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
@@ -2625,7 +2625,7 @@ public class BackgroundService_AP_PIPE extends Service {
         ArrayList<String> normalIds = new ArrayList<>();
 
         String userEmail = CommonUtils.getCustomerDetailsCC(this).PersonEmail;
-        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "UpdateInterruptedTransactionFlag");
+        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "UpdateInterruptedTransactionFlag" + AppConstants.LANG_PARAM);
 
         SharedPreferences pref = BackgroundService_AP_PIPE.this.getSharedPreferences(Constants.PREF_TXTN_INTERRUPTED, 0);
         Map<String, ?> allEntries = pref.getAll();

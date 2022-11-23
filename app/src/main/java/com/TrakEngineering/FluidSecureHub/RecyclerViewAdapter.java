@@ -55,10 +55,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View view) {
 
                 Log.d(TAG, "DEVICE NAME: " + mImageNames.get(position) + " \nDEVICE MAC: " + mImageMac.get(position));
-                Toast.makeText(mContext, "DEVICE NAME: " + mImageNames.get(position) + " \nDEVICE MAC: " + mImageMac.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.DeviceName).toUpperCase() + ": " + mImageNames.get(position) + " \n" + mContext.getResources().getString(R.string.DeviceMacAddress).toUpperCase() + ": " + mImageMac.get(position), Toast.LENGTH_LONG).show();
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink: UpdateMac Address selected DEVICE NAME:" + mImageNames.get(position) + "DEVICE MAC:" + mImageMac.get(position));
+                    AppConstants.WriteinFile(TAG + "BTLink: Update Mac Address selected DEVICE NAME:" + mImageNames.get(position) + "DEVICE MAC:" + mImageMac.get(position));
                 //String mac = CommonFunctions.ShiftMacAddress(mImageMac.get(position),"S",2);
                 UpdateMacAddress(mImageMac.get(position));
 
@@ -133,7 +133,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 String userEmail = CommonUtils.getCustomerDetailsCC(mContext).PersonEmail;
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(mContext) + ":" + userEmail + ":" + "UpdateMACAddress");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(mContext) + ":" + userEmail + ":" + "UpdateMACAddress" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(mContext, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
@@ -159,12 +159,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Mac Address Updated successfully");
                         AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDR_RECONFIGURE);
-                        AppConstants.colorToastBigFont(mContext, "Mac Address Updated successfully", Color.BLUE);
-                    }else if (ResponceMessage.equalsIgnoreCase("fail")){
+                        AppConstants.colorToastBigFont(mContext, mContext.getResources().getString(R.string.MacAddressUpdated), Color.BLUE);
+                    } else if (ResponceMessage.equalsIgnoreCase("fail")) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " "+ResponceText);
+                            AppConstants.WriteinFile(TAG + " " + ResponceText);
                         AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDR_RECONFIGURE);
-                        AppConstants.colorToastBigFont(mContext, " "+ResponceText, Color.RED);
+                        AppConstants.colorToastBigFont(mContext, " " + ResponceText, Color.BLUE);
                     }
                 }
             } catch (Exception e) {

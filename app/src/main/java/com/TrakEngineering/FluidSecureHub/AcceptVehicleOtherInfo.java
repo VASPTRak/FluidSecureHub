@@ -22,6 +22,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
+import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
+import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
+
 
 public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
@@ -29,12 +33,12 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
     EditText etOther;
     Button btnSave, btnCancel;//AppConstants.OtherLabel
     RelativeLayout footer_keybord;
-    String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", OtherLabelVehoicle = "";
+    String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", OtherLabelVehicle = "";
     String TimeOutinMinute;
     boolean Istimeout_Sec = true;
     private ConnectionDetector cd = new ConnectionDetector(AcceptVehicleOtherInfo.this);
     private static final String TAG = AcceptOtherActivity.class.getSimpleName();
-
+    OffDBController controller = new OffDBController(AcceptVehicleOtherInfo.this);
 
     @Override
     protected void onResume() {
@@ -65,6 +69,11 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
             menu.findItem(R.id.monline).setVisible(false);
             menu.findItem(R.id.mofline).setVisible(true);
         }
+
+        MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+        itemSp.setVisible(false);
+        itemEng.setVisible(false);
 
         return true;
     }
@@ -127,11 +136,11 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
         IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
         IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        OtherLabelVehoicle = sharedPrefODO.getString(AppConstants.ExtraOtherLabel, "ExtraOtherLabel");
+        OtherLabelVehicle = sharedPrefODO.getString(AppConstants.ExtraOtherLabel, "ExtraOtherLabel");
 
-        tv_otherlabel.setText(OtherLabelVehoicle);
+        tv_otherlabel.setText(getResources().getString(R.string.EnterHeading) + " " + OtherLabelVehicle);
+        etOther.setHint(getResources().getString(R.string.EnterHeading) + " " + OtherLabelVehicle);
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
-
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
@@ -150,7 +159,6 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
             }
         }, screenTimeOut);
-
 
         SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
         String KeyboardType = myPrefkb.getString("KeyboardTypeOther", "1");
@@ -176,7 +184,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                 Istimeout_Sec = false;
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Entered Vehicle Other Info: " + etOther.getText());
+                    AppConstants.WriteinFile(TAG + " Entered Vehicle Other Info: " + etOther.getText());
 
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
@@ -184,7 +192,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
                     if (!isascii) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Please enter Valid String.");
+                            AppConstants.WriteinFile(TAG + " Please enter Valid String.");
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleOtherInfo.this, "Message", "Please enter Valid String.");
                     } else {
                         if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
@@ -235,8 +243,8 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                     }
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Please enter Other, and try again.");
-                    CommonUtils.showMessageDilaog(AcceptVehicleOtherInfo.this, "Error Message", "Please enter Other, and try again.");
+                        AppConstants.WriteinFile(TAG + " Please enter Other, and try again.");
+                    CommonUtils.showMessageDilaog(AcceptVehicleOtherInfo.this, "Error Message", getResources().getString(R.string.RequiredOther).replace("Other", OtherLabelVehicle));
                 }
 
             }
@@ -263,11 +271,11 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                 int InputTyp = etOther.getInputType();
                 if (InputTyp == 3) {
                     etOther.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     etOther.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }

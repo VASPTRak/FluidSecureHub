@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -34,14 +33,7 @@ import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -449,7 +441,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
             try {
                 ServerHandler serverHandler = new ServerHandler();
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(SelectFSActivity.this) + ":" + Email + ":" + "AndroidSSID");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(SelectFSActivity.this) + ":" + Email + ":" + "AndroidSSID" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(SelectFSActivity.this, AppConstants.webURL, latLong, authString);
                 //----------------------------------------------------------------------------------
 
@@ -536,7 +528,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
                     case Activity.RESULT_OK:
                         Log.i("Splash", "User agreed to make required location settings changes.");
 
-                        AppConstants.colorToast(getApplicationContext(), "Please wait...", Color.BLACK);
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.PleaseWait), Color.BLACK);
 
 
                         goButtonAction(null);
@@ -562,7 +554,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(SelectFSActivity.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.setCancelable(true);
             pd.show();
 
@@ -577,7 +569,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
 
                 ServerHandler serverHandler = new ServerHandler();
                 //----------------------------------------------------------------------------------
-                String parm1 = AppConstants.getIMEI(SelectFSActivity.this) + ":" + userInfoEntity.PersonEmail + ":" + "Other";
+                String parm1 = AppConstants.getIMEI(SelectFSActivity.this) + ":" + userInfoEntity.PersonEmail + ":" + "Other" + AppConstants.LANG_PARAM;
                 String parm2 = "Authenticate:I:" + latitude + "," + longitude;
 
 
@@ -755,7 +747,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
                 String IsBusy = serverSSIDList.get(SelectedItemPos).get("IsBusy");
 
                 if (IsBusy.equalsIgnoreCase("Y")) {
-                    tvSSIDName.setText("Hose in use.\nPlease try again later");
+                    tvSSIDName.setText(getResources().getString(R.string.HoseInUse));
                     btnGo.setVisibility(View.GONE);
                 } else {
 
@@ -851,7 +843,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
 
             String userEmail = CommonUtils.getCustomerDetails(SelectFSActivity.this).Email;
 
-            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(SelectFSActivity.this) + ":" + userEmail + ":" + "ChangeBusyStatus");
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(SelectFSActivity.this) + ":" + userEmail + ":" + "ChangeBusyStatus" + AppConstants.LANG_PARAM);
 
             RenameHose rhose = new RenameHose();
             rhose.SiteId = AppConstants.R_SITE_ID;

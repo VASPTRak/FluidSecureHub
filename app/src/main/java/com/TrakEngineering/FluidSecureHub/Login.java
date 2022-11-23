@@ -49,10 +49,10 @@ public class Login extends AppCompatActivity {
 
                 if (etUserId.getText().toString().trim().isEmpty()) {
                     etUserId.requestFocus();
-                    AppConstants.AlertDialogBox(Login.this, "Please enter Username");
+                    AppConstants.AlertDialogBox(Login.this, getResources().getString(R.string.RequiredUserName));
                 } else if (etPass.getText().toString().trim().isEmpty()) {
                     etPass.requestFocus();
-                    AppConstants.AlertDialogBox(Login.this, "Please enter Password");
+                    AppConstants.AlertDialogBox(Login.this, getResources().getString(R.string.RequiredUserPassword));
                 } else {
 
                     ConnectionDetector cd = new ConnectionDetector(Login.this);
@@ -75,7 +75,7 @@ public class Login extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(Login.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.setCancelable(false);
         }
 

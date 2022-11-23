@@ -264,7 +264,7 @@ public class MyServer extends NanoHTTPD {
                     String jsonData = gson.toJson(objEntityClass);
 
                     String userEmail = CommonUtils.getCustomerDetailsCC(ctx).PersonEmail;
-                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "VINAuthorization");
+                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "VINAuthorization" + AppConstants.LANG_PARAM);
 
                     Log.i(TAG, " NanoHTTPD serve response jsonData:" + jsonData);
                     if (AppConstants.GenerateLogs)
@@ -505,7 +505,7 @@ public class MyServer extends NanoHTTPD {
         String jsonData = gson.toJson(obj_entity);
 
         String userEmail = CommonUtils.getCustomerDetailsCC(ctx).PersonEmail;
-        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "SaveTankMonitorReading");
+        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "SaveTankMonitorReading" + AppConstants.LANG_PARAM);
 
         new BackgroundServiceDownloadFirmware.SaveTLDDataToServer().execute(jsonData, authString);
 

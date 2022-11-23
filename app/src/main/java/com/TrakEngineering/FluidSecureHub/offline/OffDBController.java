@@ -135,7 +135,6 @@ public class OffDBController extends SQLiteOpenHelper {
 
     }
 
-
     public void storeOfflineHubDetails(Context ctx, String HubId, String AllowedLinks, String PersonnelPINNumberRequired, String VehicleNumberRequired, String PersonhasFOB,
                                        String VehiclehasFOB, String WiFiChannel, String BluetoothCardReader, String BluetoothCardReaderMacAddress, String LFBluetoothCardReader,
                                        String LFBluetoothCardReaderMacAddress, String PrinterMacAddress, String PrinterName, String EnablePrinter, String VehicleDataFilePath,
@@ -325,7 +324,8 @@ public class OffDBController extends SQLiteOpenHelper {
         return insertedID;
     }
 
-    public long insertPersonnelPinDetails(String PersonId, String PinNumber, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String Authorizedlinks, String AssignedVehicles,String MagneticCardReaderNumber,String Barcode) {
+    public long insertPersonnelPinDetails(String PersonId, String PinNumber, String FuelLimitPerTxn, String FuelLimitPerDay, String FOBNumber, String Authorizedlinks,
+                                          String AssignedVehicles, String MagneticCardReaderNumber, String Barcode) {
 
         long insertedID = 0;
         try {
@@ -1183,43 +1183,6 @@ public class OffDBController extends SQLiteOpenHelper {
         return wordList;
     }
 
-    public HashMap<String, String> getPersonnelDetailsByPersonId(String PersonId) {
-
-        HashMap<String, String> wordList = new HashMap<String, String>();
-
-        try {
-            String selectQuery = "SELECT * FROM " + TBL_PERSONNEL + " WHERE PersonId='" + PersonId.trim() + "'";
-            SQLiteDatabase database = this.getWritableDatabase();
-            Cursor cursor = database.rawQuery(selectQuery, null);
-            if (cursor.moveToFirst()) {
-                do {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("Id", cursor.getString(0));
-                    map.put("PersonId", cursor.getString(1));
-                    map.put("PinNumber", cursor.getString(2));
-                    map.put("FuelLimitPerTxn", cursor.getString(3));
-                    map.put("FuelLimitPerDay", cursor.getString(4));
-                    map.put("FOBNumber", cursor.getString(5));
-                    map.put("RequireHours", cursor.getString(6));
-                    map.put("Authorizedlinks", cursor.getString(7));
-                    map.put("AssignedVehicles", cursor.getString(8));
-                    map.put("MagneticCardReaderNumber", cursor.getString(9));
-                    map.put("Barcode", cursor.getString(10));
-
-                    System.out.println("***" + cursor.getString(1));
-
-                    wordList = map;
-
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByPersonId Exception: " + e.getMessage());
-        }
-        return wordList;
-    }
-
     public ArrayList<HashMap<String, String>> getFuelTimingsBySiteId(String siteid) {
 
         ArrayList<HashMap<String, String>> wordList = new ArrayList<HashMap<String, String>>();
@@ -1261,21 +1224,21 @@ public class OffDBController extends SQLiteOpenHelper {
             Cursor cursor = database.rawQuery(selectQuery, null);
             if (cursor.moveToFirst()) {
                 String rowCount = cursor.getString(0);
-                rowDetails += "LINKS:" + rowCount + " ";
+                rowDetails += "LINKS:" + rowCount + "; ";
             }
 
             String selectQuery2 = "SELECT COUNT(*) FROM " + TBL_VEHICLE;
             Cursor cursor2 = database.rawQuery(selectQuery2, null);
             if (cursor2.moveToFirst()) {
                 String rowCount = cursor2.getString(0);
-                rowDetails += "Vehicle:" + rowCount + " ";
+                rowDetails += "Vehicle:" + rowCount + "; ";
             }
 
             String selectQuery3 = "SELECT COUNT(*) FROM " + TBL_PERSONNEL;
             Cursor cursor3 = database.rawQuery(selectQuery3, null);
             if (cursor3.moveToFirst()) {
                 String rowCount = cursor3.getString(0);
-                rowDetails += "Personnel:" + rowCount + " ";
+                rowDetails += "Personnel:" + rowCount + "; ";
             }
         } catch (Exception e) {
             e.printStackTrace();

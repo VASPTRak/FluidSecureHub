@@ -118,7 +118,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 //Log.i(TAG, "Hotspot connected devices: " + String.valueOf(AppConstants.DetailsListOfConnectedDevices.size()));
                 for (int i = 0; i < SSIDList.size(); i++) {
 
-                    boolean IsHoseBusy = IsHoseBusyCheckLocally();
+                    boolean IsHoseBusy = AppConstants.IsHoseBusyCheckLocally();
                     String ReconfigureLink = SSIDList.get(i).get("ReconfigureLink");
                     String selSSID = SSIDList.get(i).get("WifiSSId");
                     String IsBusy = SSIDList.get(i).get("IsBusy");
@@ -306,7 +306,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 Log.i(TAG, "SSID List Empty");
                 if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " SSID List Empty");
             }
-            if (IsHoseBusyCheckLocally()) {
+            if (AppConstants.IsHoseBusyCheckLocally()) {
                 int s = DefectiveLinks.size();
                 System.out.println("S" + s);
 
@@ -344,7 +344,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
 
         //Check If hotspot Toggle required
-        boolean IsHoseBusy = IsHoseBusyCheckLocally();
+        boolean IsHoseBusy = AppConstants.IsHoseBusyCheckLocally();
         String CurrDate = CommonUtils.getTodaysDateTemp();
         int diff = getDate(CurrDate);
 
@@ -481,7 +481,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         Gson gson1 = new Gson();
         String jsonData1 = gson1.toJson(objEntityClass);
-        String authString1 = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this) + ":" + CommonUtils.getCustomerDetails_KdtAlive(BackgroundServiceKeepDataTransferAlive.this).PersonEmail + ":" + "UpgradeCurrentVersionWithUgradableVersion");
+        String authString1 = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this) + ":" + CommonUtils.getCustomerDetails_KdtAlive(BackgroundServiceKeepDataTransferAlive.this).PersonEmail + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
 
         if (hoseid != null && !hoseid.trim().isEmpty()) {
 
@@ -510,7 +510,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     String jsonData = gson.toJson(objEntityClass1);
 
                     String userEmail = CommonUtils.getCustomerDetails_KdtAlive(BackgroundServiceKeepDataTransferAlive.this).PersonEmail;
-                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this) + ":" + userEmail + ":" + "IsUpgradeCurrentVersionWithUgradableVersion");
+                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this) + ":" + userEmail + ":" + "IsUpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
 
                     //Second call will get Status for firwareupdate
                     new GetUpgrateFirmwareStatus().execute(FS_selected, jsonData, authString);
@@ -921,15 +921,6 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         }
     }
 
-    public boolean IsHoseBusyCheckLocally() {
-
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
-            return true;
-        }
-
-        return false;
-    }
-
     public class TCPClientTask extends AsyncTask<String, Void, String> {
 
         String response = "";
@@ -1314,7 +1305,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         String userEmail = CommonUtils.getCustomerDetails_KdtAlive(BackgroundServiceKeepDataTransferAlive.this).PersonEmail;
         //----------------------------------------------------------------------------------
-        String parm1 = AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this) + ":" + userEmail + ":" + "DefectiveLinkInfoEmail";
+        String parm1 = AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this) + ":" + userEmail + ":" + "DefectiveLinkInfoEmail" + AppConstants.LANG_PARAM;
         String authString = "Basic " + AppConstants.convertStingToBase64(parm1);
 
 

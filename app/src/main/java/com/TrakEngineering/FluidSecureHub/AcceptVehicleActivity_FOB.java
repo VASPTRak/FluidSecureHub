@@ -177,11 +177,11 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                 int InputTyp = editVehicleNumber.getInputType();
                 if (InputTyp == 2) {
                     editVehicleNumber.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     editVehicleNumber.setInputType(InputType.TYPE_CLASS_NUMBER);//| InputType.TYPE_CLASS_TEXT
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }
@@ -265,7 +265,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
         } else if (FobKey != null && !FobKey.isEmpty()) {
             Log.i(TAG, "FobreadSuccess FobKey" + FobKey);
         } else {
-            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.RED);
+            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.BLUE);
         }
     }
 
@@ -570,7 +570,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
         editVehicleNumber.setVisibility(View.VISIBLE);
         btnSave.setVisibility(View.VISIBLE);
         btnAccessDevice.setVisibility(View.INVISIBLE);
-        tv_vehicle_no_below.setText("Enter " + ScreenNameForVehicle + " ID");
+        tv_vehicle_no_below.setText(getResources().getString(R.string.EnterHeading) + " " + ScreenNameForVehicle + " ID");
         editVehicleNumber.setFocusable(true);
 
         InputMethodManager inputMethodManager = (InputMethodManager) editVehicleNumber.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -597,7 +597,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
     private boolean ValidateData(){
 
         if (editVehicleNumber.getText().toString().isEmpty()){
-            editVehicleNumber.setError("Enter " + ScreenNameForVehicle + " ID");
+            editVehicleNumber.setError(getResources().getString(R.string.EnterHeading) + " " + ScreenNameForVehicle + " ID");
             return false;
         }else if (FobKey.isEmpty() && MagCard_FobKey.isEmpty() && Barcode_val.isEmpty()){
             Toast.makeText(this, "Access device value empty", Toast.LENGTH_SHORT).show();
@@ -620,7 +620,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                         Log.d(TAG, "Barcode read: " + data.getStringExtra("Barcode").trim());
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile("Vehicle Barcode read success: " + Barcode_val);
-                        tv_Display_msg.setText("Barcode scan successfully: "+Barcode_val);
+                        tv_Display_msg.setText(getResources().getString(R.string.BarcodeReadSuccessMessage) + ": " + Barcode_val);
                     } else {
 
                         InitScreen();
@@ -656,7 +656,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptVehicleActivity_FOB.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.show();
 
         }
@@ -851,7 +851,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptVehicleActivity_FOB.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.show();
 
         }

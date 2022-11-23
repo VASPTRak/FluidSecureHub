@@ -55,9 +55,10 @@ public class FOBReaderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AppConstants.GenerateLogs = true;
-        SharedPreferences sharedPref = FOBReaderActivity.this.getSharedPreferences("storeLanguageSetLang", Context.MODE_PRIVATE);
-        String lang = sharedPref.getString("lang", "");
-        storeLanguageSetLang(FOBReaderActivity.this, lang, false);
+        SharedPreferences sharedPref = FOBReaderActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+        String language = sharedPref.getString("language", "");
+        CommonUtils.StoreLanguageSettings(FOBReaderActivity.this, language, false);
+
         setContentView(R.layout.activity_fobreader);
 
         SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
@@ -85,9 +86,9 @@ public class FOBReaderActivity extends AppCompatActivity {
         Button btn_read_acessdevice = (Button) findViewById(R.id.btn_read_acessdevice);
         Button btn_disconnect = (Button) findViewById(R.id.btn_disconnect);
         TextView tvVersionNum = (TextView) findViewById(R.id.tvVersionNum);
-        tvVersionNum.setText("Version " + CommonUtils.getVersionCode(FOBReaderActivity.this));
+        tvVersionNum.setText(getResources().getString(R.string.VersionHeading) + ": " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
-        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " UserInfo:\n" +AppConstants.Title + "\nAppVersion : " + CommonUtils.getVersionCode(FOBReaderActivity.this));
+        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "UserInfo:\n" +AppConstants.Title + "\nAppVersion : " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
         InItGUI();
 
@@ -127,34 +128,74 @@ public class FOBReaderActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         //getMenuInflater().inflate(R.menu.first, menu);//Menu Resource, Menu
+
+        getMenuInflater().inflate(R.menu.reader, menu);
+
+        menu.findItem(R.id.mreboot_reader).setVisible(false);
+        menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
+        menu.findItem(R.id.mcamera_back).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(false);
+        menu.findItem(R.id.mreload).setVisible(false);
+        menu.findItem(R.id.m_p_type).setVisible(false);
+        menu.findItem(R.id.monline).setVisible(false);
+        menu.findItem(R.id.mofline).setVisible(false);
+        menu.findItem(R.id.mclose).setVisible(false);
+        menu.findItem(R.id.mconfigure_tld).setVisible(false);
+        menu.findItem(R.id.enable_debug_window).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
+
+        SharedPreferences sharedPref = FOBReaderActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+        String language = sharedPref.getString("language", "");
+
+        MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+
+        if (language.trim().equalsIgnoreCase("es")) {
+            itemSp.setVisible(false);
+            itemEng.setVisible(true);
+        } else {
+            itemSp.setVisible(true);
+            itemEng.setVisible(false);
+        }
+        // Comment below code when uncomment above code
+        /*MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+        itemSp.setVisible(false);
+        itemEng.setVisible(false);*/
+
         return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-        /*if (item.getItemId() == android.R.id.home) {
-            Intent i = new Intent(FOBReaderActivity.this, WelcomeActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-        }*/
+        switch (item.getItemId()) {
 
-       /* switch (item.getItemId()) {
-            case R.id.menuClose:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    disconnectReader();
-                }
-                finish();
-                return true;
+            case R.id.mrestartapp:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Restart app.");
+                Intent i = new Intent(FOBReaderActivity.this, SplashActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
+                break;
 
+            case R.id.menuSpanish:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Spanish language selected.>");
+                CommonUtils.StoreLanguageSettings(FOBReaderActivity.this, "es", true);
+                break;
 
-            default:
-                return super.onOptionsItemSelected(item);
-        }*/
+            case R.id.menuEnglish:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<English language selected.>");
+                CommonUtils.StoreLanguageSettings(FOBReaderActivity.this, "en", true);
+                break;
+
+        }
         return super.onOptionsItemSelected(item);
     }
-
 
     private void InItGUI() {
 
@@ -171,13 +212,13 @@ public class FOBReaderActivity extends AppCompatActivity {
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(FOBReaderActivity.this);
 
-        AppConstants.Title = "HUB Name: " + CommonUtils.getSpareHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        AppConstants.Title = getResources().getString(R.string.HUBName) + " " + CommonUtils.getSpareHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
         //AppConstants.HubName = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(R.id.textView);
         tvTitle.setText(AppConstants.Title);
 
         tvCompanyName = (TextView) findViewById(R.id.tvCompanyName);
-        tvCompanyName.setText("Company Name: " + CompanyName);
+        tvCompanyName.setText(getResources().getString(R.string.CompanyName) + " " +  CompanyName);
 
         String btnGoText = getResources().getString(R.string.FobAssignButtonVehicle);
         btnGoText = btnGoText.replaceAll("Vehicle", ScreenNameForVehicle);
@@ -234,7 +275,7 @@ public class FOBReaderActivity extends AppCompatActivity {
 
     }
 
-    public static void storeLanguageSetLang(Activity activity, String lang, boolean isRecreate) {
+    /*public static void storeLanguageSetLang(Activity activity, String lang, boolean isRecreate) {
 
         if (lang.trim().equalsIgnoreCase("es"))
             AppConstants.LANG_PARAM = ":es-ES";
@@ -261,6 +302,6 @@ public class FOBReaderActivity extends AppCompatActivity {
 
         if (isRecreate)
             activity.recreate();
-    }
+    }*/
 
 }

@@ -106,6 +106,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        SharedPreferences sharedPref = SplashActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+        String language = sharedPref.getString("language", "");
+        CommonUtils.StoreLanguageSettings(SplashActivity.this, language, false);
+
         getSupportActionBar().setTitle("HUB Application");
 
         CommonUtils.LogMessage(TAG, "SplashActivity", null);
@@ -655,6 +659,11 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                     CommonUtils.SaveDataInPrefForGatehub(SplashActivity.this, IsGateHub, IsStayOpenGate);
 
+                    String HotSpotSSID = jsonObject.getString("HotSpotSSID");
+                    String HotSpotPassword = jsonObject.getString("HotSpotPassword");
+
+                    CommonUtils.SaveHotSpotDetailsInPref(SplashActivity.this, HotSpotSSID, HotSpotPassword);
+
                     System.out.println("BluetoothCardReader--" + response);
 
                     if (IsApproved.equalsIgnoreCase("True")) {
@@ -683,31 +692,22 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                                 startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
                                 finish();
                             }else if (BluetoothCardReader != null && BluetoothCardReaderMacAddress.equals("") && !BluetoothCardReader.isEmpty()) {
-                                //AppConstants.colorToastBigFont(SplashActivity.this, " Device reader needs its MAC to be entered in the Cloud. Please call Customer Support for assistance.", Color.RED); // Changed message as per #1828
+                                //AppConstants.colorToastBigFont(SplashActivity.this, " Device reader needs its MAC to be entered in the Cloud. Please call Customer Support for assistance.", Color.BLUE); // Changed message as per #1828
                                 showCustomMessageForMACDilaog(SplashActivity.this, "Message", "Device reader needs its MAC to be entered in the Cloud. Please call Customer Support for assistance.");
                                 //startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
                                 //finish();
 
                             } else {
-
-
                                 startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
                                 finish();
-
                             }
-
                         }
-
                     } else {
-                        CommonUtils.showMessageDilaog(SplashActivity.this, "Error Message", "Your registration has not been approved. Please contact your Manager.");
+                        CommonUtils.showMessageDilaog(SplashActivity.this, "Error Message", getResources().getString(R.string.RegistrationNotApproved));
                     }
-
-
                 } catch (Exception ex) {
                     CommonUtils.LogMessage(TAG, "Handle user Data", ex);
                 }
-
-
             } else if (ResponceMessage.equalsIgnoreCase("fail")) {
 
                 String ResponceText = jsonObj.getString(AppConstants.RES_TEXT);
@@ -719,7 +719,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 } else if (ResponceText.equalsIgnoreCase("notapproved")) {
 
-                    AlertDialogBox(SplashActivity.this, "Your Registration request is not approved yet.\nIt is marked Inactive in the Company Software.\nPlease contact your company administrator.");
+                    AlertDialogBox(SplashActivity.this, getResources().getString(R.string.regiNotApproved));
 
                 } else if (ResponceText.equalsIgnoreCase("IMEI not exists")) {
 
@@ -777,7 +777,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 Request request = new Request.Builder()
                         .url(AppConstants.webURL)
                         .post(body)
-                        .addHeader("Authorization", "Basic " + AppConstants.convertStingToBase64(param[0] + ":abc:Other"))
+                        .addHeader("Authorization", "Basic " + AppConstants.convertStingToBase64(param[0] + ":abc:Other" + AppConstants.LANG_PARAM))
                         .build();
 
                 Response response = client.newCall(request).execute();
@@ -785,7 +785,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
             } catch (Exception e) {
                 e.printStackTrace();
-                AppConstants.WriteinFile(TAG + " Exception in CheckApproved: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "Exception in CheckApproved: " + e.getMessage());
 
             }
             return resp;
@@ -802,7 +802,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
                         AppConstants.NETWORK_STRENGTH = false;
                     }
-                    AppConstants.WriteinFile(TAG + "  Server response null ~Switching to offline mode!!");
+                    AppConstants.WriteinFile(TAG + "Server response null ~Switching to offline mode!!");
                     SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
                     HubType = sharedPrefODO.getString("HubType", "");
 
@@ -820,8 +820,8 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     }
 
                 } else {
-                    AppConstants.WriteinFile(TAG + "Server connection problem. server response: " + response);
-                    RetryAlertDialogButtonClicked("Server connection problem...Please try it again");
+                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.server_connection_problem) + "; response: " + response);
+                    RetryAlertDialogButtonClicked(getString(R.string.server_connection_problem));
                 }
 
             }

@@ -369,7 +369,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
                     android:gravity="right"
-                    android:text="Version: "
+                    android:text="@string/VersionHeading"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="18sp" />
@@ -451,7 +451,7 @@
                     android:layout_marginBottom="10dp"
                     android:gravity="center_horizontal"
                     android:padding="2sp"
-                    android:text="Tap here to select hose"
+                    android:text="@string/selectHose"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="30dp"
                     android:textStyle="bold" />
@@ -516,7 +516,7 @@
                 android:background="@color/colorFluid"
                 android:clickable="true"
                 android:onClick="goButtonAction"
-                android:text="GO"
+                android:text="@string/GO"
                 android:textColor="#fff"
                 android:textSize="@dimen/go_button_text"
                 android:textStyle="bold" />
@@ -631,7 +631,7 @@
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="YOU MAY BEGIN FUELING"
+                                android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
 
@@ -685,7 +685,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs1QTN"
                                         style="@style/TextViewStyleQuantity"
-                                        android:text="Quantity:"
+                                        android:text="@string/Quantity"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -704,7 +704,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs1_pulseTxt"
                                         style="@style/TextViewStylePulse"
-                                        android:text="Pulse:"
+                                        android:text="@string/Pulse"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -727,7 +727,7 @@
                                     android:background="@drawable/selector_button"
                                     android:gravity="center"
                                     android:padding="5dp"
-                                    android:text="STOP"
+                                    android:text="@string/StopBtn"
                                     android:textColor="@color/black" />
 
 
@@ -763,7 +763,7 @@
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="YOU MAY BEGIN FUELING"
+                                android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
 
@@ -816,7 +816,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs2QTN"
                                         style="@style/TextViewStyleQuantity"
-                                        android:text="Quantity:"
+                                        android:text="@string/Quantity"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -835,7 +835,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs2_pulseTxt"
                                         style="@style/TextViewStylePulse"
-                                        android:text="Pulse:"
+                                        android:text="@string/Pulse"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -857,7 +857,7 @@
                                     android:background="@color/Dashboard_presstostop_btn"
                                     android:gravity="center"
                                     android:padding="5dp"
-                                    android:text="STOP"
+                                    android:text="@string/StopBtn"
                                     android:textColor="@color/black" />
 
 
@@ -903,7 +903,7 @@
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="YOU MAY BEGIN FUELING"
+                                android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
 
@@ -958,7 +958,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs3QTN"
                                         style="@style/TextViewStyleQuantity"
-                                        android:text="Quantity:"
+                                        android:text="@string/Quantity"
                                         android:textColor="@color/black" />
 
 
@@ -978,7 +978,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs3_pulseTxt"
                                         style="@style/TextViewStylePulse"
-                                        android:text="Pulse:"
+                                        android:text="@string/Pulse"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1004,7 +1004,7 @@
                                 android:background="@color/Dashboard_presstostop_btn"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="STOP"
+                                android:text="@string/StopBtn"
                                 android:textColor="@color/black" />
 
                         </LinearLayout>
@@ -1035,7 +1035,7 @@
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="YOU MAY BEGIN FUELING"
+                                android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
 
@@ -1089,7 +1089,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs4QTN"
                                         style="@style/TextViewStyleQuantity"
-                                        android:text="Quantity:"
+                                        android:text="@string/Quantity"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1108,7 +1108,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs4_pulseTxt"
                                         style="@style/TextViewStylePulse"
-                                        android:text="Pulse:"
+                                        android:text="@string/Pulse"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1131,7 +1131,7 @@
                                     android:background="@color/Dashboard_presstostop_btn"
                                     android:gravity="center"
                                     android:padding="5dp"
-                                    android:text="STOP"
+                                    android:text="@string/StopBtn"
                                     android:textColor="@color/black" />
 
                             </TableLayout>
@@ -1157,7 +1157,7 @@
                         android:orientation="vertical">
 
 
-                        <!--Hose Three Fake Message-->
+                        <!--Hose Five Fake Message-->
                         <LinearLayout
                             android:id="@+id/Fs5_beginFuel"
                             android:layout_width="match_parent"
@@ -1173,7 +1173,7 @@
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="YOU MAY BEGIN FUELING"
+                                android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
 
@@ -1202,7 +1202,7 @@
                                         android:id="@+id/tv_FS5_hoseName"
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
-                                        android:text="Hose Three"
+                                        android:text="Hose Five"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1228,7 +1228,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs5QTN"
                                         style="@style/TextViewStyleQuantity"
-                                        android:text="Quantity:"
+                                        android:text="@string/Quantity"
                                         android:textColor="@color/black" />
 
 
@@ -1248,7 +1248,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs5_pulseTxt"
                                         style="@style/TextViewStylePulse"
-                                        android:text="Pulse:"
+                                        android:text="@string/Pulse"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1274,7 +1274,7 @@
                                 android:background="@color/Dashboard_presstostop_btn"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="STOP"
+                                android:text="@string/StopBtn"
                                 android:textColor="@color/black" />
 
                         </LinearLayout>
@@ -1289,7 +1289,7 @@
                         android:orientation="vertical">
 
 
-                        <!--Hose Four Fake Message-->
+                        <!--Hose Six Fake Message-->
                         <LinearLayout
                             android:id="@+id/Fs6_beginFuel"
                             android:layout_width="match_parent"
@@ -1305,7 +1305,7 @@
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
-                                android:text="YOU MAY BEGIN FUELING"
+                                android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
 
@@ -1333,7 +1333,7 @@
                                         android:id="@+id/tv_FS6_hoseName"
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
-                                        android:text="Hose Four"
+                                        android:text="Hose Six"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1359,7 +1359,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs6QTN"
                                         style="@style/TextViewStyleQuantity"
-                                        android:text="Quantity:"
+                                        android:text="@string/Quantity"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1378,7 +1378,7 @@
                                     <TextView
                                         android:id="@+id/tv_fs6_pulseTxt"
                                         style="@style/TextViewStylePulse"
-                                        android:text="Pulse:"
+                                        android:text="@string/Pulse"
                                         android:textColor="@color/black" />
 
                                     <TextView
@@ -1401,7 +1401,7 @@
                                     android:background="@color/Dashboard_presstostop_btn"
                                     android:gravity="center"
                                     android:padding="5dp"
-                                    android:text="STOP"
+                                    android:text="@string/StopBtn"
                                     android:textColor="@color/black" />
 
                             </TableLayout>

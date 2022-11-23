@@ -40,7 +40,7 @@
                     android:layout_marginBottom="25dp"
                     android:gravity="left"
                     android:textStyle="bold"
-                    android:text="Enter Odometer No Tenths"
+                    android:text="@string/EnterOdometerHeading"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="@dimen/heading_text" />
             </LinearLayout>
@@ -59,7 +59,7 @@
                 android:background="@color/colorPrimary"
                 android:textColorHint="#fff"
                 android:textColor="@color/white"
-                android:hint="Enter Odometer No Tenths"
+                android:hint="@string/EnterOdometerHeading"
                 android:inputType="number|text"
                 android:maxLength="8"
                 android:padding="5sp"
@@ -87,7 +87,7 @@
                     android:layout_weight="1"
                     android:background="@color/backbtn"
                     android:onClick="cancelAction"
-                    android:text="Previous Screen"
+                    android:text="@string/previousScreen"
                     android:textSize="@dimen/previous_button_text"
                     android:textColor="@color/black" />
 
@@ -100,7 +100,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorFluid"
                     android:onClick="saveButtonAction"
-                    android:text="Go"
+                    android:text="@string/GO"
                     android:textColor="@color/white"
                     android:textSize="@dimen/go_button_text" />
             </LinearLayout>

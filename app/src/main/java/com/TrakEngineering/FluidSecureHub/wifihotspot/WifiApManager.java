@@ -5,12 +5,7 @@ package com.TrakEngineering.FluidSecureHub.WifiHotspot;
  * Created by VASP on 9/1/2017.
  */
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ComponentName;
@@ -27,8 +22,6 @@ import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
-import com.TrakEngineering.FluidSecureHub.R;
-import com.TrakEngineering.FluidSecureHub.SplashActivity;
 
 import static android.content.Context.WIFI_SERVICE;
 

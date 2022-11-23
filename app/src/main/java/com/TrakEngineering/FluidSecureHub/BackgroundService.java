@@ -540,7 +540,7 @@ public class BackgroundService extends Service {
                 String userEmail = CommonUtils.getCustomerDetailsCC(BackgroundService.this).PersonEmail;
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "LINKDisconnectionErrorLog");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "LINKDisconnectionErrorLog" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(BackgroundService.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
@@ -602,7 +602,7 @@ public class BackgroundService extends Service {
 
         SharedPreferences sharedPref = BackgroundService.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String userEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "SaveMultipleTransactions");
+        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "SaveMultipleTransactions" + AppConstants.LANG_PARAM);
 
         Call<ServerResponse> call = service.postttt(authString, linkJsonData);
 
@@ -758,7 +758,7 @@ public class BackgroundService extends Service {
 
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "SaveMultipleTransactions");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "SaveMultipleTransactions" + AppConstants.LANG_PARAM);
                 if (jsonData.trim().length() > 2)
                     response = serverHandler.PostTextData(BackgroundService.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
@@ -814,7 +814,7 @@ public class BackgroundService extends Service {
                 System.out.println("transStatus--" + transStatus);
 
                 String userEmail = CommonUtils.getCustomerDetailsbackgroundService(BackgroundService.this).PersonEmail;
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "UpgradeTransactionStatus");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService.this) + ":" + userEmail + ":" + "UpgradeTransactionStatus" + AppConstants.LANG_PARAM);
 
                 TransactionStatus objTS = new TransactionStatus();
                 objTS.TransactionId = transId;

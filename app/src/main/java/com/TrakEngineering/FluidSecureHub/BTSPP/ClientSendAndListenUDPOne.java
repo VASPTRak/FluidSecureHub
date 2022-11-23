@@ -2,8 +2,10 @@ package com.TrakEngineering.FluidSecureHub.BTSPP;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 
+import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.Constants;
 
 import java.io.IOException;
@@ -14,20 +16,21 @@ import java.net.SocketException;
 
 public class ClientSendAndListenUDPOne implements Runnable {
 
+    private static final String TAG = "UDP_Act_One ";
     String strcmd = "";
     String SERVER_IP = "";
     Context ct;
 
-    public ClientSendAndListenUDPOne(String info_cmd, String server_ip, Context ctx) {
+    public ClientSendAndListenUDPOne(String str_cmd, String server_ip, Context ctx) {
 
-         strcmd = info_cmd;
+         strcmd = str_cmd;
          SERVER_IP = server_ip;
          ct = ctx;
     }
 
     @Override
     public void run() {
-
+        StringBuilder sb1 = new StringBuilder();
         boolean run = true;
         try {
 
@@ -36,23 +39,44 @@ public class ClientSendAndListenUDPOne implements Runnable {
             byte[] buf = strcmd.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, buf.length, serverAddr, Constants.PORT);
             udpSocket.send(packet);
+
             while (run) {
                 try {
-                    byte[] message = new byte[8000];
+
+                    byte[] message = new byte[3000];
                     DatagramPacket p = new DatagramPacket(message, message.length);
                     Log.i("UDP client: ", "about to wait to receive");
                     udpSocket.setSoTimeout(10000);
                     udpSocket.receive(p);
-                    String text = new String(message, 0, p.getLength());
-                    Log.d("Received text", text);
+                    String Response = new String(message, 0, p.getLength());
+                    //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
+                    Log.d("Received text", Response);
+                    //AppConstants.WriteinFile(TAG + " Link 1: Received text: " + Response);
                     //run = false;
 
-                    Intent broadcastIntent = new Intent();
-                    broadcastIntent.setAction("BroadcastBlueLinkOneData");
-                    broadcastIntent.putExtra("Request", strcmd);
-                    broadcastIntent.putExtra("Response", text);
-                    broadcastIntent.putExtra("Action", "BlueLinkOne");
-                    ct.sendBroadcast(broadcastIntent);
+                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
+                        BTConstants.isNewVersionLinkOne = true;
+                    }
+
+                    if (Response.contains("$$")) {
+                        String res = Response.replace("$$", "");
+                        if (res.contains("}")) {
+                            res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                        }
+                        if (!res.trim().isEmpty()) {
+                            sb1.append(res.trim());
+                        }
+                        sendBroadcastIntentFromLinkOne(sb1.toString());
+                        sb1.setLength(0);
+                    } else {
+                        if (BTConstants.isNewVersionLinkOne) {
+                            sb1.append(Response);
+                        } else {
+                            // For old version Link response
+                            sb1.setLength(0);
+                            sendBroadcastIntentFromLinkOne(Response + '\n');
+                        }
+                    }
 
                 } catch (IOException e) {
                     Log.e(" UDP client has IOException", "error: ", e);
@@ -66,4 +90,15 @@ public class ClientSendAndListenUDPOne implements Runnable {
             Log.e("Exception:", "Error:", e);
         }
     }
+
+    public void sendBroadcastIntentFromLinkOne(String resp) {
+        //AppConstants.WriteinFile(TAG + " Link 1: Final Response: " + resp);
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction("BroadcastBlueLinkOneData");
+        broadcastIntent.putExtra("Request", strcmd);
+        broadcastIntent.putExtra("Response", resp.trim());
+        broadcastIntent.putExtra("Action", "BlueLinkOne");
+        ct.sendBroadcast(broadcastIntent);
+    }
+
 }

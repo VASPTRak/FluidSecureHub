@@ -391,7 +391,7 @@ public class OffBackgroundService extends Service {
                         if (cd.isConnecting()) {
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Offline data Link,Vehicle,Pin Start ");
+                                AppConstants.WriteinFile(TAG + " <Offline Link,Vehicle,Pin data download started.>");
 
                                 /*new GetAPILinkDetails().execute();
 
@@ -459,6 +459,7 @@ public class OffBackgroundService extends Service {
 
                     System.out.println("startDownloadTimerTask**********");
 
+                    // Download Vehicle Data
                     String status_v = getDownloadFileStatus("Vehicle");
 
                     if ((status_v.isEmpty() || status_v.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
@@ -466,7 +467,7 @@ public class OffBackgroundService extends Service {
                             downloadLibrary(VehicleDataFilePath, "Vehicle");
                     }
 
-
+                    // Download Personnel Data
                     String status_p = getDownloadFileStatus("Personnel");
 
                     if ((status_p.isEmpty() || status_p.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
@@ -474,7 +475,7 @@ public class OffBackgroundService extends Service {
                             downloadLibrary(PersonnelDataFilePath, "Personnel");
                     }
 
-
+                    // Download Link Data
                     String status_l = getDownloadFileStatus("Link");
 
                     if ((status_l.isEmpty() || status_l.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
@@ -489,7 +490,6 @@ public class OffBackgroundService extends Service {
 
                         if (timer != null)
                             timer.cancel();
-
                         AppConstants.WriteinFile("All 3 files downloaded successfully.");
 
                     }
@@ -623,7 +623,7 @@ public class OffBackgroundService extends Service {
                     }
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Offline data Link download process completed Successfully");
+                        AppConstants.WriteinFile(TAG + " Offline Link data download process completed Successfully");
 
                 } else {
                     if (AppConstants.GenerateLogs)
@@ -744,7 +744,7 @@ public class OffBackgroundService extends Service {
                     }
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Offline data Vehicle download process completed Successfully");
+                        AppConstants.WriteinFile(TAG + " Offline Vehicle data download process completed Successfully");
 
                 } else {
                     if (AppConstants.GenerateLogs)
@@ -877,7 +877,7 @@ public class OffBackgroundService extends Service {
 
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline data Personnel download process completed Successfully");
+                    AppConstants.WriteinFile(TAG + " Offline Personnel data download process completed Successfully");
 
             } catch (JSONException e) {
                 e.printStackTrace();

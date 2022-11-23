@@ -64,6 +64,7 @@ public class AppConstants {
     public static final String LOG_TXTN_HTTP = "[TXTN-HTTP]";
     public static final String LOG_MAINTAIN = "[MAINTAIN]";
     public static final String LOG_BACKGROUND = "[BACKGROUND]";
+    public static final String LOG_RECONFIG = "[RECONFIG]";
 
     public static int ScreenResolutionYOffSet = 0;
     public static int COUNT_HOTSPOT_MAIL;
@@ -138,9 +139,10 @@ public class AppConstants {
     public static final String SupportEmail = "SupportEmail";
     public static final String SupportPhonenumber = "SupportPhonenumber";
     public static String BrandName = "FluidSecure";
-    public static String LANG_PARAM;
+    public static String LANG_PARAM = "";
 
     public static final String PACKAGE_BACKGROUND_SERVICE = "com.TrakEngineering.FluidSecureHub.BackgroundService";
+    public static final String PACKAGE_BS_OffTransSync = "com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService";
 
     public static ArrayList<HashMap<String, String>> temp_serverSSIDList;
 
@@ -959,4 +961,20 @@ public class AppConstants {
         return storedIMEI;
     }
 
+    public static boolean IsHoseBusyCheckLocally() {
+
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static String spanishNumberSystem(String flQty) {
+        if (AppConstants.LANG_PARAM.equals(":es-ES")) {
+            return flQty.replace(".", ",");
+        } else {
+            return flQty;
+        }
+    }
 }

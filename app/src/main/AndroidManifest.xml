@@ -70,23 +70,31 @@
         <activity android:name=".AcceptVehicleActivity_FOB" />
         <activity android:name=".AcceptPinActivity_FOB" />
         <activity android:name=".FOBReaderActivity" /> <!-- android:testOnly="false" -->
+
+        <activity android:name=".PairDeviceActivity" />
+
         <service
-            android:name=".BTSPP.BackgroundService_BTFour"
+            android:name=".BTSPP.BackgroundService_BTOne"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTSPP.BackgroundService_BTTwo"
             android:enabled="true"
             android:exported="true" />
         <service
             android:name=".BTSPP.BackgroundService_BTThree"
             android:enabled="true"
             android:exported="true" />
-
-        <activity android:name=".PairDeviceActivity" />
-
         <service
-            android:name=".BTSPP.BackgroundService_BTTwo"
+            android:name=".BTSPP.BackgroundService_BTFour"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".BTSPP.BackgroundService_BTOne"
+            android:name=".BTSPP.BackgroundService_BTFive"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTSPP.BackgroundService_BTSix"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -332,6 +340,8 @@
         <service android:name=".BTSPP.BTSPP_LinkTwo.SerialServiceTwo" />
         <service android:name=".BTSPP.BTSPP_LinkThree.SerialServiceThree" />
         <service android:name=".BTSPP.BTSPP_LinkFour.SerialServiceFour" />
+        <service android:name=".BTSPP.BTSPP_LinkFive.SerialServiceFive" />
+        <service android:name=".BTSPP.BTSPP_LinkSix.SerialServiceSix" />
         <service
             android:name=".EddystoneScanner.FStagScannerService"
             android:enabled="true"

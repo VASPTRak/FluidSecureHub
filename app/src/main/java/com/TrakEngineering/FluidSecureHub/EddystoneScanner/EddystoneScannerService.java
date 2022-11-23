@@ -363,7 +363,7 @@ public class EddystoneScannerService extends Service {
             if (SCall) {
 
                 String userEmail = CommonUtils.getCustomerDetails_backgroundServiceEddystoneScannerService(EddystoneScannerService.this).PersonEmail;
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(EddystoneScannerService.this) + ":" + userEmail + ":" + "CheckAndValidateFSNPDetails");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(EddystoneScannerService.this) + ":" + userEmail + ":" + "CheckAndValidateFSNPDetails" + AppConstants.LANG_PARAM);
 
                 String IMEI_UDID = String.valueOf(AppConstants.getIMEI(EddystoneScannerService.this));
                 String Email = CommonUtils.getCustomerDetails_backgroundServiceEddystoneScannerService(EddystoneScannerService.this).PersonEmail;
@@ -636,7 +636,7 @@ public class EddystoneScannerService extends Service {
                                             SelectedHose = String.valueOf(p);
                                             Constants.FA_Message = RespMsg + " " + RespTxt + " " + fsnpName;
                                             if (WelcomeActivity.FA_DebugWindow)
-                                                AppConstants.colorToastBigFont(EddystoneScannerService.this, RespTxt + " " + fsnpName, Color.RED);
+                                                AppConstants.colorToastBigFont(EddystoneScannerService.this, RespTxt + " " + fsnpName, Color.BLUE);
 
 
 

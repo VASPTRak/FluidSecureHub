@@ -26,7 +26,7 @@ public class Constants {
 
     public static double Latitude=0;
     public static double Longitude=0;
-    public static int PORT = 80;
+    public static int PORT = 8080; //80;
 
     final public static String DATE_FORMAT="MMM dd, yyyy"; // May 24, 2016
     final public static String TIME_FORMAT="hh:mm aa";

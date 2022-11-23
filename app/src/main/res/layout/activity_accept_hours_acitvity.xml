@@ -40,9 +40,8 @@
                     android:id="@+id/tv_hours"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:gravity="left"
-                    android:text="Enter the Hour No Tenths:"
+                    android:text="@string/EnterHoursHeading"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textSize="@dimen/heading_text"
                     android:textStyle="bold" />
@@ -63,7 +62,7 @@
                 android:layout_height="80dp"
                 android:layout_marginTop="10sp"
                 android:background="@color/colorPrimary"
-                android:hint="Enter the Hour"
+                android:hint="@string/EnterHoursHeading"
                 android:inputType="number|text"
                 android:maxLength="7"
                 android:padding="5sp"
@@ -91,7 +90,7 @@
                     android:layout_weight="1"
                     android:background="@color/backbtn"
                     android:onClick="cancelAction"
-                    android:text="Previous Screen"
+                    android:text="@string/previousScreen"
                     android:textSize="@dimen/previous_button_text"
                     android:textColor="@color/black"/>
 
@@ -104,7 +103,7 @@
                     android:layout_weight="1"
                     android:background="@color/colorFluid"
                     android:onClick="saveButtonAction"
-                    android:text="Enter"
+                    android:text="@string/GO"
                     android:textColor="@color/white"
                     android:textSize="@dimen/go_button_text" />
             </LinearLayout>

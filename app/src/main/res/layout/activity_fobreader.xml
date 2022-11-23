@@ -28,7 +28,7 @@
                     android:gravity="left"
                     android:maxWidth="380dp"
                     android:paddingLeft="20dp"
-                    android:text="Company Name"
+                    android:text="@string/CompanyName"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="20sp" />
@@ -60,7 +60,7 @@
                     android:background="@color/colorFluid"
                     android:gravity="left"
                     android:paddingLeft="20dp"
-                    android:text="HUB Name"
+                    android:text="@string/HUBName"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="20sp" />
@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
                     android:gravity="right"
-                    android:text="Version: "
+                    android:text="@string/VersionHeading"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="18sp" />

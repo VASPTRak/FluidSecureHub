@@ -274,7 +274,7 @@ public class BackgroundServiceFSNP extends BackgroundService {
                     AppConstants.WriteinFile(TAG + "  StartTransactionProcess ServerCallRequired");
                 Log.i(TAG, " Server call");
                 String userEmail = CommonUtils.getCustomerDetails_backgroundService(BackgroundServiceFSNP.this).PersonEmail;
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundServiceFSNP.this) + ":" + userEmail + ":" + "CheckAndValidateFSNPDetails");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundServiceFSNP.this) + ":" + userEmail + ":" + "CheckAndValidateFSNPDetails" + AppConstants.LANG_PARAM);
 
                 String IMEI_UDID = String.valueOf(AppConstants.getIMEI(BackgroundServiceFSNP.this));
                 String Email = CommonUtils.getCustomerDetails_backgroundService(BackgroundServiceFSNP.this).PersonEmail;
@@ -1054,7 +1054,7 @@ public class BackgroundServiceFSNP extends BackgroundService {
                                         }
 
                                         if (ps < 3) {
-                                            AppConstants.colorToast(BackgroundServiceFSNP.this, RespMsg + " " + RespTxt + " " + fsnpName, Color.RED);
+                                            AppConstants.colorToast(BackgroundServiceFSNP.this, RespMsg + " " + RespTxt + " " + fsnpName, Color.BLUE);
                                             ps++;
                                         }
 

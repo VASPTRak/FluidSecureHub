@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="HUB Name:"
+                android:text="@string/HUBName"
                 android:textColor="#444"
                 android:textSize="25dp" />
 
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@color/save_button"
-                android:text="Register"
+                android:text="@string/RegisterBtn"
                 android:textAllCaps="false"
                 android:textColor="#fff"
                 android:textSize="25sp"

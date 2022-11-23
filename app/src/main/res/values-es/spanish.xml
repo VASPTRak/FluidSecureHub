@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FluidSecureHub</string>
+    <string name="fs_name">FluidSecureHub</string>
+    <string name="add">2901 Crescent Drive
+                        Tallahassee, FL 32301
+                        850-878-4585
+                        support@trakeng.com
+                        www.trakeng.com</string>
+
+    <string name="arrow">\\u2B06</string>
+    <string name="arrow_uni_code">\\u2B06</string>
+    <string name="start_fueling">Comience a alimentar</string>
+    <string name="fuel_another">Combustible Otro</string>
+    <string name="stop_fueling">Detener el combustible</string>
+    <string name="fuel_history">Historia del combustible</string>
+    <string name="regi">Registro</string>
+    <string name="support_line"><u>Para soporte 24/7</u></string>
+    <string name="no_internet">El sistema ha detectado que no tienes servicio celular y las opciones fuera de línea no están habilitadas. Póngase en contacto con su Gerente.</string>
+    <string name="server_connection_problem">El sistema ha detectado que no tienes servicio celular y las opciones fuera de línea no están habilitadas. Póngase en contacto con su Gerente.</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="title_activity_fob_reader">FobReader</string>
+    <string name="selectHose">Seleccionar manguera</string>
+    <string name="selectHoseToUse">Seleccione la manguera a usar</string>
+    <string name="HoseOutOfOrder">Manguera fuera de servicio</string>
+    <string name="GO">IR</string>
+    <string name="Cancel">Cancelar</string>
+    <string name="previousScreen">Pantalla anterior</string>
+    <string name="LinkIsConnecting">Conectando...</string>
+    <string name="EnterDeptNumber">Ingrese el número de departamento</string>
+    <string name="EnterOdoManually">Introducir odómetro manualmente</string>
+    <string name="PressFor123">Presiona para 123</string>
+    <string name="PressForABC">Presione para ABC</string>
+    <string name="ReturnBtn">Devolver</string>
+    <string name="BeforeStartFueling">USTED PUEDE EMPEZAR A CARGAR COMBUSTIBLE</string>
+    <string name="OdometerEntry">Entrada de odómetro:</string>
+    <string name="StartBtn">EMPEZAR</string>
+    <string name="firstTimeUseMessage">Esta es la primera vez que utiliza el sistema. Asegúrese de que la cantidad que se muestra en la pantalla coincida con la cantidad final en el dispensador. De lo contrario, asegúrese de llamar a Soporte</string>
+    <string name="TryAgainLater">Por favor, inténtelo de nuevo más tarde</string>
+    <string name="HoseInUseRetry">Manguera En Uso. Vuelva a intentarlo una vez que la transacción en curso se haya completado.</string>
+    <string name="RegistrationNotApproved">Su registro no ha sido aprobado. Por favor contacte a su Gerente.</string>
+    <string name="MakeSureBTMacIsSet">Asegúrese de que BT mac esté configurado.</string>
+    <string name="PairNewLink">Emparejar nuevo ENLACE</string>
+    <string name="DeviceName">Nombre del dispositivo</string>
+    <string name="DeviceMacAddress">Dirección Mac del dispositivo</string>
+    <string name="IMEIAlreadyExist">¡Tu número de IMEI ya EXISTE!</string>
+
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
+    <string name="title_activity_main">Barcode Reader Sample</string>
+    <string name="barcode_header">Click &quot;Read Barcode&quot; to read a barcode</string>
+    <string name="read_barcode">Read Barcode</string>
+    <string name="auto_focus">Auto Focus</string>
+    <string name="use_flash">Use Flash</string>
+    <string name="barcode_success">Barcode read successfully</string>
+    <string name="barcode_failure">No barcode captured</string>
+    <string name="barcode_error">"Error reading barcode: %1$s"</string>
+
+    <string name="action_settings">Configuración</string>
+    <string name="action_clear">Clara</string>
+    <string name="action_about">About AJ Demo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="pref_title_device">Dispositivo</string>
+    <string name="pref_title_firmware_version">Versión de firmware</string>
+    <string name="pref_title_status">Estado</string>
+    <string name="pref_title_battery_level">Nivel de bateria</string>
+    <string name="pref_title_sleep_timeout">tiempo de espera de sueño</string>
+    <string name="pref_title_reset">Reajustar</string>
+    <string name="pref_title_sleep">sueño</string>
+    <string name="pref_title_swipe_count">Swipe count</string>
+    <string name="pref_title_battery_status">Battery status</string>
+    <string name="pref_title_data_received">Data received</string>
+    <string name="pref_title_key_serial_number">Key serial number</string>
+    <string name="pref_title_track_data">Track data</string>
+    <string name="pref_title_track1_mac">Track 1 - MAC</string>
+    <string name="pref_title_track2_mac">Track 2 - MAC</string>
+    <string name="pref_title_track1">Track 1</string>
+    <string name="pref_title_jis2_data">JIS2 data</string>
+    <string name="pref_title_primary_account_number">Primary account number</string>
+    <string name="pref_title_name">Name</string>
+    <string name="pref_title_expiration_date">Expiration date</string>
+    <string name="pref_title_service_code">Service code</string>
+    <string name="pref_title_discretionary_data">Discretionary data</string>
+    <string name="pref_title_track2">Track 2</string>
+    <string name="pref_title_about_reader">About reader</string>
+    <string name="pref_title_function">Function</string>
+    <string name="pref_title_get_firmware_version">Get firmware version</string>
+    <string name="pref_title_get_status">Get status</string>
+    <string name="pref_title_set_sleep_timeout">Set sleep timeout</string>
+    <string name="pref_title_reader_id">Reader ID</string>
+    <string name="pref_title_custom_id">Custom ID</string>
+    <string name="pref_title_device_id">Device ID</string>
+    <string name="pref_title_get_custom_id">Get custom ID</string>
+    <string name="pref_title_set_custom_id">Set custom ID</string>
+    <string name="pref_title_get_device_id">Get device ID</string>
+    <string name="pref_title_cryptographic_keys">Cryptographic keys</string>
+    <string name="pref_title_new_master_key">New master key</string>
+    <string name="pref_title_master_key">Master key</string>
+    <string name="pref_title_aes_key">AES key</string>
+    <string name="pref_title_set_master_key">Set master key</string>
+    <string name="pref_title_set_aes_key">Set AES key</string>
+    <string name="pref_title_use_default_key">Use default key</string>
+    <string name="pref_title_dukpt_setup">DUKPT setup</string>
+    <string name="pref_title_dukpt">DUKPT</string>
+    <string name="pref_title_iksn">IKSN</string>
+    <string name="pref_title_ipek">IPEK</string>
+    <string name="pref_title_get_dukpt_option">Get DUKPT option</string>
+    <string name="pref_title_set_dukpt_option">Set DUKPT option</string>
+    <string name="pref_title_initialize_dukpt">Initialize DUKPT</string>
+    <string name="pref_title_use_default_iksn_ipek">Use default IKSN &amp; IPEK</string>
+    <string name="pref_title_track_data_setup">Track data setup</string>
+    <string name="pref_title_encrypted_track1">Encrypted track 1</string>
+    <string name="pref_title_encrypted_track2">Encrypted track 2</string>
+    <string name="pref_title_masked_track1">Masked track 1</string>
+    <string name="pref_title_masked_track2">Masked track 2</string>
+    <string name="pref_title_get_track_data_option">Get track data option</string>
+    <string name="pref_title_set_track_data_option">Set track data option</string>
+    <string name="pref_title_picc">PICC</string>
+    <string name="pref_title_atr">ATR</string>
+    <string name="pref_title_timeout">Timeout</string>
+    <string name="pref_title_card_type">Card type</string>
+    <string name="pref_title_command_apdu">Command APDU</string>
+    <string name="pref_title_response_apdu">Response APDU</string>
+    <string name="pref_title_rf_config">RF configuration</string>
+    <string name="pref_title_power_on">Power ON</string>
+    <string name="pref_title_power_off">Power OFF</string>
+    <string name="pref_title_transmit">Transmit</string>
+    <string name="pref_title_set_rf_config">Set RF configuration</string>
+    <string name="pref_title_icc">ICC</string>
+    <string name="pref_title_power_action">Power action</string>
+
+    <string-array name="power_action">
+        <item>Power down</item>
+        <item>Cold reset</item>
+        <item>Warm reset</item>
+    </string-array>
+
+    <string name="pref_title_wait_timeout">Wait timeout</string>
+    <string name="pref_title_protocol">Protocol</string>
+    <string name="pref_title_t0">T=0</string>
+    <string name="pref_title_t1">T=1</string>
+    <string name="pref_title_active_protocol">Active protocol</string>
+    <string name="pref_title_apdu">APDU</string>
+    <string name="pref_title_power">Power</string>
+    <string name="pref_title_set_protocol">Set protocol</string>
+    <string name="pref_title_device_control">Device control</string>
+    <string name="pref_title_control_code">Control code</string>
+    <string name="pref_title_control_command">Control command</string>
+    <string name="pref_title_control_response">Control response</string>
+    <string name="pref_title_control">Control</string>
+    <string name="pref_title_card_state">Card state</string>
+    <string name="pref_title_update_card_state">Update card state</string>
+
+    <string name="cancel">Cancelar</string>
+    <string name="error">Error</string>
+    <string name="info">Information</string>
+    <string name="message_track_data_error_corrupted">The track 1 and track 2 data may be corrupted. Please swipe the card again!</string>
+    <string name="message_track1_data_error_corrupted">The track 1 data may be corrupted. Please swipe the card again!</string>
+    <string name="message_track2_data_error_corrupted">The track 2 data may be corrupted. Please swipe the card again!</string>
+    <string name="message_track_data_error_decrypted">The track data cannot be decrypted. Please swipe the card again!</string>
+    <string name="message_track_data_error_checksum">The track data contains checksum error. Please swipe the card again!</string>
+    <string name="message_track_data_error_ksn">The key serial number does not match with the settings.</string>
+    <string name="message_track_data_error_ec">The encryption counter is invalid.</string>
+    <string name="message_reset_info_volume">In order to reset the reader, please adjust the volume to maximum.</string>
+    <string name="message_new_master_key_error_length">The new master key length is not equal to 16.</string>
+    <string name="message_master_key_error_length">The master key length is not equal to 16.</string>
+    <string name="message_aes_key_error_length">The AES key length is not equal to 16.</string>
+    <string name="message_iksn_error_length">The IKSN length is not equal to 10.</string>
+    <string name="message_ipek_error_length">The IPEK length is not equal to 16.</string>
+    <string name="message_picc_rf_config_error_length">The RF configuration length is not equal to 19.</string>
+    <string name="dialog_message_sleep_timeout">Enter the value between 4 and 20:</string>
+    <string name="dialog_message_custom_id">Enter the text (maximum 10 characters):</string>
+
+    <string name="ble_not_supported">BLE is not supported.</string>
+    <string name="title_devices">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="about">About BTDemo</string>
+    <string name="version">Version</string>
+    <string name="unknown_version">Unknown version</string>
+    <string name="ok">Ok</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
+
+    <!-- Activity -->
+    <string name="apdu_command">APDU comando</string>
+    <string name="atr">ATR</string>
+    <string name="authenticate">Autenticar</string>
+    <string name="authentication_key">Clave de autenticación</string>
+    <string name="battery_service">Servicio de batería</string>
+    <string name="battery_level">Nivel de bateria: </string>
+    <string name="battery_status">Estado de la batería: </string>
+    <string name="card_reader_not_ready">El lector de tarjetas no está listo</string>
+    <string name="card_status_2">Estado de la tarjeta: </string>
+    <string name="clear">Clara</string>
+    <string name="connection_status">Estado de conexión: </string>
+    <string name="device_info">Información del dispositivo</string>
+    <string name="escape_command">Escape comando</string>
+    <string name="fw_revision">FW revision: </string>
+    <string name="hw_revision">HW revision: </string>
+    <string name="get_battery_level">Get Battery Level</string>
+    <string name="get_battery_status">Get Battery Status</string>
+    <string name="get_device_info">Get Device Info</string>
+    <string name="get_card_status">Get Card Status</string>
+    <string name="set_tx_power">Set Tx Power</string>
+    <string name="manufacturer">Manufacturer: </string>
+    <string name="model_num">Model Num: </string>
+    <string name="noData"></string>
+    <string name="power_off_card">Power Off Card</string>
+    <string name="power_on_card">Power On Card</string>
+    <string name="serial_num">Serial Num: </string>
+    <string name="card_status">Card Status</string>
+    <string name="start_polling">Start Polling</string>
+    <string name="status_change_notifications">Status change notifications</string>
+    <string name="stop_polling">Stop Polling</string>
+    <string name="system_id">System ID: </string>
+    <string name="transmit_apdu">Transmit APDU</string>
+    <string name="transmit_escape_command">Transmit Escape Command</string>
+
+    <string-array name="tx_power_values">
+        <item>-23 dBm</item>
+        <item>-6 dBm</item>
+        <item>0 dBm</item>
+        <item>4 dBm</item>
+    </string-array>
+
+    <!-- Connection status -->
+    <string name="connect">Conectar</string>
+    <string name="connected">Conectada</string>
+    <string name="connecting">Conectando</string>
+    <string name="connect_fail">Error al conectar</string>
+    <string name="disconnect">Desconectar</string>
+    <string name="disconnected">Desconectada</string>
+    <string name="disconnecting">Desconectando</string>
+    <string name="disconnect_fail">Error al desconectar</string>
+
+    <!-- Menu items -->
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <!-- LF BLE items -->
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">Sin datos</string>
+    <string name="unknown_characteristic">Desconocida Caracteristica</string>
+    <string name="unknown_service">Desconocida Servicio</string>
+
+    <!-- Menu items -->
+    <string name="menu_connect">Conectar</string>
+    <string name="menu_disconnect">Desconectar</string>
+
+    <!-- For wifi hotspot -->
+    <string name="intent_action_turnon">com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_ON</string>
+    <string name="intent_action_turnoff">com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_OFF</string>
+
+    <string name="intent_data_scheme">wifihotspot</string>
+    <string name="intent_data_host_turnon">turnon</string>
+    <string name="intent_data_host_turnoff">turnoff</string>
+    <string name="on_uri"><a href="wifihotspot://turnon">wifihotspot://turnon</a></string>
+    <string name="off_uri"><a href="wifihotspot://turnoff">wifihotspot://turnoff</a></string>
+
+    <string name="turnon_button">Turn On</string>
+    <string name="turnoff_button">Turn Off</string>
+    <string name="dummy_content">NOTE TO\nTHE UNINITIATED</string>
+
+    <string name="notification_chnnl">Hot Spot</string>
+    <string name="notification_chnnl_location_descr">Keeps wifi hot spot persistent</string>
+
+    <string name="needpermissions">com.fitc.wifihotspot.NEED_PERMISSION</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="actions_note">Send an (Implicit )Intent with an actions below in bold. Note that in OREO this is no longer as trivial as it used to be. <a href="http://www.floatingintheclouds.com/app-wifi-hot-spot-on-oreo/">More info here</a>.</string>
+    <string name="instructions"><a href="http://www.floatingintheclouds.com/app-wifi-hot-spot-on-oreo/">INSTRUCTIONS</a></string>
+
+    <string name="Name">Name</string>
+    <string name="Mobile">Mobile</string>
+    <string name="Email">Email</string>
+    <string name="SiteName">Nombre del sitio:</string>
+    <string name="HUBName">HUB Nombre:</string>
+    <string name="HUBNumber">HUB número:</string>
+    <string name="VersionHeading">Versión</string>
+    <string name="ConnectingStatus">Conectando...</string>
+    <string name="HoseInUse">Manguera en uso.</string>
+    <string name="PairingMode">modo de emparejamiento...</string>
+    <string name="SelectHoseAlert">Por favor, seleccione Manguera</string>
+    <string name="UnableToGetHoseList">No se puede obtener la lista de mangueras desde el servidor</string>
+
+    <string name="Quantity">Cantidad:</string>
+    <string name="Pulse">pulso:</string>
+    <string name="StopBtn">Detenerse</string>
+
+    <string name="BtnScanBarcode">Escanear código de barras</string>
+    <string name="BtnReadAccessDevice">Presentar el dispositivo de acceso a la lectora</string>
+    <string name="BtnReadAccessDeviceV">Presentar el dispositivo de acceso al vehículo al lector</string>
+    <string name="BtnReadAccessDeviceP">Presentar el dispositivo de acceso de persona al lector</string>
+    <string name="FobAssignButtonVehicle">Toque aquí para asignar un dispositivo\n para Vehículo</string>
+    <string name="FobAssignButtonPer">Toque aquí para asignar un dispositivo\n para Persona</string>
+    <string name="FobRead">Dispositivo de acceso de lectura</string>
+    <string name="AccessDeviceReadSuccess">Dispositivo de acceso leído con éxito</string>
+    <string name="AccessDeviceAssignedToVehicle">Ha presentado un dispositivo que ya está asignado al vehículo %1$s. Escanea otro dispositivo.</string>
+
+    <string name="BTLinkPageMsg">El LINK que ha seleccionado no está configurado. Seleccione el enlace de la siguiente lista. Si el enlace no está en la lista, haga clic en el botón "Emparejar nuevo ENLACE" que avanzará a la página de Bluetooth. Una vez que vea el nombre del ENLACE que está intentando seleccionar, selecciónelo en la página siguiente y luego haga clic en emparejar. Si no ve este ENLACE en la página siguiente, reajustar la energía y vuelva a intentarlo. Si después de restablecer la energía, aún no ve este nombre de ENLACE, llame a Soporte.</string>
+    <string name="BTLinkNotInPairList">El LINK que ha seleccionado no está emparejado actualmente. Nosotros estamos avanzando a la página de BlueTooth. Una vez que vea el nombre del ENLACE que está intentando seleccionar, selecciónelo en la página siguiente y luego haga clic en emparejar. Si no ve este ENLACE en la página siguiente, reajustar la energía y vuelva a intentarlo. Si después de restablecer la energía, aún no ve este nombre de ENLACE, llame a Soporte.</string>
+    <string name="askreplacehub">Se ingresa el nombre del HUB que ya tiene asignado un dispositivo existente. ¿Le gustaría reemplazar su dispositivo existente con este? Al presionar continuar aquí, reemplazará el dispositivo existente de este HUB con esta unidad. Esta Acción debe ser realizada por alguien que tenga Acceso a la Nube. Si tiene un perfil de CustomerAdmin en la nube, ingrese el correo electrónico y la contraseña que usa para iniciar sesión en la nube a continuación. ¿Le gustaría continuar?</string>
+    <string name="conn_error">Hubo un error al conectarse al LINK. Haga clic en Aceptar y vuelva a realizar su selección. Si continúa teniendo más problemas, llame a Soporte.</string>
+
+    <string name="prevReading">Ha ingresado una lectura que se ingresó anteriormente. Por favor revisa e intenta de nuevo. Si el problema persiste, comuníquese con su gerente.</string>
+    <string name="peHour0">Por favor, introduzca horas mayores que 0.</string>
+    <string name="peOdo0">Por favor, introduzca el odómetro mayor que 0.</string>
+    <string name="lessThanPrevReadingMsg">Ha ingresado una lectura que es menor que la ingresada previamente. Por favor revisa e intenta de nuevo.</string>
+    <string name="UnableToConnectToHoseMessage">Pedimos disculpas por las molestias, no pudimos establecer una conexión con el ENLACE. Por favor, intenta de nuevo.</string>
+    <string name="HoseUnavailableMessage">La manguera no está disponible. reajustar la energía al dispensador que está controlando la manguera. Esto se puede hacer disparando el interruptor principal o la parada de emergencia. Una vez que se restablece la alimentación, espere 30 segundos y vuelva a intentarlo.</string>
+    <string name="HavingTroubleConnectingToLINK">Tenemos problemas para conectarnos al ENLACE que controla su dispensador. Localice la fuente de alimentación/la parada de emergencia para restablecer la alimentación del dispensador. Una vez que esto se complete, espere 30 segundos y vuelva a intentarlo. Si continúa teniendo problemas, comuníquese con Soporte.</string>
+
+    <!-- Vehicle Screen -->
+    <string name="vehicleIdentification">IDENTIFICACIÓN DEL VEHÍCULO</string>
+    <string name="PresentVehicleAccessDevice">Presente el dispositivo de acceso de su vehículo a continuación</string>
+    <string name="OR">U</string>
+    <string name="EnterVehicleId">Ingrese la identificación de su vehículo en el cuadro verde a continuación</string>
+    <string name="VehicleNumberHeading">Número de vehículo:</string>
+    <string name="EnterBtn">Ingrese</string>
+    <string name="UseFSTag">Usar FSTag</string>
+    <string name="UseOnScreenBarcode">Toque para usar el código de barras en pantalla</string>
+    <string name="PleaseWait">Espere por favor...</string>
+    <string name="PleaseWaitForWifiConnect">Conectando a Wi-Fi. Espere por favor...</string>
+    <string name="ReadAccessDeviceAgain">Haga clic para leer Dispositivo de acceso nuevamente</string>
+    <string name="peVehicle">Por favor ingrese Vehículo. Si aún tiene problemas, comuníquese con su Gerente.</string>
+    <string name="peVehicleOrAccessDevice">Ingrese el vehículo o presente un dispositivo de acceso. Si aún tiene problemas, comuníquese con su Gerente.</string>
+    <string name="VehiclePerDayLimitExceeded">Este vehículo ha excedido el límite de combustible para el día. Por favor contacte a su Gerente.</string>
+    <string name="VehiclePerMonthLimitExceeded">Este vehículo ha excedido el límite de combustible para el mes. Por favor contacte a su Gerente.</string>
+    <string name="peVehicleOrUseFobKey">Ingrese el vehículo o use la llave fob.</string>
+
+    <!-- Odometer Screen -->
+    <string name="EnterOdometerHeading">Ingrese el odómetro (sin décimos)</string>
+    <string name="peOdo">Ingrese Odómetro e inténtelo de nuevo.</string>
+    <string name="OdoNotInReasonability">El Odómetro que ingresó no está dentro de la razonabilidad que se ha establecido para este Vehículo. Póngase en contacto con su Gerente.</string>
+    <string name="IncorrectOdo">Por favor, introduzca el odómetro correcto.</string>
+
+    <!-- Hours Screen -->
+    <string name="EnterHoursHeading">Ingresar Horas (sin décimos)</string>
+    <string name="peHours">Ingrese Horas y vuelva a intentarlo.</string>
+    <string name="HoursNotInReasonability">Las Horas que ha ingresado no están dentro de la razonabilidad que se ha establecido para este Vehículo. Por favor contacte a su Gerente.</string>
+    <string name="IncorrectHours">Por favor, introduzca las horas correctas.</string>
+
+    <!-- PIN Screen -->
+    <string name="PersonnelIdentification">IDENTIFICACIÓN DEL PERSONAL</string>
+    <string name="PresentPersonAccessDevice">Presente su dispositivo de acceso personal a continuación</string>
+    <string name="EnterPersonnelId">Ingrese su PERSONAL en el cuadro verde a continuación</string>
+    <string name="PersonnelNumberHeading">Número personal:</string>
+    <string name="EnterBarcodeNumber">Ingrese el número de código de barras a continuación</string>
+    <string name="pePersonnel">Por favor ingrese Personal. Si aún tiene problemas, comuníquese con su Gerente.</string>
+    <string name="pePersonnelOrAccessDevice">Por favor ingrese Personal o presente un Dispositivo de Acceso. Si aún tiene problemas, comuníquese con su Gerente.</string>
+    <string name="PerDayLimitExceeded">Ha excedido su límite de combustible para el día. Por favor contacte a su Gerente.</string>
+
+    <!-- Department Screen -->
+    <string name="RequireDeptNumber">Ingrese el número de departamento e inténtelo de nuevo.</string>
+    <string name="InvalidDept">Departamento inválido. Vuelva a intentarlo o comuníquese con su gerente.</string>
+    <string name="NotAuthorizedForDept">No estás autorizado para este departamento.</string>
+
+    <!-- Other Screen -->
+    <string name="EnterHeading">Ingresar</string>
+    <string name="RequiredOther">Ingrese Otro e inténtelo de nuevo.</string>
+
+    <!-- Registration Screen -->
+    <string name="RegisterBtn">Registro</string>
+    <string name="SubmitBtn">Someter</string>
+    <string name="UserName">Nombre de usuario:</string>
+    <string name="UserPassword">Contraseña:</string>
+    <string name="RequiredUserName">Por favor ingrese nombre de usuario</string>
+    <string name="RequiredUserPassword">Por favor, ingrese contraseña</string>
+    <string name="NewHUBRegistration">Registro nuevo HUB</string>
+    <string name="HubNameHint">INSINUACIÓN: Su nombre HUB consistirá en las palabras HUB seguidas de 8 números.</string>
+    <string name="Example">Ejemplo</string>
+    <string name="HUBNameRequired">Ingrese el nombre del HUB</string>
+    <string name="regiThankYou">Gracias por registrarte.</string>
+    <string name="RegistrationSuccess">Gracias por registrarte. \n\nSu solicitud ha sido enviada para su aprobación. Podrá continuar con la aplicación después de que el administrador haya aprobado su solicitud.</string>
+    <string name="regiNotApproved">Su solicitud de registro aún no ha sido aprobada.\nEstá marcado como Inactivo en el Software de la empresa.\nPóngase en contacto con el administrador de su empresa.</string>
+
+    <!-- Access Device Assignment -->
+    <string name="CompanyName">Nombre de empresa:</string>
+    <string name="SaveBtn">Salvar</string>
+    <string name="EnterVehicle">Ingrese la identificación del vehículo</string>
+    <string name="BarcodeReadSuccessMessage">Código de barras escaneado con éxito</string>
+    <string name="EnterPersonnelPIN">Ingrese el PIN de persona que se asignó a este usuario en la nube</string>
+    <string name="TryAgain">¿Le gustaría volver a intentarlo?</string>
+    <string name="ExistingAccessDeviceReplace">El Personal que has ingresado ya tiene asignado un Dispositivo de Acceso. ¿Le gustaría eliminar el dispositivo existente que tenemos registrado y usar esto como un reemplazo?</string>
+
+    <!-- LINK Configuration process -->
+    <string name="HotSpotSSIDCannotBeBlank">HotSpot SSID no puede estar en blanco. Póngase en contacto con Soporte.</string>
+    <string name="HotSpotPasswordCannotBeBlank">La contraseña de HotSpot no puede estar en blanco. Póngase en contacto con Soporte.</string>
+    <string name="CannotUpdateMac">No se puede actualizar la dirección mac, la manguera está ocupada. Por favor, inténtelo de nuevo más tarde.</string>
+    <string name="HoseIsBusy">Una de las mangueras está ocupada, inténtelo de nuevo más tarde.</string>
+    <string name="UnableToAutoConnect">No se puede conectar automáticamente a</string>
+    <string name="StartedManualProcess">Proceso manual iniciado...</string>
+    <string name="EnableWifiManually">Habilitar Wi-Fi manualmente y conectarse a</string>
+    <string name="UsingWifiList">usando la lista wifi</string>
+    <string name="StartedReconfiguration">Proceso de reconfiguración iniciado. Espere por favor...</string>
+    <string name="ConnectedToWifi">Conectado a wifi</string>
+    <string name="ReconfigurationFailed">El proceso de reconfiguración falla. No se pudo obtener la dirección mac</string>
+    <string name="SettingSSIDAndPASS">Configuración de SSID y CONTRASEÑA para ENLACE</string>
+    <string name="ReconfigurationFailedRetry">El proceso de reconfiguración falla. Por favor, intenta de nuevo.</string>
+    <string name="MacAddressHeading">dirección MAC</string>
+    <string name="CheckInternet">Verifique la conexión a Internet y vuelva a intentarlo.</string>
+    <string name="PartiallyCompleted">La reconfiguración del enlace se completó parcialmente. Elimine la aplicación de Aplicaciones recientes e inicie la aplicación nuevamente.</string>
+    <string name="MacAddressUpdated">Dirección de Mac actualizada</string>
+    <string name="MacAddressNotUpdated">La dirección MAC no se pudo actualizar</string>
+
+</resources>

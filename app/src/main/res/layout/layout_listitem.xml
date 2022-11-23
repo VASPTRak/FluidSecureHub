@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Device Name"
+        android:text="@string/DeviceName"
         android:id="@+id/image_name"
         android:textColor="#000"
         android:layout_centerVertical="true"
@@ -21,7 +21,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Device Mac Address"
+        android:text="@string/DeviceMacAddress"
         android:id="@+id/image_mac"
         android:textColor="#000"
         android:layout_centerVertical="true"

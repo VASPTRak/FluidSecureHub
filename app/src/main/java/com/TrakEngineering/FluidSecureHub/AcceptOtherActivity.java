@@ -114,7 +114,8 @@ public class AcceptOtherActivity extends AppCompatActivity {
             OtherLabel = controller.getOfflineHubDetails(AcceptOtherActivity.this).OtherLabel;
         }
 
-        tv_otherlabel.setText(OtherLabel);
+        tv_otherlabel.setText(getResources().getString(R.string.EnterHeading) + " " + OtherLabel);
+        etOther.setHint(getResources().getString(R.string.EnterHeading) + " " + OtherLabel);
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
@@ -191,7 +192,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Please enter " + OtherLabel + ", and try again.");
-                    CommonUtils.showMessageDilaog(AcceptOtherActivity.this, "Error Message", "Please enter " + OtherLabel + ", and try again.");
+                    CommonUtils.showMessageDilaog(AcceptOtherActivity.this, "Error Message", getResources().getString(R.string.RequiredOther).replace("Other", OtherLabel));
                 }
 
             }
@@ -218,11 +219,11 @@ public class AcceptOtherActivity extends AppCompatActivity {
                 int InputTyp = etOther.getInputType();
                 if (InputTyp == 3) {
                     etOther.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     etOther.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }

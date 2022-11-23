@@ -100,7 +100,6 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
 
         InitUi();
 
-
         editVehicleNumber.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -134,7 +133,6 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 GiveServerCall();
             }
         });
@@ -154,24 +152,21 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
                 int InputTyp = editVehicleNumber.getInputType();
                 if (InputTyp == 2) {
                     editVehicleNumber.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     editVehicleNumber.setInputType(InputType.TYPE_CLASS_NUMBER);//| InputType.TYPE_CLASS_TEXT
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
-
             }
         });
 
         tv_return.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 hideKeybord();
             }
         });
-
     }
 
     @Override
@@ -242,7 +237,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         } else if (FobKey != null && !FobKey.isEmpty()) {
             Log.i(TAG, "FobreadSuccess FobKey" + FobKey);
         } else {
-            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.RED);
+            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.BLUE);
             AppConstants.WriteinFile(TAG + " Access Device not found");
         }
     }
@@ -300,19 +295,22 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
                 IntentFilter intentSFilterVEHICLE = new IntentFilter("ServiceToActivityMagCard");
                 registerReceiver(ServiceCardReader_vehicle, intentSFilterVEHICLE);
 
-                if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")){
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register LFReader:"+mDeviceAddress);
+                if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Register LFReader:" + mDeviceAddress);
                     startService(new Intent(ReadAccessDevice_Fob.this, ServiceLFCard.class));
                 }
 
-                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")){
+                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                     startService(new Intent(ReadAccessDevice_Fob.this, ServiceHFCard.class));
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register HFReader:"+HFDeviceAddress);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Register HFReader:" + HFDeviceAddress);
                 }
 
                 if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                     startService(new Intent(ReadAccessDevice_Fob.this, com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard.class));
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register MagReader:"+mMagCardDeviceAddress);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Register MagReader:" + mMagCardDeviceAddress);
                 }
             }
 
@@ -327,34 +325,37 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
             Bundle notificationData = intent.getExtras();
 
             try {
-
                 String Action = notificationData.getString("Action");
                 if (Action.equals("HFReader")) {
 
                     String newData = notificationData.getString("HFCardValue");
                     System.out.println("HFCard data 001 veh----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
                     displayData_FOB(newData);
 
                 } else if (Action.equals("LFReader")) {
 
                     String newData = notificationData.getString("LFCardValue");
                     System.out.println("LFCard data 001 veH----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
                     displayData_FOB(newData);
 
                 } else if (Action.equals("MagReader")) {
 
                     String newData = notificationData.getString("MagCardValue");
                     System.out.println("MagCard data 002~----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
                     MagCard_FobKey = "";
                     displayData_MagCard(newData);
 
                 } else if (Action.equals("QRReader")) {
                     String newData = notificationData.getString("QRCodeValue");
                     System.out.println("QRCode data 002~----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
                     //Barcode_val = "";
                     if (newData != null) {
                         //Barcode_val = newData.trim();
@@ -418,9 +419,8 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
                 } catch (Exception ex) {
                     System.out.println(ex);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData  --Exception " + ex);
+                        AppConstants.WriteinFile(TAG + " displayData --Exception " + ex.getMessage());
                 }
-
             }
         }
     }
@@ -459,7 +459,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
                     MagCard_FobKey = "";
                     System.out.println(ex);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData Split MagCard  --Exception " + ex);
+                        AppConstants.WriteinFile(TAG + " displayData Split MagCard --Exception " + ex.getMessage());
                 }
 
             }
@@ -502,7 +502,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         editVehicleNumber = (EditText) findViewById(R.id.editVehicleNumber);
         tv_Display_msg = (TextView) findViewById(R.id.tv_Display_msg);
         tv_vehicle_no_below = (TextView) findViewById(R.id.tv_vehicle_no_below);
-        btnAccessDevice.setText("Present the access device to the reader");
+        btnAccessDevice.setText(getResources().getString(R.string.BtnReadAccessDevice));
         tv_return = (TextView) findViewById(R.id.tv_return);
         tv_swipekeybord = (TextView) findViewById(R.id.tv_swipekeybord);
         footer_keybord = (RelativeLayout) findViewById(R.id.footer_keybord);
@@ -514,7 +514,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         // editVehicleNumber.setVisibility(View.VISIBLE);
         // btnSave.setVisibility(View.VISIBLE);
         btnAccessDevice.setVisibility(View.INVISIBLE);
-        tv_vehicle_no_below.setText("Enter " + ScreenNameForVehicle + " ID");
+        tv_vehicle_no_below.setText(getResources().getString(R.string.EnterVehicle).replace("Vehicle", ScreenNameForVehicle));
         editVehicleNumber.setFocusable(true);
 
         InputMethodManager inputMethodManager = (InputMethodManager) editVehicleNumber.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -564,7 +564,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
                         Log.d(TAG, "Barcode read: " + data.getStringExtra("Barcode").trim());
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile("Vehicle Barcode read success: " + Barcode_val);
-                        tv_Display_msg.setText("Barcode scan successfully: "+Barcode_val);
+                        tv_Display_msg.setText(getResources().getString(R.string.BarcodeReadSuccessMessage) + ": " + Barcode_val);
                     } else {
 
                         InitScreen();
@@ -600,7 +600,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(ReadAccessDevice_Fob.this);
-            pd.setMessage("Please wait...");
+            pd.setMessage(getResources().getString(R.string.PleaseWait));
             pd.show();
 
         }
@@ -761,9 +761,9 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
 
     }
 
-    private void GiveServerCall(){
+    private void GiveServerCall() {
 
-        if (ValidateData()){
+        if (ValidateData()) {
             //save to cloud call
             VehicleRequireEntity objEntityClass = new VehicleRequireEntity();
             objEntityClass.IMEIUDID = AppConstants.getIMEI(ReadAccessDevice_Fob.this);
@@ -772,9 +772,9 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
             objEntityClass.Barcode = Barcode_val;
             // objEntityClass.ReplaceAccessDevice = "n";
 
-            if (cd.isConnectingToInternet()){
-                new ReadAccessDevice_Fob.RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
-            }else{
+            if (cd.isConnectingToInternet()) {
+                new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
+            } else {
                 AppConstants.WriteinFile(TAG + "No Internet please check.");
                 CommonUtils.showNoInternetDialog(ReadAccessDevice_Fob.this);
             }

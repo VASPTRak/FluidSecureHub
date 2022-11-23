@@ -154,7 +154,8 @@ public class AcceptPinActivity extends AppCompatActivity {
         tv_swipekeybord = (TextView) findViewById(R.id.tv_swipekeybord);
         tv_ok = (TextView) findViewById(R.id.tv_ok);
         tv_dont_have_fob = (TextView) findViewById(R.id.tv_dont_have_fob);//Enter your PERSONNEL ID in the green box below
-        String content = "Enter your<br> <b>PERSONNEL ID </b>in<br> the green box below";
+        //String content = "Enter your<br> <b>PERSONNEL ID </b>in<br> the green box below";
+        String content = getResources().getString(R.string.EnterPersonnelId).replace("PERSONNEL", "<br><b>PERSONNEL ID</b><br>");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             tv_dont_have_fob.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
@@ -227,11 +228,11 @@ public class AcceptPinActivity extends AppCompatActivity {
                 int InputTyp = etPersonnelPin.getInputType();
                 if (InputTyp == 3) {
                     etPersonnelPin.setInputType(InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for 123");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
 
                     etPersonnelPin.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
-                    tv_swipekeybord.setText("Press for ABC");
+                    tv_swipekeybord.setText(getResources().getString(R.string.PressForABC));
                 }
 
             }
@@ -362,7 +363,8 @@ public class AcceptPinActivity extends AppCompatActivity {
                     tv_or.setVisibility(View.GONE);
                     tv_fob_Reader.setVisibility(View.GONE);
                     tv_dont_have_fob.setVisibility(View.VISIBLE);
-                    String content = "Enter your<br> <b>PERSONNEL ID </b>in<br> the green box below";
+                    //String content = "Enter your<br> <b>PERSONNEL ID </b>in<br> the green box below";
+                    String content = getResources().getString(R.string.EnterPersonnelId).replace("PERSONNEL", "<br><b>PERSONNEL ID</b><br>");
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         tv_dont_have_fob.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
@@ -407,7 +409,7 @@ public class AcceptPinActivity extends AppCompatActivity {
 
                 System.out.println("jsonData123" + jsonData);
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckValidPinOrFOBNUmber");
+                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckValidPinOrFOBNUmber" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(AcceptPinActivity.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
                 System.out.println("jsonData1234" + response);
@@ -512,7 +514,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 
                         if (ValidationFailFor.equalsIgnoreCase("Pin")) {
-                            AppConstants.colorToastBigFont(this, ResponceText, Color.RED);
+                            AppConstants.colorToastBigFont(this, ResponceText, Color.BLUE);
                             etPersonnelPin.setText("");
                             recreate();
 
@@ -523,7 +525,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                             startActivity(i);
 
                         } else {
-                            AppConstants.colorToastBigFont(this, ResponceText, Color.RED);
+                            AppConstants.colorToastBigFont(this, ResponceText, Color.BLUE);
                             etPersonnelPin.setText("");
                             recreate();
                         }
@@ -573,7 +575,7 @@ public class AcceptPinActivity extends AppCompatActivity {
 
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckVehicleRequireOdometerEntryAndRequireHourEntry");
+                String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckVehicleRequireOdometerEntryAndRequireHourEntry" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(AcceptPinActivity.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 

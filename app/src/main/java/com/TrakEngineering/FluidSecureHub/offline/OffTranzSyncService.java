@@ -251,7 +251,6 @@ public class OffTranzSyncService extends Service {
 
                     controller.storeOfflineToken(OffTranzSyncService.this, access_token, token_type, expires_in, refresh_token);
 
-
                     if (cd.isConnecting()) {
 
                         String off_json = controller.getAllOfflineTransactionJSON(OffTranzSyncService.this);

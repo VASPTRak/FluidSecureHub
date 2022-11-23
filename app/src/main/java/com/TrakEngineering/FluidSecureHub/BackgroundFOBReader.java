@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import androidx.annotation.Nullable;
+
 import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
@@ -72,12 +72,12 @@ public class BackgroundFOBReader extends Service{
 
 
 
-                                AppConstants.colorToastBigFont(getApplicationContext(),"Bluetooth is Connected", Color.RED);
+                                AppConstants.colorToastBigFont(getApplicationContext(),"Bluetooth is Connected", Color.BLUE);
 
                             } else if (newState == BluetoothReader.STATE_DISCONNECTED) {
                                 // mTxtConnectionState.setText(R.string.disconnect_fail);
 
-                                AppConstants.colorToastBigFont(getApplicationContext(),"Bluetooth is disconnected\nReconnecting...",Color.RED);
+                                AppConstants.colorToastBigFont(getApplicationContext(),"Bluetooth is disconnected\nReconnecting...", Color.BLUE);
                                 System.out.println("Bluetooth is disconnectedBluetooth is disconnected");
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)

@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:gravity="center"
-                android:text="Enter Vehicle ID"
+                android:text="@string/EnterVehicle"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/black"
                 android:textSize="30dp"
@@ -82,7 +82,7 @@
                 android:layout_margin="10dp"
                 android:background="@color/colorPrimary"
                 android:onClick="saveButtonAction"
-                android:text="Save"
+                android:text="@string/SaveBtn"
                 android:textColor="@color/white"
                 android:textSize="@dimen/go_button_text" />
 
@@ -106,7 +106,7 @@
                 android:layout_gravity="center_horizontal"
                 android:onClick="cancelAction"
                 android:background="@color/backbtn"
-                android:text="Previous Screen"
+                android:text="@string/previousScreen"
                 android:textColor="@color/black"
                 android:textSize="@dimen/go_button_text" />
 

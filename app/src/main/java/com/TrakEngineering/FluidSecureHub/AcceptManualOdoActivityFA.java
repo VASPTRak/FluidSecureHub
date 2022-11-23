@@ -144,7 +144,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
                                     if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not within the reasonability");
                                     editOdoManually.setText("");
-                                    AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not inreasonability.", Color.RED);//Bad odometer! Please try again.
+                                    AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not in reasonability.", Color.BLUE);//Bad odometer! Please try again.
                                 }
                             }
 
@@ -158,7 +158,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                             } else {
                                 editOdoManually.setText("");
                                 if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not in the reasonability");
-                                AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not in the reasonability", Color.RED);
+                                AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not in the reasonability", Color.BLUE);
                             }
                         }
                     } else {
@@ -197,7 +197,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
         String jsonData = gson.toJson(objEntityClass);
 
         String userEmail = CommonUtils.getCustomerDetailsCC(AcceptManualOdoActivityFA.this).PersonEmail;
-        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(AcceptManualOdoActivityFA.this) + ":" + userEmail + ":" + "SaveManualVehicleOdometer");
+        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(AcceptManualOdoActivityFA.this) + ":" + userEmail + ":" + "SaveManualVehicleOdometer" + AppConstants.LANG_PARAM);
 
         System.out.println(TAG + "Response" + jsonData);
         //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +"Response" + jsonData);

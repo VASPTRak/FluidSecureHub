@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 
@@ -21,7 +20,7 @@ import java.util.Set;
 
 public class PairDeviceActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "PairDeviceActivity ";
 
     //vars
     private ArrayList<String> mNames = new ArrayList<>();
@@ -92,6 +91,11 @@ public class PairDeviceActivity extends AppCompatActivity {
             menu.findItem(R.id.mofline).setVisible(true);
         }
 
+        MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+        itemSp.setVisible(false);
+        itemEng.setVisible(false);
+
         return true;
     }
 
@@ -119,7 +123,7 @@ public class PairDeviceActivity extends AppCompatActivity {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 if (deviceName != null) {
-                    if (deviceName.startsWith("FSBT-") || deviceName.startsWith("FSAST-")){
+                    if (deviceName.startsWith("FSBT-") || deviceName.startsWith("FSAST-")) {
                         mImageUrls.add(deviceHardwareAddress);
                         mNames.add(deviceName);
                         Log.i(TAG, "DeviceName:" + deviceName + "\n" + "MacAddress:" + deviceHardwareAddress);

@@ -2,11 +2,9 @@ package com.TrakEngineering.FluidSecureHub;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -147,8 +145,6 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
                 } else if (!screenOff && !CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn) {
 
                     if (CheckAllHosesAreFree()) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Enabling Hotspot.");
                         wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
                         Log.i(TAG, "Connecting to hotspot, please wait....");
                         //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Hotspot ON--1");
@@ -159,8 +155,6 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
                     if (isScreenOn(this) && !CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn) {
 
                         if (CheckAllHosesAreFree()) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Enabling Hotspot.");
                             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
                             Log.i(TAG, "Connecting to hotspot, please wait....");
                         }
@@ -222,7 +216,7 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
 
         String userEmail = CommonUtils.getCustomerDetailsCC(BackgroundServiceHotspotCheck.this).PersonEmail;
         //----------------------------------------------------------------------------------
-        String parm1 = AppConstants.getIMEI(BackgroundServiceHotspotCheck.this) + ":" + userEmail + ":" + "MobileHotspotErrorEmail";
+        String parm1 = AppConstants.getIMEI(BackgroundServiceHotspotCheck.this) + ":" + userEmail + ":" + "MobileHotspotErrorEmail" + AppConstants.LANG_PARAM;
         String authString = "Basic " + AppConstants.convertStingToBase64(parm1);
 
 
@@ -304,7 +298,10 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
                     JSONArray jarrsy = new JSONArray(offtransactionArray);
 
                     if (jarrsy.length() > 0 && OfflineConstants.isOfflineAccess(BackgroundServiceHotspotCheck.this)) {
-                          startService(new Intent(BackgroundServiceHotspotCheck.this, OffTranzSyncService.class));
+                        boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundServiceHotspotCheck.this, AppConstants.PACKAGE_BS_OffTransSync);
+                        if (!BSRunning) {
+                            startService(new Intent(BackgroundServiceHotspotCheck.this, OffTranzSyncService.class));
+                        }
                     }
 
                 } catch (JSONException e) {

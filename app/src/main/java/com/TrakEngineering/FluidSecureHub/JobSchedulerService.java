@@ -1,13 +1,8 @@
 package com.TrakEngineering.FluidSecureHub;
 
-import android.app.ActivityManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
-
-import java.util.List;
 
 public class JobSchedulerService extends JobService {
     private static final String TAG = "JobSchedulerService";

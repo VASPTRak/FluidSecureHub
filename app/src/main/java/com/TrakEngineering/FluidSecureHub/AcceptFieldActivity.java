@@ -307,7 +307,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                 CommonUtils.showNoInternetDialog(AcceptFieldActivity.this);
                             }
                         } else
-                            AppConstants.colorToast(AcceptFieldActivity.this, "Please check Internet Connection.", Color.RED);
+                            AppConstants.colorToast(AcceptFieldActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
 
 
                     }
@@ -343,7 +343,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
 
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence");
+                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(AcceptFieldActivity.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 

@@ -101,7 +101,7 @@ public class AcceptServiceCall {
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
+            String s = activity.getResources().getString(R.string.PleaseWait);
             SpannableString ss2=  new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
@@ -268,13 +268,12 @@ public class AcceptServiceCall {
 
                 //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Authorization Sequence Data: " + jsonData);
 
-                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + CommonUtils.getCustomerDetails(activity).Email + ":" + "AuthorizationSequence");
+                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + CommonUtils.getCustomerDetails(activity).Email + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
 
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
                 client.setWriteTimeout(15, TimeUnit.SECONDS);
-
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
@@ -283,12 +282,9 @@ public class AcceptServiceCall {
                         .addHeader("Authorization", authString)
                         .build();
 
-
                 Response response = null;
                 response = client.newCall(request).execute();
                 resp = response.body().string();
-
-
 
             } catch (IOException e) {
                 AppConstants.serverCallInProgress =  false;
@@ -297,7 +293,6 @@ public class AcceptServiceCall {
             }
             return resp;
         }
-
 
         @Override
         protected void onPostExecute(String serverRes) {
@@ -809,7 +804,7 @@ public class AcceptServiceCall {
                         AppConstants.AUTH_CALL_SUCCESS = false;
 
                         if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " ServerCall ValidationFailFor " + ValidationFailFor + " ResponceText:" + ResponceText);
-                        AppConstants.colorToastBigFont(activity, ResponceText, Color.RED);
+                        AppConstants.colorToastBigFont(activity, ResponceText, Color.BLUE);
 
                         if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
 
@@ -950,7 +945,7 @@ public class AcceptServiceCall {
                         //IF relay status zero go back to dashboard
                         if (status.equalsIgnoreCase("1")) {
 
-                            AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.RED);
+                            AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.BLUE);
                             AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
                             Intent intent = new Intent(activity, WelcomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1005,7 +1000,7 @@ public class AcceptServiceCall {
                     //Relay command else commented
                     if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "  Link is unavailable relay");
-                    AppConstants.colorToastBigFont(activity, " Link is unavailable", Color.RED);
+                    AppConstants.colorToastBigFont(activity, " Link is unavailable", Color.BLUE);
                     AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
                     BackgroundServiceKeepDataTransferAlive.IstoggleRequired_DA = true;
                     Intent intent = new Intent(activity, WelcomeActivity.class);
@@ -1076,7 +1071,7 @@ public class AcceptServiceCall {
 
                         String userEmail = CommonUtils.getCustomerDetails(activity).PersonEmail;
 
-                        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(activity) + ":" + userEmail + ":" + "TransactionComplete");
+                        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(activity) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
                         HashMap<String, String> imap = new HashMap<>();
                         imap.put("jsonData", jsonData);
@@ -1128,7 +1123,7 @@ public class AcceptServiceCall {
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
+            String s = activity.getResources().getString(R.string.PleaseWait);
             SpannableString ss2=  new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
@@ -1193,7 +1188,7 @@ public class AcceptServiceCall {
 
                 } else {
 
-                    AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.RED);
+                    AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.BLUE);
                     AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " CommandsGET_Info: info command response is empty. Redirecting to welcome activity.");
@@ -1225,7 +1220,7 @@ public class AcceptServiceCall {
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
+            String s = activity.getResources().getString(R.string.PleaseWait);
             SpannableString ss2=  new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
@@ -1286,7 +1281,7 @@ public class AcceptServiceCall {
         @Override
         protected void onPreExecute() {
 
-            String s= "Please wait...";
+            String s = activity.getResources().getString(R.string.PleaseWait);
             SpannableString ss2=  new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);

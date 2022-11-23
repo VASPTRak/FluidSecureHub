@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
 
                 pd = new ProgressDialog(MainActivity.this);
-                pd.setMessage("Please wait..");
+                pd.setMessage(getResources().getString(R.string.PleaseWait));
                 pd.show();
 
                 new android.os.Handler().postDelayed(new Runnable() {
@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             try {
                 ServerHandler serverHandler = new ServerHandler();
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(MainActivity.this) + ":" + Email + ":" + "AndroidSSID");
+                String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(MainActivity.this) + ":" + Email + ":" + "AndroidSSID" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(MainActivity.this, AppConstants.webURL, latLong, authString);
                 //----------------------------------------------------------------------------------
 
