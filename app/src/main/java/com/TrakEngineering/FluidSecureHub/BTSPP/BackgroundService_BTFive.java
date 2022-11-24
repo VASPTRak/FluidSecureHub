@@ -804,7 +804,7 @@ public class BackgroundService_BTFive extends Service {
             }
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
-            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag");
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag" + AppConstants.LANG_PARAM);
 
             RenameHose rhose = new RenameHose();
             rhose.SiteId = BTConstants.BT5SITE_ID;
@@ -1830,7 +1830,7 @@ public class BackgroundService_BTFive extends Service {
                 //AppConstants.WriteinFile(TAG + " BTLink 5: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
 
                 //----------------------------------------------------------------------------------
-                String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion");
+                String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(BackgroundService_BTFive.this, AppConstants.webURL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
