@@ -10310,7 +10310,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         wifiApManager.setWifiApEnabled(null, false);
 
 
-        String s = "Connecting to wifi please wait..";
+        String s = getResources().getString(R.string.PleaseWaitForWifiConnect);
         SpannableString ss2 = new SpannableString(s);
         ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
         ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
@@ -10493,7 +10493,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         wifiApManager.setWifiApEnabled(null, false);
 
 
-        String s = "Connecting to wifi please wait..2";
+        String s = getResources().getString(R.string.PleaseWaitForWifiConnect);
         SpannableString ss2 = new SpannableString(s);
         ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
         ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
@@ -11416,7 +11416,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             } else {
                                 errMsg = ResponceText;
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "SSIDData (" + WifiSSId + "): " + ResponceText);
+                                    AppConstants.WriteinFile(TAG + "GetSSIDUsingLocation SSIDData (" + WifiSSId + "): " + ResponceText);
                                 AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                             }
                         }

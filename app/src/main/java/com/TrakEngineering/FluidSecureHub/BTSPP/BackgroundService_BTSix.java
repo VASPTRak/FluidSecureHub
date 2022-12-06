@@ -26,6 +26,7 @@ import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 import com.TrakEngineering.FluidSecureHub.Constants;
 import com.TrakEngineering.FluidSecureHub.DBController;
+import com.TrakEngineering.FluidSecureHub.R;
 import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
@@ -214,16 +215,8 @@ public class BackgroundService_BTSix extends Service {
 
     private void BeginProcessUsingUDP() {
         try {
-            /*String s = "Connecting to wifi please wait..";
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            ProgressDialog loading = new ProgressDialog(this);
-            loading.setMessage(ss2);
 
-            loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            loading.show();*/
-            Toast.makeText(BackgroundService_BTSix.this, "Connecting to wifi please wait..", Toast.LENGTH_SHORT).show();
+            Toast.makeText(BackgroundService_BTSix.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
 
             new CountDownTimer(12000, 1000) {
                 @Override

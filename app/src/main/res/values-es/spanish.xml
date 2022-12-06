@@ -44,6 +44,15 @@
     <string name="DeviceName">Nombre del dispositivo</string>
     <string name="DeviceMacAddress">Dirección Mac del dispositivo</string>
     <string name="IMEIAlreadyExist">¡Tu número de IMEI ya EXISTE!</string>
+    <string name="CloseApp">Cerrar app</string>
+    <string name="RestartApp">Reiniciar aplicación</string>
+    <string name="ShowReaderStatus">Mostrar estado del lector</string>
+    <string name="RebootReader">Reiniciar lector</string>
+    <string name="ReconnectBLEReaders">Vuelva a conectar la lectora BLE</string>
+    <string name="OnlineMenu">En línea</string>
+    <string name="OfflineMenu">Desconectado</string>
+    <string name="CameraMenu">Cámara</string>
+    <string name="ReloadMenu">Recargar</string>
 
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
@@ -285,6 +294,7 @@
     <string name="PairingMode">modo de emparejamiento...</string>
     <string name="SelectHoseAlert">Por favor, seleccione Manguera</string>
     <string name="UnableToGetHoseList">No se puede obtener la lista de mangueras desde el servidor</string>
+    <string name="HoseListIsNotAvailable">Lista de mangueras no disponible</string>
 
     <string name="Quantity">Cantidad:</string>
     <string name="Pulse">pulso:</string>
@@ -405,5 +415,12 @@
     <string name="PartiallyCompleted">La reconfiguración del enlace se completó parcialmente. Elimine la aplicación de Aplicaciones recientes e inicie la aplicación nuevamente.</string>
     <string name="MacAddressUpdated">Dirección de Mac actualizada</string>
     <string name="MacAddressNotUpdated">La dirección MAC no se pudo actualizar</string>
+
+    <!-- LINK Upgrade process -->
+    <string name="FileDownloadInProgress">Descarga de archivo de actualización en progreso.</string>
+    <string name="SoftwareUpdateInProgress">Actualización de software en progreso.</string>
+    <string name="ConnectingToTheLINK">Conectando con el ENLACE.</string>
+    <string name="LINKConnectionLost">Conexión de ENLACE perdida.</string>
+    <string name="PleaseWaitSeveralSeconds">Por favor espere varios segundos...</string>
 
 </resources>

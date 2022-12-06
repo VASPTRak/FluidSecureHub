@@ -16,37 +16,37 @@
     <item android:id="@+id/mreload"
         android:orderInCategory="104"
         android:icon="@drawable/reload"
-        android:title="Camera"
+        android:title="@string/ReloadMenu"
         app:showAsAction="always"/>
 
     <item android:id="@+id/mcamera_front"
         android:orderInCategory="104"
         android:icon="@drawable/camera_front"
-        android:title="Camera"
+        android:title="@string/CameraMenu"
         app:showAsAction="always"/>
 
     <item android:id="@+id/mcamera_back"
         android:orderInCategory="104"
         android:icon="@drawable/camera_rear"
-        android:title="Camera"
+        android:title="@string/CameraMenu"
         app:showAsAction="always"/>
 
     <item android:id="@+id/mofline"
         android:orderInCategory="104"
         android:icon="@drawable/img_offline"
-        android:title="Offline"
+        android:title="@string/OfflineMenu"
         app:showAsAction="always"/>
 
     <item android:id="@+id/monline"
         android:orderInCategory="104"
         android:icon="@drawable/img_online"
-        android:title="Online"
+        android:title="@string/OnlineMenu"
         app:showAsAction="always"/>
 
     <item android:id="@+id/mclose"
         android:orderInCategory="104"
         android:icon="@drawable/close"
-        android:title="Close"
+        android:title="@string/CloseApp"
         app:showAsAction="always"/>
 
     <item
@@ -57,13 +57,13 @@
     <item
         android:id="@+id/mreconnect_ble_readers"
         android:orderInCategory="100"
-        android:title="Reconnect BLE Readers"
+        android:title="@string/ReconnectBLEReaders"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/mreboot_reader"
         android:orderInCategory="100"
-        android:title="Reboot reader"
+        android:title="@string/RebootReader"
         app:showAsAction="never" />
 
     <item
@@ -86,15 +86,15 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/mrestartapp"
+        android:id="@+id/mshow_reader_status"
         android:orderInCategory="100"
-        android:title="Restart App"
+        android:title="@string/ShowReaderStatus"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/mshow_reader_status"
+        android:id="@+id/mrestartapp"
         android:orderInCategory="100"
-        android:title="Show Reader Status"
+        android:title="@string/RestartApp"
         app:showAsAction="never" />
 
 </menu>
