@@ -299,15 +299,7 @@
 
         <activity android:name=".AcceptPinActivity_new" />
 
-        <service
-            android:name=".LFBle_PIN.BluetoothLeService_Pin"
-            android:enabled="true" />
-
         <activity android:name=".AcceptVehicleActivity_new" />
-
-        <service
-            android:name=".LFBle_vehicle.BluetoothLeService_vehicle"
-            android:enabled="true" />
 
         <activity android:name=".AcceptFieldActivity" />
         <activity
@@ -382,14 +374,6 @@
             android:exported="true" />
         <service
             android:name=".BackgroundServiceScheduleReboot"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".LFBle_vehicle.LeService_HF_TrakReader_vehicle"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".LFBle_PIN.LeService_HF_TrakReader_pin"
             android:enabled="true"
             android:exported="true" />
         <service

@@ -1694,6 +1694,9 @@ public class BackgroundService_BTOne extends Service {
                 long file_size = file.length();
                 long tempFileSize = file_size;
 
+                /*if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeFunctionality file_size: " + file_size);*/
+
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink 1: Sending upgrade command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
@@ -1701,7 +1704,7 @@ public class BackgroundService_BTOne extends Service {
 
                 InputStream inputStream = new FileInputStream(file);
 
-                int BUFFER_SIZE = 490; //8192;
+                int BUFFER_SIZE = 256; //490; //8192;
                 byte[] bufferBytes = new byte[BUFFER_SIZE];
 
                 Thread.sleep(2000);
@@ -1719,6 +1722,9 @@ public class BackgroundService_BTOne extends Service {
                         //AppConstants.WriteinFile(TAG + " ~~~~~~~~ Progress : " + progressValue);
                         BTConstants.upgradeProgress = progressValue;
 
+                        /*if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeFunctionality bytesWritten: " + ((double) bytesWritten));*/
+
                         if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
                             btspp.sendBytes1(bufferBytes);
 
@@ -1731,7 +1737,7 @@ public class BackgroundService_BTOne extends Service {
                                 }
                             }
 
-                            Thread.sleep(25);
+                            //Thread.sleep(50);
                         } else {
                             BTConstants.IsFileUploadCompleted = false;
                             AppConstants.WriteinFile(TAG + " BTLink 1: After upgrade command (Link is not connected): Progress: " + progressValue);

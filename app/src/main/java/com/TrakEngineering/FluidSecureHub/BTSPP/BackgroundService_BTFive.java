@@ -1690,7 +1690,7 @@ public class BackgroundService_BTFive extends Service {
 
                 InputStream inputStream = new FileInputStream(file);
 
-                int BUFFER_SIZE = 490; //8192;
+                int BUFFER_SIZE = 256; //490; //8192;
                 byte[] bufferBytes = new byte[BUFFER_SIZE];
 
                 Thread.sleep(2000);
@@ -1720,7 +1720,7 @@ public class BackgroundService_BTFive extends Service {
                                 }
                             }
 
-                            Thread.sleep(25);
+                            //Thread.sleep(25);
                         } else {
                             BTConstants.IsFileUploadCompleted = false;
                             AppConstants.WriteinFile(TAG + " BTLink 5: After upgrade command (Link is not connected): Progress: " + progressValue);
