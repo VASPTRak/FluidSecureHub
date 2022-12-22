@@ -1842,7 +1842,7 @@ public class CommonUtils {
 
         String userEmail = CommonUtils.getCustomerDetailsCC(context).PersonEmail;
         //----------------------------------------------------------------------------------
-        String parm1 = AppConstants.getIMEI(context) + ":" + userEmail + ":" + "MobileHotspotErrorEmail";
+        String parm1 = AppConstants.getIMEI(context) + ":" + userEmail + ":" + "MobileHotspotErrorEmail" + AppConstants.LANG_PARAM;
         String authString = "Basic " + AppConstants.convertStingToBase64(parm1);
 
 
@@ -2132,6 +2132,20 @@ public class CommonUtils {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
         }
+    }
+
+    public static boolean CheckAllHTTPLinksAreFree() {
+        boolean flag = false;
+        try {
+            if (!AppConstants.isHTTPTxnRunningFS1 && !AppConstants.isHTTPTxnRunningFS2 && !AppConstants.isHTTPTxnRunningFS3 && !AppConstants.isHTTPTxnRunningFS4 && !AppConstants.isHTTPTxnRunningFS5 && !AppConstants.isHTTPTxnRunningFS6) {
+                flag = true;
+            }
+        } catch (Exception e) {
+            flag = false;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in CheckAnyHTTPTxnIsRunning: " + e.getMessage());
+        }
+        return flag;
     }
 
 }

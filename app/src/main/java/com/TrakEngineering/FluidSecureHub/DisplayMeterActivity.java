@@ -222,12 +222,14 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     protected void onPostResume() {
         super.onPostResume();
 
-        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !BTConstants.CurrentTransactionIsBT && !AppConstants.isAllLinksAreBTLinks) {
 
             btnStart.setText(getResources().getString(R.string.PleaseWait));
             btnStart.setEnabled(false);
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
-            AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Connecting to hotspot, please wait", Color.BLUE);
+            AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.PleaseWaitForHotspotConnect), Color.BLUE);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "<" + getResources().getString(R.string.PleaseWaitForHotspotConnect) + ">");
 
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -364,7 +366,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             LinkName = "";
         }
 
-        if (LinkCommunicationType.equalsIgnoreCase("BT") || BTConstants.CurrentTransactionIsBT) {
+        if ((LinkCommunicationType.equalsIgnoreCase("BT") || BTConstants.CurrentTransactionIsBT) && CommonUtils.CheckAllHTTPLinksAreFree()) {
             if (CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
@@ -968,6 +970,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         pdMain = new ProgressDialog(DisplayMeterActivity.this);
         pdMain.setMessage(ss2);
         pdMain.setCancelable(false);
+        pdMain.dismiss();
+        pdMain.show();
 
     }
 

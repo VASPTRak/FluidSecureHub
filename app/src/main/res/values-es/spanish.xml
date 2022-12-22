@@ -44,6 +44,8 @@
     <string name="DeviceName">Nombre del dispositivo</string>
     <string name="DeviceMacAddress">Dirección Mac del dispositivo</string>
     <string name="IMEIAlreadyExist">¡Tu número de IMEI ya EXISTE!</string>
+    <string name="CloseBtn">Cerca</string>
+    <string name="AddLink">Agrega ENLACE</string>
     <string name="CloseApp">Cerrar app</string>
     <string name="RestartApp">Reiniciar aplicación</string>
     <string name="ShowReaderStatus">Mostrar estado del lector</string>
@@ -53,6 +55,7 @@
     <string name="OfflineMenu">Desconectado</string>
     <string name="CameraMenu">Cámara</string>
     <string name="ReloadMenu">Recargar</string>
+    <string name="PleaseWaitForHotspotConnect">Conectando al hotspot. Espere por favor...</string>
 
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>

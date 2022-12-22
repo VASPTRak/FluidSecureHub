@@ -146,7 +146,7 @@ public class AppConstants {
 
     public static ArrayList<HashMap<String, String>> temp_serverSSIDList;
 
-   // public static String webIP = "http://sierravistatest.cloudapp.net/";
+    //public static String webIP = "http://fluidsecuretest.eastus.cloudapp.azure.com/"; // OLD URL => http://sierravistatest.cloudapp.net/";
     public static String webIP = "https://www.fluidsecure.net/";
 
 
@@ -160,6 +160,7 @@ public class AppConstants {
     public static String API_URL_VEHICLE = webIP + "api/Offline/GetVehicles";
     public static String API_URL_PERSONNEL = webIP + "api/Offline/GetPersonnel";
     public static String API_URL_SYNC_TRANS = webIP + "api/Offline/OFFLineImportTransactions";
+    public static String API_URL_DEPT = webIP + "api/Offline/GetDepartments";
 
 
     public static String OFF_VEHICLE_ID;
@@ -326,7 +327,6 @@ public class AppConstants {
     public static String R_SITE_ID;
     public static String SITE_ID;
 
-
     public static String WIFI_PASSWORD = "";
 
     public static boolean NeedToRename;
@@ -340,6 +340,14 @@ public class AppConstants {
     public static ArrayList<HashMap<String, String>> DetailsServerSSIDList;
     public static ArrayList<HashMap<String, String>> DetailsListOfConnectedDevices;
     public static ArrayList<HashMap<String, String>> test;
+
+    public static boolean isAllLinksAreBTLinks = true;
+    public static boolean isHTTPTxnRunningFS1 = false;
+    public static boolean isHTTPTxnRunningFS2 = false;
+    public static boolean isHTTPTxnRunningFS3 = false;
+    public static boolean isHTTPTxnRunningFS4 = false;
+    public static boolean isHTTPTxnRunningFS5 = false;
+    public static boolean isHTTPTxnRunningFS6 = false;
 
     public static ArrayList<String> ListOfRunningTransactiins = new ArrayList<>();
 

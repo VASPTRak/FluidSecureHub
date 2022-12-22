@@ -8,4 +8,5 @@ public class EntityHub {
     public String VehicleDataFilePath, PersonnelDataFilePath, LinkDataFilePath;
     public String IsNonValidateVehicle, IsNonValidatePerson, IsNonValidateODOM;
     public String IsOtherRequire, OtherLabel, HUBType;
+    public String IsDepartmentRequire, ValidateDepartmentAgainstPIN, DepartmentDataFilePath;
 }

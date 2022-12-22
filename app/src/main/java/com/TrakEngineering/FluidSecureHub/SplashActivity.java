@@ -94,7 +94,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private DevicePolicyManager mDevicePolicyManager;
     private ComponentName mComponentName;
     private ConnectionDetector cd = new ConnectionDetector(SplashActivity.this);
-    public static String imei_mob_folder_name = "FSHUBUUID",HubType = "";
+    public static String imei_mob_folder_name = "FSHUBUUID", HubType = "";
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager wifiApManager;
@@ -173,7 +173,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         } else {
 
             //Enable hotspot
-            wifiApManager.setWifiApEnabled(null, true);
+            //wifiApManager.setWifiApEnabled(null, true);
 
             //Enable bluetooth
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

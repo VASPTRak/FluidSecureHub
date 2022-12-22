@@ -18,4 +18,6 @@ public class EntityOffTranz {
     public String OnlineTransactionId;
     public String VehicleNumber;
     public String Other;
+    public String VehicleExtraOther;
+    public String DepartmentNumber;
 }

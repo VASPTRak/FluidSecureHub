@@ -3032,10 +3032,16 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             } else if (RequireHours.trim().toLowerCase().equalsIgnoreCase("y")) {
                                 Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptHoursAcitvity.class);
                                 startActivity(intent);
+                            } else if (IsExtraOther.trim().toLowerCase().equalsIgnoreCase("True")) {
+                                Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptVehicleOtherInfo.class);
+                                startActivity(intent);
                             } else {
                                 EntityHub obj = controller.getOfflineHubDetails(AcceptVehicleActivity_new.this);
                                 if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
                                     Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                                    startActivity(intent);
+                                } else if (obj.IsDepartmentRequire.equalsIgnoreCase("true") && !obj.HUBType.equalsIgnoreCase("G")) {
+                                    Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptDeptActivity.class);
                                     startActivity(intent);
                                 } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
                                     Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptOtherActivity.class);
@@ -3084,6 +3090,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     EntityHub obj = controller.getOfflineHubDetails(AcceptVehicleActivity_new.this);
                     if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
                         Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                        startActivity(intent);
+                    } else if (obj.IsDepartmentRequire.equalsIgnoreCase("true") && !obj.HUBType.equalsIgnoreCase("G")) {
+                        Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptDeptActivity.class);
                         startActivity(intent);
                     } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
                         Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptOtherActivity.class);
@@ -3166,7 +3175,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 String FuelLimitPerMonth = hmap.get("FuelLimitPerMonth");
                 String FuelQuantityOfVehiclePerMonth = hmap.get("FuelQuantityOfVehiclePerMonth");
 
-                OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", VehicleId, "", "", "", "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", VehicleId, "", "", "", "", "", VehicleNumber, "", "", "");
 
                 OfflineConstants.storeFuelLimit(AcceptVehicleActivity_new.this, VehicleId, FuelLimitPerTxn, FuelLimitPerDay, CheckFuelLimitPerMonth, FuelLimitPerMonth, FuelQuantityOfVehiclePerMonth, "", "", "");
 
@@ -3198,15 +3207,15 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                 String VehicleNumber = "";
                 try {
-                    String V_Number = editVehicleNumber.getText().toString().trim();
+                    String V_Number = editVehicleNumber.getText().toString();
                     if (!V_Number.isEmpty()) {
-                        VehicleNumber = V_Number.trim();
+                        VehicleNumber = V_Number;
                     } else if (!AppConstants.APDU_FOB_KEY.isEmpty()) {
-                        VehicleNumber = AppConstants.APDU_FOB_KEY.trim();
+                        VehicleNumber = AppConstants.APDU_FOB_KEY;
                     } else if (!Barcode_val.isEmpty()) {
-                        VehicleNumber = Barcode_val.trim();
+                        VehicleNumber = Barcode_val;
                     } else if (!MagCard_vehicle.isEmpty()) {
-                        VehicleNumber = MagCard_vehicle.trim();
+                        VehicleNumber = MagCard_vehicle;
                     }
                 } catch (Exception ex) {
                     VehicleNumber = "";
@@ -3222,7 +3231,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         AppConstants.WriteinFile(TAG + "Vehicle Number (Non-validate): " + VehicleNumber);
 
                     if (!VehicleNumber.isEmpty()) {
-                        OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", "", "", "", "", "", "", VehicleNumber, "");
+                        OfflineConstants.storeCurrentTransaction(AcceptVehicleActivity_new.this, "", "", "", "", "", "", "", "", VehicleNumber, "", "", "");
 
                         if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                             Constants.AccVehicleNumber_FS1 = VehicleNumber;
@@ -3301,7 +3310,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptVehicleActivity_new.this);
-            String message = "Upgrade file download in progress.\nPlease wait several seconds....";
+            String message = getResources().getString(R.string.FileDownloadInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds);
             SpannableString ss2 = new SpannableString(message);
             ss2.setSpan(new RelativeSizeSpan(1.2f), 0, ss2.length(), 0);
             pd.setMessage(ss2);

@@ -199,7 +199,11 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                 if (!etDeptNumber.getText().toString().trim().isEmpty()) {
 
-                    new CallSaveButtonValidation().execute();
+                    if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                        new CallSaveButtonValidation().execute();
+                    } else {
+                        OfflineDepartmentValidation();
+                    }
 
                 } else {
                     Istimeout_Sec = true;
@@ -256,10 +260,10 @@ public class AcceptDeptActivity extends AppCompatActivity {
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
-        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -516,6 +520,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                         btnSave.setClickable(false);
 
+                        OfflineConstants.storeCurrentTransaction(AcceptDeptActivity.this, "", "", "", "", "", "", "", "", "", "", "", etDeptNumber.getText().toString().trim());
+
                         SharedPreferences sharedPrefODO = AcceptDeptActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                         String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
 
@@ -586,5 +592,80 @@ public class AcceptDeptActivity extends AppCompatActivity {
             DeptScreenTimerlist.get(i).cancel();
         }
 
+    }
+
+    private void OfflineDepartmentValidation() {
+        try {
+            String deptNumber = etDeptNumber.getText().toString().trim();
+            HashMap<String, String> hmap = new HashMap<>();
+            hmap = controller.getDepartmentDetailsByDepartmentNumber(deptNumber);
+
+            if (hmap != null && hmap.size() > 0) {
+                String DepartmentNumber = hmap.get("DepartmentNumber");
+
+                OfflineConstants.storeCurrentTransaction(AcceptDeptActivity.this, "", "", "", "", "", "", "", "", "", "", "", DepartmentNumber);
+
+                EntityHub obj = controller.getOfflineHubDetails(AcceptDeptActivity.this);
+                if (obj.ValidateDepartmentAgainstPIN.equalsIgnoreCase("true")) { // validate with entered PIN
+                    if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) { // check only if the pin screen is required
+                        String pinNumber = AppConstants.OFF_PERSON_PIN;
+                        HashMap<String, String> pinMap = controller.getPersonnelDetailsByPIN(pinNumber);
+
+                        if (pinMap.size() > 0) {
+                            String AssignedDepartments = pinMap.get("AssignedDepartments");
+                            if (AssignedDepartments != null && !AssignedDepartments.isEmpty()) {
+                                boolean isAllowed = false;
+
+                                String[] depts = AssignedDepartments.split(",");
+                                for (String allowedDept : depts) {
+                                    if (DepartmentNumber.equalsIgnoreCase(allowedDept)) {
+                                        isAllowed = true;
+                                        break;
+                                    }
+                                }
+
+                                if (isAllowed) {
+                                    allValid();
+                                } else {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "You are not authorized for this department. (" + DepartmentNumber + ")");
+                                    CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.NotAuthorizedForDept).replace("department", ScreenNameForDepartment));
+                                }
+                            } else {
+                                //allValid(); //?
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "You are not authorized for this department. (" + DepartmentNumber + ")");
+                                CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.NotAuthorizedForDept).replace("department", ScreenNameForDepartment));
+                            }
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Pin Number (" + pinNumber + ") not found in offline db.");
+                        }
+                    } else {
+                        allValid();
+                    }
+                } else {
+                    allValid();
+                }
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Department (" + deptNumber + ") not found in offline db.");
+                CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.InvalidDept).replace("Department", ScreenNameForDepartment));
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "OfflineDepartmentValidation Exception: " + ex.getMessage());
+        }
+    }
+
+    public void allValid() {
+        EntityHub obj = controller.getOfflineHubDetails(AcceptDeptActivity.this);
+        if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+            Intent intent = new Intent(AcceptDeptActivity.this, AcceptOtherActivity.class);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(AcceptDeptActivity.this, DisplayMeterActivity.class);
+            startActivity(intent);
+        }
     }
 }

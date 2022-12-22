@@ -146,6 +146,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(true);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
 
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {

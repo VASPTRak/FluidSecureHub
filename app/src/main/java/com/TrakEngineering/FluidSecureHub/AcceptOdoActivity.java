@@ -79,10 +79,10 @@ public class AcceptOdoActivity extends AppCompatActivity {
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
-        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -358,7 +358,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                     C_AccOdoMeter = Constants.AccOdoMeter_FS6;
                 }
 
-                OfflineConstants.storeCurrentTransaction(AcceptOdoActivity.this, "", "", "", editOdoTenths.getText().toString().trim(), "", "", "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptOdoActivity.this, "", "", "", editOdoTenths.getText().toString().trim(), "", "", "", "", "", "", "", "");
 
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptOdoActivity.this)) {
                     //skip all validation in permanent offline mode
@@ -599,13 +599,22 @@ public class AcceptOdoActivity extends AppCompatActivity {
             }
         }
 
+        SharedPreferences sharedPrefODO = AcceptOdoActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
+
         if (AppConstants.OFF_HOUR_REQUIRED.trim().equalsIgnoreCase("y")) {
             Intent intent = new Intent(AcceptOdoActivity.this, AcceptHoursAcitvity.class);
+            startActivity(intent);
+        } else if (IsExtraOther.trim().toLowerCase().equalsIgnoreCase("True")) {
+            Intent intent = new Intent(AcceptOdoActivity.this, AcceptVehicleOtherInfo.class);
             startActivity(intent);
         } else {
             EntityHub obj = controller.getOfflineHubDetails(AcceptOdoActivity.this);
             if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
                 Intent intent = new Intent(AcceptOdoActivity.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                startActivity(intent);
+            } else if (obj.IsDepartmentRequire.equalsIgnoreCase("true") && !obj.HUBType.equalsIgnoreCase("G")) {
+                Intent intent = new Intent(AcceptOdoActivity.this, AcceptDeptActivity.class);
                 startActivity(intent);
             } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
                 Intent intent = new Intent(AcceptOdoActivity.this, AcceptOtherActivity.class);

@@ -210,35 +210,67 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                             Constants.AccVehicleOther_FS6 = etOther.getText().toString().trim();
                         }
 
-                        SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-                        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-                        String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
-                        String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
+                        OfflineConstants.storeCurrentTransaction(AcceptVehicleOtherInfo.this, "", "", "", "", "", "", "", "", "", "", etOther.getText().toString().trim(), "");
+
+                        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+
+                            SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                            String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
+                            String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
+                            String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
+                            String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+                            String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
+                            String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
 
 
-                        if (IsPersonnelPINRequireForHub.equalsIgnoreCase("True")) {
+                            if (IsPersonnelPINRequireForHub.equalsIgnoreCase("True")) {
 
-                            Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptPinActivity_new.class);//AcceptPinActivity
-                            startActivity(intent);
+                                Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                                startActivity(intent);
 
-                        } else if (IsDepartmentRequire.equalsIgnoreCase("True")) {
+                            } else if (IsDepartmentRequire.equalsIgnoreCase("True")) {
 
-                            Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptDeptActivity.class);
-                            startActivity(intent);
+                                Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptDeptActivity.class);
+                                startActivity(intent);
 
-                        } else if (IsOtherRequire.equalsIgnoreCase("True")) {
+                            } else if (IsOtherRequire.equalsIgnoreCase("True")) {
 
-                            Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptOtherActivity.class);
-                            startActivity(intent);
+                                Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptOtherActivity.class);
+                                startActivity(intent);
 
+                            } else {
+
+                                AcceptServiceCall asc = new AcceptServiceCall();
+                                asc.activity = AcceptVehicleOtherInfo.this;
+                                asc.checkAllFields();
+                            }
                         } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
+                            //offline-------------------
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " Offline Entered Vehicle Other Info: " + etOther.getText());
 
-                            AcceptServiceCall asc = new AcceptServiceCall();
-                            asc.activity = AcceptVehicleOtherInfo.this;
-                            asc.checkAllFields();
+                            if (OfflineConstants.isOfflineAccess(AcceptVehicleOtherInfo.this)) {
+                                EntityHub obj = controller.getOfflineHubDetails(AcceptVehicleOtherInfo.this);
+                                if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
+                                    Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                                    startActivity(intent);
+                                } else if (obj.IsDepartmentRequire.equalsIgnoreCase("true") && !obj.HUBType.equalsIgnoreCase("G")) {
+                                    Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptDeptActivity.class);
+                                    startActivity(intent);
+                                } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                                    Intent intent = new Intent(AcceptVehicleOtherInfo.this, AcceptOtherActivity.class);
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(AcceptVehicleOtherInfo.this, DisplayMeterActivity.class);
+                                    startActivity(intent);
+                                }
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Offline Access not granted to this HUB.");
+                                Istimeout_Sec = true;
+                            }
                         }
                     }
                 } else {

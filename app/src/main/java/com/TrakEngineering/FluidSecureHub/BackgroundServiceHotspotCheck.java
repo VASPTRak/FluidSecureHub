@@ -144,7 +144,7 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
 
                 } else if (!screenOff && !CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn) {
 
-                    if (CheckAllHosesAreFree()) {
+                    if (CheckAllHosesAreFree() && !AppConstants.isAllLinksAreBTLinks) {
                         wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
                         Log.i(TAG, "Connecting to hotspot, please wait....");
                         //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Hotspot ON--1");
@@ -154,7 +154,7 @@ public class BackgroundServiceHotspotCheck extends BackgroundService {
 
                     if (isScreenOn(this) && !CommonUtils.isHotspotEnabled(BackgroundServiceHotspotCheck.this) && Constants.hotspotstayOn) {
 
-                        if (CheckAllHosesAreFree()) {
+                        if (CheckAllHosesAreFree() && !AppConstants.isAllLinksAreBTLinks) {
                             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
                             Log.i(TAG, "Connecting to hotspot, please wait....");
                         }

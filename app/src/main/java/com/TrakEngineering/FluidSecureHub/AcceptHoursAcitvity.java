@@ -73,10 +73,10 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
-        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -334,7 +334,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                     C_AccHours = Constants.AccHours_FS6;
                 }
 
-                OfflineConstants.storeCurrentTransaction(AcceptHoursAcitvity.this, "", "", "", "", etHours.getText().toString().trim(), "", "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptHoursAcitvity.this, "", "", "", "", etHours.getText().toString().trim(), "", "", "", "", "", "", "");
 
                 if (OfflineConstants.isTotalOfflineEnabled(AcceptHoursAcitvity.this)) {
                     //skip all validation in permanent offline mode
@@ -598,16 +598,27 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        EntityHub obj = controller.getOfflineHubDetails(AcceptHoursAcitvity.this);
-        if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
-            Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptPinActivity_new.class);//AcceptPinActivity
-            startActivity(intent);
-        } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
-            Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptOtherActivity.class);
+        SharedPreferences sharedPrefODO = AcceptHoursAcitvity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
+
+        if (IsExtraOther.trim().toLowerCase().equalsIgnoreCase("True")) {
+            Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptVehicleOtherInfo.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(AcceptHoursAcitvity.this, DisplayMeterActivity.class);
-            startActivity(intent);
+            EntityHub obj = controller.getOfflineHubDetails(AcceptHoursAcitvity.this);
+            if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
+                Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptPinActivity_new.class);//AcceptPinActivity
+                startActivity(intent);
+            } else if (obj.IsDepartmentRequire.equalsIgnoreCase("true") && !obj.HUBType.equalsIgnoreCase("G")) {
+                Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptDeptActivity.class);
+                startActivity(intent);
+            } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                Intent intent = new Intent(AcceptHoursAcitvity.this, AcceptOtherActivity.class);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(AcceptHoursAcitvity.this, DisplayMeterActivity.class);
+                startActivity(intent);
+            }
         }
     }
 

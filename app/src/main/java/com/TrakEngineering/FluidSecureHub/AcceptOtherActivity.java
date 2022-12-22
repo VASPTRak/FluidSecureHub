@@ -178,7 +178,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
                         Constants.AccOther_FS6 = etOther.getText().toString().trim();
                     }
 
-                    OfflineConstants.storeCurrentTransaction(AcceptOtherActivity.this, "", "", "", "", "", "", "", "", "", etOther.getText().toString().trim());
+                    OfflineConstants.storeCurrentTransaction(AcceptOtherActivity.this, "", "", "", "", "", "", "", "", "", etOther.getText().toString().trim(), "", "");
 
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                         AcceptServiceCall asc = new AcceptServiceCall();

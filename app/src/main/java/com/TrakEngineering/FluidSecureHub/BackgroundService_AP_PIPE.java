@@ -240,6 +240,8 @@ public class BackgroundService_AP_PIPE extends Service {
 
                 System.out.println("BackgroundService is on. AP_FS_PIPE" + HTTP_URL);
                 Constants.FS_1STATUS = "BUSY";
+                AppConstants.isHTTPTxnRunningFS1 = true;
+
                 Constants.BusyVehicleNumberList.add(Constants.AccVehicleNumber_FS1);
 
                 if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS) {
@@ -1215,7 +1217,7 @@ public class BackgroundService_AP_PIPE extends Service {
 
                     consoleString += "RENAME:\n" + jsonRename;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Sending RENAME command to Link: " + LinkName);
+                        AppConstants.WriteinFile(TAG + "Sending RENAME command to Link: " + LinkName + " (New Name: " + AppConstants.REPLACEBLE_WIFI_NAME_FS1 + ")");
                     new BackgroundService_AP_PIPE.CommandsPOST().execute(URL_WIFI, jsonRename);
 
                 }

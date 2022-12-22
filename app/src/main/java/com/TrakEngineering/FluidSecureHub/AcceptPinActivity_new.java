@@ -2226,7 +2226,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     boolean isAssigned = false;
 
-                    if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
+                    if (obj.IsDepartmentRequire.equalsIgnoreCase("true") && !obj.HUBType.equalsIgnoreCase("G")) {
+                        Intent intent = new Intent(AcceptPinActivity_new.this, AcceptDeptActivity.class);
+                        startActivity(intent);
+                    } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
                         Intent intent = new Intent(AcceptPinActivity_new.this, AcceptOtherActivity.class);
                         startActivity(intent);
 
@@ -2360,7 +2363,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     Constants.AccPersonnelPIN_FS6 = PinNumber;
                 }
 
-                OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "", "");
+                OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "", "", "", "");
 
                 OfflineConstants.storeFuelLimit(AcceptPinActivity_new.this, "", "", "", "", "", "", PersonId, FuelLimitPerTxn, FuelLimitPerDay);
             } else {
@@ -2404,7 +2407,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             Constants.AccPersonnelPIN_FS6 = PinNumber;
                         }
 
-                        OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", "0", "", "", "", "");
+                        OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", "0", "", "", "", "", "", "");
 
                     } else {
                         if (AppConstants.GenerateLogs)
@@ -2544,7 +2547,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(AcceptPinActivity_new.this);
-            String message = "Upgrade file download in progress.\nPlease wait several seconds....";
+            String message = getResources().getString(R.string.FileDownloadInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds);
             SpannableString ss2 = new SpannableString(message);
             ss2.setSpan(new RelativeSizeSpan(1.2f), 0, ss2.length(), 0);
             pd.setMessage(ss2);

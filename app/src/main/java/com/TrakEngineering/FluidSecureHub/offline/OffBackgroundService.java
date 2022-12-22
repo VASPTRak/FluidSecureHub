@@ -57,6 +57,7 @@ public class OffBackgroundService extends Service {
     Timer timer;
     TimerTask repeatedTask;
     SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
+    public String IsDepartmentRequire = "false";
 
     public OffBackgroundService() {
     }
@@ -382,16 +383,24 @@ public class OffBackgroundService extends Service {
                         String IsOtherRequire = HubDataObj.getString("IsOtherRequire");
                         String OtherLabel = HubDataObj.getString("OtherLabel");
                         String HUBType = HubDataObj.getString("HUBType");
+                        IsDepartmentRequire = HubDataObj.getString("IsDepartmentRequire");
+                        String ValidateDepartmentAgainstPIN = HubDataObj.getString("ValidateDepartmentAgainstPIN");
+                        String DepartmentDataFilePath = HubDataObj.getString("DepartmentDataFilePath");
 
                         controller.storeOfflineHubDetails(OffBackgroundService.this, HubId, AllowedLinks, PersonnelPINNumberRequired, VehicleNumberRequired, PersonhasFOB,
                                 VehiclehasFOB, WiFiChannel, BluetoothCardReader, BluetoothCardReaderMacAddress, LFBluetoothCardReader, LFBluetoothCardReaderMacAddress,
                                 PrinterMacAddress, PrinterName, EnablePrinter, VehicleDataFilePath, PersonnelDataFilePath, LinkDataFilePath, IsNonValidateVehicle,
-                                IsNonValidatePerson, IsNonValidateODOM, IsOtherRequire, OtherLabel, HUBType);
+                                IsNonValidatePerson, IsNonValidateODOM, IsOtherRequire, OtherLabel, HUBType, IsDepartmentRequire, ValidateDepartmentAgainstPIN, DepartmentDataFilePath);
 
                         if (cd.isConnecting()) {
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " <Offline Link,Vehicle,Pin data download started.>");
+                            if (IsDepartmentRequire.equalsIgnoreCase("true")) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " <Offline Link,Vehicle,Pin,Department data download started.>");
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " <Offline Link,Vehicle,Pin data download started.>");
+                            }
 
                                 /*new GetAPILinkDetails().execute();
 
@@ -399,8 +408,7 @@ public class OffBackgroundService extends Service {
 
                                 new GetAPIPersonnelPinDetails().execute();*/
 
-                                new GenerateFilesAPI().execute();
-
+                            new GenerateFilesAPI().execute();
 
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -450,6 +458,7 @@ public class OffBackgroundService extends Service {
             String VehicleDataFilePath = obj.VehicleDataFilePath;
             String PersonnelDataFilePath = obj.PersonnelDataFilePath;
             String LinkDataFilePath = obj.LinkDataFilePath;
+            String DepartmentDataFilePath = obj.DepartmentDataFilePath;
 
             repeatedTask = new TimerTask() {
                 public void run() {
@@ -483,15 +492,33 @@ public class OffBackgroundService extends Service {
                             downloadLibrary(LinkDataFilePath, "Link");
                     }
 
+                    // Download Department Data
+                    String status_d = getDownloadFileStatus("Department");
+
+                    if ((status_d.isEmpty() || status_d.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed && IsDepartmentRequire.equalsIgnoreCase("true")) {
+                        if (!DepartmentDataFilePath.equalsIgnoreCase(""))
+                            downloadLibrary(DepartmentDataFilePath, "Department");
+                    }
 
                     if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1") && !AppConstants.selectHosePressed) {
 
-                        setSharedPrefOfflineData(getApplicationContext());
+                        if (IsDepartmentRequire.equalsIgnoreCase("true")) {
+                            if (status_d.equalsIgnoreCase("1")) {
+                                setSharedPrefOfflineData(getApplicationContext());
 
-                        if (timer != null)
-                            timer.cancel();
-                        AppConstants.WriteinFile("All 3 files downloaded successfully.");
+                                if (timer != null)
+                                    timer.cancel();
 
+                                AppConstants.WriteinFile("All 4 files downloaded successfully.");
+                            }
+                        } else {
+
+                            setSharedPrefOfflineData(getApplicationContext());
+
+                            if (timer != null)
+                                timer.cancel();
+                            AppConstants.WriteinFile("All 3 files downloaded successfully.");
+                        }
                     }
                 }
             };
@@ -854,8 +881,23 @@ public class OffBackgroundService extends Service {
                                 }
                             }
 
+                            StringBuilder AssignedDepartments = new StringBuilder();
+                            JSONArray DepartmentObj = jsonObj.getJSONArray("DepartmentObj");
+                            if (DepartmentObj != null & DepartmentObj.length() > 0) {
+
+                                for (int i = 0; i < DepartmentObj.length(); i++) {
+
+                                    JSONObject obj = (JSONObject) DepartmentObj.get(i);
+                                    if (AssignedDepartments.toString().isEmpty()) {
+                                        AssignedDepartments.append(obj.getString("DepartmentNumber"));
+                                    } else {
+                                        AssignedDepartments.append(",").append(obj.getString("DepartmentNumber"));
+                                    }
+                                }
+                            }
+
                             InsertPD = controller.insertPersonnelPinDetails(PersonId, PinNumber, FuelLimitPerTxn, FuelLimitPerDay, FOBNumber, Authorizedlinks,
-                                    AssignedVehicles, MagneticCardReaderNumber, Barcode);
+                                    AssignedVehicles, MagneticCardReaderNumber, Barcode, AssignedDepartments.toString());
 
                             if (InsertPD == -1)
                                 if (AppConstants.GenerateLogs)
@@ -888,6 +930,63 @@ public class OffBackgroundService extends Service {
         } else {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " GetAPIPersonnelPinDetails InPost Result err:" + result);
+        }
+    }
+
+    public void departmentJsonParsing(String result) {
+        if (result != null && !result.isEmpty()) {
+
+            try {
+                long InsertDD = -1;
+                JSONObject jsonObject = new JSONObject(result);
+
+                String ResponceMessage = jsonObject.getString("ResponceMessage");
+
+                System.out.println("ResponseMessage:" + ResponceMessage);
+
+                if (ResponceMessage.equalsIgnoreCase("success")) {
+
+                    controller.deleteTableData(OffDBController.TBL_DEPARTMENT);
+
+                    JSONArray jsonArr = jsonObject.getJSONArray("DepartmentDataObj");
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " GetAPIDepartmentDetails Json length = " + jsonArr.length());
+
+                    if (jsonArr != null && jsonArr.length() > 0) {
+                        for (int j = 0; j < jsonArr.length(); j++) {
+                            JSONObject jsonObj = (JSONObject) jsonArr.get(j);
+
+                            String DepartmentId = jsonObj.getString("DepartmentId");
+                            String DepartmentName = jsonObj.getString("DepartmentName");
+                            String DepartmentNumber = jsonObj.getString("DepartmentNumber");
+
+                            InsertDD = controller.insertDepartmentDetails(DepartmentId, DepartmentName, DepartmentNumber);
+
+                            if (InsertDD == -1) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " GetAPIDepartmentDetails Something went wrong inserting DepartmentDetails");
+                            }
+                        }
+                    }
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Offline Department data download process completed Successfully.");
+
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " GetAPIDepartmentDetails InPost Response fail: " + result);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " GetAPIDepartmentDetails InPost Ex: " + e.toString());
+            }
+
+        } else {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " GetAPIDepartmentDetails InPost Result err: " + result);
         }
     }
 
@@ -1103,6 +1202,10 @@ public class OffBackgroundService extends Service {
                 } else if (file_name.equalsIgnoreCase("Link")) {
 
                     linkJsonParsing(decryptedJson);
+
+                } else if (file_name.equalsIgnoreCase("Department")) {
+
+                    departmentJsonParsing(decryptedJson);
 
                 }
 
