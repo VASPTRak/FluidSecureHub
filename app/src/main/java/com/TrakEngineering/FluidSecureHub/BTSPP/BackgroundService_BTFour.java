@@ -154,7 +154,8 @@ public class BackgroundService_BTFour extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink 4: <Registering Receiver.>");
                 registerReceiver(broadcastBlueLinkFourData, intentFilter);
                 isBroadcastReceiverRegistered = true;
-                AppConstants.WriteinFile(TAG + " BTLink 4: <Registered successfully. (" + broadcastBlueLinkFourData + ")>");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 4: <Registered successfully. (" + broadcastBlueLinkFourData + ")>");
 
                 AppConstants.isRelayON_fs4 = false;
                 LinkName = CommonUtils.getlinkName(3);
@@ -1695,14 +1696,15 @@ public class BackgroundService_BTFour extends Service {
                 int BUFFER_SIZE = 256; //490; //8192;
                 byte[] bufferBytes = new byte[BUFFER_SIZE];
 
-                Thread.sleep(2000);
+                Thread.sleep(5000);
 
                 if (inputStream != null) {
                     long bytesWritten = 0;
                     int amountOfBytesRead;
                     //BufferedInputStream bufferedReader = new BufferedInputStream(inputStream);
                     //while ((amountOfBytesRead = bufferedReader.read(bufferBytes, 0, bufferBytes.length)) != -1) {
-
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 4: Upload (" + AppConstants.UP_Upgrade_File_name + ") started...");
                     while ((amountOfBytesRead = inputStream.read(bufferBytes)) != -1) {
 
                         bytesWritten += amountOfBytesRead;
@@ -1725,7 +1727,8 @@ public class BackgroundService_BTFour extends Service {
                             //Thread.sleep(25);
                         } else {
                             BTConstants.IsFileUploadCompleted = false;
-                            AppConstants.WriteinFile(TAG + " BTLink 4: After upgrade command (Link is not connected): Progress: " + progressValue);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 4: After upgrade command (Link is not connected): Progress: " + progressValue);
                             BTConstants.UpgradeStatusBT4 = "Incomplete";
                             break;
                         }
@@ -1748,7 +1751,8 @@ public class BackgroundService_BTFour extends Service {
         @Override
         protected void onPostExecute(String file_url) {
             //pd.dismiss();
-            AppConstants.WriteinFile(TAG + " BTLink 4: LINK Status: " + BTConstants.BTStatusStrFour);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 4: LINK Status: " + BTConstants.BTStatusStrFour);
             BTConstants.upgradeProgress = "0 %";
             if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Completed")) {
                 BTConstants.IsFileUploadCompleted = true;

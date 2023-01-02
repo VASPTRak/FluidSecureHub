@@ -7969,6 +7969,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 break;
 
             case R.id.m_p_type:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<p_type menu selected.>");
                 Change_P_Type();
                 break;
 
@@ -14921,8 +14923,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-
     }
 
     public void RedirectToP_TypeSelection(String WifiSSId, String LinkPosition, String BTMacAddress) {
@@ -14935,5 +14935,4 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         i.putExtra("LinkPosition", LinkPosition);
         startActivity(i);
     }
-
 }

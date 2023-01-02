@@ -30,17 +30,15 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
     Button btnSet;
     public RadioGroup rdg_p_type;
     public RadioButton rdSelectedType;
-    public BroadcastBlueLinkOneData broadcastBlueLinkOneData = null;
-    public BroadcastBlueLinkTwoData broadcastBlueLinkTwoData = null;
-    public BroadcastBlueLinkThreeData broadcastBlueLinkThreeData = null;
-    public BroadcastBlueLinkFourData broadcastBlueLinkFourData = null;
+    public BroadcastBlueLinkData broadcastBlueLinkData = null;
+    public IntentFilter intentFilter;
     String Request = "", Response = "";
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         try {
-            UnregisterReceiver(Integer.parseInt(LinkPosition));
+            UnregisterReceiver();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -49,7 +47,7 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         try {
-            UnregisterReceiver(Integer.parseInt(LinkPosition));
+            UnregisterReceiver();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -90,7 +88,7 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
             LinkPosition = "0";
         }
 
-        RegisterReceiver(Integer.parseInt(LinkPosition));
+        RegisterReceiver(LinkPosition);
 
         btnSet.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +130,12 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
                     case "3"://Link 4
                         btspp.send4(BTConstants.p_type_command + selectedType);
                         break;
+                    case "4"://Link 5
+                        btspp.send5(BTConstants.p_type_command + selectedType);
+                        break;
+                    case "5"://Link 6
+                        btspp.send6(BTConstants.p_type_command + selectedType);
+                        break;
                     default://Something went wrong in link selection please try again.
                         break;
                 }
@@ -152,47 +156,38 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
         }
     }
 
-    private void RegisterReceiver(int index) {
+    private void RegisterReceiver(String linkPosition) {
 
         //Register Broadcast receiver
-        if (index == 0) {
-            broadcastBlueLinkOneData = new BroadcastBlueLinkOneData();
-            IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
-            registerReceiver(broadcastBlueLinkOneData, intentFilter);
+        broadcastBlueLinkData = new BroadcastBlueLinkData();
+        switch (linkPosition) {
+            case "0"://Link 1
+                intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
+                break;
+            case "1"://Link 2
+                intentFilter = new IntentFilter("BroadcastBlueLinkTwoData");
+                break;
+            case "2"://Link 3
+                intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
+                break;
+            case "3"://Link 4
+                intentFilter = new IntentFilter("BroadcastBlueLinkFourData");
+                break;
+            case "4"://Link 5
+                intentFilter = new IntentFilter("BroadcastBlueLinkFiveData");
+                break;
+            case "5"://Link 6
+                intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
+                break;
         }
-        if (index == 1) {
-            broadcastBlueLinkTwoData = new BroadcastBlueLinkTwoData();
-            IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkTwoData");
-            registerReceiver(broadcastBlueLinkTwoData, intentFilter);
-        }
-        if (index == 2) {
-            broadcastBlueLinkThreeData = new BroadcastBlueLinkThreeData();
-            IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
-            registerReceiver(broadcastBlueLinkThreeData, intentFilter);
-        }
-        if (index == 3) {
-            broadcastBlueLinkFourData = new BroadcastBlueLinkFourData();
-            IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkFourData");
-            registerReceiver(broadcastBlueLinkFourData, intentFilter);
-        }
+        registerReceiver(broadcastBlueLinkData, intentFilter);
     }
 
-    private void UnregisterReceiver(int index) {
-        if (index == 0) {
-            unregisterReceiver(broadcastBlueLinkOneData);
-        }
-        if (index == 1) {
-            unregisterReceiver(broadcastBlueLinkTwoData);
-        }
-        if (index == 2) {
-            unregisterReceiver(broadcastBlueLinkThreeData);
-        }
-        if (index == 3) {
-            unregisterReceiver(broadcastBlueLinkFourData);
-        }
+    private void UnregisterReceiver() {
+        unregisterReceiver(broadcastBlueLinkData);
     }
 
-    public class BroadcastBlueLinkOneData extends BroadcastReceiver {
+    public class BroadcastBlueLinkData extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -200,13 +195,37 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
             try {
                 Bundle notificationData = intent.getExtras();
                 String Action = notificationData.getString("Action");
-                if (Action.equalsIgnoreCase("BlueLinkOne")) {
+                String actionByPosition = "";
+                switch (LinkPosition) {
+                    case "0"://Link 1
+                        actionByPosition = "BlueLinkOne";
+                        break;
+                    case "1"://Link 2
+                        actionByPosition = "BlueLinkTwo";
+                        break;
+                    case "2"://Link 3
+                        actionByPosition = "BlueLinkThree";
+                        break;
+                    case "3"://Link 4
+                        actionByPosition = "BlueLinkFour";
+                        break;
+                    case "4"://Link 5
+                        actionByPosition = "BlueLinkFive";
+                        break;
+                    case "5"://Link 6
+                        actionByPosition = "BlueLinkSix";
+                        break;
+                    default://Something went wrong in link selection please try again.
+                        break;
+                }
+
+                if (Action.equalsIgnoreCase(actionByPosition)) {
 
                     Request = notificationData.getString("Request");
                     Response = notificationData.getString("Response");
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 1: Response from Link >>" + Response.trim());
+                        AppConstants.WriteinFile(TAG + "BTLink: Response from Link >>" + Response.trim());
 
                     if (Response.contains("pulser_type")) {
                         getPulserType(Response);
@@ -215,91 +234,7 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink 1:onReceive Exception:" + e.getMessage());
-            }
-        }
-    }
-
-    public class BroadcastBlueLinkTwoData extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            try {
-                Bundle notificationData = intent.getExtras();
-                String Action = notificationData.getString("Action");
-                if (Action.equalsIgnoreCase("BlueLinkTwo")) {
-
-                    Request = notificationData.getString("Request");
-                    Response = notificationData.getString("Response");
-
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 2: Response from Link >>" + Response.trim());
-
-                    if (Response.contains("pulser_type")) {
-                        getPulserType(Response);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink 2:onReceive Exception:" + e.getMessage());
-            }
-        }
-    }
-
-    public class BroadcastBlueLinkThreeData extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            try {
-                Bundle notificationData = intent.getExtras();
-                String Action = notificationData.getString("Action");
-                if (Action.equalsIgnoreCase("BlueLinkThree")) {
-
-                    Request = notificationData.getString("Request");
-                    Response = notificationData.getString("Response");
-
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 3: Response from Link >>" + Response.trim());
-
-                    if (Response.contains("pulser_type")) {
-                        getPulserType(Response);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink 3:onReceive Exception:" + e.getMessage());
-            }
-        }
-    }
-
-    public class BroadcastBlueLinkFourData extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            try {
-                Bundle notificationData = intent.getExtras();
-                String Action = notificationData.getString("Action");
-                if (Action.equalsIgnoreCase("BlueLinkFour")) {
-
-                    Request = notificationData.getString("Request");
-                    Response = notificationData.getString("Response");
-
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 4: Response from Link >>" + Response.trim());
-
-                    if (Response.contains("pulser_type")) {
-                        getPulserType(Response);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink 4:onReceive Exception:" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + "BTLink: onReceive Exception:" + e.getMessage());
             }
         }
     }
