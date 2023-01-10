@@ -1765,8 +1765,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             if (IsTankEmpty.equalsIgnoreCase("True")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
-                                CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
+                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.EmptyTankWarning));
+                                CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", getResources().getString(R.string.EmptyTankWarning));
                                 tvSSIDName.setText(R.string.selectHose);
                                 btnGo.setVisibility(View.GONE);
 
@@ -3102,8 +3102,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     if (IsTankEmpty != null && IsTankEmpty.equalsIgnoreCase("True")) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
-                        CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", "The system is low on fuel and must be refilled before fueling can start. Please contact your Manager.");
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.EmptyTankWarning));
+                        CommonUtils.AlertDialogAutoClose(WelcomeActivity.this, "", getResources().getString(R.string.EmptyTankWarning));
                         tvSSIDName.setText(R.string.selectHose);
                         btnGo.setVisibility(View.GONE);
 
@@ -6224,6 +6224,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            if (BTConstants.isPTypeCommandExecuted1) {
+                BTConstants.isPTypeCommandExecuted1 = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                btspp.connect1();
+            }
+
             //----------------------------------------
             tv_fs1_Qty.setText(AppConstants.spanishNumberSystem(Constants.FS_1Gallons));
             tv_fs1_Pulse.setText(Constants.FS_1Pulse);
@@ -6344,6 +6354,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else {
                     CountBeforeReconnectRelay2++;
                 }
+            }
+
+            if (BTConstants.isPTypeCommandExecuted2) {
+                BTConstants.isPTypeCommandExecuted2 = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                btspp.connect2();
             }
 
             tv_fs2_Qty.setText(AppConstants.spanishNumberSystem(Constants.FS_2Gallons));
@@ -6467,6 +6487,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            if (BTConstants.isPTypeCommandExecuted3) {
+                BTConstants.isPTypeCommandExecuted3 = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                btspp.connect3();
+            }
+
             tv_fs3_Qty.setText(AppConstants.spanishNumberSystem(Constants.FS_3Gallons));
             tv_fs3_Pulse.setText(Constants.FS_3Pulse);
             linear_fs_3.setBackgroundResource(R.color.colorPrimary);
@@ -6586,6 +6616,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else {
                     CountBeforeReconnectRelay4++;
                 }
+            }
+
+            if (BTConstants.isPTypeCommandExecuted4) {
+                BTConstants.isPTypeCommandExecuted4 = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                btspp.connect4();
             }
 
             tv_fs4_Qty.setText(AppConstants.spanishNumberSystem(Constants.FS_4Gallons));
@@ -6710,6 +6750,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            if (BTConstants.isPTypeCommandExecuted5) {
+                BTConstants.isPTypeCommandExecuted5 = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Retrying to Connect");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                btspp.connect5();
+            }
+
             tv_fs5_Qty.setText(AppConstants.spanishNumberSystem(Constants.FS_5Gallons));
             tv_fs5_Pulse.setText(Constants.FS_5Pulse);
             linear_fs_5.setBackgroundResource(R.color.colorPrimary);
@@ -6829,6 +6879,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else {
                     CountBeforeReconnectRelay6++;
                 }
+            }
+
+            if (BTConstants.isPTypeCommandExecuted6) {
+                BTConstants.isPTypeCommandExecuted6 = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Retrying to Connect");
+                //Retrying to connect to link
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                btspp.connect6();
             }
 
             tv_fs6_Qty.setText(AppConstants.spanishNumberSystem(Constants.FS_6Gallons));

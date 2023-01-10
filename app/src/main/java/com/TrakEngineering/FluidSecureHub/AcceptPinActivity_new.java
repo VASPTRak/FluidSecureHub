@@ -664,7 +664,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 return true;
             case R.id.mreconnect_ble_readers:
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Reconnect BLE Readers");
+                    AppConstants.WriteinFile(TAG + "<Reconnect BLE Readers>");
                 AppConstants.showReaderStatus = true;
                 new ReconnectBleReaders().execute();
                 return true;
@@ -674,7 +674,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 return true;
             case R.id.mshow_reader_status:
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Show Reader Status");
+                    AppConstants.WriteinFile(TAG + "<Show Reader Status>");
                 AppConstants.showReaderStatus = true;
                 return true;
         }
@@ -1523,7 +1523,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "ValidateFor Pin: " + ResponceText);
 
-                            DilaogRecreate(AcceptPinActivity_new.this, "Message", ResponceText);
+                            DialogRecreate(AcceptPinActivity_new.this, "Message", ResponceText);
 
                         } else if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
 
@@ -2440,7 +2440,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     }
 
-    public void DilaogRecreate(final Activity context, final String title, final String message) {
+    public void DialogRecreate(final Activity context, final String title, final String message) {
 
         runOnUiThread(new Runnable() {
             @Override

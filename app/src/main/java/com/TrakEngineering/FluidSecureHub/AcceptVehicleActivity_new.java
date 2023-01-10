@@ -557,14 +557,14 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 return true;
             case R.id.mreconnect_ble_readers:
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Reconnect BLE Readers");
+                    AppConstants.WriteinFile(TAG + "<Reconnect BLE Readers>");
                 AppConstants.showReaderStatus = true;
                 new ReconnectBleReaders().execute();
                 return true;
 
             case R.id.mshow_reader_status:
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Show Reader Status");
+                    AppConstants.WriteinFile(TAG + "<Show Reader Status>");
                 AppConstants.showReaderStatus = true;
                 return true;
 

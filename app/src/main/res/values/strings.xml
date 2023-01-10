@@ -55,6 +55,7 @@
     <string name="CameraMenu">Camera</string>
     <string name="ReloadMenu">Reload</string>
     <string name="PleaseWaitForHotspotConnect">Connecting to the hotspot. Please wait...</string>
+    <string name="EmptyTankWarning">This tank level is low. Please contact your Manager.</string>
 
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
