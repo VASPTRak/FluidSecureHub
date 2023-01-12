@@ -1866,7 +1866,7 @@ public class BackgroundService_BTSix extends Service {
                                 }
                             }
 
-                            //Thread.sleep(25);
+                            Thread.sleep(10);
                         } else {
                             BTConstants.IsFileUploadCompleted = false;
                             if (AppConstants.GenerateLogs)

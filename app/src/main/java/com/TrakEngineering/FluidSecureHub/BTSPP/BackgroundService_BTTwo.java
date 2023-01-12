@@ -1867,7 +1867,7 @@ public class BackgroundService_BTTwo extends Service {
                                 }
                             }
 
-                            //Thread.sleep(25);
+                            Thread.sleep(10);
                         } else {
                             BTConstants.IsFileUploadCompleted = false;
                             if (AppConstants.GenerateLogs)

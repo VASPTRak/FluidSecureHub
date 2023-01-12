@@ -1877,7 +1877,7 @@ public class BackgroundService_BTOne extends Service {
                                 }
                             }
 
-                            //Thread.sleep(25);
+                            Thread.sleep(10);
                         } else {
                             BTConstants.IsFileUploadCompleted = false;
                             if (AppConstants.GenerateLogs)
