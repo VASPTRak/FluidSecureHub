@@ -6206,6 +6206,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs1Cnt5Sec++;
             }
 
+            // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkOneStatus && AppConstants.isRelayON_fs1 && !BTConstants.SwitchedBTToUDP1) {
                 if (CountBeforeReconnectRelay1 >= 1) {
                     if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT1) {
@@ -6224,6 +6225,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            // BT Link reconnection attempt after p_type command
             if (BTConstants.isPTypeCommandExecuted1) {
                 BTConstants.isPTypeCommandExecuted1 = false;
                 if (AppConstants.GenerateLogs)
@@ -6338,6 +6340,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs2Cnt5Sec++;
             }
 
+            // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkTwoStatus && AppConstants.isRelayON_fs2 && !BTConstants.SwitchedBTToUDP2) {
                 if (CountBeforeReconnectRelay2 >= 1) {
                     if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT2) {
@@ -6356,6 +6359,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            // BT Link reconnection attempt after p_type command
             if (BTConstants.isPTypeCommandExecuted2) {
                 BTConstants.isPTypeCommandExecuted2 = false;
                 if (AppConstants.GenerateLogs)
@@ -6469,6 +6473,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs3Cnt5Sec++;
             }
 
+            // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkThreeStatus && AppConstants.isRelayON_fs3 && !BTConstants.SwitchedBTToUDP3) {
                 if (CountBeforeReconnectRelay3 >= 1) {
                     if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT3) {
@@ -6487,6 +6492,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            // BT Link reconnection attempt after p_type command
             if (BTConstants.isPTypeCommandExecuted3) {
                 BTConstants.isPTypeCommandExecuted3 = false;
                 if (AppConstants.GenerateLogs)
@@ -6600,6 +6606,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs4Cnt5Sec++;
             }
 
+            // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFourStatus && AppConstants.isRelayON_fs4 && !BTConstants.SwitchedBTToUDP4) {
                 if (CountBeforeReconnectRelay4 >= 1) {
                     if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT4) {
@@ -6618,6 +6625,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            // BT Link reconnection attempt after p_type command
             if (BTConstants.isPTypeCommandExecuted4) {
                 BTConstants.isPTypeCommandExecuted4 = false;
                 if (AppConstants.GenerateLogs)
@@ -6732,6 +6740,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs5Cnt5Sec++;
             }
 
+            // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFiveStatus && AppConstants.isRelayON_fs5 && !BTConstants.SwitchedBTToUDP5) {
                 if (CountBeforeReconnectRelay5 >= 1) {
                     if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT5) {
@@ -6750,6 +6759,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            // BT Link reconnection attempt after p_type command
             if (BTConstants.isPTypeCommandExecuted5) {
                 BTConstants.isPTypeCommandExecuted5 = false;
                 if (AppConstants.GenerateLogs)
@@ -6863,6 +6873,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 fs6Cnt5Sec++;
             }
 
+            // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkSixStatus && AppConstants.isRelayON_fs6 && !BTConstants.SwitchedBTToUDP6) {
                 if (CountBeforeReconnectRelay6 >= 1) {
                     if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT6) {
@@ -6881,6 +6892,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            // BT Link reconnection attempt after p_type command
             if (BTConstants.isPTypeCommandExecuted6) {
                 BTConstants.isPTypeCommandExecuted6 = false;
                 if (AppConstants.GenerateLogs)

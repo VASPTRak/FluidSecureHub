@@ -217,6 +217,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     long sqlite_id = 0;
     Timer ScreenOutTime;
     public boolean onResumeAlreadyCalled = false;
+    private boolean skipOnResumeForHotspot = false;
 
     @Override
     protected void onPostResume() {
@@ -226,6 +227,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             btnStart.setText(getResources().getString(R.string.PleaseWait));
             btnStart.setEnabled(false);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
             AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.PleaseWaitForHotspotConnect), Color.BLUE);
             if (AppConstants.GenerateLogs)
@@ -247,6 +250,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         super.onResume();
 
         //checkBusyhose();
+        if (skipOnResumeForHotspot) { // To handle app crash due to double onResume call after disabling the hotspot.
+            skipOnResumeForHotspot = false;
+            return;
+        }
 
         invalidateOptionsMenu();
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
@@ -368,10 +375,24 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         if ((LinkCommunicationType.equalsIgnoreCase("BT") || BTConstants.CurrentTransactionIsBT) && CommonUtils.CheckAllHTTPLinksAreFree()) {
             if (CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
+                skipOnResumeForHotspot = true;
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
-                wifiApManager.setWifiApEnabled(null, false);
-                BTConstants.isHotspotDisabled = true;
+                try {
+                    wifiApManager.setWifiApEnabled(null, false);
+                    BTConstants.isHotspotDisabled = true;
+                } catch (Exception e) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Exception while disabling hotspot. Attempt 1. " + e.getMessage());
+                    try {
+                        wifiApManager.setWifiApEnabled(null, false);
+                        BTConstants.isHotspotDisabled = true;
+                    } catch (Exception ex) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Exception while disabling hotspot. Attempt 2. " + ex.getMessage());
+                    }
+                }
+
             }
         }
 

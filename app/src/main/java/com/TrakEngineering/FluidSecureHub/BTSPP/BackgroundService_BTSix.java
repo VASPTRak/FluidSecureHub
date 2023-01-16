@@ -169,7 +169,7 @@ public class BackgroundService_BTSix extends Service {
                     } else {
                         if (CommonUtils.CheckAllHTTPLinksAreFree()) {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Link not connected. Switching to wifi connection...");
+                                AppConstants.WriteinFile(TAG + " BTLink 6: Link not connected. Switching to wifi (UDP) connection...");
 
                             // Enable Wi-Fi
                             WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -261,7 +261,7 @@ public class BackgroundService_BTSix extends Service {
                         cancel();
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Unable to connect to Wifi.");
+                            AppConstants.WriteinFile(TAG + " BTLink 6: Unable to connect to " + LinkName + " via wifi.");
                         TerminateBTTransaction();
                     }
                 }
@@ -1104,6 +1104,8 @@ public class BackgroundService_BTSix extends Service {
                         //Enable Hotspot
                         WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTSix.this);
                         if (!CommonUtils.isHotspotEnabled(BackgroundService_BTSix.this) && !AppConstants.isAllLinksAreBTLinks) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
                             wifiApManager.setWifiApEnabled(null, true);
                         }
                         BTConstants.isHotspotDisabled = false;
