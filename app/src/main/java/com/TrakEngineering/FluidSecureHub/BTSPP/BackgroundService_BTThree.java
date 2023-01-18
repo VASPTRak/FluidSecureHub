@@ -104,7 +104,7 @@ public class BackgroundService_BTThree extends Service {
             Bundle extras = intent.getExtras();
             if (extras == null) {
                 this.stopSelf();
-                CloseTransaction();
+                CloseTransaction(false);
             } else {
                 sqlite_id = (long) extras.get("sqlite_id");
                 SERVER_IP = String.valueOf(extras.get("SERVER_IP"));
@@ -192,8 +192,7 @@ public class BackgroundService_BTThree extends Service {
                                 AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
                             AppConstants.TxnFailedCount3++;
                             AppConstants.IsTransactionFailed3 = true;
-                            PostTransactionBackgroundTasks();
-                            CloseTransaction();
+                            CloseTransaction(true);
                             this.stopSelf();
                         }
                     }
@@ -207,7 +206,7 @@ public class BackgroundService_BTThree extends Service {
                     Log.i(TAG, " BTLink 3: Something went Wrong in hose selection.");
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 3: Something went wrong in hose selection.");
-                    CloseTransaction();
+                    CloseTransaction(false);
                     this.stopSelf();
                 }
             }
@@ -284,8 +283,7 @@ public class BackgroundService_BTThree extends Service {
                 AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
             AppConstants.TxnFailedCount3++;
             AppConstants.IsTransactionFailed3 = true;
-            PostTransactionBackgroundTasks();
-            CloseTransaction();
+            CloseTransaction(true);
             this.stopSelf();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
@@ -311,8 +309,7 @@ public class BackgroundService_BTThree extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 3: Link not connected.");
                     AppConstants.TxnFailedCount3++;
                     AppConstants.IsTransactionFailed3 = true;
-                    PostTransactionBackgroundTasks();
-                    CloseTransaction();
+                    CloseTransaction(true);
                     this.stopSelf();
                 }
             } else {
@@ -471,7 +468,7 @@ public class BackgroundService_BTThree extends Service {
                             Log.i(TAG, "BTLink 3: TransactionId is empty.");
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " BTLink 3: TransactionId is empty.");
-                            CloseTransaction();
+                            CloseTransaction(false);
                         }
                     } else {
 
@@ -483,8 +480,7 @@ public class BackgroundService_BTThree extends Service {
                                 AppConstants.WriteinFile(TAG + " BTLink 3: Checking Info command response. Response: false");
                             AppConstants.TxnFailedCount3++;
                             AppConstants.IsTransactionFailed3 = true;
-                            PostTransactionBackgroundTasks();
-                            CloseTransaction();
+                            CloseTransaction(true);
                         } else {
                             infoCommandAttempt++;
                             infoCommand(); // Retried one more time after failed to receive response from info command
@@ -712,8 +708,7 @@ public class BackgroundService_BTThree extends Service {
                         Log.i(TAG, "BTLink 3: Failed to get transactionId Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 3: Checking transactionId command response. Response: false");
-                        PostTransactionBackgroundTasks();
-                        CloseTransaction();
+                        CloseTransaction(true);
                     }
                 }
             }.start();
@@ -788,7 +783,7 @@ public class BackgroundService_BTThree extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 3: Checking relayOn command response. Response: false");
                         relayOffCommand(); //RelayOff
                         TransactionCompleteFunction();
-                        CloseTransaction();
+                        CloseTransaction(false);
                     }
                 }
 
@@ -873,7 +868,7 @@ public class BackgroundService_BTThree extends Service {
         }
     }
 
-    private void CloseTransaction() {
+    private void CloseTransaction(boolean startBackgroundServices) {
 
         try {
             clearEditTextFields();
@@ -903,6 +898,9 @@ public class BackgroundService_BTThree extends Service {
             CancelTimer();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 3: Transaction stopped.");
+            if (startBackgroundServices) {
+                PostTransactionBackgroundTasks();
+            }
             this.stopSelf();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1040,8 +1038,7 @@ public class BackgroundService_BTThree extends Service {
                         BTConstants.isReconnectCalled3 = false;
                         AppConstants.TxnFailedCount3++;
                         AppConstants.IsTransactionFailed3 = true;
-                        PostTransactionBackgroundTasks();
-                        CloseTransaction();
+                        CloseTransaction(true);
                     }
                     return;
                 }
@@ -1071,7 +1068,7 @@ public class BackgroundService_BTThree extends Service {
                             @Override
                             public void run() {
                                 TransactionCompleteFunction();
-                                CloseTransaction();
+                                CloseTransaction(false);
                             }
                         }, delay);
 
@@ -1421,7 +1418,7 @@ public class BackgroundService_BTThree extends Service {
                 AppConstants.WriteinFile(TAG + " BTLink 3: Auto Stop Hit>> You reached MAX fuel limit.");
             relayOffCommand(); //RelayOff
             TransactionCompleteFunction();
-            CloseTransaction();
+            CloseTransaction(false);
         }
 
     }
@@ -1442,7 +1439,7 @@ public class BackgroundService_BTThree extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 3: PumpOnTime Hit.");
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
-                    CloseTransaction();
+                    CloseTransaction(false);
                 }
             } else {//PumpOff Time logic
 
@@ -1459,7 +1456,7 @@ public class BackgroundService_BTThree extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 3: PumpOffTime Hit.");
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
-                    CloseTransaction();
+                    CloseTransaction(false);
                 }
             }
         } catch (Exception e) {
@@ -1516,7 +1513,7 @@ public class BackgroundService_BTThree extends Service {
                     stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
-                    CloseTransaction();
+                    CloseTransaction(false);
                     this.stopSelf();
                 }
             }
@@ -1925,8 +1922,7 @@ public class BackgroundService_BTThree extends Service {
                                 IsThisBTTrnx = false;
                                 AppConstants.TxnFailedCount3++;
                                 AppConstants.IsTransactionFailed3 = true;
-                                PostTransactionBackgroundTasks();
-                                CloseTransaction();
+                                CloseTransaction(true);
                             }
                         }
                     }

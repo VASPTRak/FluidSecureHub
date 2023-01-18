@@ -532,7 +532,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " OkHttpFileUpload" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + "OkHttpFileUpload Exception: " + e.getMessage());
             }
 
 
@@ -560,7 +560,7 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
             } catch (Exception e) {
                 System.out.println(e);
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " OkHttpFileUpload" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + "OkHttpFileUpload Exception: " + e.getMessage());
             }
 
         }

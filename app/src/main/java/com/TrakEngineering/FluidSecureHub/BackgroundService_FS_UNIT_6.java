@@ -146,6 +146,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
     long sqliteID = 0;
     boolean GETPulsarCallCompleted = false;
     public OkHttpClient client = new OkHttpClient();
+    public int countForZeroPulses = 0;
 
     ConnectivityManager connection_manager;
     String printReceipt = "", IsFuelingStop = "0", IsLastTransaction = "0";
@@ -443,7 +444,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " RelayOnThreeAttempts. --Exception " + e);
+                AppConstants.WriteinFile(TAG + "RelayOnThreeAttempts. --Exception " + e.getMessage());
         }
         return IsRelayOn;
     }
@@ -537,7 +538,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             }catch (Exception e) {
                 Log.d("Ex", e.getMessage());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " URL: " + param[0]);
+                    AppConstants.WriteinFile(TAG + "<CommandsPOST URL: " + param[0] + ">");
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " CommandsPOST InBackground Exception " + e.getMessage());
                 stopSelf();
@@ -883,15 +884,26 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_FS_UNIT_6.this);
                 }
 
+                if (CNT_LAST > 0 && CNT_current == 0) {
+                    countForZeroPulses = countForZeroPulses + 1;
+                }
+
                 if (CNT_LAST <= CNT_current) {
                     CNT_LAST = CNT_current;
 
                     convertCountToQuantity(counts);
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
+                        AppConstants.WriteinFile(TAG + "pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
                 }
 
+                if (countForZeroPulses > 2) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "<pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST + ">");
+                    stopTimer = false;
+                    this.stopSelf();
+                    return;
+                }
 
                 if (!pulsar_secure_status.trim().isEmpty()) {
                     secure_status = Integer.parseInt(pulsar_secure_status);
@@ -985,13 +997,13 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
                 } catch (Exception e) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  quantity reach max limit1 Exception " + e);
+                        AppConstants.WriteinFile(TAG + "quantity reach max limit1 Exception " + e);
                 }
             }
         } catch (Exception e) {
             System.out.println(e);
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  quantity reach max limit2 Exception " + e);
+                AppConstants.WriteinFile(TAG + "quantity reach max limit2 Exception " + e);
         }
     }
 
@@ -1048,7 +1060,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                                         convertCountToQuantity(counts);
                                     } else {
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "  Count from the link: " + counts);
+                                            AppConstants.WriteinFile(TAG + "<Count from the link: " + counts + ">");
                                     }
 
                                     /*if (i == 0)
@@ -1071,7 +1083,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                             }
                         } catch (Exception e) {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  stopButtonFunctionality Exception " + e);
+                                AppConstants.WriteinFile(TAG + "stopButtonFunctionality Exception " + e);
                             System.out.println(e);
                         }
                     }
@@ -1199,7 +1211,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar onPostExecute Exception " + e);
+                    AppConstants.WriteinFile(TAG + "GETFINALPulsar onPostExecute Exception " + e);
                 System.out.println(e);
             }
 
@@ -1272,7 +1284,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  secondsTimeLogic Exception " + e);
+                AppConstants.WriteinFile(TAG + "secondsTimeLogic Exception " + e);
         }
     }
 
@@ -1291,7 +1303,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
 
             //>>Added for tempory log to check #1536 (Eva)  Harrison County issue
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
+                AppConstants.WriteinFile(TAG + " Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
         } else {
             quantityRecords.remove(0);
         }
@@ -1696,7 +1708,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                     Tem_data = tld.getString("Tem_data");
                     String Checksum = tld.getString("Checksum");
 
-                    AppConstants.WriteinFile(TAG + "  TLD Reading:" + " Mac Address:" + mac_address + " Sensor ID:" + Sensor_ID + " Response code:" + Response_code + " LSB:" + LSB + " MSB:" + MSB + " Temperature data:" + Tem_data + " Checksum:" + Checksum);
+                    AppConstants.WriteinFile(TAG + "TLD Reading:" + " Mac Address:" + mac_address + " Sensor ID:" + Sensor_ID + " Response code:" + Response_code + " LSB:" + LSB + " MSB:" + MSB + " Temperature data:" + Tem_data + " Checksum:" + Checksum);
 
                     //Get mac address of probe
                     //String mac_str = GetMacAddressOfProbe(level);
@@ -1711,7 +1723,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  TankMonitorReading ~~~JSONException~~" + e);
+                        AppConstants.WriteinFile(TAG + " TankMonitorReading ~~~JSONException~~" + e);
                 }
 
                 //-----------------------------------------------------------
@@ -1738,7 +1750,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                     String serverRes = TestAsynTask.response;
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  TankMonitorReading ~~~serverRes~~" + serverRes);
+                        AppConstants.WriteinFile(TAG + " TankMonitorReading ~~~serverRes~~" + serverRes);
                 } else {
                     offcontroller.insertTLDReadings(mac_address, "", AppConstants.SITE_ID, "", AppConstants.getIMEI(BackgroundService_FS_UNIT_6.this), LSB, MSB, Tem_data, CurrentDeviceDate, Response_code, "n");
                 }
@@ -1748,7 +1760,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  TankMonitorReading ~~~Exception~~" + e);
+                AppConstants.WriteinFile(TAG + " TankMonitorReading ~~~Exception~~" + e);
         }
 
 
@@ -2235,7 +2247,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_6.this);
         CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " pulsar ration error>>" + numPulseRatio);
+            AppConstants.WriteinFile(TAG + "pulsar ratio error>>" + numPulseRatio);
         stopTimer = false;
         if (AppConstants.GenerateLogs)
             AppConstants.WriteinFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);

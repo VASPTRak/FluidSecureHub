@@ -1731,6 +1731,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.WriteinFile(TAG + "Exception in goButtonAction: single link selection. " + ex.getMessage());
         }
 
+        // Start background services (Change for #2108 & #2109)
+        SyncSqliteData();
+
         ///////////////////common online offline///////////////////////////////
         EntityHub obj = offcontroller.getOfflineHubDetails(WelcomeActivity.this);
 
