@@ -2346,7 +2346,7 @@ public class BackgroundService_AP extends Service {
     private void ExitServicePulsarRatioZero() {
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "pulsar ratio error>>" + numPulseRatio);
+            AppConstants.WriteinFile(TAG + "pulser ratio error>>" + numPulseRatio);
         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_AP.this);
         CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         stopTimer = false;

@@ -218,15 +218,20 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     Timer ScreenOutTime;
     public boolean onResumeAlreadyCalled = false;
     private boolean skipOnResumeForHotspot = false;
+    private boolean skipOnPostResumeForHotspot = false;
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
 
         if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !BTConstants.CurrentTransactionIsBT && !AppConstants.isAllLinksAreBTLinks) {
-
+            if (skipOnPostResumeForHotspot) { // To handle app crash due to double onResume call after disabling the hotspot.
+                skipOnPostResumeForHotspot = false;
+                return;
+            }
             btnStart.setText(getResources().getString(R.string.PleaseWait));
             btnStart.setEnabled(false);
+            skipOnPostResumeForHotspot = true;
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
@@ -2825,7 +2830,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             }
 
                         }
-                        AppConstants.WriteinFile(TAG + " link Mac:" + AppConstants.SELECTED_MACADDRESS + " - HotspotList: " + ListOfConnectedDevices.toString());
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MACADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -4701,7 +4707,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             public void onFinish() {
 
-                dialogBus.dismiss();
+                if (dialogBus != null) {
+                    dialogBus.dismiss();
+                }
                 proceedToPostResume();
 
             }
@@ -4713,7 +4721,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onClick(View v) {
-                dialogBus.dismiss();
+                if (dialogBus != null) {
+                    dialogBus.dismiss();
+                }
                 if (finalCTimer != null) finalCTimer.cancel();
                 proceedToPostResume();
             }

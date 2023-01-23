@@ -2293,7 +2293,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
         CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "pulsar ratio error>>" + numPulseRatio);
+            AppConstants.WriteinFile(TAG + "pulser ratio error>>" + numPulseRatio);
         stopTimer = false;
         if (AppConstants.GenerateLogs)
             AppConstants.WriteinFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);

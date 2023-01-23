@@ -410,6 +410,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public int delayMillis = 100;
     public String st = "";
     public boolean ConfigurationStep1IsInProgress = false;
+    public boolean upgradeLoaderIsShown = false;
     public ProgressDialog pdP_Type;
 
     //============ Bluetooth reader Gatt end==============
@@ -525,26 +526,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             loading.show();
         }
 
-        boolean showLoader = false;
-        if (BTConstants.CurrentTransactionIsBT) {
-            if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Started")) {
-                BTConstants.UpgradeStatusBT1 = "";
-                showLoader = true;
-            } else if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Started")) {
-                BTConstants.UpgradeStatusBT2 = "";
-                showLoader = true;
-            } else if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Started")) {
-                BTConstants.UpgradeStatusBT3 = "";
-                showLoader = true;
-            } else if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Started")) {
-                BTConstants.UpgradeStatusBT4 = "";
-                showLoader = true;
-            }
-            if (showLoader) {
-                BTLinkUpgradeProcessLoader();
-            }
-            showUpgradeSpinnerMessage = true;
-        }
+        showUpgradeSpinnerMessage();
+
         UpdateFSUI_seconds();
         DeleteOldLogFiles();//Delete log files older than 1 month
         //Reconnect BT reader if disconnected
@@ -563,6 +546,37 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         DebugWindow();
 
+    }
+
+    private void showUpgradeSpinnerMessage() {
+        try {
+            if (upgradeLoaderIsShown) {
+                return;
+            }
+
+            boolean showLoader = false;
+            if (BTConstants.CurrentTransactionIsBT) {
+                if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Started")) {
+                    BTConstants.UpgradeStatusBT1 = "";
+                    showLoader = true;
+                } else if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Started")) {
+                    BTConstants.UpgradeStatusBT2 = "";
+                    showLoader = true;
+                } else if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Started")) {
+                    BTConstants.UpgradeStatusBT3 = "";
+                    showLoader = true;
+                } else if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Started")) {
+                    BTConstants.UpgradeStatusBT4 = "";
+                    showLoader = true;
+                }
+                if (showLoader) {
+                    BTLinkUpgradeProcessLoader();
+                }
+                showUpgradeSpinnerMessage = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -5777,6 +5791,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 pdOnResume.dismiss();
                             }
                             if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
+                                upgradeLoaderIsShown = true;
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5830,6 +5845,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 pdOnResume.dismiss();
                             }
                             if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
+                                upgradeLoaderIsShown = true;
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5883,6 +5899,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 pdOnResume.dismiss();
                             }
                             if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
+                                upgradeLoaderIsShown = true;
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5936,6 +5953,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 pdOnResume.dismiss();
                             }
                             if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
+                                upgradeLoaderIsShown = true;
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5989,6 +6007,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 pdOnResume.dismiss();
                             }
                             if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
+                                upgradeLoaderIsShown = true;
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -6042,6 +6061,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 pdOnResume.dismiss();
                             }
                             if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
+                                upgradeLoaderIsShown = true;
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -6120,6 +6140,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         if (BTConstants.CurrentTransactionIsBT && showUpgradeSpinnerMessage) {
             ManageBTLinkUpgrade();
+        }
+        if (!upgradeLoaderIsShown) {
+            showUpgradeSpinnerMessage();
         }
 
         // Toast.makeText(getApplicationContext(),"FS_Count"+FS_Count,Toast.LENGTH_SHORT).show();

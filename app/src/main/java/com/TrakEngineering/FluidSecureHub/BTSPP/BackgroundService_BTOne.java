@@ -65,6 +65,7 @@ public class BackgroundService_BTOne extends Service {
     public BroadcastBlueLinkOneData broadcastBlueLinkOneData = null;
     String Request = "", Response = "";
     String FDRequest = "", FDResponse = "";
+    String upgradeResponse = "";
     int PreviousRes = 0;
     boolean stopTxtprocess, redpulseloop_on, RelayStatus;
     int pulseCount = 0;
@@ -1216,6 +1217,9 @@ public class BackgroundService_BTOne extends Service {
                         FDRequest = Request;
                         FDResponse = Response;
                     }
+                    if (Request.contains(BTConstants.linkUpgrade_cmd) && upgradeResponse.isEmpty()) {
+                        upgradeResponse = Response;
+                    }
                     /*if (AppConstants.isRelayON_fs1 && Response.trim().isEmpty()) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 1: No Response from Broadcast.");
@@ -1791,9 +1795,7 @@ public class BackgroundService_BTOne extends Service {
                 String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
                 File file = new File(LocalPath);
                 if (file.exists()) { // && AppConstants.UP_Upgrade_File_name.startsWith("BT_")
-                    BTConstants.UpgradeStatusBT1 = "Started";
-                    BTConstants.isUpgradeInProgress_BT1 = true;
-                    new BTLinkUpgradeFunctionality().execute();
+                    upgradeCommand();
 
                 } else {
                     if (AppConstants.GenerateLogs)
@@ -1808,6 +1810,77 @@ public class BackgroundService_BTOne extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeCommand Exception:>>" + e.getMessage());
             proceedToInfoCommand(false);
+        }
+    }
+
+    private void upgradeCommand() {
+        try {
+            //Execute upgrade Command
+            Request = "";
+            upgradeResponse = "";
+
+            String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeFunctionality file name: " + AppConstants.UP_Upgrade_File_name);
+
+            File file = new File(LocalPath);
+            long file_size = file.length();
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: Sending upgrade command to Link: " + LinkName);
+            BTSPPMain btspp = new BTSPPMain();
+            btspp.send1(BTConstants.linkUpgrade_cmd + file_size);
+
+            new CountDownTimer(10000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    try {
+                        if (Request.contains(BTConstants.linkUpgrade_cmd) && !upgradeResponse.isEmpty()) {
+                            //upgrade command success.
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " BTLink 1: Checking upgrade command response. Response:>>" + upgradeResponse.trim());
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    BTConstants.UpgradeStatusBT1 = "Started";
+                                    BTConstants.isUpgradeInProgress_BT1 = true;
+                                    new BTLinkUpgradeFunctionality().execute();
+                                }
+                            }, 1000);
+                            cancel();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: upgrade command Exception. Exception: " + e.getMessage());
+                    }
+                }
+
+                public void onFinish() {
+
+                    if (Request.contains(BTConstants.linkUpgrade_cmd) && !upgradeResponse.isEmpty()) {
+                        //upgrade command success.
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Checking upgrade command response. Response:>>" + upgradeResponse.trim());
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                BTConstants.UpgradeStatusBT1 = "Started";
+                                BTConstants.isUpgradeInProgress_BT1 = true;
+                                new BTLinkUpgradeFunctionality().execute();
+                            }
+                        }, 1000);
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink 1: Checking upgrade command response. Response: false");
+                        proceedToInfoCommand(false);
+                    }
+                }
+            }.start();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: upgradeCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -1830,25 +1903,18 @@ public class BackgroundService_BTOne extends Service {
 
             try {
                 String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: BTLinkUpgradeFunctionality file name: " + AppConstants.UP_Upgrade_File_name);
 
                 File file = new File(LocalPath);
 
                 long file_size = file.length();
                 long tempFileSize = file_size;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: Sending upgrade command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send1(BTConstants.linkUpgrade_cmd + file_size);
 
                 InputStream inputStream = new FileInputStream(file);
 
                 int BUFFER_SIZE = 256; //490; //8192;
                 byte[] bufferBytes = new byte[BUFFER_SIZE];
-
-                Thread.sleep(5000);
 
                 if (inputStream != null) {
                     long bytesWritten = 0;
