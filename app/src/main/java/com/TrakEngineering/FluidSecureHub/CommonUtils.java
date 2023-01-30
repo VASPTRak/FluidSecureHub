@@ -2148,4 +2148,29 @@ public class CommonUtils {
         return flag;
     }
 
+    public static void saveLinkMacAddressForReconfigure(Context activity, String jsonData) {
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("jsonData", jsonData);
+        editor.commit();
+
+    }
+
+    public static boolean CheckP_TypeCommandIsSent(Context activity, String prefName) {
+        boolean isAlreadySent = false;
+        try {
+            SharedPreferences FSPref = activity.getSharedPreferences(prefName, 0);
+            String jsonData = FSPref.getString("jsonData", "");
+            String authString = FSPref.getString("authString", "");
+
+            if (!jsonData.trim().isEmpty() && !authString.trim().isEmpty()) {
+                isAlreadySent = true;
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in CheckP_TypeCommandIsSent: " + ex.getMessage());
+        }
+        return isAlreadySent;
+    }
+
 }

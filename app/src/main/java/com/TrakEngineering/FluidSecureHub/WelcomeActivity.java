@@ -4097,7 +4097,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 Gson gson = new Gson();
                                 final String jsonData = gson.toJson(authEntityClass1);
 
-                                saveLinkMacAddressForReconfigure(jsonData);
+                                CommonUtils.saveLinkMacAddressForReconfigure(WelcomeActivity.this, jsonData);
 
                                 //setGlobalMobileDatConnection();
                                 cd = new ConnectionDetector(WelcomeActivity.this);
@@ -4144,7 +4144,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Started Reconfiguration process...");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Started Reconfiguration process...");
             String s = getResources().getString(R.string.StartedReconfiguration);
             SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
@@ -4179,7 +4180,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     WifiManager wifiManager = (WifiManager) WelcomeActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
-                    String ssid = wifiInfo.getSSID();
+                    String ssid = wifiInfo.getSSID().replace("\"", "");
+
                     if (ssid.contains(AppConstants.CURRENT_SELECTED_SSID)) {
 
                         setGlobalWifiConnection();
@@ -4258,7 +4260,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                         new CommandsPOST_ChangeHotspotSettings().execute(URL_UPDATE_FS_INFO, jsonChangeUsernamePass);
 
                                                     } catch (Exception e) {
-                                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "CommandsPOST_ChangeHotspotSettings. Exception: " + e.getMessage());
+                                                        if (AppConstants.GenerateLogs)
+                                                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "CommandsPOST_ChangeHotspotSettings. Exception: " + e.getMessage());
                                                     }
                                                     btnRetryWifi.setVisibility(View.GONE);
                                                 }
@@ -9867,7 +9870,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 tvLatLng.setText(getResources().getString(R.string.HoseListIsNotAvailable));
 
                 System.out.println("GetSSIDUsingLocation...." + result);
-
+                AppConstants.isAllLinksAreBTLinks = true;
                 serverSSIDList.clear();
                 // BackgroundServiceKeepDataTransferAlive.SSIDList.clear();//clear SSIDList
                 //AppConstants.DetailsServerSSIDList.clear();
@@ -10871,6 +10874,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 // BackgroundServiceKeepDataTransferAlive.SSIDList.clear();//clear SSIDList
                 //AppConstants.DetailsServerSSIDList.clear();
 
+                AppConstants.isAllLinksAreBTLinks = true;
                 String errMsg = "";
 
                 if (result != null && !result.isEmpty()) {
@@ -11392,6 +11396,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         try {
             serverSSIDList.clear();
             //AppConstants.DetailsServerSSIDList.clear();
+            AppConstants.isAllLinksAreBTLinks = true;
             String errMsg = "";
             if (result != null && !result.isEmpty()) {
 
@@ -11855,13 +11860,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
 
-    public void saveLinkMacAddressForReconfigure(String jsonData) {
+    /*public void saveLinkMacAddressForReconfigure(String jsonData) {
         SharedPreferences sharedPref = WelcomeActivity.this.getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("jsonData", jsonData);
         editor.commit();
 
-    }
+    }*/
 
     public void clearMacAddressSharedPref() {
         SharedPreferences preferences = getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
@@ -12299,7 +12304,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);*/
 
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + ssid + " =--= " + AppConstants.SELECTED_SSID_FOR_MANUALL); //+" IsWifi Connected: "+mWifi.isConnected()
+                                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Selected SSID: " + AppConstants.SELECTED_SSID_FOR_MANUALL +"; Connected to: " + ssid); //+" IsWifi Connected: "+mWifi.isConnected()
 
                             }
 
@@ -12333,7 +12338,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     new WiFiConnectTask().execute();
                                 } else {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step1 => Connected SSID: " + ssid +"; Selected SSID: " + AppConstants.SELECTED_SSID_FOR_MANUALL);
+                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step1 => Selected SSID: " + AppConstants.SELECTED_SSID_FOR_MANUALL +"; Connected SSID: " + ssid);
                                 }
                             }
 
@@ -12601,7 +12606,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             Gson gson = new Gson();
             final String jsonData = gson.toJson(authEntityClass1);
-            saveLinkMacAddressForReconfigure(jsonData);
+            CommonUtils.saveLinkMacAddressForReconfigure(WelcomeActivity.this, jsonData);
 
             setGlobalMobileDatConnection();  //check if needed
             cd = new ConnectionDetector(WelcomeActivity.this);
@@ -14712,7 +14717,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public void alertSelectBTLinkList() {
         final Dialog dialog = new Dialog(WelcomeActivity.this);
-        dialog.setTitle("FluidSecureHub");
+        dialog.setTitle(R.string.fs_name);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_bt_link_list);
 
