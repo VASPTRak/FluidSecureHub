@@ -568,6 +568,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Started")) {
                     BTConstants.UpgradeStatusBT4 = "";
                     showLoader = true;
+                } else if (BTConstants.UpgradeStatusBT5.equalsIgnoreCase("Started")) {
+                    BTConstants.UpgradeStatusBT5 = "";
+                    showLoader = true;
+                } else if (BTConstants.UpgradeStatusBT6.equalsIgnoreCase("Started")) {
+                    BTConstants.UpgradeStatusBT6 = "";
+                    showLoader = true;
                 }
                 if (showLoader) {
                     BTLinkUpgradeProcessLoader();
