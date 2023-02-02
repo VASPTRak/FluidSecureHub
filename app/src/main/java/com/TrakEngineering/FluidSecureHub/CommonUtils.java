@@ -96,6 +96,8 @@ public class CommonUtils {
     public static String FOLDER_PATH_TLD_Firmware = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/TLD/";
     public static String FOLDER_PATH_FSVM_Firmware = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSVM/";
     public static String FOLDER_PATH_FSNP_Firmware = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSNP/";
+    public static ArrayList<HashMap<String, String>> TankDataList = new ArrayList<>();
+    public static ArrayList<HashMap<String, String>> ProductDataList = new ArrayList<>();
 
     public static void LogMessage(String TAG, String TheMessage, Exception ex) {
         String logmessage = getTodaysDateInString();
@@ -195,6 +197,72 @@ public class CommonUtils {
         } else {
             return String.valueOf(Html.fromHtml(content));
         }
+
+    }
+
+    public static String getdateToStoreInLink(String input){
+
+        String DateOut = input;
+        //Format of the date defined in the input String
+        DateFormat df = new SimpleDateFormat("MM/DD/yyyy hh:mm:ss aaa");
+        //Desired format: 24 hour format: Change the pattern as per the need
+        DateFormat outputformat = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
+        Date date = null;
+        String output = null;
+        try{
+            //Converting the input String to Date
+            date= df.parse(input);
+            //Changing the format of date and storing it in String
+            output = outputformat.format(date);
+            DateOut =output;
+            //Displaying the date
+            System.out.println(output);
+        }catch(ParseException pe){
+            DateOut = input;
+            pe.printStackTrace();
+        }
+        return DateOut;
+    }
+
+    public static String changeDateFormat(String input){
+
+        /*String DateOut = date_s;
+        try
+        {
+            //String date_s = "2011-01-18 00:00:00.0";
+            SimpleDateFormat simpledateformat = new SimpleDateFormat("yyMMddHHmmss");
+            Date tempDate=simpledateformat.parse(date_s);
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            DateOut = outputDateFormat.format(tempDate).toString();
+            System.out.println("Output date is = "+outputDateFormat.format(tempDate));
+        } catch (ParseException ex)
+        {
+            DateOut = date_s;
+            System.out.println("Parse Exception");
+        }
+        return DateOut;*/
+
+
+        String DateOut = input;
+        //Format of the date defined in the input String
+        DateFormat df = new SimpleDateFormat("yyMMddHHmm");
+        //Desired format: 24 hour format: Change the pattern as per the need
+        DateFormat outputformat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");  //dd/MM/yyyy hh:mm:ss aa
+        Date date = null;
+        String output = null;
+        try{
+            //Converting the input String to Date
+            date= df.parse(input);
+            //Changing the format of date and storing it in String
+            output = outputformat.format(date);
+            DateOut =output;
+            //Displaying the date
+            System.out.println(output);
+        }catch(ParseException pe){
+            DateOut = input;
+            pe.printStackTrace();
+        }
+        return DateOut;
 
     }
 
@@ -1963,6 +2031,67 @@ public class CommonUtils {
         Log.i(TAG, Fun);
         if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + Fun);
 
+    }
+
+    public static void BindTankData(String tanksForLinksObj, boolean clearTankList) {
+
+        try {
+            if (clearTankList) {
+                TankDataList.clear();
+            }
+            JSONArray jsonArray = new JSONArray(tanksForLinksObj);
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                String TankNumber = jsonObj.getString("TankNumber");
+                String TankName = jsonObj.getString("TankName");
+                String ScheduleTankReading = jsonObj.getString("ScheduleTankReading");
+                String ReceiveDeliveryInformation = jsonObj.getString("ReceiveDeliveryInformation");
+                String TankId = jsonObj.getString("TankId");
+                String FuelTypeId = jsonObj.getString("FuelTypeId");
+
+                HashMap<String, String> map = new HashMap<>();
+                map.put("TankNumber", TankNumber);
+                map.put("TankName", TankName);
+                map.put("ScheduleTankReading", ScheduleTankReading);
+                map.put("ReceiveDeliveryInformation", ReceiveDeliveryInformation);
+                map.put("TankId", TankId);
+                map.put("FuelTypeId", FuelTypeId);
+
+                TankDataList.add(map);
+
+            }
+            Log.i(TAG, "TankDataList" + TankDataList.size());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void BindProductData(String productsForTanksObj){
+
+        try {
+
+            ProductDataList.clear();
+            JSONArray jsonArray = new JSONArray(productsForTanksObj);
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                String FuelTypeId = jsonObj.getString("FuelTypeID");
+                String FuelType = jsonObj.getString("FuelType");
+
+                HashMap<String, String> map = new HashMap<>();
+                map.put("FuelTypeId", FuelTypeId);
+                map.put("FuelType", FuelType);
+
+                ProductDataList.add(map);
+
+            }
+            Log.i(TAG, "ProductDataList" + ProductDataList.size());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getHUBNumberByName(String hubName) {

@@ -427,4 +427,53 @@
     <string name="LINKConnectionLost">LINK connection lost.</string>
     <string name="PleaseWaitSeveralSeconds">Please wait several seconds...</string>
 
+    <!-- Add New LINK -->
+    <string name="NoLinksAssignedServerMessage">There are no LINKS assigned to this HUB</string>
+    <string name="NoLinksAssignedAppMessage">There are no LINKS currently assigned to this HUB. Would you like to add LINK(s)?</string>
+    <string name="AddLinkWarning">You will be unable to utilize this HUB until LINKS are assigned. Please call into Support for assistance. You still have the option of adding LINKS from the App.</string>
+    <string name="AddNewLinkWelcomeMessage">All fields are required, some are pre-filled with the most common selections, but can be changed.</string>
+    <string name="AddMultipleLinksMessage">Do you want to add additional LINKS?</string>
+    <string name="LinkNameHeading">LINK Name:</string>
+    <string name="LinkNameHint">LINK Name</string>
+    <string name="LinkNameRequired">Please enter LINK Name.</string>
+    <string name="LinkNameInvalid">Please enter valid LINK Name.</string>
+    <string name="LinkNameToolTip">The LINK Name is found on the LINK. There is a label that begins with FS. All characters must be entered correctly.</string>
+    <string name="NewNameHeading">New Name:</string>
+    <string name="NewNameHint">New Name</string>
+    <string name="NewNameInvalid">Please enter valid New Name.</string>
+    <string name="NewNameToolTip">Here you will enter what you would like to name the LINK so that it is familiar to you and your users. HINT: Diesel 1, Unleaded 2, etc. Keeping in mind if you have multiple locations you want to identify the location in your LINK Name as well. HINT: Diesel 1 North, Unleaded 2 South, etc.</string>
+    <string name="InSeconds">(in seconds)</string>
+    <string name="TankHeading">Tank:</string>
+    <string name="BtnAddTank">Add Tank</string>
+    <string name="AddTankToolTip">Be sure to assign your LINKS to the appropriate tank especially if the Inventory tracking feature will be used. If the appropriate tank in not listed, please select Add Tank in the drop down menu. Be sure to also identify your tanks with a location name if there will be multiple locations.</string>
+    <string name="TankNumberHeading">Tank Number:</string>
+    <string name="TankNumberHint">Tank Number</string>
+    <string name="TankNumberRequired">Please enter Tank Number.</string>
+    <string name="TankNameHeading">Tank Name:</string>
+    <string name="TankNameHint">Tank Name</string>
+    <string name="TankNameRequired">Please enter Tank Name.</string>
+    <string name="ProductHeading">Product:</string>
+    <string name="PumpOnTimeHeading">Pump On Time:</string>
+    <string name="PumpOnTimeRequired">Please enter Pump On Time.</string>
+    <string name="PumpOnTimeToolTip">This is the number of seconds the user will have to start pumping once the system turns on the pump.</string>
+    <string name="PumpOffTimeHeading">Pump Off Time:</string>
+    <string name="PumpOffTimeRequired">Please enter Pump Off Time.</string>
+    <string name="PumpOffTimeToolTip">Once the flow of product stops, this is the number of seconds the user will have to start pumping again before the transaction is terminated.</string>
+    <string name="PulseRatioHeading">Pulse Ratio:</string>
+    <string name="PulseRatioToolTip">These are the standard pulse ratios. If you are using our Optical Pulser which is the most common, you will select 20/1. If you are using a cabinet type dispenser the typical for these is 10/1 or 100/1. Please call Support with any questions.</string>
+
+    <string-array name="pulseRatios">
+        <item>10/1</item>
+        <item>20/1</item>
+        <item>100/1</item>
+    </string-array>
+
+    <string name="BtnSelect">Select</string>
+    <string name="AddressHeading">Street Address:</string>
+    <string name="AddressHint">Street Address</string>
+    <string name="AddressRequired">Please enter Street Address.</string>
+    <string name="AddressToolTip">Please enter the complete physical address of where this LINK is located. Accuracy is important as in the event a replacement part is needed, this address will be used for shipping. If the site address cannot be used for shipping, please enter the address of where you prefer to have any necessary replacement parts sent in future, as needed.</string>
+    <string name="LocationRequired">Please select a location on the map.</string>
+    <string name="SearchAddressHint">Search here..</string>
+
 </resources>

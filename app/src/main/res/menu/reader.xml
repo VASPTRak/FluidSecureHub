@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
+    <!--<item
         android:id="@+id/mconfigure_tld"
         android:orderInCategory="100"
         android:title="configure TLD"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/enable_debug_window"
@@ -31,6 +31,12 @@
         android:title="@string/CameraMenu"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/madd_link"
+        android:orderInCategory="103"
+        android:title="@string/AddLink"
+        app:showAsAction="ifRoom" />
+
     <item android:id="@+id/mofline"
         android:orderInCategory="104"
         android:icon="@drawable/img_offline"
@@ -41,12 +47,6 @@
         android:orderInCategory="104"
         android:icon="@drawable/img_online"
         android:title="@string/OnlineMenu"
-        app:showAsAction="always"/>
-
-    <item android:id="@+id/mclose"
-        android:orderInCategory="104"
-        android:icon="@drawable/close"
-        android:title="@string/CloseApp"
         app:showAsAction="always"/>
 
     <item
@@ -75,13 +75,13 @@
 
     <item
         android:id="@+id/menuEnglish"
-        android:orderInCategory="100"
+        android:orderInCategory="102"
         android:title="English"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menuSpanish"
-        android:orderInCategory="100"
+        android:orderInCategory="102"
         android:title="Spanish"
         app:showAsAction="ifRoom" />
 
@@ -96,5 +96,10 @@
         android:orderInCategory="100"
         android:title="@string/RestartApp"
         app:showAsAction="never" />
+
+    <item android:id="@+id/mclose"
+        android:orderInCategory="100"
+        android:title="@string/CloseApp"
+        app:showAsAction="never"/>
 
 </menu>

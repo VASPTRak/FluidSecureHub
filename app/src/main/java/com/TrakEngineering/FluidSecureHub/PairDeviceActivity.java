@@ -79,6 +79,7 @@ public class PairDeviceActivity extends AppCompatActivity {
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
+        menu.findItem(R.id.madd_link).setVisible(false);
 
         if (cd.isConnectingToInternet()) {
 

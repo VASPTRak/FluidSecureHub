@@ -67,10 +67,10 @@
         <activity
             android:name=".ReadAccessDevice_Fob"
             android:exported="false" />
+        <activity android:name=".AddNewLinkToCloud" />
         <activity android:name=".AcceptVehicleActivity_FOB" />
         <activity android:name=".AcceptPinActivity_FOB" />
         <activity android:name=".FOBReaderActivity" /> <!-- android:testOnly="false" -->
-
         <activity android:name=".PairDeviceActivity" />
 
         <service
@@ -298,9 +298,7 @@
         </receiver>
 
         <activity android:name=".AcceptPinActivity_new" />
-
         <activity android:name=".AcceptVehicleActivity_new" />
-
         <activity android:name=".AcceptFieldActivity" />
         <activity
             android:name=".AcceptPinActivity"
@@ -317,7 +315,6 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:fitsSystemWindows="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".AcceptCheckAll" />
         <activity
             android:name=".AcceptHoursAcitvity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

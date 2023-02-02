@@ -328,14 +328,14 @@ public class BackgroundService_BTTwo extends Service {
                         if (nextAction.equalsIgnoreCase("upgrade")) { // Proceed to upgrade check
                             BTLinkUpgradeCheck();
                         } else if (nextAction.equalsIgnoreCase("info")) { // proceed to info command after upgrade is done
-                            new Handler().postDelayed(new Runnable() {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     infoCommand();
                                 }
                             }, 2000);
                         } else if (nextAction.equalsIgnoreCase("relay")) { // proceed to relayOn command after reconnect
-                            new Handler().postDelayed(new Runnable() {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     stopCount = 0;
@@ -359,14 +359,14 @@ public class BackgroundService_BTTwo extends Service {
                         if (nextAction.equalsIgnoreCase("upgrade")) { // Proceed to upgrade check
                             BTLinkUpgradeCheck();
                         } else if (nextAction.equalsIgnoreCase("info")) { // proceed to info command after upgrade is done
-                            new Handler().postDelayed(new Runnable() {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     infoCommand();
                                 }
                             }, 2000);
                         } else if (nextAction.equalsIgnoreCase("relay")) { // proceed to relayOn command after reconnect
-                            new Handler().postDelayed(new Runnable() {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     stopCount = 0;
@@ -425,6 +425,11 @@ public class BackgroundService_BTTwo extends Service {
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 2: checkBTLinkStatus Exception:>>" + e.getMessage());
+            if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
+                TerminateBTTransaction();
+            } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
+                TerminateBTTxnAfterInterruption();
+            }
         }
         //return isConnected;
     }
@@ -1082,7 +1087,12 @@ public class BackgroundService_BTTwo extends Service {
 
                 if (BTConstants.isReconnectCalled2 && !BTConstants.isRelayOnAfterReconnect2) {
                     CancelTimer();
-                    checkBTLinkStatus("relay");
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkBTLinkStatus("relay");
+                        }
+                    }, 100);
                     /*if (checkBTLinkStatus(true)) {
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override

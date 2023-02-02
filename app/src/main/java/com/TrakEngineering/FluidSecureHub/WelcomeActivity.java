@@ -412,6 +412,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public boolean ConfigurationStep1IsInProgress = false;
     public boolean upgradeLoaderIsShown = false;
     public ProgressDialog pdP_Type;
+    public Menu myMenu;
 
     //============ Bluetooth reader Gatt end==============
 
@@ -545,6 +546,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         ConnectAllAvailableBTLinks();
 
         DebugWindow();
+        AppConstants.showWelcomeDialogForAddNewLink = true;
 
     }
 
@@ -911,6 +913,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         AppConstants.WriteinFile(TAG + " HUB Name: " + userInfoEntity.PersonName);
         AppConstants.WriteinFile(TAG + " Site Name: " + userInfoEntity.FluidSecureSiteName);
         AppConstants.WriteinFile(TAG + " App Version: " + CommonUtils.getVersionCode(WelcomeActivity.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " ");
+
+        AppConstants.showWelcomeDialogForAddNewLink = true;
 
         wifiApManager = new WifiApManager(this);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -7994,14 +7998,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        myMenu = menu;
         getMenuInflater().inflate(R.menu.reader, menu);
 
         menu.findItem(R.id.mreboot_reader).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
-        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mreload).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.m_p_type).setVisible(true);
 
@@ -8009,11 +8014,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             menu.findItem(R.id.monline).setVisible(true);
             menu.findItem(R.id.mofline).setVisible(false);
+            menu.findItem(R.id.madd_link).setVisible(true); // Show Add LINK menu only in online mode.
+            HideAddLinkMenu();
 
         } else {
 
             menu.findItem(R.id.monline).setVisible(false);
             menu.findItem(R.id.mofline).setVisible(true);
+            menu.findItem(R.id.madd_link).setVisible(false);
         }
 
         SharedPreferences sharedPref = WelcomeActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
@@ -8048,11 +8056,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 CustomDilaogExitApp(WelcomeActivity.this, "Please enter a code to continue.", "Message");
                 //String Dt = CommonUtils.getTodaysDateInStringbt();
                 break;
-            case R.id.mconfigure_tld:
+            /*case R.id.mconfigure_tld:
                 //TLD Service
                 ConfigureTld();
 
-                break;
+                break;*/
             case R.id.enable_debug_window:
 
                 CustomDilaogForDebugWindow(WelcomeActivity.this, "Please enter a code to continue.", "Message");
@@ -8081,6 +8089,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 Change_P_Type();
                 break;
 
+            case R.id.madd_link:
+                if (AppConstants.IsHoseBusyCheckLocally()) {
+                    AddNewLinkScreen();
+                } else {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
+                }
+                break;
+
             case R.id.menuSpanish:
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<Spanish language selected.>");
@@ -8103,6 +8119,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void HideAddLinkMenu() {
+        try {
+            if (myMenu != null) {
+                int linkDataSize = 5;
+                if (IsGateHub.equalsIgnoreCase("True")) {
+                    linkDataSize = 0;
+                }
+                if (serverSSIDList != null && serverSSIDList.size() > linkDataSize) {
+                    myMenu.findItem(R.id.madd_link).setVisible(false);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, " Error in HideAddLinkMenu. " + ex.getMessage());
+        }
     }
 
     /* Show and hide UI resources and set the default master key and commands. */
@@ -10148,14 +10180,18 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     errMsg = ResponceText;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationOnResume: " + ResponceText);
-                                    AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
+                                    if (ResponceText.contains(getResources().getString(R.string.NoLinksAssignedServerMessage))) {
+                                        CustomMessageWithYesOrNo(WelcomeActivity.this, "", getResources().getString(R.string.NoLinksAssignedAppMessage));
+                                    } else {
+                                        AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
+                                    }
                                 }
                             }
 
                             AppConstants.temp_serverSSIDList = serverSSIDList;
                         }
                         try {
-
+                            HideAddLinkMenu();
                             if (serverSSIDList != null && serverSSIDList.size() == 1 && IsGateHub.equalsIgnoreCase("True") && Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
 
                                 cancelThinDownloadManager();
@@ -11049,13 +11085,17 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     errMsg = ResponceText;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationGateHub: " + ResponceText);
-                                    AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
+                                    if (ResponceText.contains(getResources().getString(R.string.NoLinksAssignedServerMessage))) {
+                                        CustomMessageWithYesOrNo(WelcomeActivity.this, "", getResources().getString(R.string.NoLinksAssignedAppMessage));
+                                    } else {
+                                        AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
+                                    }
                                 }
                             }
 
                         }
                         try {
-
+                            HideAddLinkMenu();
                             if (serverSSIDList != null && serverSSIDList.size() == 1 && IsGateHub.equalsIgnoreCase("True") && Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
 
                                 //Thread.sleep(1000);
@@ -11550,7 +11590,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 errMsg = ResponceText;
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + "GetSSIDUsingLocation: " + ResponceText);
-                                AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
+                                if (ResponceText.contains(getResources().getString(R.string.NoLinksAssignedServerMessage))) {
+                                    CustomMessageWithYesOrNo(WelcomeActivity.this, "", getResources().getString(R.string.NoLinksAssignedAppMessage));
+                                } else {
+                                    AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
+                                }
                             }
                         }
 
@@ -11563,6 +11607,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     }
 
                     AppConstants.temp_serverSSIDList = serverSSIDList;
+                    HideAddLinkMenu();
 
                 } else if (ResponseMessageSite.equalsIgnoreCase("fail")) {
                     String ResponseTextSite = jsonObjectSite.getString(AppConstants.RES_TEXT);
@@ -15043,5 +15088,80 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         i.putExtra("BTMacAddress", BTMacAddress);
         i.putExtra("LinkPosition", LinkPosition);
         startActivity(i);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void CustomMessageWithYesOrNo(final Activity context, String title, String message) {
+
+        final Dialog dialogBus = new Dialog(context);
+        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogBus.setCancelable(false);
+        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
+        dialogBus.show();
+
+        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
+        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
+        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
+        edt_message.setText(message); //Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY)
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+                AddNewLinkScreen();
+            }
+        });
+
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+                CustomMessageAddLinkWarning(context, "", getResources().getString(R.string.AddLinkWarning));
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void CustomMessageAddLinkWarning(final Activity context, String title, String message) {
+
+        final Dialog dialogBus = new Dialog(context);
+        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogBus.setCancelable(false);
+        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
+
+        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
+        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
+        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
+        btnYes.setText(R.string.AddLink);
+        btnNo.setText(R.string.CloseBtn);
+        edt_message.setText(message); //Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY)
+
+        dialogBus.show();
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+                AddNewLinkScreen();
+            }
+        });
+
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogBus.dismiss();
+                context.finish();
+            }
+        });
+    }
+
+    public void AddNewLinkScreen() {
+        AppConstants.newlyAddedLinks.clear();
+        Intent in = new Intent(WelcomeActivity.this, AddNewLinkToCloud.class);
+        startActivity(in);
     }
 }

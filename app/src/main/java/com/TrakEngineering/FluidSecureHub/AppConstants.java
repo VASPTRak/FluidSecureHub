@@ -72,6 +72,7 @@ public class AppConstants {
     public static String sharedPref_KeyboardType = "KeyboardType";
     public static String sharedPref_HotSpotEmail = "HotSpotEmail";
     public static String sharedPref_OfflineAzureSync = "OfflineAzureSync";
+    public static String sharedPref_AzureMapDetails = "AzureMapDetails";
     public static String IsFirstTimeUse = "false";
     public static boolean enableHotspotManuallyWindow = false;
     public static boolean busyWithHotspotToggle = false;
@@ -162,6 +163,7 @@ public class AppConstants {
     public static String API_URL_SYNC_TRANS = webIP + "api/Offline/OFFLineImportTransactions";
     public static String API_URL_DEPT = webIP + "api/Offline/GetDepartments";
 
+    public static String BASE_URL_AZURE_MAP = "https://atlas.microsoft.com/";
 
     public static String OFF_VEHICLE_ID;
     public static String OFF_PERSON_PIN;
@@ -194,6 +196,11 @@ public class AppConstants {
     public static boolean CURRENT_STATE_MOBILEDATA;
     public static boolean AUTH_CALL_SUCCESS = false;
     public static boolean serverCallInProgress;
+
+    public static boolean showWelcomeDialogForAddNewLink = true;
+    public static ArrayList<HashMap<String, String>> newlyAddedLinks = new ArrayList<>();
+    public static String NewlyAddedSiteId = "0";
+    //public static boolean enableHotspotAfterNewLinkConfigure = false;
 
     public static String LOG_FluidSecure_Auto = "";
     public static String Server_mesage = "Server Not Connected..!!!";
@@ -279,7 +286,8 @@ public class AppConstants {
     public static String RES_DATA = "ResponceData";
     public static String RES_DATA_SSID = "SSIDDataObj";
     public static String RES_DATA_USER = "objUserData";
-    public static String RES_TANK_DATA = "tanksForLinksObj";
+    public static String RES_TANK_DATA = "TanksForLinksObj";
+    public static String RES_PRODUCT_DATA = "ProductsObj";
     public static String RES_TEXT = "ResponceText";
     public static String VALIDATION_FOR_TEXT = "ValidationFailFor";
 
@@ -326,6 +334,9 @@ public class AppConstants {
     public static String R_HOSE_ID;
     public static String R_SITE_ID;
     public static String SITE_ID;
+    public static String CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE;
+    public static String CURRENT_NEW_LINK_SITE_ID;
+    public static String NEW_LINK_UPDATE_MAC_ADDRESS;
 
     public static String WIFI_PASSWORD = "";
 
@@ -336,6 +347,10 @@ public class AppConstants {
     public static boolean IS_WIFI_ON;
     public static boolean IS_DATA_ON;
     public static boolean IS_HOTSPOT_ON;
+
+    public static String Latitude = "0.00";
+    public static String Longitude = "0.00";
+    public static boolean isLocationSelected = false;
 
     public static ArrayList<HashMap<String, String>> DetailsServerSSIDList;
     public static ArrayList<HashMap<String, String>> DetailsListOfConnectedDevices;

@@ -18,4 +18,9 @@
     <dimen name="add_text">16dp</dimen>
     <dimen name="date_text">14dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="tooltip_max_width">230dp</dimen>
+    <dimen name="tooltip_width">300dp</dimen>
+    <dimen name="tooltip_padding">15dp</dimen>
+    <dimen name="tooltip_text_size">20sp</dimen>
+    <dimen name="tooltip_radius">10dp</dimen>
 </resources>

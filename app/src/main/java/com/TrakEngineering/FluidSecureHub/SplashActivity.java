@@ -664,6 +664,12 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                     CommonUtils.SaveHotSpotDetailsInPref(SplashActivity.this, HotSpotSSID, HotSpotPassword);
 
+                    // Save Subscription Key for Azure Map
+                    SharedPreferences prefMap = SplashActivity.this.getSharedPreferences(AppConstants.sharedPref_AzureMapDetails, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor edMap = prefMap.edit();
+                    edMap.putString("SubscriptionKey", "FJ29LaayVFiy20Hp29hEe5mG7F6QTbhfyV6wuWwG7Sg"); // Change here when this key is received from server
+                    edMap.commit();
+
                     System.out.println("BluetoothCardReader--" + response);
 
                     if (IsApproved.equalsIgnoreCase("True")) {

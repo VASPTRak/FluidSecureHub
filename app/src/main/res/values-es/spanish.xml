@@ -427,4 +427,53 @@
     <string name="LINKConnectionLost">Conexión de ENLACE perdida.</string>
     <string name="PleaseWaitSeveralSeconds">Por favor espere varios segundos...</string>
 
+    <!-- Add New LINK -->
+    <string name="NoLinksAssignedServerMessage">No hay ENLACES asignados a este HUB</string>
+    <string name="NoLinksAssignedAppMessage">No hay ENLACES asignados actualmente a este HUB. ¿Le gustaría agregar ENLACE(s)?</string>
+    <string name="AddLinkWarning">No podrá utilizar este HUB hasta que se asignen ENLACES. Por favor llame a Soporte para asistencia. Todavía tiene la opción de agregar ENLACES desde aplicación.</string>
+    <string name="AddNewLinkWelcomeMessage">Todos los campos son obligatorios, algunos se completan previamente con las selecciones más comunes, pero se pueden cambiar.</string>
+    <string name="AddMultipleLinksMessage">¿Quieres añadir ENLACES adicionales?</string>
+    <string name="LinkNameHeading">ENLACE Nombre:</string>
+    <string name="LinkNameHint">ENLACE Nombre</string>
+    <string name="LinkNameRequired">Por favor, introduzca el nombre del ENLACE.</string>
+    <string name="LinkNameInvalid">Ingrese un nombre de ENLACE válido.</string>
+    <string name="LinkNameToolTip">El nombre del ENLACE se encuentra en el ENLACE. Hay una etiqueta que comienza con FS. Todos los caracteres deben ser ingresados correctamente.</string>
+    <string name="NewNameHeading">Nuevo Nombre:</string>
+    <string name="NewNameHint">Nuevo Nombre</string>
+    <string name="NewNameInvalid">Ingrese un Nuevo Nombre válido.</string>
+    <string name="NewNameToolTip">Aquí ingresará cómo le gustaría llamar al ENLACE para que sea familiar para usted y sus usuarios. INSINUACIÓN: Diesel 1, Unleaded 2, etc. Teniendo en cuenta que si tiene varias ubicaciones, también desea identificar la ubicación en su nombre de ENLACE. INSINUACIÓN: Diesel 1 North, Unleaded 2 South, etc.</string>
+    <string name="InSeconds">(en segundos)</string>
+    <string name="TankHeading">Tanque:</string>
+    <string name="BtnAddTank">Agregar Tanque</string>
+    <string name="AddTankToolTip">Asegúrese de asignar sus ENLACES al tanque apropiado, especialmente si se utilizará la función de seguimiento de inventario. Si el tanque apropiado no está en la lista, seleccione Agregar tanque en el menú desplegable. Asegúrese de identificar también sus tanques con un nombre de ubicación si habrá múltiples ubicaciones.</string>
+    <string name="TankNumberHeading">Número de Tanque:</string>
+    <string name="TankNumberHint">Número de Tanque</string>
+    <string name="TankNumberRequired">Por favor, introduzca el número de tanque.</string>
+    <string name="TankNameHeading">Nombre del Tanque:</string>
+    <string name="TankNameHint">Nombre del Tanque</string>
+    <string name="TankNameRequired">Por favor, introduzca el nombre del tanque.</string>
+    <string name="ProductHeading">Producto:</string>
+    <string name="PumpOnTimeHeading">Bombee a tiempo:</string>
+    <string name="PumpOnTimeRequired">Por favor, introduzca bombee a tiempo.</string>
+    <string name="PumpOnTimeToolTip">Esta es la cantidad de segundos que el usuario tendrá para comenzar a bombear una vez que el sistema encienda la bomba.</string>
+    <string name="PumpOffTimeHeading">Tiempo de bomba apagada:</string>
+    <string name="PumpOffTimeRequired">Ingrese el tiempo de apagado de la bomba.</string>
+    <string name="PumpOffTimeToolTip">Una vez que el flujo de producto se detiene, esta es la cantidad de segundos que el usuario tendrá que comenzar a bombear nuevamente antes de que finalice la transacción.</string>
+    <string name="PulseRatioHeading">Relación de pulso:</string>
+    <string name="PulseRatioToolTip">Estas son las relaciones de pulso estándar. Si está utilizando nuestro Pulser óptico, que es el más común, seleccionará 20/1. Si está utilizando un dispensador tipo gabinete, lo típico para estos es 10/1 o 100/1. Por favor llame a Soporte con cualquier pregunta.</string>
+
+    <string-array name="pulseRatios">
+        <item>10/1</item>
+        <item>20/1</item>
+        <item>100/1</item>
+    </string-array>
+
+    <string name="BtnSelect">Seleccione</string>
+    <string name="AddressHeading">Dirección de calle:</string>
+    <string name="AddressHint">Dirección de calle</string>
+    <string name="AddressRequired">Por favor, introduzca la dirección de la calle.</string>
+    <string name="AddressToolTip">Por favor ingrese la dirección física completa de donde se encuentra este ENLACE. La precisión es importante ya que, en caso de que se necesite una pieza de repuesto, esta dirección se utilizará para el envío. Si la dirección del sitio no se puede utilizar para el envío, ingrese la dirección a la que prefiere que se le envíen las piezas de repuesto necesarias en el futuro, según sea necesario.</string>
+    <string name="LocationRequired">Por favor, seleccione una ubicación en el mapa.</string>
+    <string name="SearchAddressHint">Busca aquí..</string>
+
 </resources>
