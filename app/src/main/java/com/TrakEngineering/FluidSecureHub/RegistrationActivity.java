@@ -180,7 +180,7 @@ public class RegistrationActivity extends AppCompatActivity {
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
         menu.findItem(R.id.mreload).setVisible(false);
-        menu.findItem(R.id.m_p_type).setVisible(false);
+        //menu.findItem(R.id.m_p_type).setVisible(false);
         menu.findItem(R.id.monline).setVisible(false);
         menu.findItem(R.id.mofline).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);

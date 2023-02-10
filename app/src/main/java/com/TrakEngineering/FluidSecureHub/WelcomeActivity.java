@@ -578,6 +578,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     showLoader = true;
                 }
                 if (showLoader) {
+                    upgradeLoaderIsShown = true;
                     BTLinkUpgradeProcessLoader();
                 }
                 showUpgradeSpinnerMessage = true;
@@ -3397,6 +3398,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 goButtonAction(null);
                                             } else {
                                                 RestHoseinUse_FS1 = true;
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                                 RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
 
                                             }
@@ -3424,6 +3427,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 goButtonAction(null);
                                             } else {
                                                 RestHoseinUse_FS2 = true;
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                                 RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                             }
 
@@ -3450,6 +3455,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 goButtonAction(null);
                                             } else {
                                                 RestHoseinUse_FS3 = true;
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                                 RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                             }
 
@@ -3476,6 +3483,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 goButtonAction(null);
                                             } else {
                                                 RestHoseinUse_FS4 = true;
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                                 RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                             }
                                         } else if (String.valueOf(position).equalsIgnoreCase("4") && !IsUpgradeInprogress_FS5) {
@@ -3500,6 +3509,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 btnGo.setVisibility(View.VISIBLE);
                                             } else {
                                                 RestHoseinUse_FS5 = true;
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                                 RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                             }
 
@@ -3524,6 +3535,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 goButtonAction(null);
                                             } else {
                                                 RestHoseinUse_FS6 = true;
+                                                if (AppConstants.GenerateLogs)
+                                                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                                 RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                             }
                                         } else {
@@ -3629,6 +3642,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         btnGo.setVisibility(View.VISIBLE);
                                         goButtonAction(null);
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
 
                                     }
@@ -3646,6 +3661,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         btnGo.setVisibility(View.VISIBLE);
                                         goButtonAction(null);
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                     }
 
@@ -3663,6 +3680,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         btnGo.setVisibility(View.VISIBLE);
                                         goButtonAction(null);
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                     }
 
@@ -3680,6 +3699,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         btnGo.setVisibility(View.VISIBLE);
                                         goButtonAction(null);
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                     }
 
@@ -3695,6 +3716,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         btnGo.setVisibility(View.VISIBLE);
                                         goButtonAction(null);
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                     }
 
@@ -3710,6 +3733,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         btnGo.setVisibility(View.VISIBLE);
                                         goButtonAction(null);
                                     } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                                     }
                                 } else {
@@ -5803,8 +5828,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (pdOnResume != null) {
                                 pdOnResume.dismiss();
                             }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
-                                upgradeLoaderIsShown = true;
+                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5857,8 +5881,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (pdOnResume != null) {
                                 pdOnResume.dismiss();
                             }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
-                                upgradeLoaderIsShown = true;
+                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5911,8 +5934,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (pdOnResume != null) {
                                 pdOnResume.dismiss();
                             }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
-                                upgradeLoaderIsShown = true;
+                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -5965,8 +5987,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (pdOnResume != null) {
                                 pdOnResume.dismiss();
                             }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
-                                upgradeLoaderIsShown = true;
+                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -6019,8 +6040,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (pdOnResume != null) {
                                 pdOnResume.dismiss();
                             }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
-                                upgradeLoaderIsShown = true;
+                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -6073,8 +6093,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             if (pdOnResume != null) {
                                 pdOnResume.dismiss();
                             }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage) {
-                                upgradeLoaderIsShown = true;
+                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
                                 //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
                             }
@@ -7415,6 +7434,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     btnGo.setVisibility(View.VISIBLE);
                     //goButtonAction(null);
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
 
                 }
@@ -7437,6 +7458,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     Constants.CurrentSelectedHose = "FS2";
                     btnGo.setVisibility(View.VISIBLE);
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                 }
 
@@ -7461,6 +7484,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     Constants.CurrentSelectedHose = "FS3";
                     btnGo.setVisibility(View.VISIBLE);
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                 }
 
@@ -7485,6 +7510,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     Constants.CurrentSelectedHose = "FS4";
                     btnGo.setVisibility(View.VISIBLE);
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                 }
             } else if (String.valueOf(position).equalsIgnoreCase("4")) {
@@ -7506,6 +7533,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     Constants.CurrentSelectedHose = "FS5";
                     btnGo.setVisibility(View.VISIBLE);
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                 }
             } else if (String.valueOf(position).equalsIgnoreCase("5")) {
@@ -7527,6 +7556,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     Constants.CurrentSelectedHose = "FS6";
                     btnGo.setVisibility(View.VISIBLE);
                 } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                 }
             } else {
@@ -8008,7 +8039,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         menu.findItem(R.id.mreload).setVisible(false);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
-        menu.findItem(R.id.m_p_type).setVisible(true);
+        //menu.findItem(R.id.m_p_type).setVisible(true);
 
         if (cd.isConnectingToInternet()) {
 
@@ -8083,11 +8114,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 ManualLinkUpgrade();
                 break;
 
-            case R.id.m_p_type:
+            /*case R.id.m_p_type:
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<p_type menu selected.>");
                 Change_P_Type();
-                break;
+                break;*/
 
             case R.id.madd_link:
                 if (AppConstants.IsHoseBusyCheckLocally()) {
@@ -13291,6 +13322,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         BTL1State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                     }
 
@@ -13359,6 +13392,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         BTL2State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                     }
 
@@ -13428,6 +13463,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         BTL3State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                     }
 
@@ -13498,6 +13535,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         BTL4State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                     }
 
@@ -13540,6 +13579,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         BTL5State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                     }
 
@@ -13582,6 +13623,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         BTL6State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse));
                     }
 

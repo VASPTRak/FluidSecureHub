@@ -440,6 +440,7 @@ public class BackgroundService_BTSix extends Service {
             if (BTConstants.IsFileUploadCompleted) {
                 BTConstants.IsFileUploadCompleted = false;
             }
+            BTConstants.isNewVersionLinkSix = false;
             AppConstants.TxnFailedCount6 = 0;
             //Execute info command
             Request = "";
@@ -1863,6 +1864,7 @@ public class BackgroundService_BTSix extends Service {
                 File file = new File(LocalPath);
                 if (file.exists()) { // && AppConstants.UP_Upgrade_File_name.startsWith("BT_")
                     // Sending info command to check link version
+                    BTConstants.UpgradeStatusBT6 = "Started";
                     infoCommandBeforeUpgrade();
                     //upgradeCommand();
 
@@ -1887,6 +1889,7 @@ public class BackgroundService_BTSix extends Service {
             //Execute info command before upgrade to get link version
             Request = "";
             Response = "";
+            BTConstants.isNewVersionLinkSix = false;
 
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 6: Sending Info command (before upgrade) to Link: " + LinkName);
@@ -1905,11 +1908,13 @@ public class BackgroundService_BTSix extends Service {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response (before upgrade). Response: true");
                                 BTConstants.isNewVersionLinkSix = true;
+                                getVersionBeforeUpgrade(Response.trim(), true);
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response (before upgrade). Response:>>" + Response.trim());
                                 BTConstants.isNewVersionLinkSix = false;
+                                getVersionBeforeUpgrade(Response.trim(), false);
                             }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -1933,11 +1938,13 @@ public class BackgroundService_BTSix extends Service {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response (before upgrade). Response: true");
                             BTConstants.isNewVersionLinkSix = true;
+                            getVersionBeforeUpgrade(Response.trim(), true);
                             Response = "";
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response (before upgrade). Response:>>" + Response.trim());
                             BTConstants.isNewVersionLinkSix = false;
+                            getVersionBeforeUpgrade(Response.trim(), false);
                         }
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -1952,6 +1959,7 @@ public class BackgroundService_BTSix extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response (before upgrade). Response: false");
                         AppConstants.TxnFailedCount6++;
                         AppConstants.IsTransactionFailed6 = true;
+                        BTConstants.UpgradeStatusBT6 = "Incomplete";
                         CloseTransaction(true);
                     }
                 }
@@ -1960,6 +1968,44 @@ public class BackgroundService_BTSix extends Service {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 6: infoCommandBeforeUpgrade Exception:>>" + e.getMessage());
+        }
+    }
+
+    public void getVersionBeforeUpgrade(String response, boolean isNewLink) {
+        try {
+            if (isNewLink) {
+                // New Link version
+                JSONObject jsonObject = new JSONObject(response);
+
+                JSONObject versionJsonArray = jsonObject.getJSONObject("version");
+                String version = versionJsonArray.getString("version");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 6: LINK Version (Before Upgrade) >> " + version);
+            } else {
+                // Old Link version
+                String version = "";
+                if (response.contains("BTMAC")) {
+                    String[] split_res = response.split("\n");
+
+                    if (split_res.length > 10) {
+                        for (int i = 0; i < split_res.length; i++) {
+                            String res = split_res[i];
+
+                            if (res.contains("version:")) {
+                                version = res.substring(res.indexOf(":") + 1).trim();
+                            }
+                            if (!version.isEmpty()) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 6: LINK Version (Before Upgrade) >> " + version);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 6: getVersionBeforeUpgrade Exception:>>" + e.getMessage());
         }
     }
 
@@ -2025,6 +2071,7 @@ public class BackgroundService_BTSix extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 6: Checking upgrade command response. Response: false");
                         AppConstants.TxnFailedCount6++;
                         AppConstants.IsTransactionFailed6 = true;
+                        BTConstants.UpgradeStatusBT6 = "Incomplete";
                         CloseTransaction(true);
                     }
                 }
@@ -2104,7 +2151,7 @@ public class BackgroundService_BTSix extends Service {
                         }
                     }
                     inputStream.close();
-                    if (BTConstants.UpgradeStatusBT6.isEmpty()) {
+                    if (BTConstants.UpgradeStatusBT6.isEmpty() || BTConstants.UpgradeStatusBT6.equalsIgnoreCase("Started")) {
                         BTConstants.UpgradeStatusBT6 = "Completed";
                     }
                 }

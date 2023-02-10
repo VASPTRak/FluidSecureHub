@@ -440,6 +440,7 @@ public class BackgroundService_BTOne extends Service {
             if (BTConstants.IsFileUploadCompleted) {
                 BTConstants.IsFileUploadCompleted = false;
             }
+            BTConstants.isNewVersionLinkOne = false;
             AppConstants.TxnFailedCount1 = 0;
             //Execute info command
             Request = "";
@@ -1874,6 +1875,7 @@ public class BackgroundService_BTOne extends Service {
                 File file = new File(LocalPath);
                 if (file.exists()) { // && AppConstants.UP_Upgrade_File_name.startsWith("BT_")
                     // Sending info command to check link version
+                    BTConstants.UpgradeStatusBT1 = "Started";
                     infoCommandBeforeUpgrade();
                     //upgradeCommand();
 
@@ -1898,6 +1900,7 @@ public class BackgroundService_BTOne extends Service {
             //Execute info command before upgrade to get link version
             Request = "";
             Response = "";
+            BTConstants.isNewVersionLinkOne = false;
 
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: Sending Info command (before upgrade) to Link: " + LinkName);
@@ -1916,11 +1919,13 @@ public class BackgroundService_BTOne extends Service {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response (before upgrade). Response: true");
                                 BTConstants.isNewVersionLinkOne = true;
+                                getVersionBeforeUpgrade(Response.trim(), true);
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response (before upgrade). Response:>>" + Response.trim());
                                 BTConstants.isNewVersionLinkOne = false;
+                                getVersionBeforeUpgrade(Response.trim(), false);
                             }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -1944,11 +1949,13 @@ public class BackgroundService_BTOne extends Service {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response (before upgrade). Response: true");
                             BTConstants.isNewVersionLinkOne = true;
+                            getVersionBeforeUpgrade(Response.trim(), true);
                             Response = "";
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response (before upgrade). Response:>>" + Response.trim());
                             BTConstants.isNewVersionLinkOne = false;
+                            getVersionBeforeUpgrade(Response.trim(), false);
                         }
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -1963,6 +1970,7 @@ public class BackgroundService_BTOne extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response (before upgrade). Response: false");
                         AppConstants.TxnFailedCount1++;
                         AppConstants.IsTransactionFailed1 = true;
+                        BTConstants.UpgradeStatusBT1 = "Incomplete";
                         CloseTransaction(true);
                     }
                 }
@@ -1971,6 +1979,44 @@ public class BackgroundService_BTOne extends Service {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: infoCommandBeforeUpgrade Exception:>>" + e.getMessage());
+        }
+    }
+
+    public void getVersionBeforeUpgrade(String response, boolean isNewLink) {
+        try {
+            if (isNewLink) {
+                // New Link version
+                JSONObject jsonObject = new JSONObject(response);
+
+                JSONObject versionJsonArray = jsonObject.getJSONObject("version");
+                String version = versionJsonArray.getString("version");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " BTLink 1: LINK Version (Before Upgrade) >> " + version);
+            } else {
+                // Old Link version
+                String version = "";
+                if (response.contains("BTMAC")) {
+                    String[] split_res = response.split("\n");
+
+                    if (split_res.length > 10) {
+                        for (int i = 0; i < split_res.length; i++) {
+                            String res = split_res[i];
+
+                            if (res.contains("version:")) {
+                                version = res.substring(res.indexOf(":") + 1).trim();
+                            }
+                            if (!version.isEmpty()) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink 1: LINK Version (Before Upgrade) >> " + version);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 1: getVersionBeforeUpgrade Exception:>>" + e.getMessage());
         }
     }
 
@@ -2036,6 +2082,7 @@ public class BackgroundService_BTOne extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 1: Checking upgrade command response. Response: false");
                         AppConstants.TxnFailedCount1++;
                         AppConstants.IsTransactionFailed1 = true;
+                        BTConstants.UpgradeStatusBT1 = "Incomplete";
                         CloseTransaction(true);
                     }
                 }
@@ -2115,7 +2162,7 @@ public class BackgroundService_BTOne extends Service {
                         }
                     }
                     inputStream.close();
-                    if (BTConstants.UpgradeStatusBT1.isEmpty()) {
+                    if (BTConstants.UpgradeStatusBT1.isEmpty() || BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Started")) {
                         BTConstants.UpgradeStatusBT1 = "Completed";
                     }
                 }

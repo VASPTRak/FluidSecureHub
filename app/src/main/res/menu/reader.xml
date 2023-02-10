@@ -66,12 +66,12 @@
         android:title="@string/RebootReader"
         app:showAsAction="never" />
 
-    <item
+    <!--<item
         android:id="@+id/m_p_type"
         android:orderInCategory="100"
         android:title="p_type"
         android:visible="false"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/menuEnglish"

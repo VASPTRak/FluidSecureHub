@@ -929,8 +929,9 @@ public class BackgroundService_AP extends Service {
 
                 if (countForZeroPulses > 2) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST + ">");
+                        AppConstants.WriteinFile(TAG + "<Auto Stop Hit.>");
                     stopTimer = false;
+                    stopButtonFunctionality();
                     this.stopSelf();
                     return;
                 }
@@ -962,6 +963,10 @@ public class BackgroundService_AP extends Service {
                         //linearTimer.setVisibility(View.GONE);
                         //tvCountDownTimer.setText("1");
 
+                        if (!Constants.BusyVehicleNumberList.equals(null)) {
+                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
+                        }
+
                         IsFuelingStop = "1";
                         System.out.println("APFS33 Auto Stop! Count down timer completed");
                         if (AppConstants.GenerateLogs)
@@ -969,10 +974,6 @@ public class BackgroundService_AP extends Service {
                         AppConstants.colorToastBigFont(this, AppConstants.FS2_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                         this.stopSelf();
-
-                        if (!Constants.BusyVehicleNumberList.equals(null)) {
-                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
-                        }
                     }
 
                 }
@@ -993,11 +994,11 @@ public class BackgroundService_AP extends Service {
             //if quantity reach max limit
             if (!outputQuantity.trim().isEmpty()) {
                 try {
-
-
                     if (minFuelLimit > 0) {
                         if (fillqty >= minFuelLimit) {
-
+                            if (!Constants.BusyVehicleNumberList.equals(null)) {
+                                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
+                            }
                             IsFuelingStop = "1";
                             System.out.println("APFS33 Auto Stop! You reached MAX fuel limit.");
                             if (AppConstants.GenerateLogs)
@@ -1005,14 +1006,12 @@ public class BackgroundService_AP extends Service {
                             AppConstants.DisplayToastmaxlimit = true;
                             AppConstants.MaxlimitMessage = LimitReachedMessage;
                             stopButtonFunctionality();
-                            //yet to test
                             this.stopSelf();
-
-                            if (!Constants.BusyVehicleNumberList.equals(null)) {
-                                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
-                            }
                         }
-                    }else if (minFuelLimit == -1){
+                    } else if (minFuelLimit == -1) {
+                        if (!Constants.BusyVehicleNumberList.equals(null)) {
+                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
+                        }
                         IsFuelingStop = "1";
                         System.out.println("APFS33 Auto Stop! You reached MAX fuel limit.");
                         if (AppConstants.GenerateLogs)
@@ -1020,12 +1019,7 @@ public class BackgroundService_AP extends Service {
                         AppConstants.DisplayToastmaxlimit = true;
                         AppConstants.MaxlimitMessage = LimitReachedMessage;
                         stopButtonFunctionality();
-                        //yet to test
                         this.stopSelf();
-
-                        if (!Constants.BusyVehicleNumberList.equals(null)) {
-                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
-                        }
                     }
                 } catch (Exception e) {
                     if (AppConstants.GenerateLogs)
@@ -1305,12 +1299,12 @@ public class BackgroundService_AP extends Service {
                                 //AppConstants.colorToastBigFont(this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
                                 stopButtonFunctionality();
                                 stopTimer = false;
-                                this.stopSelf();
                                 Constants.FS_2STATUS = "FREE";
                                 clearEditTextFields();
                                 if (!Constants.BusyVehicleNumberList.equals(null)) {
                                     Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber);
                                 }
+                                this.stopSelf();
 
                             } else {
                                 quantityRecords.remove(0);
@@ -1334,7 +1328,6 @@ public class BackgroundService_AP extends Service {
             IsFuelingStop = "1";
             stopButtonFunctionality();
             stopTimer = false;
-            this.stopSelf();
             Constants.FS_2STATUS = "FREE";
             clearEditTextFields();
             if (!Constants.BusyVehicleNumberList.equals(null)) {
@@ -1343,7 +1336,7 @@ public class BackgroundService_AP extends Service {
             //>>Added for tempory log to check #1536 (Eva)  Harrison County issue
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
-
+            this.stopSelf();
         } else {
             quantityRecords.remove(0);
         }

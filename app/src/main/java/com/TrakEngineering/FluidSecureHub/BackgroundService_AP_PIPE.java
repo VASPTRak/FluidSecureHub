@@ -1028,8 +1028,9 @@ public class BackgroundService_AP_PIPE extends Service {
 
                 if (countForZeroPulses > 2) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST + ">");
+                        AppConstants.WriteinFile(TAG + "<Auto Stop Hit.>");
                     stopTimer = false;
+                    stopButtonFunctionality();
                     this.stopSelf();
                     return;
                 }
@@ -1061,8 +1062,6 @@ public class BackgroundService_AP_PIPE extends Service {
                         //linearTimer.setVisibility(View.GONE);
                         //tvCountDownTimer.setText("1");
 
-                        this.stopSelf();
-
                         if (!Constants.BusyVehicleNumberList.equals(null)) {
                             Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
                         }
@@ -1073,6 +1072,7 @@ public class BackgroundService_AP_PIPE extends Service {
                             AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
                         AppConstants.colorToastBigFont(this, AppConstants.FS1_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
+                        this.stopSelf();
                     }
 
                 }
@@ -1093,16 +1093,11 @@ public class BackgroundService_AP_PIPE extends Service {
             //if quantity reach max limit
             if (!outputQuantity.trim().isEmpty()) {
                 try {
-
                     if (minFuelLimit > 0) {
                         if (fillqty >= minFuelLimit) {
-
-                            this.stopSelf();
-
                             if (!Constants.BusyVehicleNumberList.equals(null)) {
                                 Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
                             }
-
                             IsFuelingStop = "1";
                             System.out.println("APFS_PIPE Auto Stop! You reached MAX fuel limit.");
                             if (AppConstants.GenerateLogs)
@@ -1110,8 +1105,12 @@ public class BackgroundService_AP_PIPE extends Service {
                             AppConstants.DisplayToastmaxlimit = true;
                             AppConstants.MaxlimitMessage = LimitReachedMessage;
                             stopButtonFunctionality();
+                            this.stopSelf();
                         }
-                    }else if (minFuelLimit == -1){
+                    } else if (minFuelLimit == -1) {
+                        if (!Constants.BusyVehicleNumberList.equals(null)) {
+                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
+                        }
                         IsFuelingStop = "1";
                         System.out.println("APFS_PIPE Auto Stop! You reached MAX fuel limit.");
                         if (AppConstants.GenerateLogs)
@@ -1119,6 +1118,7 @@ public class BackgroundService_AP_PIPE extends Service {
                         AppConstants.DisplayToastmaxlimit = true;
                         AppConstants.MaxlimitMessage = LimitReachedMessage;
                         stopButtonFunctionality();
+                        this.stopSelf();
                     }
                 } catch (Exception e) {
                     if (AppConstants.GenerateLogs)
@@ -1394,13 +1394,12 @@ public class BackgroundService_AP_PIPE extends Service {
                                 //AppConstants.colorToastBigFont(this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
                                 stopButtonFunctionality();
                                 stopTimer = false;
-                                this.stopSelf();
                                 Constants.FS_1STATUS = "FREE";
                                 clearEditTextFields();
                                 if (!Constants.BusyVehicleNumberList.equals(null)) {
                                     Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS1);
                                 }
-
+                                this.stopSelf();
 
                             } else {
                                 quantityRecords.remove(0);
@@ -1426,7 +1425,6 @@ public class BackgroundService_AP_PIPE extends Service {
             IsFuelingStop = "1";
             stopButtonFunctionality();
             stopTimer = false;
-            this.stopSelf();
             Constants.FS_1STATUS = "FREE";
             clearEditTextFields();
             if (!Constants.BusyVehicleNumberList.equals(null)) {
@@ -1435,6 +1433,7 @@ public class BackgroundService_AP_PIPE extends Service {
             //>>Added for tempory log to check #1536 (Eva)  Harrison County issue
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
+            this.stopSelf();
         } else {
             quantityRecords.remove(0);
 
