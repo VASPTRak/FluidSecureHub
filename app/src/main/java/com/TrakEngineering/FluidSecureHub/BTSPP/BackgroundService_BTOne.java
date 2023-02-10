@@ -156,7 +156,7 @@ public class BackgroundService_BTOne extends Service {
                 broadcastBlueLinkOneData = new BroadcastBlueLinkOneData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1: <Registering Receiver.>");
+                    AppConstants.WriteinFile(TAG + " BTLink 1: <Registering Broadcast Receiver.>");
                 registerReceiver(broadcastBlueLinkOneData, intentFilter);
                 isBroadcastReceiverRegistered = true;
                 if (AppConstants.GenerateLogs)

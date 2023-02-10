@@ -156,7 +156,7 @@ public class BackgroundService_BTSix extends Service {
                 broadcastBlueLinkSixData = new BroadcastBlueLinkSixData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: <Registering Receiver.>");
+                    AppConstants.WriteinFile(TAG + " BTLink 6: <Registering Broadcast Receiver.>");
                 registerReceiver(broadcastBlueLinkSixData, intentFilter);
                 isBroadcastReceiverRegistered = true;
                 if (AppConstants.GenerateLogs)

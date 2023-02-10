@@ -13345,36 +13345,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
+                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
                                 RedirectBtLinkOneToNextScreen(selSSID);
                             }
                         }, delay);
-
-                        /*handler.postDelayed(new Runnable() {
-                            public void run() {
-
-                                if (checkBTLinkStatus(1)) {
-                                    if (BTConnectionHandler != null) {
-                                        BTConnectionHandler.removeCallbacksAndMessages(null);
-                                    }
-                                    RedirectBtLinkOneToNextScreen(selSSID);
-                                } else {
-                                    if (BTL1counter == 0) {
-                                        BTL1counter++;
-
-                                        retryConnect(1);
-
-                                        handler.postDelayed(this, delay);
-                                    } else {
-                                        BTL1counter = 0;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        if (BTConnectionHandler != null) {
-                                            BTConnectionHandler.removeCallbacksAndMessages(null);
-                                        }
-                                        RedirectBtLinkOneToNextScreen(selSSID);
-                                    }
-                                }
-                            }
-                        }, delay);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
@@ -13415,36 +13389,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
+                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
                                 RedirectBtLinkTwoToNextScreen(selSSID);
                             }
                         }, delay);
-
-                        /*handler.postDelayed(new Runnable() {
-                            public void run() {
-
-                                if (checkBTLinkStatus(2)) {
-                                    if (BTConnectionHandler != null) {
-                                        BTConnectionHandler.removeCallbacksAndMessages(null);
-                                    }
-                                    RedirectBtLinkTwoToNextScreen(selSSID);
-                                } else {
-                                    if (BTL2counter == 0) {
-                                        BTL2counter++;
-
-                                        retryConnect(2);
-
-                                        handler.postDelayed(this, delay);
-                                    } else {
-                                        BTL2counter = 0;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        if (BTConnectionHandler != null) {
-                                            BTConnectionHandler.removeCallbacksAndMessages(null);
-                                        }
-                                        RedirectBtLinkTwoToNextScreen(selSSID);
-                                    }
-                                }
-                            }
-                        }, delay);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
@@ -13486,36 +13434,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
+                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
                                 RedirectBtLinkThreeToNextScreen(selSSID);
                             }
                         }, delay);
-
-                        /*handler.postDelayed(new Runnable() {
-                            public void run() {
-
-                                if (checkBTLinkStatus(3)) {
-                                    if (BTConnectionHandler != null) {
-                                        BTConnectionHandler.removeCallbacksAndMessages(null);
-                                    }
-                                    RedirectBtLinkThreeToNextScreen(selSSID);
-                                } else {
-                                    if (BTL3counter == 0) {
-                                        BTL3counter++;
-
-                                        retryConnect(3);
-
-                                        handler.postDelayed(this, delay);
-                                    } else {
-                                        BTL3counter = 0;
-                                        BTConstants.CurrentTransactionIsBT = false;
-                                        if (BTConnectionHandler != null) {
-                                            BTConnectionHandler.removeCallbacksAndMessages(null);
-                                        }
-                                        RedirectBtLinkThreeToNextScreen(selSSID);
-                                    }
-                                }
-                            }
-                        }, delay);*/
 
                     } else {
                         AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
@@ -13558,6 +13480,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
+                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
                                 RedirectBtLinkFourToNextScreen(selSSID);
                             }
                         }, delay);
@@ -13602,6 +13525,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
+                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
                                 RedirectBtLinkFiveToNextScreen(selSSID);
                             }
                         }, delay);
@@ -13646,6 +13570,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
+                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
                                 RedirectBtLinkSixToNextScreen(selSSID);
                             }
                         }, delay);

@@ -156,7 +156,7 @@ public class BackgroundService_BTFive extends Service {
                 broadcastBlueLinkFiveData = new BroadcastBlueLinkFiveData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkFiveData");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 5: <Registering Receiver.>");
+                    AppConstants.WriteinFile(TAG + " BTLink 5: <Registering Broadcast Receiver.>");
                 registerReceiver(broadcastBlueLinkFiveData, intentFilter);
                 isBroadcastReceiverRegistered = true;
                 if (AppConstants.GenerateLogs)

@@ -156,7 +156,7 @@ public class BackgroundService_BTThree extends Service {
                 broadcastBlueLinkThreeData = new BroadcastBlueLinkThreeData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 3: <Registering Receiver.>");
+                    AppConstants.WriteinFile(TAG + " BTLink 3: <Registering Broadcast Receiver.>");
                 registerReceiver(broadcastBlueLinkThreeData, intentFilter);
                 isBroadcastReceiverRegistered = true;
                 if (AppConstants.GenerateLogs)

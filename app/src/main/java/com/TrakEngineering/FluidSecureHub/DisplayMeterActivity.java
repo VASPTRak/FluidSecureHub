@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
@@ -197,6 +198,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     public OkHttpClient client = new OkHttpClient();
 
     double CurrentLat = 0, CurrentLng = 0;
+
+    public String BTStatusStr = "", BTLinkIndex = "";
+    public int connectionAttemptCount = 0;
+    ProgressDialog pdBT;
 
     TextView tvWifiList;
 
@@ -4564,7 +4569,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         if (LinkCommunicationType.equalsIgnoreCase("BT")) {
             if (!onResumeAlreadyCalled) {
                 onResumeAlreadyCalled = true;
-                new CheckBTConnection().execute();
+                new CheckAndRetryBTConnection().execute();
             }
         } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
             //cHECK UDP INFO COMMAND HERE
@@ -4577,21 +4582,25 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public class CheckBTConnection extends AsyncTask<String, Void, String> {
+    public class CheckAndRetryBTConnection extends AsyncTask<String, Void, String> {
 
-        ProgressDialog pd;
+        //ProgressDialog pdBT;
+        boolean isReconnectionTried = false;
 
         @Override
         protected void onPreExecute() {
 
+            if (pdBT != null && pdBT.isShowing()) {
+                pdBT.dismiss();
+            }
             String s = getResources().getString(R.string.PleaseWait);
             SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(DisplayMeterActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(false);
-            pd.show();
+            pdBT = new ProgressDialog(DisplayMeterActivity.this);
+            pdBT.setMessage(ss2);
+            pdBT.setCancelable(false);
+            pdBT.show();
 
         }
 
@@ -4601,8 +4610,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 switch (WelcomeActivity.SelectedItemPos) {
                     case 0: // Link 1
                         if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                            isReconnectionTried = true;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Link not connected. Retrying to connect.");
                             //Retrying to connect to link
                             BTSPPMain btspp = new BTSPPMain();
                             btspp.activity = DisplayMeterActivity.this;
@@ -4611,8 +4621,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         break;
                     case 1: // Link 2
                         if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                            isReconnectionTried = true;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Link not connected. Retrying to connect.");
                             //Retrying to connect to link
                             BTSPPMain btspp = new BTSPPMain();
                             btspp.activity = DisplayMeterActivity.this;
@@ -4621,8 +4632,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         break;
                     case 2: // Link 3
                         if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                            isReconnectionTried = true;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Link not connected. Retrying to connect.");
                             //Retrying to connect to link
                             BTSPPMain btspp = new BTSPPMain();
                             btspp.activity = DisplayMeterActivity.this;
@@ -4631,8 +4643,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         break;
                     case 3: // Link 4
                         if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                            isReconnectionTried = true;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Link not connected. Retrying to connect.");
                             //Retrying to connect to link
                             BTSPPMain btspp = new BTSPPMain();
                             btspp.activity = DisplayMeterActivity.this;
@@ -4641,8 +4654,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         break;
                     case 4: // Link 5
                         if (!BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                            isReconnectionTried = true;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Retrying to Connect");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Link not connected. Retrying to connect.");
                             //Retrying to connect to link
                             BTSPPMain btspp = new BTSPPMain();
                             btspp.activity = DisplayMeterActivity.this;
@@ -4651,8 +4665,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         break;
                     case 5: // Link 6
                         if (!BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
+                            isReconnectionTried = true;
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Retrying to Connect");
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Link not connected. Retrying to connect.");
                             //Retrying to connect to link
                             BTSPPMain btspp = new BTSPPMain();
                             btspp.activity = DisplayMeterActivity.this;
@@ -4662,7 +4677,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " CheckBTConnection Exception: " + e.getMessage());
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "CheckAndRetryBTConnection Exception: " + e.getMessage());
                 e.printStackTrace();
             }
             return null;
@@ -4672,16 +4687,116 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         protected void onPostExecute(String FSStatus) {
 
             try {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        //pd.dismiss();
-                        BtnStartStateChange(true);
-                    }
-                }, 1000);
+                if (isReconnectionTried) {
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            checkBTLinkStatus(WelcomeActivity.SelectedItemPos);
+                        }
+                    }, 100);
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "<Link is connected.>");
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //pd.dismiss();
+                            BtnStartStateChange(true);
+                        }
+                    }, 1000);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private String getBTStatusStr(int linkPosition) {
+        switch (linkPosition) {
+            case 0://Link 1
+                BTStatusStr = BTConstants.BTStatusStrOne;
+                BTLinkIndex = "BTLink 1:";
+                break;
+            case 1://Link 2
+                BTStatusStr = BTConstants.BTStatusStrTwo;
+                BTLinkIndex = "BTLink 2:";
+                break;
+            case 2://Link 3
+                BTStatusStr = BTConstants.BTStatusStrThree;
+                BTLinkIndex = "BTLink 3:";
+                break;
+            case 3://Link 4
+                BTStatusStr = BTConstants.BTStatusStrFour;
+                BTLinkIndex = "BTLink 4:";
+                break;
+            case 4://Link 5
+                BTStatusStr = BTConstants.BTStatusStrFive;
+                BTLinkIndex = "BTLink 5:";
+                break;
+            case 5://Link 6
+                BTStatusStr = BTConstants.BTStatusStrSix;
+                BTLinkIndex = "BTLink 6:";
+                break;
+        }
+        return BTStatusStr;
+    }
+
+    private void checkBTLinkStatus(int linkPosition) {
+        try {
+
+            new CountDownTimer(10000, 2000) {
+                public void onTick(long millisUntilFinished) {
+                    if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link is connected.");
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                BtnStartStateChange(true); // Continue
+                            }
+                        }, 1000);
+                        cancel();
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Checking Connection Status...");
+                    }
+                }
+
+                public void onFinish() {
+
+                    if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link is connected.");
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                BtnStartStateChange(true); // Continue
+                            }
+                        }, 1000);
+                    } else {
+                        if (connectionAttemptCount > 1) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link not connected. Terminating the transaction.");
+                            if (pdBT != null && pdBT.isShowing()) {
+                                pdBT.dismiss();
+                            }
+                            TerminateTransaction("BT"); // Terminating the transaction.
+                        } else {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    connectionAttemptCount++;
+                                    new CheckAndRetryBTConnection().execute();
+                                }
+                            }, 100);
+                        }
+                    }
+                }
+            }.start();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "checkBTLinkStatus Exception:>>" + e.getMessage());
         }
     }
 
@@ -4845,9 +4960,19 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this))
                 SyncOfflineData();
 
+            if (BTConstants.isHotspotDisabled) {
+                //Enable Hotspot
+                if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.isAllLinksAreBTLinks) {
+                    skipOnResumeForHotspot = true;
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
+                    wifiApManager.setWifiApEnabled(null, true);
+                }
+                BTConstants.isHotspotDisabled = false;
+            }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BackgroundTasksPostTransaction Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "PostTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 
