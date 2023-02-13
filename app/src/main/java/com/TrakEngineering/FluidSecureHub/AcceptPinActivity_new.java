@@ -504,6 +504,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if (AppConstants.serverAuthCallCompleted) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<onResume skipped.>");
+            return;
+        }
 
         AppConstants.AUTH_CALL_SUCCESS = false;
         barcodeReaderCall = true;
@@ -988,6 +993,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                         if (!isFinishing()) {
                             //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: MAG " + MagCard_personnel);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Pin MagCard success: " + AppConstants.APDU_FOB_KEY);
                             new GetPinNuOnFobKeyDetection().execute();
                         }
                     } else {
@@ -997,6 +1004,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                             checkPINvalidation(hmap);
                             String PinNumber = hmap.get("PinNumber");
+                            AppConstants.OFF_PERSON_PIN = PinNumber;
                             etPersonnelPin.setText(PinNumber);
                         } else {
                             if (AppConstants.GenerateLogs)
@@ -1024,6 +1032,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                             if (!isFinishing()) {
                                 // if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: APDU " + AppConstants.APDU_FOB_KEY);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "Pin FOB success: " + AppConstants.APDU_FOB_KEY);
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
@@ -1032,6 +1042,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                                 checkPINvalidation(hmap);
                                 String PinNumber = hmap.get("PinNumber");
+                                AppConstants.OFF_PERSON_PIN = PinNumber;
                                 etPersonnelPin.setText(PinNumber);
                             } else {
                                 if (AppConstants.GenerateLogs)
@@ -1729,6 +1740,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         DisplayScreenFobReadSuccess();
                         tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Personnel", ScreenNameForPersonnel) + " ****");//PersonPIN fob replace by asterisk for password
                         System.out.println("PersonFOBNumber.." + PersonFOBNumber + "PersonPin" + PersonPIN);
+                        AppConstants.OFF_PERSON_PIN = PersonPIN;
                         etPersonnelPin.setText(PersonPIN);
 
                         new Handler().postDelayed(new Runnable() {
@@ -2810,8 +2822,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                                 barcodeReaderCall = false;
                                 if (AppConstants.GenerateLogs)
-                                    //AppConstants.WriteinFile(TAG + " templog Barcode value read: " + Barcode_pin_val);
-                                    new GetPinNuOnFobKeyDetection().execute();
+                                    AppConstants.WriteinFile(TAG + "Pin QR scan value: " + Barcode_pin_val);
+                                new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
                             //offline---------------

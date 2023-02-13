@@ -1722,6 +1722,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         qrcodebleServiceOn();
         //launchCamera();     //Calling camera activity for image capture on GO button click
+        AppConstants.serverAuthCallCompleted = false;
 
         try {
             if (cd.isConnectingToInternet() && serverSSIDList != null && serverSSIDList.size() == 1) {
@@ -7269,7 +7270,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public void OnHoseSelected_OnClick(String position) {
 
-
+        AppConstants.serverAuthCallCompleted = false;
         String IpAddress = "";
         SelectedItemPos = Integer.parseInt(position);
         String ReconfigureLink = serverSSIDList.get(SelectedItemPos).get("ReconfigureLink");

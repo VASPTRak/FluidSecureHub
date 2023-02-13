@@ -2281,7 +2281,7 @@ public class BackgroundService_FS_UNIT_6 extends Service {
                     new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + OffLastTXNid + "}");
 
                 }
-            }, 1500);
+            }, 1000);
 
             EntityOffTranz tzc = offcontroller.getTransactionDetailsBySqliteId(sqlite_id);
 

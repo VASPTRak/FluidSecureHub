@@ -376,6 +376,12 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     protected void onResume() {
         super.onResume();
 
+        if (AppConstants.serverAuthCallCompleted) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<onResume skipped.>");
+            return;
+        }
+
         AppConstants.AUTH_CALL_SUCCESS = false;
         resetReaderStatus();//BLE reader status reset
 

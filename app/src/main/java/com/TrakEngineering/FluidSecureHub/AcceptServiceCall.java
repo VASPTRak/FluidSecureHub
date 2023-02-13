@@ -325,6 +325,7 @@ public class AcceptServiceCall {
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
                         AppConstants.AUTH_CALL_SUCCESS = true;
+                        AppConstants.serverAuthCallCompleted = true;
                         //OnHose Selection
                         if (Constants.CurrentSelectedHose.equals("FS1")) {
 
@@ -803,7 +804,8 @@ public class AcceptServiceCall {
 
                         AppConstants.AUTH_CALL_SUCCESS = false;
 
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " ServerCall ValidationFailFor " + ValidationFailFor + " ResponceText:" + ResponceText);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " ServerCall ValidationFailFor " + ValidationFailFor + " ResponceText:" + ResponceText);
                         AppConstants.colorToastBigFont(activity, ResponceText, Color.BLUE);
 
                         if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
