@@ -299,6 +299,8 @@ public class AcceptServiceCall {
 
             try {
                 AppConstants.serverCallInProgress =  false;
+                AppConstants.serverCallInProgressForPin = false;
+                AppConstants.serverCallInProgressForVehicle = false;
                 Log.e(TAG,"Activity OnPostExecute");
 
                 String LinkCommType = "";

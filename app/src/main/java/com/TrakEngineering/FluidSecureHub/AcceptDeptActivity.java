@@ -383,6 +383,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         // ActivityHandler.removeActivity(4);
+        AppConstants.serverCallInProgressForPin = false;
+        AppConstants.serverCallInProgressForVehicle = false;
         Istimeout_Sec=false;
         finish();
     }

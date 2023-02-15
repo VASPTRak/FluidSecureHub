@@ -206,6 +206,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IsStayOpenGate, "");
 
         PersonValidationInProgress = false;
+        AppConstants.serverCallInProgressForPin = false;
 
         /* site id is mismatching
         SharedPreferences sharedPref = AcceptPinActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_SITE, Context.MODE_PRIVATE);
@@ -994,7 +995,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         if (!isFinishing()) {
                             //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: MAG " + MagCard_personnel);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Pin MagCard success: " + AppConstants.APDU_FOB_KEY);
+                                AppConstants.WriteinFile(TAG + "MagCard read success: " + fob);
                             new GetPinNuOnFobKeyDetection().execute();
                         }
                     } else {
@@ -1033,7 +1034,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (!isFinishing()) {
                                 // if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: APDU " + AppConstants.APDU_FOB_KEY);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Pin FOB success: " + AppConstants.APDU_FOB_KEY);
+                                    AppConstants.WriteinFile(TAG + "FOB read success: " + fob);
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
@@ -1119,6 +1120,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             AppConstants.GoButtonAlreadyClicked = false;
         }
         // ActivityHandler.removeActivity(3);
+
+        AppConstants.serverCallInProgressForPin = false;
+        AppConstants.serverCallInProgressForVehicle = false;
         Istimeout_Sec = false;
         //AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity.this); //Clear EditText on move to welcome activity.
         finish();
@@ -1494,6 +1498,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         } else {
 
+                            AppConstants.serverCallInProgressForPin = true;
                             barcodeReaderCall = true;
                             PersonValidationInProgress = true;
                             AcceptServiceCall asc = new AcceptServiceCall();
@@ -1820,6 +1825,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
+                                    AppConstants.serverCallInProgressForPin = true;
                                     barcodeReaderCall = true;
                                     PersonValidationInProgress = true;
                                     AcceptServiceCall asc = new AcceptServiceCall();
@@ -2183,6 +2189,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         } else {
 
+            AppConstants.serverCallInProgressForPin = true;
             barcodeReaderCall = true;
             PersonValidationInProgress = true;
             AcceptServiceCall asc = new AcceptServiceCall();
@@ -2771,7 +2778,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     startService(new Intent(AcceptPinActivity_new.this, ServiceHFCard.class));
 
                 if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
-                    startService(new Intent(AcceptPinActivity_new.this, com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard.class));
+                    startService(new Intent(AcceptPinActivity_new.this, ServiceMagCard.class));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -2817,13 +2824,22 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         //Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                         Barcode_pin_val = newData.trim();
 
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "QR scan value: " + Barcode_pin_val);
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                             if (!isFinishing() && barcodeReaderCall) {
 
                                 barcodeReaderCall = false;
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Pin QR scan value: " + Barcode_pin_val);
-                                new GetPinNuOnFobKeyDetection().execute();
+                                
+                                if (!Barcode_pin_val.isEmpty()) {
+                                    if (!AppConstants.serverCallInProgressForPin) {
+                                        AppConstants.serverCallInProgressForPin = true;
+                                        new GetPinNuOnFobKeyDetection().execute();
+                                    } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "<Previous server call is in queue. Skipped QR validation.>");
+                                    }
+                                }
                             }
                         } else {
                             //offline---------------
@@ -2981,7 +2997,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     Barcode_pin_val = data.getStringExtra("Barcode").trim();
 
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Pin Barcode scan value: " + Barcode_pin_val);
+                        AppConstants.WriteinFile(TAG + "Barcode scan value: " + Barcode_pin_val);
 
                     if (cd.isConnectingToInternet()) {
                         new GetPinNuOnFobKeyDetection().execute();

@@ -707,6 +707,8 @@ public class AcceptOdoActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //ActivityHandler.removeActivity(2);
+        AppConstants.serverCallInProgressForPin = false;
+        AppConstants.serverCallInProgressForVehicle = false;
         Istimeout_Sec = false;
         finish();
     }

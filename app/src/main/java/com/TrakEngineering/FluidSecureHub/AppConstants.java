@@ -196,6 +196,8 @@ public class AppConstants {
     public static boolean CURRENT_STATE_MOBILEDATA;
     public static boolean AUTH_CALL_SUCCESS = false;
     public static boolean serverCallInProgress;
+    public static boolean serverCallInProgressForPin = false;
+    public static boolean serverCallInProgressForVehicle = false;
     public static boolean serverAuthCallCompleted = false;
 
     public static boolean showWelcomeDialogForAddNewLink = true;

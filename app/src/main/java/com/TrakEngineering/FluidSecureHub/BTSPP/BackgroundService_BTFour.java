@@ -1870,7 +1870,7 @@ public class BackgroundService_BTFour extends Service {
 
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 4: BTLinkUpgradeCommand - File (" + AppConstants.UP_Upgrade_File_name + ") Not found.");
+                        AppConstants.WriteinFile(TAG + " BTLink 4: BTLinkUpgradeCheck - File (" + AppConstants.UP_Upgrade_File_name + ") Not found.");
                     proceedToInfoCommand(false);
                 }
             } else {
@@ -1879,7 +1879,7 @@ public class BackgroundService_BTFour extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 4: BTLinkUpgradeCommand Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink 4: BTLinkUpgradeCheck Exception:>>" + e.getMessage());
             proceedToInfoCommand(false);
         }
     }

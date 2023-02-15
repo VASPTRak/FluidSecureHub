@@ -263,6 +263,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         String dataSite = sharedPref.getString(Constants.PREF_COLUMN_SITE, "");
 
         VehicleValidationInProgress = false;
+        AppConstants.serverCallInProgressForVehicle = false;
 
         //enable hotspot.
         Constants.hotspotstayOn = true;
@@ -907,6 +908,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
             if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                 if (!isFinishing()) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "MagCard read success: " + fob);
                     new GetVehicleNuOnFobKeyDetection().execute();
                 }
             } else {
@@ -950,6 +953,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
             if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                 if (!isFinishing()) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "FOB read success: " + fob);
                     new GetVehicleNuOnFobKeyDetection().execute();
                 }
             } else {
@@ -1404,6 +1409,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             startActivity(intent);
 
                         } else {
+                            AppConstants.serverCallInProgressForVehicle = true;
                             VehicleValidationInProgress = true;
                             AcceptServiceCall asc = new AcceptServiceCall();
                             asc.activity = AcceptVehicleActivity_new.this;
@@ -1681,7 +1687,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         startActivity(intent);
 
                     } else {
-
+                        AppConstants.serverCallInProgressForVehicle = true;
                         VehicleValidationInProgress = true;
                         AcceptServiceCall asc = new AcceptServiceCall();
                         asc.activity = AcceptVehicleActivity_new.this;
@@ -2034,7 +2040,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                                         startActivity(intent);
 
                                     } else {
-
+                                        AppConstants.serverCallInProgressForVehicle = true;
                                         VehicleValidationInProgress = true;
                                         AcceptServiceCall asc = new AcceptServiceCall();
                                         asc.activity = AcceptVehicleActivity_new.this;
@@ -2718,7 +2724,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             startActivity(intent);
 
         } else {
-
+            AppConstants.serverCallInProgressForVehicle = true;
             AcceptServiceCall asc = new AcceptServiceCall();
             asc.activity = AcceptVehicleActivity_new.this;
             asc.checkAllFields();
@@ -3561,7 +3567,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     startService(new Intent(AcceptVehicleActivity_new.this, ServiceHFCard.class));
 
                 if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
-                    startService(new Intent(AcceptVehicleActivity_new.this, com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard.class));
+                    startService(new Intent(AcceptVehicleActivity_new.this, ServiceMagCard.class));
             }
 
         } catch (Exception e) {
@@ -3608,6 +3614,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                         Barcode_val = newData.trim();
 
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "QR scan value: " + Barcode_val);
                         HashMap<String, String> hmap = new HashMap<>();
                         if (!IsNonValidateVehicle.equalsIgnoreCase("True")) {
                             hmap = controller.getVehicleDetailsByBarcodeNumber(Barcode_val);
@@ -3617,7 +3625,16 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                             if (!isFinishing()) {
-                                new GetVehicleNuOnFobKeyDetection().execute();
+
+                                if (!Barcode_val.isEmpty()) {
+                                    if (!AppConstants.serverCallInProgressForVehicle) {
+                                        AppConstants.serverCallInProgressForVehicle = true;
+                                        new GetVehicleNuOnFobKeyDetection().execute();
+                                    } else {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(TAG + "<Previous server call is in queue. Skipped QR validation.>");
+                                    }
+                                }
                             }
                         } else {
                             if (AppConstants.GenerateLogs)

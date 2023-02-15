@@ -337,6 +337,8 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
     public void onBackPressed() {
 
         // ActivityHandler.removeActivity(6);
+        AppConstants.serverCallInProgressForPin = false;
+        AppConstants.serverCallInProgressForVehicle = false;
         Istimeout_Sec = false;
         finish();
     }
