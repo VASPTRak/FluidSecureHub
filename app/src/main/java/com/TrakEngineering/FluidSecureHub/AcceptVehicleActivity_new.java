@@ -2069,7 +2069,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                                 int h = ActionBar.LayoutParams.WRAP_CONTENT;
                                 LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(w, h);
                                 par.weight = 1;
-                                btnCancel.setTextSize(12);
+                                par.rightMargin = 20;
+                                btnCancel.setTextSize(18);
                                 btnCancel.setLayoutParams(par);
 
                                 btnSave.setVisibility(View.VISIBLE);
@@ -2359,7 +2360,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 int h = ActionBar.LayoutParams.WRAP_CONTENT;
                 LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(w, h);
                 par.topMargin = 700;
-                btnCancel.setTextSize(15);
+                btnCancel.setTextSize(18);
                 btnCancel.setLayoutParams(par);
             }
 

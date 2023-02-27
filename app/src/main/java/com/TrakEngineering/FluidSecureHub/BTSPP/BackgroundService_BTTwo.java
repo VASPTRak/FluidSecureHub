@@ -849,7 +849,6 @@ public class BackgroundService_BTTwo extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink 2: Checking relayOn command response. Response: false");
                         relayOffCommand(); //RelayOff
                         TransactionCompleteFunction();
-                        CloseTransaction(false);
                     }
                 }
 
@@ -1018,7 +1017,7 @@ public class BackgroundService_BTTwo extends Service {
             storeIsRenameFlag(this, BTConstants.BT2NeedRename, jsonData, authString);
 
             Thread.sleep(1000);
-            PostTransactionBackgroundTasks();
+            CloseTransaction(true);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1133,7 +1132,6 @@ public class BackgroundService_BTTwo extends Service {
                             @Override
                             public void run() {
                                 TransactionCompleteFunction();
-                                CloseTransaction(false);
                             }
                         }, delay);
 
@@ -1450,10 +1448,10 @@ public class BackgroundService_BTTwo extends Service {
                     }
                 }, 1000);
             } else {
-                PostTransactionBackgroundTasks();
+                CloseTransaction(true);
             }
         } else {
-            PostTransactionBackgroundTasks();
+            CloseTransaction(true);
         }
     }
 
@@ -1502,7 +1500,6 @@ public class BackgroundService_BTTwo extends Service {
                 AppConstants.WriteinFile(TAG + " BTLink 2: Auto Stop Hit>> You reached MAX fuel limit.");
             relayOffCommand(); //RelayOff
             TransactionCompleteFunction();
-            CloseTransaction(true);
         }
 
     }
@@ -1523,7 +1520,6 @@ public class BackgroundService_BTTwo extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 2: PumpOnTime Hit.");
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
-                    CloseTransaction(true);
                 }
             } else {//PumpOff Time logic
 
@@ -1540,7 +1536,6 @@ public class BackgroundService_BTTwo extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 2: PumpOffTime Hit.");
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
-                    CloseTransaction(true);
                 }
             }
         } catch (Exception e) {
@@ -1565,13 +1560,14 @@ public class BackgroundService_BTTwo extends Service {
                         //Execute fdcheck counter
                         Log.i(TAG, "BTLink 2: Execute FD Check..>>");
 
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             getMainExecutor().execute(new Runnable() {
-                                @Override public void run() {
+                                @Override
+                                public void run() {
                                     fdCheckCommand();
                                 }
                             });
-                        } else{
+                        } else {
                             fdCheckCommand();
                         }
                     }
@@ -1597,7 +1593,6 @@ public class BackgroundService_BTTwo extends Service {
                     stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
-                    CloseTransaction(true);
                     this.stopSelf();
                 }
             }
