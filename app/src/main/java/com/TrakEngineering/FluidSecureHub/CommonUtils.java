@@ -43,6 +43,7 @@ import com.TrakEngineering.FluidSecureHub.EddystoneScanner.EddystoneScannerServi
 import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -70,6 +71,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -363,7 +366,7 @@ public class CommonUtils {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void AutoCloseCustomMessageDilaog(final Activity context, String title, String message) {
 
-        //Declare timer
+        /*//Declare timer
         CountDownTimer cTimer = null;
         final Dialog dialogBus = new Dialog(context);
         dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -407,14 +410,54 @@ public class CommonUtils {
 
             }
 
-        });
+        });*/ // Commented above code as per #1465
 
+        final Timer timer = new Timer();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+
+        String newString1 = message.replaceAll("PERSONNEL", "<font color='red'> " + "<U> PERSONNEL </U>" + " </font>");
+        String newString = newString1.replaceAll("VEHICLE", "<font color='red'> " + "<U> VEHICLE </U>" + " </font>");
+
+        alertDialogBuilder.setMessage(Html.fromHtml(newString));
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                }
+        );
+
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
+                timer.cancel();
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+        }, 4000);
+
+        alertDialog.show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void AutoCloseBTLinkMessage(final Activity context, String title, String message) {
 
-        //Declare timer
+        /*//Declare timer
         CountDownTimer cTimer = null;
         final Dialog dialogBus = new Dialog(context);
         dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -429,7 +472,6 @@ public class CommonUtils {
         cTimer = new CountDownTimer(20000, 20000) {
             public void onTick(long millisUntilFinished) {
             }
-
             public void onFinish() {
 
                 dialogBus.dismiss();
@@ -452,13 +494,48 @@ public class CommonUtils {
                 Intent intent = new Intent();
                 intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
                 context.startActivity(intent);
-
             }
+        });*/ // Commented above code as per #1465
 
-        });
+        final Timer timer = new Timer();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+
+                        Intent intent = new Intent();
+                        intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                        context.startActivity(intent);
+                    }
+                }
+        );
+
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
+                timer.cancel();
+                Intent intent = new Intent();
+                intent.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+                context.startActivity(intent);
+            }
+        }, 20000);
+
+        alertDialog.show();
     }
-
 
     public static void AlertDialogAutoClose(final Activity context, String title, String message) {
 
@@ -509,7 +586,7 @@ public class CommonUtils {
                 AppConstants.WriteinFile(TAG + "Exception in showCustomMessageDilaog: " + ex.getMessage());
         }
 
-        final Dialog dialogBus = new Dialog(context);
+        /*final Dialog dialogBus = new Dialog(context);
         dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogBus.setCancelable(false);
         dialogBus.setContentView(R.layout.custom_alertdialouge);
@@ -533,14 +610,37 @@ public class CommonUtils {
                     AppConstants.GoButtonAlreadyClicked = false;
                 }
 
-//                editVehicleNumber.requestFocus();
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                 imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-
             }
-        });
+        });*/ // Commented above code as per #1465
 
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+
+        String newString1 = message.replaceAll("PERSONNEL", "<font color='red'> " + "<U> PERSONNEL </U>" + " </font>");
+        String newString = newString1.replaceAll("VEHICLE", "<font color='red'> " + "<U> VEHICLE </U>" + " </font>");
+
+        alertDialogBuilder.setMessage(Html.fromHtml(newString));
+        alertDialogBuilder.setCancelable(false);
+
+        String finalHoseUnavailableMessage = HoseUnavailableMessage;
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+
+                        if (message.equalsIgnoreCase(finalHoseUnavailableMessage)) {
+                            AppConstants.GoButtonAlreadyClicked = false;
+                        }
+
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                }
+        );
+
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public static void SimpleMessageDilaog(final Activity context, final String title, final String message) {
@@ -2300,6 +2400,19 @@ public class CommonUtils {
                 AppConstants.WriteinFile(TAG + "Exception occurred in CheckP_TypeCommandIsSent: " + ex.getMessage());
         }
         return isAlreadySent;
+    }
+
+    public static void ClearOfflineData(Context context) {
+        try {
+            OffDBController controller = new OffDBController(context);
+            controller.deleteTableData(OffDBController.TBL_LINK); // Clear Link data after registration
+            controller.deleteTableData(OffDBController.TBL_VEHICLE); // Clear Vehicle data after registration
+            controller.deleteTableData(OffDBController.TBL_PERSONNEL); // Clear Personnel data after registration
+            controller.deleteTableData(OffDBController.TBL_DEPARTMENT); // Clear Department data after registration
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred while deleting offline data: " + ex.getMessage());
+        }
     }
 
 }

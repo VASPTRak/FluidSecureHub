@@ -195,8 +195,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     OffDBController offcontroller = new OffDBController(WelcomeActivity.this);
 
-    public boolean reconfigureForOnResume = false;
-
     public static HashMap<String, Date> lastFSNPDate = new HashMap<>();
     private ArrayList<String> NearByBTDevices = new ArrayList<>();
     public static int countFSVMUpgrade;
@@ -320,15 +318,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     String jsonRename;
     String jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
 
-
     String URL_INFO = "";
     String URL_UPDATE_FS_INFO = "";
     String FOLDER_PATH = ""; //Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
     private WifiManager.LocalOnlyHotspotReservation mReservation;
 
     //============Bluetooth reader Gatt==============
-
-
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
@@ -1117,6 +1112,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         startBTSppMain(0); //BT link connection
 
         cancelThinDownloadManager();
+
     }
 
     public void cancelThinDownloadManager() {
@@ -3192,7 +3188,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                         /////////////////////////////////////////////////////
                         //Check hotspot manually
-                        try {
+                        /*try {
                             if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !ReconfigureLink.equalsIgnoreCase("true")) {
 
                                 Log.i(TAG, "EMobileHotspotManually");
@@ -3203,7 +3199,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             e.printStackTrace();
                             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "onItemClick Check hotspot manually Exception:" + e);
                             //CommonUtils.enableMobileHotspotmanuallyStartTimer(WelcomeActivity.this);
-                        }
+                        }*/
 
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -3318,63 +3314,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 }
                                             }
                                         }
-
-                                        /*try {
-
-                                            IpAddress = "";
-
-                                            boolean isMacConnected = false;
-                                            if (AppConstants.DetailsListOfConnectedDevices != null) {
-                                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-
-                                                    if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
-                                                        IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-                                                        isMacConnected = true;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            if (!isMacConnected) {
-                                                if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
-                                                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                                    if (AppConstants.GenerateLogs)
-                                                        AppConstants.WriteinFile(TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
-
-                                                    String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
-
-                                                    IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
-                                                    if (!IpAddress.trim().isEmpty()) {
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile("===================================================================");
-                                                        break;
-                                                    }
-                                                    if (AppConstants.GenerateLogs)
-                                                        AppConstants.WriteinFile("===================================================================");
-                                                }
-                                            }
-                                        } catch (Exception e) {
-                                            System.out.println(e);
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "  DetailsListOfConnectedDevices --Empty ");
-                                        }*/
-
-                                        /*if (IpAddress.equals("")) {
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + " Issue #812 HNC-1 (selMacAddress:" + selMacAddress + ") " + AppConstants.DetailsListOfConnectedDevices);
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + " Hose not connected");
-                                            RestrictHoseSelection("Hose not connected");
-                                            getipOverOSVersion();
-
-                                        } else {*/
-
-                                        //Selected position
 
                                         AppConstants.FS_selected = String.valueOf(position);
                                         if (String.valueOf(position).equalsIgnoreCase("0") && !IsUpgradeInprogress_FS1) {
@@ -4396,6 +4335,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "WiFiConnectTask => Connected SSID: " + ssid +"; Selected SSID: " + AppConstants.CURRENT_SELECTED_SSID);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, " Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; WiFi Connected to: " + ssid, Color.BLUE);
+                        if (loading != null)
+                            loading.dismiss();
+                        ChangeWifiState(false);//turn wifi off
                     }
                 }
             }, 5000);
@@ -6218,24 +6161,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             tv_fs1_stop.setClickable(false);
             FS1_Stpflag = true;
 
-            /*if (Constants.FS_1Gallons.equals("") || Constants.FS_1Gallons.equals("0.00")) {
-                Constants.FS_1Gallons = String.valueOf("0.00");
-                Constants.FS_1Pulse = "00";
-                tv_fs1_Qty.setText("");
-                tv_fs1_Pulse.setText("");
-                linear_fs_1.setBackgroundResource(R.color.Dashboard_background);
-                tv_fs1_stop.setBackgroundResource(R.color.Dashboard_presstostop_btn);
-                tv_NFS1.setTextColor(getResources().getColor(R.color.black));
-                tv_FS1_hoseName.setTextColor(getResources().getColor(R.color.black));
-                tv_fs1_stop.setTextColor(getResources().getColor(R.color.black));
-                tv_fs1QTN.setTextColor(getResources().getColor(R.color.black));
-                tv_fs1_pulseTxt.setTextColor(getResources().getColor(R.color.black));
-                tv_fs1_Qty.setTextColor(getResources().getColor(R.color.black));
-                tv_fs1_Pulse.setTextColor(getResources().getColor(R.color.black));
-                tv_fs1_stop.setClickable(false);
-
-            } else {*/
-
             Constants.FS_1Gallons = String.valueOf("0.00");
             Constants.FS_1Pulse = "00";
             tv_fs1_Qty.setText("");
@@ -6352,24 +6277,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             tv_fs2_stop.setClickable(false);
             FS2_Stpflag = true;
 
-            /*if (Constants.FS_2Gallons.equals("") || Constants.FS_2Gallons.equals("0.00")) {
-                Constants.FS_2Gallons = String.valueOf("0.00");
-                Constants.FS_2Pulse = "00";
-                tv_fs2_Qty.setText("");
-                tv_fs2_Pulse.setText("");
-                linear_fs_2.setBackgroundResource(R.color.Dashboard_background);
-                tv_fs2_stop.setBackgroundResource(R.color.Dashboard_presstostop_btn);
-                tv_NFS2.setTextColor(getResources().getColor(R.color.black));
-                tv_FS2_hoseName.setTextColor(getResources().getColor(R.color.black));
-                tv_fs2_stop.setTextColor(getResources().getColor(R.color.black));
-                tv_fs2QTN.setTextColor(getResources().getColor(R.color.black));
-                tv_fs2_pulseTxt.setTextColor(getResources().getColor(R.color.black));
-                tv_fs2_Qty.setTextColor(getResources().getColor(R.color.black));
-                tv_fs2_Pulse.setTextColor(getResources().getColor(R.color.black));
-                tv_fs2_stop.setClickable(false);
-
-            } else {*/
-
             Constants.FS_2Gallons = String.valueOf("0.00");
             Constants.FS_2Pulse = "00";
             tv_fs2_Qty.setText("");
@@ -6485,24 +6392,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             tv_fs3_stop.setClickable(false);
             FS3_Stpflag = true;
 
-            /*if (Constants.FS_3Gallons.equals("") || Constants.FS_3Gallons.equals("0.00")) {
-                Constants.FS_3Gallons = String.valueOf("0.00");
-                Constants.FS_3Pulse = "00";
-                tv_fs3_Qty.setText("");
-                tv_fs3_Pulse.setText("");
-                linear_fs_3.setBackgroundResource(R.color.Dashboard_background);
-                tv_fs3_stop.setBackgroundResource(R.color.Dashboard_presstostop_btn);
-                tv_NFS3.setTextColor(getResources().getColor(R.color.black));
-                tv_FS3_hoseName.setTextColor(getResources().getColor(R.color.black));
-                tv_fs3_stop.setTextColor(getResources().getColor(R.color.black));
-                tv_fs3QTN.setTextColor(getResources().getColor(R.color.black));
-                tv_fs3_pulseTxt.setTextColor(getResources().getColor(R.color.black));
-                tv_fs3_Qty.setTextColor(getResources().getColor(R.color.black));
-                tv_fs3_Pulse.setTextColor(getResources().getColor(R.color.black));
-                tv_fs3_stop.setClickable(false);
-
-            } else {*/
-
             Constants.FS_3Gallons = String.valueOf("0.00");
             Constants.FS_3Pulse = "00";
             tv_fs3_Qty.setText("");
@@ -6617,24 +6506,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             tv_fs4_Pulse.setText(Constants.FS_4Pulse);
             tv_fs4_stop.setClickable(false);
             FS4_Stpflag = true;
-
-            /*if (Constants.FS_4Gallons.equals("") || Constants.FS_4Gallons.equals("0.00")) {
-                Constants.FS_4Gallons = String.valueOf("0.00");
-                Constants.FS_4Pulse = "00";
-                tv_fs4_Qty.setText("");
-                tv_fs4_Pulse.setText("");
-                linear_fs_4.setBackgroundResource(R.color.Dashboard_background);
-                tv_fs4_stop.setBackgroundResource(R.color.Dashboard_presstostop_btn);
-                tv_NFS4.setTextColor(getResources().getColor(R.color.black));
-                tv_FS4_hoseName.setTextColor(getResources().getColor(R.color.black));
-                tv_fs4_stop.setTextColor(getResources().getColor(R.color.black));
-                tv_fs4QTN.setTextColor(getResources().getColor(R.color.black));
-                tv_fs4_pulseTxt.setTextColor(getResources().getColor(R.color.black));
-                tv_fs4_Qty.setTextColor(getResources().getColor(R.color.black));
-                tv_fs4_Pulse.setTextColor(getResources().getColor(R.color.black));
-                tv_fs4_stop.setClickable(false);
-
-            } else {*/
 
             Constants.FS_4Gallons = String.valueOf("0.00");
             Constants.FS_4Pulse = "00";
@@ -6752,24 +6623,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             tv_fs5_stop.setClickable(false);
             FS5_Stpflag = true;
 
-            /*if (Constants.FS_5Gallons.equals("") || Constants.FS_5Gallons.equals("0.00")) {
-                Constants.FS_5Gallons = String.valueOf("0.00");
-                Constants.FS_5Pulse = "00";
-                tv_fs5_Qty.setText("");
-                tv_fs5_Pulse.setText("");
-                linear_fs_5.setBackgroundResource(R.color.Dashboard_background);
-                tv_fs5_stop.setBackgroundResource(R.color.Dashboard_presstostop_btn);
-                tv_NFS5.setTextColor(getResources().getColor(R.color.black));
-                tv_FS5_hoseName.setTextColor(getResources().getColor(R.color.black));
-                tv_fs5_stop.setTextColor(getResources().getColor(R.color.black));
-                tv_fs5QTN.setTextColor(getResources().getColor(R.color.black));
-                tv_fs5_pulseTxt.setTextColor(getResources().getColor(R.color.black));
-                tv_fs5_Qty.setTextColor(getResources().getColor(R.color.black));
-                tv_fs5_Pulse.setTextColor(getResources().getColor(R.color.black));
-                tv_fs5_stop.setClickable(false);
-
-            } else {*/
-
             Constants.FS_5Gallons = String.valueOf("0.00");
             Constants.FS_5Pulse = "00";
             tv_fs5_Qty.setText("");
@@ -6884,24 +6737,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             tv_fs6_Pulse.setText(Constants.FS_6Pulse);
             tv_fs6_stop.setClickable(false);
             FS6_Stpflag = true;
-
-            /*if (Constants.FS_6Gallons.equals("") || Constants.FS_6Gallons.equals("0.00")) {
-                Constants.FS_6Gallons = String.valueOf("0.00");
-                Constants.FS_6Pulse = "00";
-                tv_fs6_Qty.setText("");
-                tv_fs6_Pulse.setText("");
-                linear_fs_6.setBackgroundResource(R.color.Dashboard_background);
-                tv_fs6_stop.setBackgroundResource(R.color.Dashboard_presstostop_btn);
-                tv_NFS6.setTextColor(getResources().getColor(R.color.black));
-                tv_FS6_hoseName.setTextColor(getResources().getColor(R.color.black));
-                tv_fs6_stop.setTextColor(getResources().getColor(R.color.black));
-                tv_fs6QTN.setTextColor(getResources().getColor(R.color.black));
-                tv_fs6_pulseTxt.setTextColor(getResources().getColor(R.color.black));
-                tv_fs6_Qty.setTextColor(getResources().getColor(R.color.black));
-                tv_fs6_Pulse.setTextColor(getResources().getColor(R.color.black));
-                tv_fs6_stop.setClickable(false);
-
-            } else {*/
 
             Constants.FS_6Gallons = String.valueOf("0.00");
             Constants.FS_6Pulse = "00";
@@ -10217,7 +10052,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationOnResume: " + ResponceText);
                                     if (ResponceText.contains(getResources().getString(R.string.NoLinksAssignedServerMessage))) {
-                                        CustomMessageWithYesOrNo(WelcomeActivity.this, "", getResources().getString(R.string.NoLinksAssignedAppMessage));
+                                        CustomMessageWithYesOrNo(WelcomeActivity.this, getResources().getString(R.string.NoLinksAssignedAppMessage));
                                     } else {
                                         AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                                     }
@@ -11122,7 +10957,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationGateHub: " + ResponceText);
                                     if (ResponceText.contains(getResources().getString(R.string.NoLinksAssignedServerMessage))) {
-                                        CustomMessageWithYesOrNo(WelcomeActivity.this, "", getResources().getString(R.string.NoLinksAssignedAppMessage));
+                                        CustomMessageWithYesOrNo(WelcomeActivity.this, getResources().getString(R.string.NoLinksAssignedAppMessage));
                                     } else {
                                         AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                                     }
@@ -11627,7 +11462,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + "GetSSIDUsingLocation: " + ResponceText);
                                 if (ResponceText.contains(getResources().getString(R.string.NoLinksAssignedServerMessage))) {
-                                    CustomMessageWithYesOrNo(WelcomeActivity.this, "", getResources().getString(R.string.NoLinksAssignedAppMessage));
+                                    CustomMessageWithYesOrNo(WelcomeActivity.this, getResources().getString(R.string.NoLinksAssignedAppMessage));
                                 } else {
                                     AppConstants.AlertDialogFinish(WelcomeActivity.this, ResponceText);
                                 }
@@ -13766,10 +13601,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
-    public void SetBTLinksMacAddress(int i, String BTMacAddress) {
-
+    public void SetBTLinksMacAddress(int linkPosition, String BTMacAddress) {
         try {
-            switch (i) {
+            switch (linkPosition) {
                 case 0:
                     BTConstants.deviceAddress1 = BTMacAddress.toUpperCase();
                     break;
@@ -13792,9 +13626,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SetBTLinksMacAddress Exception:" + e.toString());
+                AppConstants.WriteinFile(TAG + "SetBTLinksMacAddress Exception:" + e.getMessage());
         }
     }
 
@@ -15064,72 +14897,59 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void CustomMessageWithYesOrNo(final Activity context, String title, String message) {
+    private void CustomMessageWithYesOrNo(final Activity context, String message) {
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
-        dialogBus.show();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
-        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
-        edt_message.setText(message); //Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY)
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        AddNewLinkScreen();
+                    }
+                }
+        );
 
-        btnYes.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                AddNewLinkScreen();
-            }
-        });
-
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                CustomMessageAddLinkWarning(context, "", getResources().getString(R.string.AddLinkWarning));
-            }
-        });
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        CustomMessageAddLinkWarning(context, getResources().getString(R.string.AddLinkWarning));
+                    }
+                }
+        );
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void CustomMessageAddLinkWarning(final Activity context, String title, String message) {
+    private void CustomMessageAddLinkWarning(final Activity context, String message) {
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
-        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
-        btnYes.setText(R.string.AddLink);
-        btnNo.setText(R.string.CloseBtn);
-        edt_message.setText(message); //Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY)
+        alertDialogBuilder.setPositiveButton(getResources().getString(R.string.AddLink), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        AddNewLinkScreen();
+                    }
+                }
+        );
 
-        dialogBus.show();
-
-        btnYes.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                AddNewLinkScreen();
-            }
-        });
-
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                context.finish();
-            }
-        });
+        alertDialogBuilder.setNegativeButton(getResources().getString(R.string.CloseBtn), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        context.finish();
+                    }
+                }
+        );
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public void AddNewLinkScreen() {

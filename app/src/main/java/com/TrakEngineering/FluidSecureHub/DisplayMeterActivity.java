@@ -1284,7 +1284,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetUpgradeFirmwareStatus onPostExecute Exception " + e.getMessage());
+                    AppConstants.WriteinFile(TAG + "GetUpgradeFirmwareStatus onPostExecute Exception " + e.getMessage());
                 System.out.println(e.getMessage());
             }
         }
@@ -4802,7 +4802,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void firstTimeUseWarningDialog(final Activity context) {
 
-        //Declare timer
+        /*//Declare timer
         CountDownTimer cTimer = null;
         final Dialog dialogBus = new Dialog(context);
         dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -4826,7 +4826,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     dialogBus.dismiss();
                 }
                 proceedToPostResume();
-
             }
         };
         cTimer.start();
@@ -4842,9 +4841,43 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 if (finalCTimer != null) finalCTimer.cancel();
                 proceedToPostResume();
             }
+        });*/
+        // Commented above code as per #1465
 
-        });
+        final Timer timer = new Timer();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        String message = getResources().getString(R.string.firstTimeUseMessage);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+                        proceedToPostResume();
+                    }
+                }
+        );
+
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
+                timer.cancel();
+                proceedToPostResume();
+            }
+        }, 10000);
+
+        alertDialog.show();
     }
 
     private void StoreLinkDisconnectInfo(SocketException se) {

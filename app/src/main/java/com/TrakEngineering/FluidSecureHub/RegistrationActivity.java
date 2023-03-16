@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -377,6 +378,10 @@ public class RegistrationActivity extends AppCompatActivity {
                             "", "", "", "", "", "", FluidSecureSiteName, ISVehicleHasFob, IsPersonHasFob,
                             IsVehicleNumberRequire, Integer.parseInt(WifiChannelToUse), "", "", "", "",
                             "", "", "");
+
+                    Log.i(TAG, " Clearing previous offline data after new registration.");
+                    CommonUtils.ClearOfflineData(RegistrationActivity.this); // To clear offline data of Links, Vehicle, Personnel and Department.
+                    AppConstants.clearSharedPrefByName(RegistrationActivity.this, "OfflineData");
 
                     AlertDialogBox(RegistrationActivity.this, getResources().getString(R.string.RegistrationSuccess));
                 } else if (ResponceMessage.equalsIgnoreCase("fail")) {

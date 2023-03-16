@@ -1177,28 +1177,22 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void showCustomMessageForMACDilaog(final Activity context, String title, String message) {
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialouge);
-        dialogBus.show();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
-        edt_message.setText(message);
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
+                        finish();
+                    }
+                }
+        );
 
-        btnAllow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));//
-                finish();
-
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-            }
-        });
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }
 

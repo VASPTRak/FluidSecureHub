@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -703,7 +704,6 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
 
                     InitScreen();
                     if (ResponceMessage.equalsIgnoreCase("success")) {
-                        //CommonUtils.showCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " " + ResponceText);
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
@@ -762,60 +762,50 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void CustomMessage2Input(final Activity context, String title, String message) {
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
-        dialogBus.show();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
 
         String newString1 = message.replaceAll("PERSONNEL", "<font color='red'> " + "<U> PERSONNEL </U>" + " </font>");
         String newString = newString1.replaceAll("VEHICLE", "<font color='red'> " + "<U> VEHICLE </U>" + " </font>");
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
-        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
-        edt_message.setText(Html.fromHtml(newString, Html.FROM_HTML_MODE_LEGACY));
+        alertDialogBuilder.setMessage(Html.fromHtml(newString, Html.FROM_HTML_MODE_LEGACY));
+        alertDialogBuilder.setCancelable(false);
 
-        btnYes.setOnClickListener(new View.OnClickListener() {
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        //save to cloud call
+                        VehicleRequireEntity objEntityClass = new VehicleRequireEntity();
+                        objEntityClass.IMEIUDID = AppConstants.getIMEI(AcceptVehicleActivity_FOB.this);
+                        objEntityClass.VehicleNumber = AppConstants.AddVehicle;
+                        objEntityClass.FOBNumber = AppConstants.AddFobKey;
+                        objEntityClass.MagneticCardNumber = AppConstants.AddMagCard_FobKey;
+                        objEntityClass.Barcode = AppConstants.AddBarcode_val;
+                        objEntityClass.ReplaceAccessDevice = "y";
 
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                //save to cloud call
-                VehicleRequireEntity objEntityClass = new VehicleRequireEntity();
-                objEntityClass.IMEIUDID = AppConstants.getIMEI(AcceptVehicleActivity_FOB.this);
-                objEntityClass.VehicleNumber = AppConstants.AddVehicle;
-                objEntityClass.FOBNumber = AppConstants.AddFobKey;
-                objEntityClass.MagneticCardNumber = AppConstants.AddMagCard_FobKey;
-                objEntityClass.Barcode = AppConstants.AddBarcode_val;
-                objEntityClass.ReplaceAccessDevice = "y";
-
-                if (cd.isConnectingToInternet()) {
-                    new CheckVehicleFobOnly(objEntityClass).execute();
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " No Internet please check.");
-                    CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);
+                        if (cd.isConnectingToInternet()) {
+                            new CheckVehicleFobOnly(objEntityClass).execute();
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " No Internet please check.");
+                            CommonUtils.showNoInternetDialog(AcceptVehicleActivity_FOB.this);
+                        }
+                    }
                 }
+        );
 
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
 
-            }
-        });
-
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-
-//                editVehicleNumber.requestFocus();
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-
-            }
-        });
-
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                }
+        );
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public void hideKeybord() {

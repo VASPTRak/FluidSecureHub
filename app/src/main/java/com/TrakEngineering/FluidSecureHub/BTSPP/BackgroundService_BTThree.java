@@ -310,7 +310,7 @@ public class BackgroundService_BTThree extends Service {
                     public void run() {
                         infoCommand();
                     }
-                }, 2000);
+                }, 1000);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -333,7 +333,7 @@ public class BackgroundService_BTThree extends Service {
                                 public void run() {
                                     infoCommand();
                                 }
-                            }, 2000);
+                            }, 1000);
                         } else if (nextAction.equalsIgnoreCase("relay")) { // proceed to relayOn command after reconnect
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -364,7 +364,7 @@ public class BackgroundService_BTThree extends Service {
                                 public void run() {
                                     infoCommand();
                                 }
-                            }, 2000);
+                            }, 1000);
                         } else if (nextAction.equalsIgnoreCase("relay")) { // proceed to relayOn command after reconnect
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -1583,7 +1583,14 @@ public class BackgroundService_BTThree extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 3: No response from link. Response >> " + Response.trim());
                 }*/
                 //int pumpOnpoint = Integer.parseInt(PumpOnTime);
-                if (stopCount >= stopAutoFuelSeconds) {
+                long autoStopSeconds = 0;
+                if (pre_pulse == 0) {
+                    autoStopSeconds = Long.parseLong(PumpOnTime);
+                } else {
+                    autoStopSeconds = stopAutoFuelSeconds;
+                }
+
+                if (stopCount >= autoStopSeconds) {
                     if (Pulses <= 0) {
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTThree.this);
                     }

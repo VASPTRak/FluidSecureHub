@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -80,6 +81,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -744,49 +747,47 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
     public void AlertDialogBox(final Context ctx, String message) {
 
-        final Dialog dialogBus = new Dialog(AddNewLinkToCloud.this);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialouge);
-        dialogBus.show();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(ctx);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        edt_message.setTextSize(30);
-        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
-        edt_message.setText(message);
-
-        btnAllow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (message.contains("success")) {
-                    dialogBus.dismiss();
-                    //finish();
-                    // Save newly added link into arraylist to configure
-                    String linkName = edt_linkname.getText().toString().trim();
-                    boolean linkNameExist = false;
-                    if (AppConstants.newlyAddedLinks != null) {
-                        for (HashMap<String, String> hashMap : AppConstants.newlyAddedLinks) {
-                            if (hashMap.containsValue(linkName)) {
-                                linkNameExist = true;
-                                break;
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        if (message.contains("success")) {
+                            AppConstants.isLocationSelected = false;
+                            StreetAddress = "";
+                            dialog.dismiss();
+                            //finish();
+                            // Save newly added link into arraylist to configure
+                            String linkName = edt_linkname.getText().toString().trim();
+                            boolean linkNameExist = false;
+                            if (AppConstants.newlyAddedLinks != null) {
+                                for (HashMap<String, String> hashMap : AppConstants.newlyAddedLinks) {
+                                    if (hashMap.containsValue(linkName)) {
+                                        linkNameExist = true;
+                                        break;
+                                    }
+                                }
                             }
+                            if (!linkNameExist) {
+                                HashMap<String, String> map = new HashMap<>();
+                                map.put("SiteId", AppConstants.NewlyAddedSiteId);
+                                map.put("LinkName", linkName);
+                                AppConstants.newlyAddedLinks.add(map);
+                            }
+                            //==============================================================
+
+                            AddMultipleLinksDialog();
+                        } else {
+                            dialog.dismiss();
                         }
                     }
-                    if (!linkNameExist) {
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put("SiteId", AppConstants.NewlyAddedSiteId);
-                        map.put("LinkName", linkName);
-                        AppConstants.newlyAddedLinks.add(map);
-                    }
-                    //==============================================================
-
-                    AddMultipleLinksDialog();
-                } else {
-                    dialogBus.dismiss();
                 }
-            }
-        });
+        );
+
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public void ShowProgressDialog(){
@@ -1006,28 +1007,25 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     }
 
     public void showCustomMessageDialog(final Activity context, String message) {
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + " " + message);
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialouge);
-        dialogBus.show();
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
-        edt_message.setText(Html.fromHtml(message));
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                }
+        );
 
-        btnAllow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-            }
-        });
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void GetAddressByLatLng(Double Latitude, Double Longitude) {
@@ -1207,79 +1205,70 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
     public void welcomeDialog() {
 
-        //Declare timer
-        CountDownTimer cTimer = null;
-        final Dialog dialogBus = new Dialog(AddNewLinkToCloud.this);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialouge);
-        dialogBus.show();
+        final Timer timer = new Timer();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(AddNewLinkToCloud.this);
+        String message = getResources().getString(R.string.AddNewLinkWelcomeMessage);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        String newString = getResources().getString(R.string.AddNewLinkWelcomeMessage);
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
-        edt_message.setText(Html.fromHtml(newString));
-
-        cTimer = new CountDownTimer(10000, 10000) {
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                dialogBus.dismiss();
-            }
-        };
-        cTimer.start();
-
-        CountDownTimer finalCTimer = cTimer;
-        btnAllow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                if (finalCTimer != null) {
-                    finalCTimer.cancel();
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+                    }
                 }
-            }
+        );
 
-        });
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
+                timer.cancel();
+            }
+        }, 10000);
+
+        alertDialog.show();
     }
 
     private void AddMultipleLinksDialog() {
 
-        final Dialog dialogBus = new Dialog(AddNewLinkToCloud.this);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
-        dialogBus.show();
+        String message = getResources().getString(R.string.AddMultipleLinksMessage);
 
-        String msg = getResources().getString(R.string.AddMultipleLinksMessage);
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(AddNewLinkToCloud.this);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
-        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
-        edt_message.setText(msg);
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        AppConstants.showWelcomeDialogForAddNewLink = false;
+                        finish();
+                        Intent in = new Intent(AddNewLinkToCloud.this, AddNewLinkToCloud.class);
+                        startActivity(in);
+                    }
+                }
+        );
 
-        btnYes.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                AppConstants.showWelcomeDialogForAddNewLink = false;
-                finish();
-                Intent in = new Intent(AddNewLinkToCloud.this, AddNewLinkToCloud.class);
-                startActivity(in);
-            }
-        });
-
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                ProceedToLinkConfiguration(false);
-            }
-        });
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        ProceedToLinkConfiguration(false);
+                    }
+                }
+        );
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void ProceedToLinkConfiguration(boolean flagForWait) {
@@ -2004,24 +1993,21 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
     public void showMessageDialog(final Activity context, String message) {
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialouge);
-        dialogBus.show();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
-        edt_message.setText(message);
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
 
-        btnAllow.setOnClickListener(new View.OnClickListener() {
+                        ProceedToLinkConfiguration(false); // Continue to configure next link
+                    }
+                }
+        );
 
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-
-                ProceedToLinkConfiguration(false); // Continue to configure next link
-            }
-        });
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

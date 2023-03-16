@@ -75,12 +75,12 @@ public class AcceptDeptActivity extends AppCompatActivity {
         invalidateOptionsMenu();
         //Set/Reset EnterPin text
         etDeptNumber.setText("");
-
+        if (btnSave != null) {
+            btnSave.setClickable(true);
+        }
 
         Istimeout_Sec = true;
         TimeoutDeptScreen();
-
-
     }
 
     @Override

@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -691,58 +692,48 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void CustomMessage2Input(final Activity context, String title, String message) {
 
-        final Dialog dialogBus = new Dialog(context);
-        dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogBus.setCancelable(false);
-        dialogBus.setContentView(R.layout.custom_alertdialougeinput);
-        dialogBus.show();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
 
         String newString1 = message.replaceAll("PERSONNEL", "<font color='red'> " + "<U> PERSONNEL </U>" + " </font>");
         String newString = newString1.replaceAll("VEHICLE", "<font color='red'> " + "<U> VEHICLE </U>" + " </font>");
 
-        TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
-        Button btnYes = (Button) dialogBus.findViewById(R.id.btnYes);
-        Button btnNo = (Button) dialogBus.findViewById(R.id.btnNo);
-        edt_message.setText(Html.fromHtml(newString));
+        alertDialogBuilder.setMessage(Html.fromHtml(newString));
+        alertDialogBuilder.setCancelable(false);
 
-        btnYes.setOnClickListener(new View.OnClickListener() {
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                        //save to cloud call
+                        VehicleRequireEntity objEntityClass = new VehicleRequireEntity();
+                        objEntityClass.IMEIUDID = AppConstants.getIMEI(ReadAccessDevice_Fob.this);
+                        objEntityClass.VehicleNumber = AppConstants.AddVehicle;
+                        objEntityClass.FOBNumber = AppConstants.AddFobKey;
+                        objEntityClass.MagneticCardNumber = AppConstants.AddMagCard_FobKey;
+                        objEntityClass.Barcode = AppConstants.AddBarcode_val;
+                        objEntityClass.ReplaceAccessDevice = "y";
 
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-                //save to cloud call
-                VehicleRequireEntity objEntityClass = new VehicleRequireEntity();
-                objEntityClass.IMEIUDID = AppConstants.getIMEI(ReadAccessDevice_Fob.this);
-                objEntityClass.VehicleNumber = AppConstants.AddVehicle;
-                objEntityClass.FOBNumber = AppConstants.AddFobKey;
-                objEntityClass.MagneticCardNumber = AppConstants.AddMagCard_FobKey;
-                objEntityClass.Barcode = AppConstants.AddBarcode_val;
-                objEntityClass.ReplaceAccessDevice = "y";
-
-                if (cd.isConnectingToInternet()){
-                    new ReadAccessDevice_Fob.RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
-                }else{
-                    CommonUtils.showNoInternetDialog(ReadAccessDevice_Fob.this);
+                        if (cd.isConnectingToInternet()){
+                            new ReadAccessDevice_Fob.RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
+                        }else{
+                            CommonUtils.showNoInternetDialog(ReadAccessDevice_Fob.this);
+                        }
+                    }
                 }
+        );
 
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
 
-            }
-        });
-
-        btnNo.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                dialogBus.dismiss();
-
-//                editVehicleNumber.requestFocus();
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-
-            }
-        });
-
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }
+                }
+        );
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public void hideKeybord() {
