@@ -41,19 +41,19 @@ public class ConnectionDetector {
         //UNKNOWN connection quality cannot be found.
 
         ConnectivityManager Connectivity = (ConnectivityManager) _context.getSystemService(_context.CONNECTIVITY_SERVICE);
-        TelephonyManager mTelephonyManager = (TelephonyManager)_context.getSystemService(_context.TELEPHONY_SERVICE);
+        TelephonyManager mTelephonyManager = (TelephonyManager) _context.getSystemService(_context.TELEPHONY_SERVICE);
         int subType = mTelephonyManager.getNetworkType();
         NetworkInfo info = Connectivity.getActiveNetworkInfo();
 
-        if(info.getType() == ConnectivityManager.TYPE_WIFI){
+        if (info.getType() == ConnectivityManager.TYPE_WIFI) {
             Constants.CurrentNetworkType = "_wifi on";
             return false;
-        } else if(info.getType() == ConnectivityManager.TYPE_MOBILE){
+        } else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
 
             // check NetworkInfo subtype
-            switch(subType){
+            switch (subType) {
                 case TelephonyManager.NETWORK_TYPE_1xRTT:
-                    Constants.CurrentNetworkType ="50-100 kbps";
+                    Constants.CurrentNetworkType = "50-100 kbps";
                     return false; // ~ 50-100 kbps
                 case TelephonyManager.NETWORK_TYPE_CDMA:
                     Constants.CurrentNetworkType = "14-64 kbps";
@@ -109,7 +109,7 @@ public class ConnectionDetector {
 
             }
 
-        }else{
+        } else {
             return false;
         }
 

@@ -81,6 +81,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
         Istimeout_Sec = true;
         TimeoutDeptScreen();
+
+
     }
 
     @Override
@@ -209,7 +211,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                     Istimeout_Sec = true;
                     ResetTimeoutDeptScreen();
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForDepartment + " Number, and try again.");
+                        AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForDepartment + ", and try again.");
                     CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.RequireDeptNumber).replace("Department", ScreenNameForDepartment));
                 }
 
@@ -543,7 +545,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                         String ResponceText = jsonObject.getString("ResponceText");
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Department number rejected. Error: " + ResponceText);
+                            AppConstants.WriteinFile(TAG + "Department rejected. Error: " + ResponceText);
 
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 

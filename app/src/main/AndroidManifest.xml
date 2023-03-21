@@ -59,6 +59,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".BT_Link_Oscilloscope_Activity"
+            android:exported="false" />
+        <activity
             android:name=".BT_Link_P_Type_Activity"
             android:exported="false" />
         <activity

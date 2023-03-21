@@ -1085,7 +1085,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
         tv_title.setText(getResources().getString(R.string.vehicleIdentification).replace("VEHICLE", ScreenNameForVehicle.toUpperCase()));
         tv_fob_Reader.setText(getResources().getString(R.string.PresentVehicleAccessDevice).replace("vehicle", ScreenNameForVehicle));
-        tv_vehicle_no_below.setText(getResources().getString(R.string.VehicleNumberHeading).replace("Vehicle", ScreenNameForVehicle));
+        tv_vehicle_no_below.setText(getResources().getString(R.string.VehicleNumberHeading).replace("Number", "").replace("Vehicle", ScreenNameForVehicle));
 
     }
 
@@ -3131,7 +3131,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                     if (PinMap1.size() > 0) {
                         //Pin Number please use vehicle Number
-                        String msg = "This is " + ScreenNameForPersonnel + " Number. Please use your " + ScreenNameForVehicle + " Number";
+                        String msg = "This is " + ScreenNameForPersonnel + ". Please use your " + ScreenNameForVehicle + ".";
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Vehicle Number not found in offline db. This (" + pin + ") is pin number.");
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", msg);
@@ -3139,7 +3139,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Vehicle Number not found in offline db.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Invalid " + ScreenNameForVehicle + " Number");
+                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_new.this, "Message", "Invalid " + ScreenNameForVehicle);
                     }
                 }
             }

@@ -27,7 +27,7 @@
     <string name="Cancel">Cancelar</string>
     <string name="previousScreen">Pantalla anterior</string>
     <string name="LinkIsConnecting">Conectando...</string>
-    <string name="EnterDeptNumber">Ingrese el número de departamento</string>
+    <string name="EnterDeptNumber">Entrar Departamento</string>
     <string name="EnterOdoManually">Introducir odómetro manualmente</string>
     <string name="PressFor123">Presiona para 123</string>
     <string name="PressForABC">Presione para ABC</string>
@@ -368,7 +368,7 @@
     <string name="PerDayLimitExceeded">Ha excedido su límite de combustible para el día. Por favor contacte a su Gerente.</string>
 
     <!-- Department Screen -->
-    <string name="RequireDeptNumber">Ingrese el número de departamento e inténtelo de nuevo.</string>
+    <string name="RequireDeptNumber">Ingrese Departamento y vuelva a intentarlo.</string>
     <string name="InvalidDept">Departamento inválido. Vuelva a intentarlo o comuníquese con su gerente.</string>
     <string name="NotAuthorizedForDept">No estás autorizado para este departamento.</string>
 

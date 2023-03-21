@@ -34,7 +34,7 @@ import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.service6;
 public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialListenerThree , SerialListenerFour, SerialListenerFive, SerialListenerSix {
 
     public Activity activity;
-    private static final String TAG = AppConstants.LOG_TXTN_BT + "-"; //BTSPPMain.class.getSimpleName();
+    private static final String TAG = ""; //AppConstants.LOG_TXTN_BT + "-"; //BTSPPMain.class.getSimpleName();
     private String newline = "\r\n";
     //private String deviceAddress1 = ""; //80:7D:3A:A4:67:22
     //private String deviceAddress2 = "";
@@ -108,7 +108,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
         }
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTSPPLink 1: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 1: SerialIoError: " + e.getMessage());
     }
 
     public void connect1() {
@@ -134,7 +134,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTSPPLink 1: Link not connected");
             //Toast.makeText(activity, "BTSPPLink 1: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 1: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 1: Link not connected");
             return;
         }
         try {
@@ -153,7 +153,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkOne = "";
             Log.i(TAG, "BTSPPLink 1: Link not connected");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 1: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 1: Link not connected");
             return;
         }
         try {
@@ -188,7 +188,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             sendBroadcastIntentFromLinkOne(sb1.toString());
             sb1.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkOne || BTConstants.CurrentCommand_LinkOne.contains(BTConstants.p_type_command)) {
+            if (BTConstants.isNewVersionLinkOne || BTConstants.forOscilloscope || BTConstants.CurrentCommand_LinkOne.contains(BTConstants.p_type_command)) {
                 sb1.append(Response);
             } else {
                 // For old version Link response
@@ -255,7 +255,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
         }
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTSPPLink 2: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 2: SerialIoError: " + e.getMessage());
     }
 
     public void connect2() {
@@ -281,7 +281,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTSPPLink 2: Link not connected");
             //Toast.makeText(activity, "BTSPPLink 2: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 2: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 2: Link not connected");
             return;
         }
         try {
@@ -300,7 +300,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkTwo = "";
             Log.i(TAG, "BTSPPLink 2: Link not connected");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 2: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 2: Link not connected");
             return;
         }
         try {
@@ -335,7 +335,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             sendBroadcastIntentFromLinkTwo(sb2.toString());
             sb2.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkTwo || BTConstants.CurrentCommand_LinkTwo.contains(BTConstants.p_type_command)) {
+            if (BTConstants.isNewVersionLinkTwo || BTConstants.forOscilloscope || BTConstants.CurrentCommand_LinkTwo.contains(BTConstants.p_type_command)) {
                 sb2.append(Response);
             } else {
                 // For old version Link response
@@ -401,7 +401,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
         }
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTSPPLink 3: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 3: SerialIoError: " + e.getMessage());
     }
 
     public void connect3() {
@@ -427,7 +427,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTSPPLink 3: Link not connected");
             //Toast.makeText(activity, "BTSPPLink 3: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 3: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 3: Link not connected");
             return;
         }
         try {
@@ -446,7 +446,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkThree = "";
             Log.i(TAG, "BTSPPLink 3: Link not connected");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 3: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 3: Link not connected");
             return;
         }
         try {
@@ -481,7 +481,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             sendBroadcastIntentFromLinkThree(sb3.toString());
             sb3.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkThree || BTConstants.CurrentCommand_LinkThree.contains(BTConstants.p_type_command)) {
+            if (BTConstants.isNewVersionLinkThree || BTConstants.forOscilloscope || BTConstants.CurrentCommand_LinkThree.contains(BTConstants.p_type_command)) {
                 sb3.append(Response);
             } else {
                 // For old version Link response
@@ -548,7 +548,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
         }
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTSPPLink 4: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 4: SerialIoError: " + e.getMessage());
     }
 
     public void connect4() {
@@ -574,7 +574,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTSPPLink 4: Link not connected");
             //Toast.makeText(activity, "BTSPPLink 4: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 4: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 4: Link not connected");
             return;
         }
         try {
@@ -593,7 +593,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkFour = "";
             Log.i(TAG, "BTSPPLink 4: Link not connected");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 4: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 4: Link not connected");
             return;
         }
         try {
@@ -628,7 +628,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             sendBroadcastIntentFromLinkFour(sb4.toString());
             sb4.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkFour || BTConstants.CurrentCommand_LinkFour.contains(BTConstants.p_type_command)) {
+            if (BTConstants.isNewVersionLinkFour || BTConstants.forOscilloscope || BTConstants.CurrentCommand_LinkFour.contains(BTConstants.p_type_command)) {
                 sb4.append(Response);
             } else {
                 // For old version Link response
@@ -694,7 +694,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
         }
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTSPPLink 5: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 5: SerialIoError: " + e.getMessage());
     }
 
     public void connect5() {
@@ -719,7 +719,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkFive = "";
             Log.i(TAG, "BTSPPLink 5: Link not connected");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 5: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 5: Link not connected");
             return;
         }
         try {
@@ -739,7 +739,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTSPPLink 5: Link not connected");
             //Toast.makeText(activity, "BTSPPLink 5: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 5: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 5: Link not connected");
             return;
         }
         try {
@@ -774,7 +774,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             sendBroadcastIntentFromLinkFive(sb5.toString());
             sb5.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkFive || BTConstants.CurrentCommand_LinkFive.contains(BTConstants.p_type_command)) {
+            if (BTConstants.isNewVersionLinkFive || BTConstants.forOscilloscope || BTConstants.CurrentCommand_LinkFive.contains(BTConstants.p_type_command)) {
                 sb5.append(Response);
             } else {
                 // For old version Link response
@@ -841,7 +841,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
         }
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTSPPLink 6: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 6: SerialIoError: " + e.getMessage());
     }
 
     public void connect6() {
@@ -867,7 +867,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             Log.i(TAG, "BTSPPLink 6: Link not connected");
             //Toast.makeText(activity, "BTSPPLink 6: Link not connected", Toast.LENGTH_SHORT).show();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 6: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 6: Link not connected");
             return;
         }
         try {
@@ -886,7 +886,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.CurrentCommand_LinkSix = "";
             Log.i(TAG, "BTSPPLink 6: Link not connected");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTSPPLink 6: Link not connected");
+                AppConstants.WriteinFile(TAG + "BTSPPLink 6: Link not connected");
             return;
         }
         try {
@@ -921,7 +921,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             sendBroadcastIntentFromLinkSix(sb6.toString());
             sb6.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkSix || BTConstants.CurrentCommand_LinkSix.contains(BTConstants.p_type_command)) {
+            if (BTConstants.isNewVersionLinkSix || BTConstants.forOscilloscope || BTConstants.CurrentCommand_LinkSix.contains(BTConstants.p_type_command)) {
                 sb6.append(Response);
             } else {
                 // For old version Link response

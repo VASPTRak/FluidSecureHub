@@ -33,6 +33,9 @@ public class BTConstants {
     public static String deviceAddress4 = "";
     public static String deviceAddress5 = "";
     public static String deviceAddress6 = "";
+    public static String deviceAddressOscilloscope = "";
+    public static String selectedSiteIdForScope = "0";
+    public static boolean forOscilloscope = false;
 
     public static boolean SwitchedBTToUDP1 = false;
     public static boolean SwitchedBTToUDP2 = false;

@@ -266,7 +266,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             System.out.println(Html.fromHtml(content));
         }
 
-        tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Personnel", ScreenNameForPersonnel));
+        tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Number", "").replace("Personnel", ScreenNameForPersonnel));
 
         //BLE upgrade
         SharedPreferences myPrefslo = this.getSharedPreferences("BLEUpgradeInfo", 0);
@@ -1743,7 +1743,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
                         DisplayScreenFobReadSuccess();
-                        tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Personnel", ScreenNameForPersonnel) + " ****");//PersonPIN fob replace by asterisk for password
+                        tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Number", "").replace("Personnel", ScreenNameForPersonnel) + " ****");//PersonPIN fob replace by asterisk for password
                         System.out.println("PersonFOBNumber.." + PersonFOBNumber + "PersonPin" + PersonPIN);
                         AppConstants.OFF_PERSON_PIN = PersonPIN;
                         etPersonnelPin.setText(PersonPIN);
@@ -1798,7 +1798,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                     CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Same access device is scanned again. Please check.");
                                 } else {
 
-                                    tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Personnel", ScreenNameForPersonnel) + " ****");//fob replace by asterisk for password
+                                    tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Number", "").replace("Personnel", ScreenNameForPersonnel) + " ****");//fob replace by asterisk for password
                                     etPersonnelPin.setText(fob);
 
                                     if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
@@ -2337,7 +2337,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     HashMap<String, String> VehicleMap = controller.getVehicleDetailsByVehicleNumber(V_Number);
                     if (VehicleMap.size() > 0) {
                         //vehicle fob please present pin fob
-                        String msg = "This is " + ScreenNameForVehicle + " Number. Please use your " + ScreenNameForPersonnel + "Number";
+                        String msg = "This is " + ScreenNameForVehicle + ". Please use your " + ScreenNameForPersonnel + ".";
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. This (" + V_Number + ") is vehicle number.");
                         CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);

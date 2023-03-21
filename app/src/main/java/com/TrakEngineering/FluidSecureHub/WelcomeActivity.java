@@ -406,7 +406,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public String st = "";
     public boolean ConfigurationStep1IsInProgress = false;
     public boolean upgradeLoaderIsShown = false;
-    public ProgressDialog pdP_Type;
     public Menu myMenu;
 
     //============ Bluetooth reader Gatt end==============
@@ -1721,7 +1720,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         AppConstants.serverAuthCallCompleted = false;
         AppConstants.serverCallInProgressForPin = false;
         AppConstants.serverCallInProgressForVehicle = false;
-
+        BTConstants.forOscilloscope = false;
         try {
             if (cd.isConnectingToInternet() && serverSSIDList != null && serverSSIDList.size() == 1) {
                 AppConstants.FS_selected = "0";
@@ -3079,6 +3078,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     IpAddress = "";
                     SelectedItemPos = position;
                     SelectedItemPosFor10Txn = position;
+                    BTConstants.forOscilloscope = false;
 
                     String selSSID = serverSSIDList.get(SelectedItemPos).get("WifiSSId");
                     String selMacAddress = serverSSIDList.get(SelectedItemPos).get("MacAddress");
@@ -3887,7 +3887,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             try {
                 consoleString += "OUTPUT- " + result + "\n";
-                // tvConsole.setText(consoleString);
 
                 System.out.println(result);
 
@@ -7877,6 +7876,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
         menu.findItem(R.id.mreload).setVisible(false);
+        menu.findItem(R.id.btLinkScope).setVisible(true);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         //menu.findItem(R.id.m_p_type).setVisible(true);
@@ -7963,6 +7963,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             case R.id.madd_link:
                 if (AppConstants.IsHoseBusyCheckLocally()) {
                     AddNewLinkScreen();
+                } else {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.btLinkScope:
+                if (AppConstants.IsHoseBusyCheckLocally()) {
+                    OscilloscopeLinkSelection();
                 } else {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
@@ -14308,25 +14316,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.IsProblemWhileEnableHotspot = true;
                 }
             }*/
-            //ShowHotspotDisabledErrorMessage();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void ShowHotspotDisabledErrorMessage() {
-        if (!CommonUtils.isHotspotEnabled(this) && !AppConstants.IsBTLinkSelectedCurrently && AppConstants.IsProblemWhileEnableHotspot && Constants.hotspotstayOn && !AppConstants.ManuallReconfigure) {
-
-            AppConstants.IsProblemWhileEnableHotspot = false;
-            HotspotEnableErrorCount = 0; // reset error Count
-            AppConstants.WriteinFile("Error occurred while enabling the hotspot.");
-            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Error Message", "HotSpot is disabled, please contact customer support.");
-            stopService(new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class));
-            Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);
-            PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            pintent.cancel();
-            alarm.cancel(pintent);
         }
     }
 
@@ -14509,7 +14500,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public CharSequence GetSpinnerMessage(String message) {
         try {
             SpannableString ss2 = new SpannableString(message);
-            ss2.setSpan(new RelativeSizeSpan(1.2f), 0, ss2.length(), 0);
+            ss2.setSpan(new RelativeSizeSpan(1.4f), 0, ss2.length(), 0);
+            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
             return ss2;
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
@@ -14572,6 +14564,44 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
+    public void OscilloscopeLinkSelection() {
+        try {
+            BTLinkList.clear();
+            if (serverSSIDList != null) {
+                for (int i = 0; i < serverSSIDList.size(); i++) {
+                    String SiteId = serverSSIDList.get(i).get("SiteId");
+                    String WifiSSId = serverSSIDList.get(i).get("WifiSSId");
+                    String BTMacAddress = serverSSIDList.get(i).get("BTMacAddress");
+                    String LinkCommunicationType = serverSSIDList.get(i).get("LinkCommunicationType");
+
+                    if (BTMacAddress != null && !BTMacAddress.isEmpty() && LinkCommunicationType.equalsIgnoreCase("BT") && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)) {
+                        // Add into BT link list for Oscilloscope functionality
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put("SiteId", SiteId);
+                        map.put("WifiSSId", WifiSSId);
+                        map.put("item", WifiSSId);
+                        map.put("BTMacAddress", BTMacAddress);
+                        map.put("LinkPosition", String.valueOf(i));
+                        BTLinkList.add(map);
+                    }
+                }
+            }
+            if (BTLinkList != null) {
+                if (BTLinkList.size() > 0) {
+                    alertSelectBTLinkList();
+                } else {
+                    Toast.makeText(getApplicationContext(), "BT LINK not found.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "BT LINK not found.", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in OscilloscopeLinkSelection. " + ex.getMessage());
+        }
+    }
+
     public void alertSelectBTLinkList() {
         final Dialog dialog = new Dialog(WelcomeActivity.this);
         dialog.setTitle(R.string.fs_name);
@@ -14599,28 +14629,24 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 try {
                     dialog.dismiss();
 
+                    String SiteId = BTLinkList.get(position).get("SiteId");
                     String WifiSSId = BTLinkList.get(position).get("WifiSSId");
                     String BTMacAddress = BTLinkList.get(position).get("BTMacAddress");
                     String LinkPosition = BTLinkList.get(position).get("LinkPosition");
 
                     SetBTLinksMacAddress(Integer.parseInt(LinkPosition), BTMacAddress);
+                    BTConstants.deviceAddressOscilloscope = BTMacAddress.toUpperCase();
+                    BTConstants.selectedSiteIdForScope = SiteId;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Selected LINK for p_type: " + WifiSSId);
+                        AppConstants.WriteinFile(TAG + "================ Oscilloscope ================");
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "Selected LINK for Oscilloscope: " + WifiSSId);
 
-                    if (LinkPosition == null) {
-                        LinkPosition = "0";
-                    }
+                    //startBTSppMain(5);
 
-                    String s = getResources().getString(R.string.PleaseWait);
-                    SpannableString ss2 = new SpannableString(s);
-                    ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-                    ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-                    pdP_Type = new ProgressDialog(WelcomeActivity.this);
-                    pdP_Type.setMessage(ss2);
-                    pdP_Type.setCancelable(true);
-                    pdP_Type.show();
+                    BTConstants.forOscilloscope = true;
 
-                    CheckBTConnectionForPType(LinkPosition, WifiSSId, BTMacAddress);
+                    CheckBTConnectionForOscilloscope(LinkPosition, WifiSSId);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -14631,7 +14657,283 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         dialog.show();
     }
 
-    private void CheckBTConnectionForPType(String selectedItemPos, String selSSID, String BTMacAddress) {
+    public void RedirectToOscilloscope(String WifiSSId, String LinkPosition) {
+        Intent i = new Intent(WelcomeActivity.this, BT_Link_Oscilloscope_Activity.class);
+        i.putExtra("WifiSSId", WifiSSId);
+        i.putExtra("LinkPosition", LinkPosition);
+        startActivity(i);
+    }
+
+    public class RedirectToOscilloscope extends AsyncTask<String, String, String> {
+
+        ProgressDialog pd;
+        String WifiSSId, LinkPosition;
+        int counter = 0;
+
+        @Override
+        protected void onPreExecute() {
+            String st = getResources().getString(R.string.PleaseWait);
+            SpannableString ss2 = new SpannableString(st);
+            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
+            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+            pd = new ProgressDialog(WelcomeActivity.this);
+            pd.setMessage(ss2);
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... f_url) {
+            WifiSSId = f_url[0];
+            LinkPosition = f_url[1];
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            //pd.dismiss();
+
+            final Handler handler = new Handler();
+            final int delay = 1000; // 1000 milliseconds == 1 second
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    if (counter < 10) {
+                        String BTStatus = "";
+                        switch (LinkPosition) {
+                            case "0"://Link 1
+                                BTStatus = BTConstants.BTStatusStrOne;
+                                break;
+                            case "1"://Link 2
+                                BTStatus = BTConstants.BTStatusStrTwo;
+                                break;
+                            case "2"://Link 3
+                                BTStatus = BTConstants.BTStatusStrThree;
+                                break;
+                            case "3"://Link 4
+                                BTStatus = BTConstants.BTStatusStrFour;
+                                break;
+                            case "4"://Link 5
+                                BTStatus = BTConstants.BTStatusStrFive;
+                                break;
+                            case "5"://Link 6
+                                BTStatus = BTConstants.BTStatusStrSix;
+                                break;
+                            default://Something went wrong in link selection please try again.
+                                break;
+                        }
+
+                        if (BTStatus.equalsIgnoreCase("Connected")) {
+                            pd.dismiss();
+                            //BTServiceSelectionFunction(LinkPosition);
+                            RedirectToOscilloscope(WifiSSId, LinkPosition);
+                        } else {
+                            counter++;
+                            handler.postDelayed(this, delay);
+                        }
+                    } else {
+                        pd.dismiss();
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "BT LINK not connected.");
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "Message", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    }
+                }
+            }, delay);
+        }
+    }
+
+    private void CheckBTConnectionForOscilloscope(String LinkPosition, String WifiSSId) {
+
+        switch (LinkPosition) {
+
+            case "0":
+                //Link one
+                if (BTConstants.BTLinkOneStatus) {
+                    if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
+                        new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                    } else {
+                        BTL1State = 0;
+                    }
+                } else {
+                    if (!BTConstants.deviceAddress1.isEmpty()) {
+                        NearByBTDevices.clear();
+                        mBluetoothAdapter.startDiscovery();
+
+                        Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (!checkBTLinkStatus(1)) {
+                                    retryConnect(1);
+                                }
+                                new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                            }
+                        }, delay);
+
+                    } else {
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                    }
+                }
+                break;
+            case "1":
+                //Link Two
+                if (BTConstants.BTLinkTwoStatus) {
+                    if (Constants.FS_2STATUS.equalsIgnoreCase("FREE")) {
+                        new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                    } else {
+                        BTL2State = 0;
+                    }
+                } else {
+                    if (!BTConstants.deviceAddress2.isEmpty()) {
+                        NearByBTDevices.clear();
+                        mBluetoothAdapter.startDiscovery();
+
+                        Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (!checkBTLinkStatus(2)) {
+                                    retryConnect(2);
+                                }
+                                new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                            }
+                        }, delay);
+
+                    } else {
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                    }
+                }
+                break;
+            case "2":
+
+                //Link Three
+                if (BTConstants.BTLinkThreeStatus) {
+                    if (Constants.FS_3STATUS.equalsIgnoreCase("FREE")) {
+                        new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                    } else {
+                        BTL3State = 0;
+                    }
+                } else {
+                    if (!BTConstants.deviceAddress3.isEmpty()) {
+                        NearByBTDevices.clear();
+                        mBluetoothAdapter.startDiscovery();
+
+                        Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (!checkBTLinkStatus(3)) {
+                                    retryConnect(3);
+                                }
+                                new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                            }
+                        }, delay);
+
+                    } else {
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                    }
+                }
+                break;
+            case "3"://Link Four
+
+                if (BTConstants.BTLinkFourStatus) {
+                    if (Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+                        new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                    } else {
+                        BTL4State = 0;
+                    }
+                } else {
+                    if (!BTConstants.deviceAddress4.isEmpty()) {
+                        NearByBTDevices.clear();
+                        mBluetoothAdapter.startDiscovery();
+
+                        Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (!checkBTLinkStatus(4)) {
+                                    retryConnect(4);
+                                }
+                                new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                            }
+                        }, delay);
+
+                    } else {
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                    }
+                }
+                break;
+            case "4"://Link Five
+
+                if (BTConstants.BTLinkFiveStatus) {
+                    if (Constants.FS_5STATUS.equalsIgnoreCase("FREE")) {
+                        new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                    } else {
+                        BTL5State = 0;
+                    }
+                } else {
+                    if (!BTConstants.deviceAddress5.isEmpty()) {
+                        NearByBTDevices.clear();
+                        mBluetoothAdapter.startDiscovery();
+
+                        Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (!checkBTLinkStatus(5)) {
+                                    retryConnect(5);
+                                }
+                                new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                            }
+                        }, delay);
+
+                    } else {
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                    }
+                }
+                break;
+            case "5"://Link Six
+
+                if (BTConstants.BTLinkSixStatus) {
+                    if (Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+                        new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                    } else {
+                        BTL6State = 0;
+                    }
+                } else {
+                    if (!BTConstants.deviceAddress6.isEmpty()) {
+                        NearByBTDevices.clear();
+                        mBluetoothAdapter.startDiscovery();
+
+                        Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                if (!checkBTLinkStatus(6)) {
+                                    retryConnect(6);
+                                }
+                                new RedirectToOscilloscope().execute(WifiSSId, LinkPosition);
+                            }
+                        }, delay);
+
+                    } else {
+                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                    }
+                }
+                break;
+        }
+
+    }
+
+    /*private void CheckBTConnectionForPType(String selectedItemPos, String selSSID, String BTMacAddress) {
         try {
             switch (selectedItemPos) {
 
@@ -14883,9 +15185,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
+    }*/
 
-    public void RedirectToP_TypeSelection(String WifiSSId, String LinkPosition, String BTMacAddress) {
+    /*public void RedirectToP_TypeSelection(String WifiSSId, String LinkPosition, String BTMacAddress) {
         if (pdP_Type != null) {
             pdP_Type.dismiss();
         }
@@ -14894,7 +15196,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         i.putExtra("BTMacAddress", BTMacAddress);
         i.putExtra("LinkPosition", LinkPosition);
         startActivity(i);
-    }
+    }*/
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void CustomMessageWithYesOrNo(final Activity context, String message) {

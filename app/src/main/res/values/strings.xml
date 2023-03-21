@@ -26,7 +26,7 @@
     <string name="Cancel">Cancel</string>
     <string name="previousScreen">Previous Screen</string>
     <string name="LinkIsConnecting">Connecting...</string>
-    <string name="EnterDeptNumber">Enter Department Number</string>
+    <string name="EnterDeptNumber">Enter Department</string>
     <string name="EnterOdoManually">Enter Odometer Manually</string>
     <string name="PressFor123">Press for 123</string>
     <string name="PressForABC">Press for ABC</string>
@@ -368,7 +368,7 @@
     <string name="PerDayLimitExceeded">You have exceeded your fuel limit for the day. Please contact your Manager.</string>
 
     <!-- Department Screen -->
-    <string name="RequireDeptNumber">Please enter Department Number, and try again.</string>
+    <string name="RequireDeptNumber">Please enter Department, and try again.</string>
     <string name="InvalidDept">Invalid Department. Please try again or contact your Manager.</string>
     <string name="NotAuthorizedForDept">You are not authorized for this department.</string>
 
