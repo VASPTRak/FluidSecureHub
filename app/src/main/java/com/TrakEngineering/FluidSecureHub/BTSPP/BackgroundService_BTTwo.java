@@ -1439,6 +1439,9 @@ public class BackgroundService_BTTwo extends Service {
     private void TransactionCompleteFunction() {
 
         if (cd.isConnectingToInternet()) {
+            if (BTConstants.BT2REPLACEBLE_WIFI_NAME == null) {
+                BTConstants.BT2REPLACEBLE_WIFI_NAME = "";
+            }
             //BTLink Rename functionality
             if (BTConstants.BT2NeedRename && !BTConstants.BT2REPLACEBLE_WIFI_NAME.isEmpty()) {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

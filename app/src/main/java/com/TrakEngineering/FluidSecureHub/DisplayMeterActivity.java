@@ -3891,7 +3891,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        if (pdBT != null && pdBT.isShowing()) {
+            pdBT.dismiss();
+        }
+        if (pdMain != null && pdMain.isShowing()) {
+            pdMain.dismiss();
+        }
         if (receiver != null) {
             this.unregisterReceiver(receiver);
         }
@@ -4589,19 +4594,24 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         protected void onPreExecute() {
-
             if (pdBT != null && pdBT.isShowing()) {
                 pdBT.dismiss();
             }
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pdBT = new ProgressDialog(DisplayMeterActivity.this);
-            pdBT.setMessage(ss2);
-            pdBT.setCancelable(false);
-            pdBT.show();
-
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String s = getResources().getString(R.string.PleaseWait);
+                    SpannableString ss2 = new SpannableString(s);
+                    ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
+                    ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+                    pdBT = new ProgressDialog(DisplayMeterActivity.this);
+                    pdBT.setMessage(ss2);
+                    pdBT.setCancelable(false);
+                    if (!pdBT.isShowing()) {
+                        pdBT.show();
+                    }
+                }
+            });
         }
 
         protected String doInBackground(String... param) {

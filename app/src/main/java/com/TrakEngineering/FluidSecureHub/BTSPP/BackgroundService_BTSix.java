@@ -1438,6 +1438,9 @@ public class BackgroundService_BTSix extends Service {
     private void TransactionCompleteFunction() {
 
         if (cd.isConnectingToInternet()) {
+            if (BTConstants.BT6REPLACEBLE_WIFI_NAME == null) {
+                BTConstants.BT6REPLACEBLE_WIFI_NAME = "";
+            }
             //BTLink Rename functionality
             if (BTConstants.BT6NeedRename && !BTConstants.BT6REPLACEBLE_WIFI_NAME.isEmpty()) {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

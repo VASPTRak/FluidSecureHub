@@ -106,15 +106,11 @@ public class ConnectionDetector {
                 default:
                     Constants.CurrentNetworkType = "_unknown";
                     return false;
-
             }
-
         } else {
             return false;
         }
-
     }
-
 
     /**
      * Checking for all possible internet providers

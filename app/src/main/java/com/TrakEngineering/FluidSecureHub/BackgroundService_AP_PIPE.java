@@ -176,7 +176,11 @@ public class BackgroundService_AP_PIPE extends Service {
 
             if (LinkName == null || LinkName.isEmpty()) {
                 try {
-                    LinkName = AppConstants.DetailsServerSSIDList.get(0).get("WifiSSId");
+                    if (AppConstants.DetailsServerSSIDList != null) {
+                        if (AppConstants.DetailsServerSSIDList.size() > 0) {
+                            LinkName = AppConstants.DetailsServerSSIDList.get(0).get("WifiSSId");
+                        }
+                    }
                 } catch (Exception e) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Something went wrong please check Link name Ex:" + e.toString());
@@ -912,15 +916,19 @@ public class BackgroundService_AP_PIPE extends Service {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "GETPulsarQuantity onFailure Exception: " + e.toString());
                     //stopTimer = false;
-                    Constants.FS_1STATUS = "FREE";
-                    clearEditTextFields();
-                    stopSelf();
+                    //Constants.FS_1STATUS = "FREE";
+                    //clearEditTextFields();
+                    //stopSelf();
                 }
                 if (GetPulsarAttemptFailCount == 3) {
                     stopTimer = false;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);
                     new CommandsPOST().execute(URL_RELAY, jsonRelayOff);
+                    Constants.FS_1STATUS = "FREE";
+                    clearEditTextFields();
+                    PostTransactionBackgroundTasks();
+                    stopSelf();
                 }
             }
 
@@ -1024,9 +1032,15 @@ public class BackgroundService_AP_PIPE extends Service {
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
+
+                    if (CNT_LAST > 0 && CNT_current > 0 && CNT_LAST > CNT_current) {
+                        CNT_current = CNT_LAST + CNT_current;
+                        convertCountToQuantity(String.valueOf(CNT_current));
+                    }
                 }
 
                 if (countForZeroPulses > 2) {
+                    countForZeroPulses = 0;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "<Auto Stop Hit.>");
                     stopTimer = false;

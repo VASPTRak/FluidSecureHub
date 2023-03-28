@@ -22,13 +22,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.Editable;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -39,7 +40,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -328,6 +328,77 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             }
         });*/
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        BackToWelcomeActivity();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.reader, menu);
+
+        menu.findItem(R.id.mreboot_reader).setVisible(false);
+        menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
+        menu.findItem(R.id.mcamera_back).setVisible(false);
+        menu.findItem(R.id.mcamera_front).setVisible(false);
+        menu.findItem(R.id.mreload).setVisible(false);
+        menu.findItem(R.id.btLinkScope).setVisible(false);
+        menu.findItem(R.id.monline).setVisible(false);
+        menu.findItem(R.id.mofline).setVisible(false);
+        menu.findItem(R.id.mclose).setVisible(false);
+        menu.findItem(R.id.enable_debug_window).setVisible(false);
+        menu.findItem(R.id.madd_link).setVisible(false);
+        menu.findItem(R.id.mshow_reader_status).setVisible(false);
+        menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
+
+        SharedPreferences sharedPref = AddNewLinkToCloud.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+        String language = sharedPref.getString("language", "");
+
+        MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+
+        if (language.trim().equalsIgnoreCase("es")) {
+            itemSp.setVisible(false);
+            itemEng.setVisible(true);
+        } else {
+            itemSp.setVisible(true);
+            itemEng.setVisible(false);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.mrestartapp:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Restart app.>");
+                Intent i = new Intent(AddNewLinkToCloud.this, SplashActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
+                break;
+
+            case R.id.menuSpanish:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " <Spanish language selected.>");
+                AppConstants.languageChanged = true;
+                CommonUtils.StoreLanguageSettings(AddNewLinkToCloud.this, "es", true);
+                break;
+
+            case R.id.menuEnglish:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " <English language selected.>");
+                AppConstants.languageChanged = true;
+                CommonUtils.StoreLanguageSettings(AddNewLinkToCloud.this, "en", true);
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void SetSubscriptionKeyForAzureMap() {
@@ -1359,6 +1430,12 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (AppConstants.languageChanged) {
+                    AppConstants.languageChanged = false;
+                    Intent i = new Intent(AddNewLinkToCloud.this, WelcomeActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                }
                 finish();
             }
         }, waitingTime);
