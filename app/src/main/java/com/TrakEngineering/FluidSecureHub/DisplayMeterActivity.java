@@ -938,7 +938,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                            AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.BLUE);
+                            AppConstants.colorToastBigFont(DisplayMeterActivity.this, AppConstants.OFF1, Color.BLUE);
                             Istimeout_Sec = true;
                             ResetTimeoutDisplayMeterScreen();
                         }
@@ -1140,7 +1140,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }*/
             }
         } else {
-            AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.CheckInternet), Color.BLUE);
+            AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
             Istimeout_Sec = true;
             ResetTimeoutDisplayMeterScreen();
         }
@@ -1162,7 +1162,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
             new GetUpgradeFirmwareStatus().execute(FS_selected, jsonData, authString);
         else {
-            AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.CheckInternet), Color.BLUE);
+            AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
             Istimeout_Sec = true;
             ResetTimeoutDisplayMeterScreen();
         }

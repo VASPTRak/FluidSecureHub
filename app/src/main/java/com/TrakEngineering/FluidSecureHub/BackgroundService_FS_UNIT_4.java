@@ -944,7 +944,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
                         System.out.println("APFS_PIPE Auto Stop! Count down timer completed");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
-                        AppConstants.colorToastBigFont(this, AppConstants.FS4_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
+                        AppConstants.colorToastBigFont(BackgroundService_FS_UNIT_4.this, AppConstants.FS4_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                         this.stopSelf();
                     }
@@ -1117,9 +1117,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
             secondsTime = 2000; //5000
         }
 
-        if (AppConstants.UP_Upgrade_fs4) {
-
-
+        /*if (AppConstants.UP_Upgrade_fs4) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -1134,18 +1132,13 @@ public class BackgroundService_FS_UNIT_4 extends Service {
                     File f = new File(LocalPath);
 
                     if (f.exists()) {
-
                         new BackgroundService_FS_UNIT_4.OkHttpFileUpload().execute(LocalPath, "application/binary");
-
                     } else {
                         Toast.makeText(getApplicationContext(), "File Not found " + LocalPath, Toast.LENGTH_LONG).show();
                     }
-
-
                 }
-
             }, 3000);
-        }
+        }*/
 
         new Handler().postDelayed(new Runnable() {
             @Override

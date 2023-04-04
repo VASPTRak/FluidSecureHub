@@ -400,13 +400,25 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public int HotspotEnableErrorCount = 0;
     public ProgressDialog pdOnResume;
     public ProgressDialog pdUpgradeProcess;
-    public boolean showUpgradeSpinnerMessage = true;
     public Handler BTConnectionHandler = new Handler(Looper.getMainLooper());
     public int delayMillis = 100;
     public String st = "";
     public boolean ConfigurationStep1IsInProgress = false;
     public boolean upgradeLoaderIsShown = false;
     public Menu myMenu;
+    public String BTStatusStr = "";
+    public int connectionAttemptCount = 0;
+    public boolean proceedAfterManualWifiConnect = false;
+    public boolean skipOnResume = false;
+    public int linkPositionForUpgrade = 0;
+
+    // ============ Bluetooth receiver for Upgrade =========//
+    public BroadcastBlueLinkData broadcastBlueLinkData = null;
+    public boolean isBroadcastReceiverRegistered = false;
+    public IntentFilter intentFilter;
+    public int btLinkPosition = 0;
+    public String upRequest = "", upResponse = "";
+    //======================================================//
 
     //============ Bluetooth reader Gatt end==============
 
@@ -421,6 +433,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         IsHotspotEnabled();
         AppConstants.IsBTLinkSelectedCurrently = false;
+
+        if (skipOnResume && !proceedAfterManualWifiConnect) {
+            skipOnResume = false;
+            return;
+        }
+        if (proceedAfterManualWifiConnect) {
+            proceedAfterManualWifiConnect = false;
+            new WiFiConnectTask().execute();
+        }
 
         AppConstants.showReaderStatus = false;
         //AppConstants.selectHosePressed = false;
@@ -506,7 +527,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                 new GetOfflineSSIDUsingLocationOnResume().execute();
             } else {
-                AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, AppConstants.OFF1, Color.BLUE);
             }
         }
 
@@ -520,8 +541,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             loading.show();
         }
-
-        showUpgradeSpinnerMessage();
 
         UpdateFSUI_seconds();
         DeleteOldLogFiles();//Delete log files older than 1 month
@@ -542,44 +561,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         DebugWindow();
         AppConstants.showWelcomeDialogForAddNewLink = true;
 
-    }
-
-    private void showUpgradeSpinnerMessage() {
-        try {
-            if (upgradeLoaderIsShown) {
-                return;
-            }
-
-            boolean showLoader = false;
-            if (BTConstants.CurrentTransactionIsBT) {
-                if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Started")) {
-                    BTConstants.UpgradeStatusBT1 = "";
-                    showLoader = true;
-                } else if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Started")) {
-                    BTConstants.UpgradeStatusBT2 = "";
-                    showLoader = true;
-                } else if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Started")) {
-                    BTConstants.UpgradeStatusBT3 = "";
-                    showLoader = true;
-                } else if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Started")) {
-                    BTConstants.UpgradeStatusBT4 = "";
-                    showLoader = true;
-                } else if (BTConstants.UpgradeStatusBT5.equalsIgnoreCase("Started")) {
-                    BTConstants.UpgradeStatusBT5 = "";
-                    showLoader = true;
-                } else if (BTConstants.UpgradeStatusBT6.equalsIgnoreCase("Started")) {
-                    BTConstants.UpgradeStatusBT6 = "";
-                    showLoader = true;
-                }
-                if (showLoader) {
-                    upgradeLoaderIsShown = true;
-                    BTLinkUpgradeProcessLoader();
-                }
-                showUpgradeSpinnerMessage = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -667,6 +648,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -950,7 +932,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         btnRetryWifi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppConstants.colorToastBigFont(getApplicationContext(), "Please wait for few seconds....", Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, "Please wait for few seconds....", Color.BLUE);
                 Log.i(TAG, "Please wait for few seconds....");
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "Please wait for few seconds....");
@@ -1746,6 +1728,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     GoButtonFunctionalityForSingleLink(LinkCommunicationType);
                     if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                         return;
+                    } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+                        LinkUpgradeFunctionality("HTTP", 0); // To handle Single HTTP link
                     }
                 }
             }
@@ -1928,13 +1912,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         startActivity(intent);
 
                                     } else {
-                                        AppConstants.colorToastBigFont(getApplicationContext(), "Fuel screen", Color.BLUE);
+                                        AppConstants.colorToastBigFont(WelcomeActivity.this, "Fuel screen", Color.BLUE);
                                         if (AppConstants.GenerateLogs)
                                             AppConstants.WriteinFile(TAG + "Fuel screen");
 
                                     }
                                 } else {
-                                    AppConstants.colorToastBigFont(getApplicationContext(), "Unauthorised day or timings", Color.BLUE);
+                                    AppConstants.colorToastBigFont(WelcomeActivity.this, "Unauthorised day or timings", Color.BLUE);
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "Unauthorised day or timings");
                                 }
@@ -1962,7 +1946,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
 
             } else {
-                AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, AppConstants.OFF1, Color.BLUE);
             }
         }
     }
@@ -2869,7 +2853,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } else {
                 hoseClicked = false;
-                AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, AppConstants.OFF1, Color.BLUE);
             }
         }
     }
@@ -2902,7 +2886,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     case Activity.RESULT_OK:
                         Log.i("Splash", "User agreed to make required location settings changes.");
 
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.PleaseWait), Color.BLACK);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.PleaseWait), Color.BLACK);
 
                         goButtonAction(null);
 
@@ -2910,7 +2894,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     case Activity.RESULT_CANCELED:
                         Log.i("Splash", "User chose not to make required location settings changes.");
 
-                        AppConstants.colorToastBigFont(getApplicationContext(), "Please On GPS to connect WiFi", Color.BLUE);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, "Please On GPS to connect WiFi", Color.BLUE);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Please On GPS to connect WiFi");
                         break;
@@ -3159,14 +3143,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             CheckBTConnection(SelectedItemPos, selSSID, BTselMacAddress);
                         } else {
-                            //AppConstants.colorToastBigFont(getApplicationContext(), "Selected Link not in BT paired list", Color.BLUE);
                             CommonUtils.AutoCloseBTLinkMessage(WelcomeActivity.this, "", getResources().getString(R.string.BTLinkNotInPairList));
                             BTConstants.CurrentSelectedLinkBT = 0;
                             RestrictHoseSelection(getResources().getString(R.string.PairingMode)); //"Please try again later" changed as per #1899.
                         }
                     } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
 
-                        AppConstants.colorToastBigFont(getApplicationContext(), "UDP Link Selected", Color.BLUE);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, "UDP Link Selected", Color.BLUE);
                         tvSSIDName.setText(getResources().getString(R.string.TryAgainLater));
                         BTConstants.CurrentSelectedLinkBT = 0;
                         btnGo.setVisibility(View.GONE);
@@ -3291,7 +3274,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                             }
 
                                         } else {
-                                            AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Color.BLUE);
+                                            AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.HoseIsBusy), Color.BLUE);
                                         }
                                     } else if (IsLinkFlagged != null && IsLinkFlagged.equalsIgnoreCase("True")) {
                                         if (AppConstants.GenerateLogs)
@@ -3337,7 +3320,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 AppConstants.FS1_CONNECTED_SSID = selSSID;
                                                 Constants.CurrentSelectedHose = "FS1";
                                                 btnGo.setVisibility(View.VISIBLE);
-                                                goButtonAction(null);
+                                                LinkUpgradeFunctionality("HTTP", position);
                                             } else {
                                                 RestHoseinUse_FS1 = true;
                                                 if (AppConstants.GenerateLogs)
@@ -3366,7 +3349,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 AppConstants.FS2_CONNECTED_SSID = selSSID;
                                                 Constants.CurrentSelectedHose = "FS2";
                                                 btnGo.setVisibility(View.VISIBLE);
-                                                goButtonAction(null);
+                                                LinkUpgradeFunctionality("HTTP", position);
                                             } else {
                                                 RestHoseinUse_FS2 = true;
                                                 if (AppConstants.GenerateLogs)
@@ -3394,7 +3377,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 AppConstants.FS3_CONNECTED_SSID = selSSID;
                                                 Constants.CurrentSelectedHose = "FS3";
                                                 btnGo.setVisibility(View.VISIBLE);
-                                                goButtonAction(null);
+                                                LinkUpgradeFunctionality("HTTP", position);
                                             } else {
                                                 RestHoseinUse_FS3 = true;
                                                 if (AppConstants.GenerateLogs)
@@ -3422,7 +3405,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 AppConstants.FS4_CONNECTED_SSID = selSSID;
                                                 Constants.CurrentSelectedHose = "FS4";
                                                 btnGo.setVisibility(View.VISIBLE);
-                                                goButtonAction(null);
+                                                LinkUpgradeFunctionality("HTTP", position);
                                             } else {
                                                 RestHoseinUse_FS4 = true;
                                                 if (AppConstants.GenerateLogs)
@@ -3449,6 +3432,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 AppConstants.FS5_CONNECTED_SSID = selSSID;
                                                 Constants.CurrentSelectedHose = "FS5";
                                                 btnGo.setVisibility(View.VISIBLE);
+                                                LinkUpgradeFunctionality("HTTP", position);
                                             } else {
                                                 RestHoseinUse_FS5 = true;
                                                 if (AppConstants.GenerateLogs)
@@ -3474,7 +3458,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                                 AppConstants.FS6_CONNECTED_SSID = selSSID;
                                                 Constants.CurrentSelectedHose = "FS6";
                                                 btnGo.setVisibility(View.VISIBLE);
-                                                goButtonAction(null);
+                                                LinkUpgradeFunctionality("HTTP", position);
                                             } else {
                                                 RestHoseinUse_FS6 = true;
                                                 if (AppConstants.GenerateLogs)
@@ -3854,12 +3838,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class CommandsPOST extends AsyncTask<String, Void, String> {
 
-        public String resp = "";
+        public String resp = "", URL_INFO_AFTER_RESET = "";
 
         protected String doInBackground(String... param) {
 
             System.out.println("url" + HTTP_URL);
             try {
+                URL_INFO_AFTER_RESET = param[2];
                 MediaType JSON = MediaType.parse("application/json");
 
                 OkHttpClient client = new OkHttpClient();
@@ -3888,7 +3873,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             try {
                 consoleString += "OUTPUT- " + result + "\n";
 
-                System.out.println(result);
+                if (!URL_INFO_AFTER_RESET.isEmpty()) {
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "Sending INFO command (After upgrade) to the Link.");
+                            new CommandsGET_INFO_AfterUpgrade().execute(URL_INFO_AFTER_RESET);
+                        }
+                    }, 5000);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -3941,6 +3935,73 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 ChangeWifiState(false);//turn wifi off
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "CommandsGET_INFO onPostExecute --Exception: " + e.getMessage());
+                Log.d("Ex", e.getMessage());
+                Constants.hotspotstayOn = true;
+            }
+        }
+    }
+
+    public class CommandsGET_INFO_AfterUpgrade extends AsyncTask<String, Void, String> {
+
+        public String resp = "";
+
+        protected String doInBackground(String... param) {
+
+            try {
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setWriteTimeout(15, TimeUnit.SECONDS);
+
+                Request request = new Request.Builder()
+                        .url(param[0])
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+
+            } catch (Exception e) {
+                ChangeWifiState(false);//turn wifi off
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "CommandsGET_INFO_AfterUpgrade InBackground --Exception: " + e.getMessage());
+                Log.d("Ex", e.getMessage());
+                Constants.hotspotstayOn = true;
+                if (loading != null) {
+                    loading.dismiss();
+                }
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            try {
+                if (result.startsWith("{") && result.contains("Version")) {
+
+                    try {
+                        JSONObject jsonObj = new JSONObject(result);
+                        String userData = jsonObj.getString("Version");
+                        JSONObject jsonObject = new JSONObject(userData);
+
+                        iot_version = jsonObject.getString("iot_version");
+
+                        storeUpgradeFSVersion(WelcomeActivity.this, linkPositionForUpgrade, iot_version, "HTTP");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "CommandsGET_INFO_AfterUpgrade Response: " + result);
+                    if (!AppConstants.UP_FirmwareVersion.isEmpty()) {
+                        storeUpgradeFSVersion(WelcomeActivity.this, linkPositionForUpgrade, AppConstants.UP_FirmwareVersion, "HTTP");
+                    }
+                }
+            } catch (Exception e) {
+                ChangeWifiState(false);//turn wifi off
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "CommandsGET_INFO_AfterUpgrade onPostExecute --Exception: " + e.getMessage());
                 Log.d("Ex", e.getMessage());
                 Constants.hotspotstayOn = true;
             }
@@ -4019,7 +4080,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             try {
                 if (result.equalsIgnoreCase("exception")) {
                     ChangeWifiState(false);//turn wifi off
-                    AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.ReconfigurationFailedRetry), Color.BLUE);
+                    AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.ReconfigurationFailedRetry), Color.BLUE);
                     Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step2 Failed while changing Hotspot Settings Please try again.. exception: " + result);
@@ -4043,6 +4104,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    skipOnResume = true;
                     wifiApManager.setWifiApEnabled(null, true);
 
                     System.out.println(result);
@@ -4456,6 +4518,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.MacAddressUpdated), Color.parseColor("#4CAF50"));
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Mac Address Updated.");
+                        skipOnResume = true;
                         wifiApManager.setWifiApEnabled(null, true);
                         ChangeWifiState(false);
                         alertHotspotOnOffAfterReconfigure();
@@ -4467,6 +4530,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.MacAddressNotUpdated), Color.BLUE);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "MAC address could not be updated.");
+                        skipOnResume = true;
                         wifiApManager.setWifiApEnabled(null, true);
                         ChangeWifiState(false);
                     }
@@ -5753,352 +5817,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
-    public void BTLinkUpgradeProcessLoader() {
-
-        pdUpgradeProcess = new ProgressDialog(WelcomeActivity.this);
-        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-        pdUpgradeProcess.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        pdUpgradeProcess.setCancelable(false);
-        pdUpgradeProcess.show();
-
-    }
-
-    public void ManageBTLinkUpgrade() {
-        try {
-
-            if (BTConstants.CurrentTransactionIsBT) {
-                switch (BTConstants.CurrentSelectedLinkBT) {
-                    case 1://Link 1
-                        if (AppConstants.UP_Upgrade_fs1) {
-                            if (pdOnResume != null) {
-                                pdOnResume.dismiss();
-                            }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
-                                //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Completed")) {
-                            BTConstants.isUpgradeInProgress_BT1 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 1: Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress1 + ")");
-                            BTConstants.UpgradeStatusBT1 = "";
-
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                            }
-
-                            startBTSppMain(1);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 10000);
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT1.equalsIgnoreCase("Incomplete")) {
-                            BTConstants.isUpgradeInProgress_BT1 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
-                            }
-
-                            startBTSppMain(1);
-
-                            BTConstants.UpgradeStatusBT1 = "";
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 3000);
-                            }
-                        }
-                        break;
-                    case 2://Link 2
-
-                        if (AppConstants.UP_Upgrade_fs2) {
-                            if (pdOnResume != null) {
-                                pdOnResume.dismiss();
-                            }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
-                                //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Completed")) {
-                            BTConstants.isUpgradeInProgress_BT2 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 2: Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress2 + ")");
-                            BTConstants.UpgradeStatusBT2 = "";
-
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                            }
-
-                            startBTSppMain(2);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 10000);
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT2.equalsIgnoreCase("Incomplete")) {
-                            BTConstants.isUpgradeInProgress_BT2 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
-                            }
-                            BTConstants.UpgradeStatusBT2 = "";
-
-                            startBTSppMain(2);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 3000);
-                            }
-                        }
-                        break;
-                    case 3://Link 3
-
-                        if (AppConstants.UP_Upgrade_fs3) {
-                            if (pdOnResume != null) {
-                                pdOnResume.dismiss();
-                            }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
-                                //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Completed")) {
-                            BTConstants.isUpgradeInProgress_BT3 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 3: Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress3 + ")");
-                            BTConstants.UpgradeStatusBT3 = "";
-
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                            }
-
-                            startBTSppMain(3);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 10000);
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT3.equalsIgnoreCase("Incomplete")) {
-                            BTConstants.isUpgradeInProgress_BT3 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
-                            }
-                            BTConstants.UpgradeStatusBT3 = "";
-
-                            startBTSppMain(3);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 3000);
-                            }
-                        }
-                        break;
-                    case 4://Link 4
-
-                        if (AppConstants.UP_Upgrade_fs4) {
-                            if (pdOnResume != null) {
-                                pdOnResume.dismiss();
-                            }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
-                                //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Completed")) {
-                            BTConstants.isUpgradeInProgress_BT4 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 4 Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress4 + ")");
-                            BTConstants.UpgradeStatusBT4 = "";
-
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                            }
-
-                            startBTSppMain(4);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 10000);
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT4.equalsIgnoreCase("Incomplete")) {
-                            BTConstants.isUpgradeInProgress_BT4 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
-                            }
-                            BTConstants.UpgradeStatusBT4 = "";
-
-                            startBTSppMain(4);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 3000);
-                            }
-                        }
-                        break;
-                    case 5://Link 5
-
-                        if (AppConstants.UP_Upgrade_fs5) {
-                            if (pdOnResume != null) {
-                                pdOnResume.dismiss();
-                            }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
-                                //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT5.equalsIgnoreCase("Completed")) {
-                            BTConstants.isUpgradeInProgress_BT5 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 5 Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress5 + ")");
-                            BTConstants.UpgradeStatusBT5 = "";
-
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                            }
-
-                            startBTSppMain(5);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 10000);
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT5.equalsIgnoreCase("Incomplete")) {
-                            BTConstants.isUpgradeInProgress_BT5 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
-                            }
-                            BTConstants.UpgradeStatusBT5 = "";
-
-                            startBTSppMain(5);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 3000);
-                            }
-                        }
-                        break;
-                    case 6://Link 6
-
-                        if (AppConstants.UP_Upgrade_fs6) {
-                            if (pdOnResume != null) {
-                                pdOnResume.dismiss();
-                            }
-                            if (pdUpgradeProcess != null & showUpgradeSpinnerMessage && !BTConstants.upgradeProgress.equalsIgnoreCase("0 %")) {
-                                //pdUpgradeProcess.setProgress(Integer.parseInt(BTConstants.upgradeProgress));
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds) + " " + BTConstants.upgradeProgress));
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT6.equalsIgnoreCase("Completed")) {
-                            BTConstants.isUpgradeInProgress_BT6 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "BTLink 6 Upgrade Completed. Connecting to LINK: " + AppConstants.CURRENT_SELECTED_SSID + " (" + BTConstants.deviceAddress6 + ")");
-                            BTConstants.UpgradeStatusBT6 = "";
-
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                            }
-
-                            startBTSppMain(6);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 10000);
-                            }
-                        }
-                        if (BTConstants.UpgradeStatusBT6.equalsIgnoreCase("Incomplete")) {
-                            BTConstants.isUpgradeInProgress_BT6 = false;
-                            showUpgradeSpinnerMessage = false;
-                            if (pdUpgradeProcess != null) {
-                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
-                            }
-                            BTConstants.UpgradeStatusBT6 = "";
-
-                            startBTSppMain(6);
-
-                            if (pdUpgradeProcess != null) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pdUpgradeProcess.dismiss();
-                                    }
-                                }, 3000);
-                            }
-                        }
-                        break;
-                    default://Something went wrong in link selection please try again.
-                        break;
-                }
-            }
-        } catch (Exception e) {
-            Log.e("Error: ", e.getMessage());
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-"+ TAG + "Exception in ManageBTLinkUpgrade: " + e.getMessage());
-            if (pdUpgradeProcess != null) {
-                pdUpgradeProcess.dismiss();
-            }
-        }
-    }
-
     /////////////////////////////////////////////////////////////////////////////////////////////////
     public void DisplayDashboardEveSecond() {
 
@@ -6113,13 +5831,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IsUiChangeReq();
         if (AppConstants.EnableFA || AppConstants.EnableServerForTLD) {
             UpdateServerMessages();
-        }
-
-        if (BTConstants.CurrentTransactionIsBT && showUpgradeSpinnerMessage) {
-            ManageBTLinkUpgrade();
-        }
-        if (!upgradeLoaderIsShown) {
-            showUpgradeSpinnerMessage();
         }
 
         // Toast.makeText(getApplicationContext(),"FS_Count"+FS_Count,Toast.LENGTH_SHORT).show();
@@ -6194,7 +5905,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkOneStatus && AppConstants.isRelayON_fs1 && !BTConstants.SwitchedBTToUDP1) {
                 if (CountBeforeReconnectRelay1 >= 1) {
-                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT1) {
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
                         SaveLastQtyInSharedPref(1, Constants.FS_1Pulse);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Retrying to Connect");
@@ -6310,7 +6021,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkTwoStatus && AppConstants.isRelayON_fs2 && !BTConstants.SwitchedBTToUDP2) {
                 if (CountBeforeReconnectRelay2 >= 1) {
-                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT2) {
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect")) {
                         SaveLastQtyInSharedPref(2, Constants.FS_2Pulse);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Retrying to Connect");
@@ -6425,7 +6136,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkThreeStatus && AppConstants.isRelayON_fs3 && !BTConstants.SwitchedBTToUDP3) {
                 if (CountBeforeReconnectRelay3 >= 1) {
-                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT3) {
+                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect")) {
                         SaveLastQtyInSharedPref(3, Constants.FS_3Pulse);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Retrying to Connect");
@@ -6540,7 +6251,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFourStatus && AppConstants.isRelayON_fs4 && !BTConstants.SwitchedBTToUDP4) {
                 if (CountBeforeReconnectRelay4 >= 1) {
-                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT4) {
+                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect")) {
                         SaveLastQtyInSharedPref(4, Constants.FS_4Pulse);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Retrying to Connect");
@@ -6656,7 +6367,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkFiveStatus && AppConstants.isRelayON_fs5 && !BTConstants.SwitchedBTToUDP5) {
                 if (CountBeforeReconnectRelay5 >= 1) {
-                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT5) {
+                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect")) {
                         SaveLastQtyInSharedPref(5, Constants.FS_5Pulse);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Retrying to Connect");
@@ -6771,7 +6482,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             // BT Link reconnection attempt for interrupted transaction
             if (BTConstants.CurrentTransactionIsBT && !BTConstants.BTLinkSixStatus && AppConstants.isRelayON_fs6 && !BTConstants.SwitchedBTToUDP6) {
                 if (CountBeforeReconnectRelay6 >= 1) {
-                    if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect") && !BTConstants.isUpgradeInProgress_BT6) {
+                    if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect")) {
                         SaveLastQtyInSharedPref(6, Constants.FS_6Pulse);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Retrying to Connect");
@@ -7041,7 +6752,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             consoleString += "RENAME:\n" + jsonRename;
 
-            new CommandsPOST().execute(URL_WIFI, jsonRename);
+            new CommandsPOST().execute(URL_WIFI, jsonRename, "");
 
         }
 
@@ -7154,6 +6865,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 //Link Reconfigure process start
                 ReconfigureCountdown();
                 Constants.hotspotstayOn = false;//hotspot enable/disable flag
+                skipOnResume = true;
                 wifiApManager.setWifiApEnabled(null, false);  //Disabled Hotspot
 
                 //Enable wifi
@@ -10348,6 +10060,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         System.out.println("MJ- connectWiFiLibrary" + asd);
 
         Constants.hotspotstayOn = false; //hotspot enable/disable flag
+        skipOnResume = true;
         wifiApManager.setWifiApEnabled(null, false);
 
 
@@ -10400,6 +10113,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         Constants.hotspotstayOn = false; //hotspot enable/disable flag
         if (CommonUtils.isHotspotEnabled(this)) {
+            skipOnResume = true;
             wifiApManager.setWifiApEnabled(null, false);
         }
 
@@ -10512,7 +10226,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } else {
 
-                AppConstants.colorToastBigFont(getApplicationContext(), "Connected to wrong Wifi Please try again..", Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wrong Wifi Please try again..", Color.BLUE);
 
             }
 
@@ -10520,7 +10234,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
 
             AppConstants.ManuallReconfigure = false;
-            AppConstants.colorToastBigFont(getApplicationContext(), "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt " + 2, Color.BLUE);
+            AppConstants.colorToastBigFont(WelcomeActivity.this, "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt " + 2, Color.BLUE);
             connectWiFiLibrary2Attempt();
 
 
@@ -10531,6 +10245,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public void connectWiFiLibrary2Attempt() {
 
         Constants.hotspotstayOn = false; //hotspot enable/disable flag
+        skipOnResume = true;
         wifiApManager.setWifiApEnabled(null, false);
 
 
@@ -10566,6 +10281,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 .onConnectionResult(WelcomeActivity.this::checkResult2Attempt)
                 .start();
 
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loading.dismiss();
+            }
+        }, 5000);
     }
 
     private void checkResult2Attempt(boolean isSuccess) {
@@ -10589,7 +10310,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } else {
 
-                AppConstants.colorToastBigFont(getApplicationContext(), "Connected to wrong Wifi Please try again..", Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wrong Wifi Please try again..", Color.BLUE);
 
             }
 
@@ -10597,7 +10318,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
 
             AppConstants.ManuallReconfigure = false;
-            AppConstants.colorToastBigFont(getApplicationContext(), "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt 3", Color.BLUE);
+            AppConstants.colorToastBigFont(WelcomeActivity.this, "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt 3", Color.BLUE);
             connectWiFiLibrary3Attempt();
 
 
@@ -10608,6 +10329,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public void connectWiFiLibrary3Attempt() {
 
         Constants.hotspotstayOn = false; //hotspot enable/disable flag
+        skipOnResume = true;
         wifiApManager.setWifiApEnabled(null, false);
 
 
@@ -10643,6 +10365,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 .onConnectionResult(WelcomeActivity.this::checkResult3Attempt)
                 .start();
 
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loading.dismiss();
+            }
+        }, 5000);
     }
 
     private void checkResult3Attempt(boolean isSuccess) {
@@ -10666,7 +10394,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } else {
 
-                AppConstants.colorToastBigFont(getApplicationContext(), "Connected to wrong Wifi Please try again..", Color.BLUE);
+                AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wrong Wifi Please try again..", Color.BLUE);
 
             }
 
@@ -10676,7 +10404,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             Constants.hotspotstayOn = false;
             AppConstants.ManuallReconfigure = true;
 
-            AppConstants.colorToastBigFont(getApplicationContext(), "Connect manually to: " + AppConstants.CURRENT_SELECTED_SSID, Color.BLUE);
+            AppConstants.colorToastBigFont(WelcomeActivity.this, "Connect manually to: " + AppConstants.CURRENT_SELECTED_SSID, Color.BLUE);
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Connect manually to: " + AppConstants.CURRENT_SELECTED_SSID + " and try..!! ");
 
@@ -11675,7 +11403,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             startService(serviceIntent);
 
         } else {
-            AppConstants.colorToastBigFont(getApplicationContext(), "Please select link and try..", Color.BLUE);
+            AppConstants.colorToastBigFont(WelcomeActivity.this, "Please select link and try..", Color.BLUE);
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "ConfigureTld Please select link and try..");
         }
@@ -11900,10 +11628,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             public void run() {
 
                 if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
+                    skipOnResume = true;
                     wifiApManager.setWifiApEnabled(null, true);
                 }
                 ChangeWifiState(false);
                 getipOverOSVersion();
+                loading.dismiss();
             }
         }, 5000);
         //=============================================
@@ -12150,7 +11880,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.enableHotspotManuallyWindow = false;
                 Constants.hotspotstayOn = false; //hotspot enable/disable flag
                 ReconfigureCountdown();
-                wifiApManager.setWifiApEnabled(null, false);  //Disabled Hotspot
+                if (CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
+                    skipOnResume = true;
+                    wifiApManager.setWifiApEnabled(null, false);  //Disabled Hotspot
+                }
                 //Enable wifi
                 WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
                 wifiManagerMM.setWifiEnabled(true);
@@ -12183,6 +11916,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     private void ChangeWifiState(boolean enable) {
 
+        skipOnResume = true;
         WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         if (enable) {
             //Enable wifi
@@ -12208,6 +11942,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 //Enable wifi
                 ChangeWifiState(true);
                 if (CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
+                    skipOnResume = true;
                     wifiApManager.setWifiApEnabled(null, false);
                 }
 
@@ -12220,7 +11955,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step1 Link ReConfiguration enable wifi manually.");
 
                         AppConstants.SELECTED_SSID_FOR_MANUALL = AppConstants.CURRENT_SELECTED_SSID; //ReconfigSSID;
-                        AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.SELECTED_SSID_FOR_MANUALL + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.SELECTED_SSID_FOR_MANUALL + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
                         startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                         ConfigurationStep1IsInProgress = true;
                         //mjconf
@@ -12271,8 +12006,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                             LinkReConfigurationProcessStep2();
                                         }
                                     }, 1000);*/
+                                    proceedAfterManualWifiConnect = false;
                                     new WiFiConnectTask().execute();
                                 } else {
+                                    proceedAfterManualWifiConnect = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step1 => Selected SSID: " + AppConstants.SELECTED_SSID_FOR_MANUALL +"; Connected SSID: " + ssid);
                                 }
@@ -12391,6 +12128,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        skipOnResume = true;
         wifiApManager.setWifiApEnabled(null, true); //one try for auto on
         try {
             Thread.sleep(6000);
@@ -12612,7 +12350,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (result.equalsIgnoreCase("exception")) {
 
                     ChangeWifiState(false);//turn wifi off
-                    AppConstants.colorToastBigFont(getApplicationContext(), "Step2 Failed while changing Hotspot Settings Please try again..", Color.BLUE);
+                    AppConstants.colorToastBigFont(WelcomeActivity.this, "Step2 Failed while changing Hotspot Settings Please try again..", Color.BLUE);
                     Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step2 Failed while changing Hotspot Settings aboveAndroid9.");
@@ -12693,6 +12431,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         Log.i(TAG, "Step4 Mac Address Updated");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step4 Mac Address Updated");
+                        skipOnResume = true;
                         wifiApManager.setWifiApEnabled(null, true);
                         ChangeWifiState(false);
                         //alertHotspotOnOffAfterReconfigure();
@@ -12704,6 +12443,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         Log.i(TAG, "Step4 MAC address could not be updated");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Step4 MAC address could not be updated");
+                        skipOnResume = true;
                         wifiApManager.setWifiApEnabled(null, true);
                         ChangeWifiState(false);
                     }
@@ -12743,7 +12483,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             AppConstants.WriteinFile(TAG + "Step1 UDP Link ReConfiguration enable wifi manually.");
 
                         AppConstants.SELECTED_SSID_FOR_MANUALL = AppConstants.CURRENT_SELECTED_SSID;//ReconfigSSID;
-                        AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.SELECTED_SSID_FOR_MANUALL + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.SELECTED_SSID_FOR_MANUALL + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
                         startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
 
                         new CountDownTimer(180000, 2000) {
@@ -12791,7 +12531,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                 ChangeWifiState(false);
                                 Log.i(TAG, "Step1 onFinish ssid Not connected. Please try again..");
-                                AppConstants.colorToastBigFont(getApplicationContext(), "Failed to connect to " + AppConstants.SELECTED_SSID_FOR_MANUALL + " Please try again..", Color.BLUE);
+                                AppConstants.colorToastBigFont(WelcomeActivity.this, "Failed to connect to " + AppConstants.SELECTED_SSID_FOR_MANUALL + " Please try again..", Color.BLUE);
                                 Log.i(TAG, "Step1 Failed to connect to " + AppConstants.SELECTED_SSID_FOR_MANUALL + " Please try again..");
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + "Step1 Failed to connect to " + AppConstants.SELECTED_SSID_FOR_MANUALL + " Please try again..");
@@ -12895,7 +12635,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                     } else {
                         ChangeWifiState(false);//turn wifi off
-                        AppConstants.colorToastBigFont(getApplicationContext(), "Step2 Failed while changing Hotspot Settings Please try again..", Color.BLUE);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, "Step2 Failed while changing Hotspot Settings Please try again..", Color.BLUE);
                         Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + linkstation_response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Step2 Failed while changing Hotspot Settings UDPLink. exception: " + linkstation_response);
@@ -13205,7 +12945,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -13249,7 +12989,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -13294,7 +13034,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
 
@@ -13340,7 +13080,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -13385,7 +13125,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -13430,7 +13170,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -13643,6 +13383,38 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "SetBTLinksMacAddress Exception:" + e.getMessage());
         }
+    }
+
+    public String GetBTLinksMacAddress(int linkPosition) {
+        String BTMacAddress = "";
+        try {
+            switch (linkPosition) {
+                case 0:
+                    BTMacAddress = BTConstants.deviceAddress1;
+                    break;
+                case 1://Link Two
+                    BTMacAddress = BTConstants.deviceAddress2;
+                    break;
+                case 2://Link Three
+                    BTMacAddress = BTConstants.deviceAddress3;
+                    break;
+                case 3://Link Four
+                    BTMacAddress = BTConstants.deviceAddress4;
+                    break;
+                case 4://Link Five
+                    BTMacAddress = BTConstants.deviceAddress5;
+                    break;
+                case 5://Link Six
+                    BTMacAddress = BTConstants.deviceAddress6;
+                    break;
+                default://Something went wrong in link selection please try again.
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "GetBTLinksMacAddress Exception: " + e.getMessage());
+        }
+        return BTMacAddress;
     }
 
     private void SetSSIDIfSingleHose() {
@@ -13982,9 +13754,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         btnGo.setVisibility(View.VISIBLE);
         //AppConstants.goButtonClicked = true;
-        goButtonAction(null);
-
-
+        //goButtonAction(null);
+        LinkUpgradeFunctionality("BT", 0);
     }
 
     private void RedirectBtLinkTwoToNextScreen(String selSSID) {
@@ -14025,8 +13796,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        goButtonAction(null);
-
+        //goButtonAction(null);
+        LinkUpgradeFunctionality("BT", 1);
     }
 
     private void RedirectBtLinkThreeToNextScreen(String selSSID) {
@@ -14066,8 +13837,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        goButtonAction(null);
-
+        //goButtonAction(null);
+        LinkUpgradeFunctionality("BT", 2);
     }
 
     private void RedirectBtLinkFourToNextScreen(String selSSID) {
@@ -14107,8 +13878,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        goButtonAction(null);
-
+        //goButtonAction(null);
+        LinkUpgradeFunctionality("BT", 3);
     }
 
     private void RedirectBtLinkFiveToNextScreen(String selSSID) {
@@ -14147,8 +13918,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        goButtonAction(null);
-
+        //goButtonAction(null);
+        LinkUpgradeFunctionality("BT", 4);
     }
 
     private void RedirectBtLinkSixToNextScreen(String selSSID) {
@@ -14187,8 +13958,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         btnGo.setVisibility(View.VISIBLE);
-        goButtonAction(null);
-
+        //goButtonAction(null);
+        LinkUpgradeFunctionality("BT", 5);
     }
 
     private void ManualLinkUpgrade() {
@@ -14503,19 +14274,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
-    public CharSequence GetSpinnerMessage(String message) {
-        try {
-            SpannableString ss2 = new SpannableString(message);
-            ss2.setSpan(new RelativeSizeSpan(1.4f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            return ss2;
-        } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception in GetSpinnerMessage. " + ex.getMessage());
-            return message;
-        }
-    }
-
     public boolean HoseAvailabilityCheckTwoAttempts(ArrayList<String> NearByBTDevices, String deviceAddress) {
         boolean isConnected = false;
         try {
@@ -14670,6 +14428,64 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         startActivity(i);
     }
 
+    private void BTServiceSelectionFunction(String linkPosition) {
+        long sqlite_id = 0;
+        switch (linkPosition) {
+            case "0"://Link 1
+
+                Log.i(TAG, "BTServiceSelected One>>");
+                Intent serviceIntent1 = new Intent(WelcomeActivity.this, BackgroundService_BTOne.class);
+                serviceIntent1.putExtra("SERVER_IP", "");
+                serviceIntent1.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent1);
+
+                break;
+            case "1"://Link 2
+
+                Log.i(TAG, "BTServiceSelected Two>>");
+                Intent serviceIntent2 = new Intent(WelcomeActivity.this, BackgroundService_BTTwo.class);
+                serviceIntent2.putExtra("SERVER_IP", "");
+                serviceIntent2.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent2);
+
+                break;
+            case "2"://Link 3
+                Log.i(TAG, "BTServiceSelected Three>>");
+                Intent serviceIntent3 = new Intent(WelcomeActivity.this, BackgroundService_BTThree.class);
+                serviceIntent3.putExtra("SERVER_IP", "");
+                serviceIntent3.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent3);
+
+                break;
+            case "3"://Link 4
+                Log.i(TAG, "BTServiceSelected Four>>");
+                Intent serviceIntent4 = new Intent(WelcomeActivity.this, BackgroundService_BTFour.class);
+                serviceIntent4.putExtra("SERVER_IP", "");
+                serviceIntent4.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent4);
+
+                break;
+            case "4"://Link 5
+                Log.i(TAG, "BTServiceSelected Five>>");
+                Intent serviceIntent5 = new Intent(WelcomeActivity.this, BackgroundService_BTFive.class);
+                serviceIntent5.putExtra("SERVER_IP", "");
+                serviceIntent5.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent5);
+
+                break;
+            case "5"://Link 6
+                Log.i(TAG, "BTServiceSelected Six>>");
+                Intent serviceIntent6 = new Intent(WelcomeActivity.this, BackgroundService_BTSix.class);
+                serviceIntent6.putExtra("SERVER_IP", "");
+                serviceIntent6.putExtra("sqlite_id", sqlite_id);
+                startService(serviceIntent6);
+
+                break;
+            default://Something went wrong in link selection please try again.
+                break;
+        }
+    }
+
     public class RedirectToOscilloscope extends AsyncTask<String, String, String> {
 
         ProgressDialog pd;
@@ -14780,7 +14596,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -14810,7 +14626,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -14841,7 +14657,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -14871,7 +14687,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -14901,7 +14717,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -14931,7 +14747,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
+                        AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
                 break;
@@ -15265,4 +15081,1309 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         Intent in = new Intent(WelcomeActivity.this, AddNewLinkToCloud.class);
         startActivity(in);
     }
+
+    public void LinkUpgradeFunctionality(String linkType, int linkPosition) {
+        try {
+            if (AppConstants.UP_Upgrade) {
+                FirmwareFileCheckAndDownload(linkType, linkPosition);
+            } else {
+                ContinueToTheTransaction();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            ContinueToTheTransaction();
+        }
+    }
+
+    private void ContinueToTheTransaction() {
+        if (isBroadcastReceiverRegistered) {
+            isBroadcastReceiverRegistered = false;
+            UnregisterReceiver();
+        }
+        if (pdUpgradeProcess != null) {
+            if (pdUpgradeProcess.isShowing()) {
+                pdUpgradeProcess.dismiss();
+            }
+        }
+        goButtonAction(null);
+    }
+
+    private void FirmwareFileCheckAndDownload(String linkType, int linkPosition) {
+        String logUpgrade = AppConstants.LOG_UPGRADE_HTTP;
+        try {
+            if (linkType.equalsIgnoreCase("BT")) {
+                logUpgrade = AppConstants.LOG_UPGRADE_BT;
+            }
+
+            String binFolderPath = String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN));
+            File folder = new File(binFolderPath);
+            boolean success = true;
+            if (!folder.exists()) {
+                success = folder.mkdirs();
+            }
+
+            String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
+
+            File f = new File(LocalPath);
+            if (f.exists()) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(logUpgrade + "-" + TAG + "Link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ") already exist. Skip download.");
+                // Continue to upgrade
+                if (linkType.equalsIgnoreCase("BT")) {
+                    CheckBTLinkStatusForUpgrade(linkPosition, false);
+                } else {
+                    CheckHTTPLinkStatusForUpgrade(linkPosition);
+                }
+            } else {
+                if (AppConstants.UP_FilePath != null) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(logUpgrade + "-" + TAG + "Downloading link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ")");
+                    new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name, linkType, String.valueOf(linkPosition));
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(logUpgrade + "-" + TAG + "Link upgrade File path null. Upgrade process skipped.");
+                    ContinueToTheTransaction();
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(logUpgrade + "-" + TAG + "FirmwareFileCheckAndDownload Exception:>>" + ex.getMessage() + "; Upgrade process skipped.");
+            ContinueToTheTransaction();
+        }
+    }
+
+    public class DownloadFileFromURL extends AsyncTask<String, String, String> {
+
+        ProgressDialog pd;
+        String linkType;
+        int linkPosition;
+
+        @Override
+        protected void onPreExecute() {
+            pd = new ProgressDialog(WelcomeActivity.this);
+            String message = getResources().getString(R.string.FileDownloadInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds);
+            pd.setMessage(GetSpinnerMessage(message));
+            pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... f_url) {
+            int count;
+            try {
+                linkType = f_url[3];
+                linkPosition = Integer.parseInt(f_url[4]);
+
+                URL url = new URL(f_url[0]);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                // getting file length
+                int lenghtOfFile = connection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
+                // Output stream to write file
+                OutputStream output = new FileOutputStream(f_url[1] + "/" + f_url[2]);
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+
+            return null;
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            pd.setProgress(Integer.parseInt(progress[0]));
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            pd.dismiss();
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Continue to upgrade
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        CheckBTLinkStatusForUpgrade(linkPosition, false);
+                    } else {
+                        CheckHTTPLinkStatusForUpgrade(linkPosition);
+                    }
+                }
+            }, 100);
+        }
+    }
+
+    //region HTTP Link Upgrade Functionality
+
+    private void CheckHTTPLinkStatusForUpgrade(int linkPosition) {
+        try {
+            ShowUpgradeProcessLoader(getResources().getString(R.string.PleaseWaitSeveralSeconds));
+
+            String LinkName = "", selMacAddress = "";
+            if (serverSSIDList != null && serverSSIDList.size() > 0) {
+                LinkName = serverSSIDList.get(linkPosition).get("WifiSSId");
+                selMacAddress = serverSSIDList.get(linkPosition).get("MacAddress");
+            }
+            String ipAddress = "";
+            boolean isMacConnected = false;
+            if (AppConstants.DetailsListOfConnectedDevices != null) {
+                for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                    String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+
+                    if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "Selected LINK (" + LinkName + " <==> " + selMacAddress + ") is connected to hotspot.");
+                        ipAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                        isMacConnected = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isMacConnected) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "Selected LINK (" + LinkName + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
+
+                if (AppConstants.DetailsListOfConnectedDevices != null) {
+                    for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+                        String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
+
+                        String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+
+                        ipAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
+                        if (!ipAddress.trim().isEmpty()) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "===================================================================");
+                            break;
+                        }
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "===================================================================");
+                    }
+                }
+            }
+
+            if (!ipAddress.trim().isEmpty()) {
+                linkPositionForUpgrade = linkPosition;
+                HTTPLinkUpgradeFunctionality(LinkName, ipAddress);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Upgrade process skipped.");
+                ContinueToTheTransaction();
+            }
+
+        } catch (Exception e) {
+            if (pdUpgradeProcess != null) {
+                if (pdUpgradeProcess.isShowing()) {
+                    pdUpgradeProcess.dismiss();
+                }
+            }
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "CheckHTTPLinkStatusForUpgrade Exception:>>" + e.getMessage());
+        }
+    }
+
+    private void HTTPLinkUpgradeFunctionality(String LinkName, String ipAddress) {
+        try {
+            String HTTP_URL = "http://" + ipAddress + ":80/";
+            String URL_UPGRADE_START = HTTP_URL + "upgrade?command=start";
+
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (pdUpgradeProcess != null) {
+                        if (pdUpgradeProcess.isShowing()) {
+                            pdUpgradeProcess.dismiss();
+                        }
+                    }
+                    //upgrade bin
+                    String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "Sending UPGRADE START command to Link: " + LinkName);
+                    new CommandsPOST().execute(URL_UPGRADE_START, "", "");
+
+                    new OkHttpFileUpload().execute(LocalPath, "application/binary", ipAddress, LinkName);
+                }
+            }, 1000);
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "HTTPLinkUpgradeFunctionality Exception: " + ex.getMessage());
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Upgrade process skipped.");
+            ContinueToTheTransaction();
+        }
+    }
+
+    public class OkHttpFileUpload extends AsyncTask<String, Void, String> {
+
+        public String resp = "", HTTP_URL = "", URL_RESET = "", URL_INFO_AFTER_RESET = "", LinkName = "";
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            pd = new ProgressDialog(WelcomeActivity.this);
+            String message = getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds);
+            pd.setMessage(GetSpinnerMessage(message));
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        protected String doInBackground(String... param) {
+            try {
+                String LocalPath = param[0];
+                String LocalContentType = param[1];
+                HTTP_URL = "http://" + param[2] + ":80/";
+                URL_RESET = HTTP_URL + "upgrade?command=reset";
+                URL_INFO_AFTER_RESET = HTTP_URL + "client?command=info";
+                LinkName = param[3];
+
+                MediaType contentType = MediaType.parse(LocalContentType);
+
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(15, TimeUnit.SECONDS);
+                client.setReadTimeout(15, TimeUnit.SECONDS);
+                RequestBody body = RequestBody.create(contentType, readBytesFromFile(LocalPath));
+                Request request = new Request.Builder()
+                        .url(HTTP_URL)
+                        .header("Accept-Encoding", "identity")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                return response.body().string();
+
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "OkHttpFileUpload InBackground Exception: " + e.getMessage());
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //pd.dismiss();
+            try {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "Sending RESET command to Link: " + LinkName);
+                        new CommandsPOST().execute(URL_RESET, "", URL_INFO_AFTER_RESET);
+                    }
+                }, 5000);
+
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (pd != null && pd.isShowing()) {
+                            pd.dismiss();
+                        }
+                        ContinueToTheTransaction();
+                    }
+                }, 12000);
+
+            } catch (Exception e) {
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                }
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_HTTP + "-" + TAG + "OkHttpFileUpload onPostExecute Exception: " + e.getMessage());
+            }
+        }
+    }
+
+    private static byte[] readBytesFromFile(String filePath) {
+        FileInputStream fileInputStream = null;
+        byte[] bytesArray = null;
+
+        try {
+            File file = new File(filePath);
+            bytesArray = new byte[(int) file.length()];
+
+            //read file into bytes[]
+            fileInputStream = new FileInputStream(file);
+            fileInputStream.read(bytesArray);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return bytesArray;
+    }
+
+    //endregion
+
+    //region BT Link Upgrade Functionality
+
+    private String getBTStatusStr(int linkPosition) {
+        switch (linkPosition) {
+            case 0://Link 1
+                BTStatusStr = BTConstants.BTStatusStrOne;
+                break;
+            case 1://Link 2
+                BTStatusStr = BTConstants.BTStatusStrTwo;
+                break;
+            case 2://Link 3
+                BTStatusStr = BTConstants.BTStatusStrThree;
+                break;
+            case 3://Link 4
+                BTStatusStr = BTConstants.BTStatusStrFour;
+                break;
+            case 4://Link 5
+                BTStatusStr = BTConstants.BTStatusStrFive;
+                break;
+            case 5://Link 6
+                BTStatusStr = BTConstants.BTStatusStrSix;
+                break;
+        }
+        return BTStatusStr;
+    }
+
+    private String getBTLinkIndexByPosition(int linkPosition) {
+        String BTLinkIndex = "";
+        switch (linkPosition) {
+            case 0://Link 1
+                BTLinkIndex = "BTLink 1:";
+                break;
+            case 1://Link 2
+                BTLinkIndex = "BTLink 2:";
+                break;
+            case 2://Link 3
+                BTLinkIndex = "BTLink 3:";
+                break;
+            case 3://Link 4
+                BTLinkIndex = "BTLink 4:";
+                break;
+            case 4://Link 5
+                BTLinkIndex = "BTLink 5:";
+                break;
+            case 5://Link 6
+                BTLinkIndex = "BTLink 6:";
+                break;
+        }
+        return BTLinkIndex;
+    }
+
+    public void ShowUpgradeProcessLoader(String message) {
+
+        pdUpgradeProcess = new ProgressDialog(WelcomeActivity.this);
+        pdUpgradeProcess.setMessage(GetSpinnerMessage(message));
+        pdUpgradeProcess.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pdUpgradeProcess.setCancelable(false);
+        pdUpgradeProcess.show();
+
+    }
+
+    public CharSequence GetSpinnerMessage(String message) {
+        try {
+            SpannableString ss2 = new SpannableString(message);
+            ss2.setSpan(new RelativeSizeSpan(1.4f), 0, ss2.length(), 0);
+            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+            return ss2;
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in GetSpinnerMessage. " + ex.getMessage());
+            return message;
+        }
+    }
+
+    private void retryBTConnection(int linkPosition) {
+        try {
+            switch (linkPosition) {
+                case 0: // Link 1
+                    if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + "BTLink 1: Link not connected. Retrying to connect.");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect1();
+                    }
+                    break;
+                case 1: // Link 2
+                    if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + "BTLink 2: Link not connected. Retrying to connect.");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect2();
+                    }
+                    break;
+                case 2: // Link 3
+                    if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + "BTLink 3: Link not connected. Retrying to connect.");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect3();
+                    }
+                    break;
+                case 3: // Link 4
+                    if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + "BTLink 4: Link not connected. Retrying to connect.");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect4();
+                    }
+                    break;
+                case 4: // Link 5
+                    if (!BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + "BTLink 5: Link not connected. Retrying to connect.");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect5();
+                    }
+                    break;
+                case 5: // Link 6
+                    if (!BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + "BTLink 6: Link not connected. Retrying to connect.");
+                        //Retrying to connect to link
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.activity = WelcomeActivity.this;
+                        btspp.connect6();
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void CheckBTLinkStatusForUpgrade(int linkPosition, boolean retryAttempt) {
+        try {
+            if (!retryAttempt) {
+                ShowUpgradeProcessLoader(getResources().getString(R.string.PleaseWaitSeveralSeconds));
+            }
+
+            new CountDownTimer(10000, 2000) {
+                public void onTick(long millisUntilFinished) {
+                    if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Link is connected.");
+                        RegisterBTReceiver(linkPosition);
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                infoCommandBeforeUpgrade(linkPosition); // Continue to BT upgrade
+                            }
+                        }, 1000);
+                        cancel();
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Connection Status...");
+                    }
+                }
+
+                public void onFinish() {
+
+                    if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Link is connected.");
+                        RegisterBTReceiver(linkPosition);
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                infoCommandBeforeUpgrade(linkPosition); // Continue to BT upgrade
+                            }
+                        }, 1000);
+                    } else {
+                        if (connectionAttemptCount > 0) {
+                            connectionAttemptCount = 0;
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Link not connected.");
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "Upgrade process skipped.");
+                                    ContinueToTheTransaction();
+                                }
+                            }, 100);
+                        } else {
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    connectionAttemptCount++;
+                                    retryBTConnection(linkPosition);
+                                    CheckBTLinkStatusForUpgrade(linkPosition, true);
+                                }
+                            }, 100);
+                        }
+                    }
+                }
+            }.start();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " CheckBTLinkStatusForUpgrade Exception:>>" + e.getMessage());
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Upgrade process skipped.");
+            ContinueToTheTransaction();
+        }
+    }
+
+    private void RegisterBTReceiver(int linkPosition) {
+        btLinkPosition = linkPosition;
+        broadcastBlueLinkData = new BroadcastBlueLinkData();
+        switch (linkPosition) {
+            case 0://Link 1
+                intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
+                break;
+            case 1://Link 2
+                intentFilter = new IntentFilter("BroadcastBlueLinkTwoData");
+                break;
+            case 2://Link 3
+                intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
+                break;
+            case 3://Link 4
+                intentFilter = new IntentFilter("BroadcastBlueLinkFourData");
+                break;
+            case 4://Link 5
+                intentFilter = new IntentFilter("BroadcastBlueLinkFiveData");
+                break;
+            case 5://Link 6
+                intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
+                break;
+        }
+        registerReceiver(broadcastBlueLinkData, intentFilter);
+        isBroadcastReceiverRegistered = true;
+    }
+
+    private void UnregisterReceiver() {
+        unregisterReceiver(broadcastBlueLinkData);
+    }
+
+    public class BroadcastBlueLinkData extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            try {
+                Bundle notificationData = intent.getExtras();
+                String Action = notificationData.getString("Action");
+                if (Action == null) {
+                    Action = "";
+                }
+                String actionByPosition = "";
+                switch (btLinkPosition) {
+                    case 0://Link 1
+                        actionByPosition = "BlueLinkOne";
+                        break;
+                    case 1://Link 2
+                        actionByPosition = "BlueLinkTwo";
+                        break;
+                    case 2://Link 3
+                        actionByPosition = "BlueLinkThree";
+                        break;
+                    case 3://Link 4
+                        actionByPosition = "BlueLinkFour";
+                        break;
+                    case 4://Link 5
+                        actionByPosition = "BlueLinkFive";
+                        break;
+                    case 5://Link 6
+                        actionByPosition = "BlueLinkSix";
+                        break;
+                    default://Something went wrong in link selection please try again.
+                        break;
+                }
+
+                if (Action.equalsIgnoreCase(actionByPosition)) {
+
+                    upRequest = notificationData.getString("Request");
+                    upResponse = notificationData.getString("Response");
+
+                    if (upResponse == null) {
+                        upResponse = "";
+                    }
+
+                    Log.i(TAG, getBTLinkIndexByPosition(btLinkPosition) + " Response from Link >>" + upResponse.trim());
+                    /*if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(btLinkPosition) + " Response from Link >>" + upResponse.trim());*/
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(btLinkPosition) + " onReceive Exception: " + e.getMessage());
+            }
+        }
+    }
+
+    private void SendBTCommands(int linkPosition, String btCommand) {
+        try {
+            BTSPPMain btspp = new BTSPPMain();
+
+            switch (linkPosition) {
+                case 0://Link 1
+                    btspp.send1(btCommand);
+                    break;
+                case 1://Link 2
+                    btspp.send2(btCommand);
+                    break;
+                case 2://Link 3
+                    btspp.send3(btCommand);
+                    break;
+                case 3://Link 4
+                    btspp.send4(btCommand);
+                    break;
+                case 4://Link 5
+                    btspp.send5(btCommand);
+                    break;
+                case 5://Link 6
+                    btspp.send6(btCommand);
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " SendBTCommands Exception:>>" + e.getMessage());
+            //ContinueToTheTransaction();
+        }
+    }
+
+    private void SendBytes(int linkPosition, byte[] bufferBytes) {
+        try {
+            BTSPPMain btspp = new BTSPPMain();
+
+            switch (linkPosition) {
+                case 0://Link 1
+                    btspp.sendBytes1(bufferBytes);
+                    break;
+                case 1://Link 2
+                    btspp.sendBytes2(bufferBytes);
+                    break;
+                case 2://Link 3
+                    btspp.sendBytes3(bufferBytes);
+                    break;
+                case 3://Link 4
+                    btspp.sendBytes4(bufferBytes);
+                    break;
+                case 4://Link 5
+                    btspp.sendBytes5(bufferBytes);
+                    break;
+                case 5://Link 6
+                    btspp.sendBytes6(bufferBytes);
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " SendBytes Exception:>>" + e.getMessage());
+            ///ContinueToTheTransaction();
+        }
+    }
+
+    private void SetNewVersionFlag(int linkPosition, boolean isNewLink) {
+        try {
+            switch (linkPosition) {
+                case 0://Link 1
+                    BTConstants.isNewVersionLinkOne = isNewLink;
+                    break;
+                case 1://Link 2
+                    BTConstants.isNewVersionLinkTwo = isNewLink;
+                    break;
+                case 2://Link 3
+                    BTConstants.isNewVersionLinkThree = isNewLink;
+                    break;
+                case 3://Link 4
+                    BTConstants.isNewVersionLinkFour = isNewLink;
+                    break;
+                case 4://Link 5
+                    BTConstants.isNewVersionLinkFive = isNewLink;
+                    break;
+                case 5://Link 6
+                    BTConstants.isNewVersionLinkSix = isNewLink;
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " SetNewVersionFlag Exception:>>" + e.getMessage());
+        }
+    }
+
+    private boolean GetNewVersionFlag(int linkPosition) {
+        boolean isNewLink = false;
+        try {
+            switch (linkPosition) {
+                case 0://Link 1
+                     isNewLink = BTConstants.isNewVersionLinkOne;
+                    break;
+                case 1://Link 2
+                    isNewLink = BTConstants.isNewVersionLinkTwo;
+                    break;
+                case 2://Link 3
+                    isNewLink = BTConstants.isNewVersionLinkThree;
+                    break;
+                case 3://Link 4
+                    isNewLink = BTConstants.isNewVersionLinkFour;
+                    break;
+                case 4://Link 5
+                    isNewLink = BTConstants.isNewVersionLinkFive;
+                    break;
+                case 5://Link 6
+                    isNewLink = BTConstants.isNewVersionLinkSix;
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " GetNewVersionFlag Exception:>>" + e.getMessage());
+        }
+        return isNewLink;
+    }
+
+    private void infoCommandBeforeUpgrade(int linkPosition) {
+        try {
+            //Execute info command before upgrade to get link version
+            upRequest = "";
+            upResponse = "";
+            String LinkName = "";
+            if (serverSSIDList != null && serverSSIDList.size() > 0) {
+                LinkName = serverSSIDList.get(linkPosition).get("WifiSSId");
+            }
+            SetNewVersionFlag(linkPosition, false);
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Sending Info command (before upgrade) to Link: " + LinkName);
+            SendBTCommands(linkPosition, BTConstants.info_cmd);
+
+            new CountDownTimer(5000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    long attempt = (5 - (millisUntilFinished / 1000));
+                    if (attempt > 0) {
+                        if (upRequest.equalsIgnoreCase(BTConstants.info_cmd) && !upResponse.equalsIgnoreCase("")) {
+                            //Info command (before upgrade) success.
+                            if (upResponse.contains("records") && upResponse.contains("mac_address")) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
+                                SetNewVersionFlag(linkPosition, true);
+                                getVersionBeforeUpgrade(upResponse.trim(), true, linkPosition);
+                                upResponse = "";
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + upResponse.trim());
+                                SetNewVersionFlag(linkPosition, false);
+                                getVersionBeforeUpgrade(upResponse.trim(), false, linkPosition);
+                            }
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (pdUpgradeProcess != null) {
+                                        if (pdUpgradeProcess.isShowing()) {
+                                            pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
+                                        }
+                                    }
+                                    upgradeCommand(linkPosition);
+                                }
+                            }, 1000);
+                            cancel();
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: false");
+                        }
+                    }
+                }
+
+                public void onFinish() {
+
+                    if (upRequest.equalsIgnoreCase(BTConstants.info_cmd) && !upResponse.equalsIgnoreCase("")) {
+                        //Info command (before upgrade) success.
+                        if (upResponse.contains("records") && upResponse.contains("mac_address")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
+                            SetNewVersionFlag(linkPosition, true);
+                            getVersionBeforeUpgrade(upResponse.trim(), true, linkPosition);
+                            upResponse = "";
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + upResponse.trim());
+                            SetNewVersionFlag(linkPosition, false);
+                            getVersionBeforeUpgrade(upResponse.trim(), false, linkPosition);
+                        }
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (pdUpgradeProcess != null) {
+                                    if (pdUpgradeProcess.isShowing()) {
+                                        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
+                                    }
+                                }
+                                upgradeCommand(linkPosition);
+                            }
+                        }, 1000);
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: false.");
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "Upgrade process skipped.");
+                                ContinueToTheTransaction();
+                            }
+                        }, 100);
+                    }
+                }
+            }.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " infoCommandBeforeUpgrade Exception:>>" + e.getMessage());
+        }
+    }
+
+    public void getVersionBeforeUpgrade(String response, boolean isNewLink, int linkPosition) {
+        try {
+            if (isNewLink) {
+                // New Link version
+                JSONObject jsonObject = new JSONObject(response);
+
+                JSONObject versionJsonArray = jsonObject.getJSONObject("version");
+                String version = versionJsonArray.getString("version");
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK Version (Before Upgrade) >> " + version);
+            } else {
+                // Old Link version
+                String version = "";
+                if (response.contains("BTMAC")) {
+                    String[] split_res = response.split("\n");
+
+                    if (split_res.length > 10) {
+                        for (String res : split_res) {
+                            if (res.contains("version:")) {
+                                version = res.substring(res.indexOf(":") + 1).trim();
+                            }
+                            if (!version.isEmpty()) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK Version (Before Upgrade) >> " + version);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " getVersionBeforeUpgrade Exception:>>" + e.getMessage());
+        }
+    }
+
+    private void upgradeCommand(int linkPosition) {
+        try {
+            //Execute upgrade Command
+            upRequest = "";
+            upResponse = "";
+
+            String LinkName = "";
+            if (serverSSIDList != null && serverSSIDList.size() > 0) {
+                LinkName = serverSSIDList.get(linkPosition).get("WifiSSId");
+            }
+
+            String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " BTLinkUpgradeFunctionality file name: " + AppConstants.UP_Upgrade_File_name);
+
+            File file = new File(LocalPath);
+            long file_size = file.length();
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Sending upgrade command to Link: " + LinkName);
+            SendBTCommands(linkPosition, BTConstants.linkUpgrade_cmd + file_size);
+
+            new CountDownTimer(10000, 2000) {
+
+                public void onTick(long millisUntilFinished) {
+                    if (upRequest.contains(BTConstants.linkUpgrade_cmd) && !upResponse.isEmpty()) {
+                        //upgrade command success.
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking upgrade command response. Response:>>" + upResponse.trim());
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                new BTUpgradeFileUploadFunctionality().execute(String.valueOf(linkPosition));
+                            }
+                        }, 1000);
+                        cancel();
+                    }
+                }
+
+                public void onFinish() {
+
+                    if ((upRequest.contains(BTConstants.linkUpgrade_cmd) && !upResponse.isEmpty()) || (!GetNewVersionFlag(linkPosition))) {
+                        //upgrade command success.
+                        if (GetNewVersionFlag(linkPosition)) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking upgrade command response. Response:>>" + upResponse.trim());
+                        }
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                new BTUpgradeFileUploadFunctionality().execute(String.valueOf(linkPosition));
+                            }
+                        }, 1000);
+                    } else {
+                        // Terminating the transaction as per Bolong's comment in #2120 => DO NOT send any command after sending upgrade command.
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking upgrade command response. Response: false.");
+                        if (pdUpgradeProcess != null) {
+                            if (pdUpgradeProcess.isShowing()) {
+                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
+                            }
+                        }
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + "Upgrade process skipped.");
+                                ContinueToTheTransaction();
+                            }
+                        }, 2000);
+                    }
+                }
+            }.start();
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " upgradeCommand Exception:>>" + e.getMessage());
+        }
+    }
+
+    public class BTUpgradeFileUploadFunctionality extends AsyncTask<String, String, String> {
+
+        int counter = 0, linkPosition = 0;
+        String LinkName = "";
+
+        @Override
+        protected void onPreExecute() {
+            BTConstants.BTUpgradeStatus = "";
+        }
+
+        @Override
+        protected String doInBackground(String... f_url) {
+
+            try {
+                linkPosition = Integer.parseInt(f_url[0]);
+                if (serverSSIDList != null && serverSSIDList.size() > 0) {
+                    LinkName = serverSSIDList.get(linkPosition).get("WifiSSId");
+                }
+
+                String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+
+                File file = new File(LocalPath);
+
+                long file_size = file.length();
+                long tempFileSize = file_size;
+
+                InputStream inputStream = new FileInputStream(file);
+
+                int BUFFER_SIZE = 256; //490; //8192;
+                byte[] bufferBytes = new byte[BUFFER_SIZE];
+
+                if (inputStream != null) {
+                    long bytesWritten = 0;
+                    int amountOfBytesRead;
+
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Upload (" + AppConstants.UP_Upgrade_File_name + ") started...");
+                    while ((amountOfBytesRead = inputStream.read(bufferBytes)) != -1) {
+
+                        bytesWritten += amountOfBytesRead;
+                        int progressValue = (int) (100 * ((double) bytesWritten) / ((double) file_size));
+
+                        if (pdUpgradeProcess != null) {
+                            if (pdUpgradeProcess.isShowing()) {
+                                pdUpgradeProcess.setMessage(GetSpinnerMessage((getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)) + " " + String.valueOf(progressValue) + " %"));
+                            }
+                        }
+                        //publishProgress(String.valueOf(progressValue));
+
+                        if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
+                            SendBytes(linkPosition, bufferBytes);
+
+                            tempFileSize = tempFileSize - BUFFER_SIZE;
+                            if (tempFileSize < BUFFER_SIZE){
+                                int i = (int) (long) tempFileSize;
+                                if (i > 0) {
+                                    //i = i + BUFFER_SIZE;
+                                    bufferBytes = new byte[i];
+                                }
+                            }
+
+                            Thread.sleep(10);
+                        } else {
+                            //BTConstants.IsFileUploadCompleted = false;
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK connection lost while uploading the upgrade file. Progress: " + progressValue + " %");
+                            BTConstants.BTUpgradeStatus = "Incomplete";
+                            break;
+                        }
+                    }
+                    inputStream.close();
+                    if (BTConstants.BTUpgradeStatus.isEmpty()) { // || BTConstants.BTUpgradeStatus.equalsIgnoreCase("Started")
+                        BTConstants.BTUpgradeStatus = "Completed";
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " UpgradeFileUploadFunctionality InBackground Exception: " + e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            //pd.dismiss();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK Status: " + getBTStatusStr(linkPosition));
+
+            if (BTConstants.BTUpgradeStatus.equalsIgnoreCase("Completed")) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Upgrade Completed. Connecting to the LINK: " + LinkName + " (" + GetBTLinksMacAddress(linkPosition) + ")");
+                BTConstants.BTUpgradeStatus = "";
+
+                if (pdUpgradeProcess != null) {
+                    if (pdUpgradeProcess.isShowing()) {
+                        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.ConnectingToTheLINK) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
+                    }
+                }
+
+                storeUpgradeFSVersion(WelcomeActivity.this, linkPosition, AppConstants.UP_FirmwareVersion, "BT");
+
+                Handler handler = new Handler();
+                int delay = 10000;
+
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
+                            counter = 0;
+                            handler.removeCallbacksAndMessages(null);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Link is connected.");
+                            ContinueToTheTransaction();
+                        } else {
+                            counter++;
+                            if (counter < 3) {
+                                retryBTConnection(linkPosition);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Waiting to reconnect... (Attempt: " + counter + ")");
+                                handler.postDelayed(this, delay);
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Failed to connect to the link. (Status: " + getBTStatusStr(linkPosition) + ")");
+                                if (pdUpgradeProcess != null) {
+                                    if (pdUpgradeProcess.isShowing()) {
+                                        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
+                                    }
+                                }
+                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        counter = 0;
+                                        ContinueToTheTransaction();
+                                    }
+                                }, 1000);
+                            }
+                        }
+                    }
+                }, delay);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK connection lost.");
+                BTConstants.BTUpgradeStatus = "";
+
+                if (pdUpgradeProcess != null) {
+                    if (pdUpgradeProcess.isShowing()) {
+                        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.LINKConnectionLost) + "\n" + getResources().getString(R.string.TryAgainLater)));
+                    }
+                }
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ContinueToTheTransaction();
+                    }
+                }, 1000);
+            }
+        }
+    }
+
+    public void storeUpgradeFSVersion(Context context, int linkPosition, String fsVersion, String linkType) {
+        try {
+            String strHoseId = "", strFsVersion = "", hoseId = "";
+            switch (linkPosition) {
+                case 0://Link 1
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        strHoseId = "hoseid_bt1";
+                        strFsVersion = "fsversion_bt1";
+                    } else {
+                        strHoseId = "hoseid_fs1";
+                        strFsVersion = "fsversion_fs1";
+                    }
+                    hoseId = AppConstants.UP_HoseId_fs1;
+                    break;
+                case 1://Link 2
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        strHoseId = "hoseid_bt2";
+                        strFsVersion = "fsversion_bt2";
+                    } else {
+                        strHoseId = "hoseid_fs2";
+                        strFsVersion = "fsversion_fs2";
+                    }
+                    hoseId = AppConstants.UP_HoseId_fs2;
+                    break;
+                case 2://Link 3
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        strHoseId = "hoseid_bt3";
+                        strFsVersion = "fsversion_bt3";
+                    } else {
+                        strHoseId = "hoseid_fs3";
+                        strFsVersion = "fsversion_fs3";
+                    }
+                    hoseId = AppConstants.UP_HoseId_fs3;
+                    break;
+                case 3://Link 4
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        strHoseId = "hoseid_bt4";
+                        strFsVersion = "fsversion_bt4";
+                    } else {
+                        strHoseId = "hoseid_fs4";
+                        strFsVersion = "fsversion_fs4";
+                    }
+                    hoseId = AppConstants.UP_HoseId_fs4;
+                    break;
+                case 4://Link 5
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        strHoseId = "hoseid_bt5";
+                        strFsVersion = "fsversion_bt5";
+                    } else {
+                        strHoseId = "hoseid_fs5";
+                        strFsVersion = "fsversion_fs5";
+                    }
+                    hoseId = AppConstants.UP_HoseId_fs5;
+                    break;
+                case 5://Link 6
+                    if (linkType.equalsIgnoreCase("BT")) {
+                        strHoseId = "hoseid_bt6";
+                        strFsVersion = "fsversion_bt6";
+                    } else {
+                        strHoseId = "hoseid_fs6";
+                        strFsVersion = "fsversion_fs6";
+                    }
+                    hoseId = AppConstants.UP_HoseId_fs6;
+                    break;
+            }
+
+            SharedPreferences sharedPref = context.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(strHoseId, hoseId);
+            editor.putString(strFsVersion, fsVersion);
+            editor.commit();
+
+
+            UpgradeVersionEntity objEntityClass = new UpgradeVersionEntity();
+            objEntityClass.IMEIUDID = AppConstants.getIMEI(WelcomeActivity.this);
+            objEntityClass.Email = CommonUtils.getCustomerDetails_backgroundServiceBT(WelcomeActivity.this).PersonEmail;
+            objEntityClass.HoseId = hoseId;
+            objEntityClass.Version = fsVersion;
+
+            if (hoseId != null && !hoseId.trim().isEmpty()) {
+                new UpgradeCurrentVersionWithUpgradableVersion(objEntityClass, linkPosition).execute();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public class UpgradeCurrentVersionWithUpgradableVersion extends AsyncTask<Void, Void, String> {
+        UpgradeVersionEntity objUpgrade;
+        int linkPosition;
+        public String response = null;
+
+        public UpgradeCurrentVersionWithUpgradableVersion(UpgradeVersionEntity objUpgrade, int linkPosition) {
+            this.objUpgrade = objUpgrade;
+            this.linkPosition = linkPosition;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            try {
+                ServerHandler serverHandler = new ServerHandler();
+
+                Gson gson = new Gson();
+                String jsonData = gson.toJson(objUpgrade);
+
+                //----------------------------------------------------------------------------------
+                String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
+                response = serverHandler.PostTextData(WelcomeActivity.this, AppConstants.webURL, jsonData, authString);
+                //----------------------------------------------------------------------------------
+
+            } catch (Exception ex) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " UpgradeCurrentVersionWithUpgradableVersion Exception: " + ex.getMessage());
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String aVoid) {
+            try {
+                AppConstants.UP_Upgrade = false;
+                JSONObject jsonObject = new JSONObject(aVoid);
+                String ResponceMessage = jsonObject.getString("ResponceMessage");
+                String ResponceText = jsonObject.getString("ResponceText");
+
+                if (ResponceMessage.equalsIgnoreCase("success")) {
+                    AppConstants.clearSharedPrefByName(WelcomeActivity.this, Constants.PREF_FS_UPGRADE);
+                }
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
+            }
+        }
+    }
+    //endregion
 }

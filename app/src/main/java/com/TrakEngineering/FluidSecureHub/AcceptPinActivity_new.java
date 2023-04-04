@@ -277,7 +277,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSCardReader_" + BLEType + "/";
 
         if (!IsVehicleNumberRequire.equalsIgnoreCase("True")) {
-            CheckForFirmwareUpgrade();
+            //CheckForFirmwareUpgrade();
             CommonUtils.LogReaderDetails(AcceptPinActivity_new.this);
         }
 
@@ -371,7 +371,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 }
                             }
                         } else {
-                            AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.CheckInternet), Color.BLUE);
+                            AppConstants.colorToastBigFont(AcceptPinActivity_new.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                         }
 
                     } else if (pin.equalsIgnoreCase("") && !FKey.equalsIgnoreCase("")) {
@@ -381,7 +381,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
-                            AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.CheckInternet), Color.BLUE);
+                            AppConstants.colorToastBigFont(AcceptPinActivity_new.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                         }
 
                     } else if (!pin.equalsIgnoreCase("") && !FKey.equalsIgnoreCase("")) {
@@ -392,7 +392,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
-                            AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.CheckInternet), Color.BLUE);
+                            AppConstants.colorToastBigFont(AcceptPinActivity_new.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                         }
                     }
                 } else {
@@ -1058,7 +1058,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     }
 
                 } else {
-                    AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.BLUE);
+                    AppConstants.colorToastBigFont(AcceptPinActivity_new.this, "Access Device not found", Color.BLUE);
                 }
 
             }
@@ -2281,7 +2281,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Vehicle is not assigned for this PIN");
                             CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForVehicle + " not assigned for this PIN");
-                            //AppConstants.colorToastBigFont(getApplicationContext(), "Vehicle is not assigned for this PIN", Color.BLUE);
                         }
 
 
@@ -2518,7 +2517,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     }
 
-    private void CheckForFirmwareUpgrade() {
+    /*private void CheckForFirmwareUpgrade() {
 
         //LINK UPGRADE
         if (AppConstants.UP_Upgrade) {
@@ -2532,9 +2531,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 success = folder.mkdirs();
             }
 
-            /*if (BTConstants.CurrentTransactionIsBT) {
+            *//*if (BTConstants.CurrentTransactionIsBT) {
                 AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
-            }*/
+            }*//*
             String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
             File f = new File(LocalPath);
             if (f.exists()) {
@@ -2554,9 +2553,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 }
             }
         }
-    }
+    }*/
 
-    public class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    /*public class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         ProgressDialog pd;
 
@@ -2625,7 +2624,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         protected void onPostExecute(String file_url) {
             pd.dismiss();
         }
-    }
+    }*/
 
     @SuppressLint("ResourceAsColor")
     private void UpdateReaderStatusToUI() {

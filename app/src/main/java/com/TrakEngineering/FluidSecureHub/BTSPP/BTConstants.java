@@ -125,21 +125,7 @@ public class BTConstants {
     public static String BT6HOSE_ID;
     public static String BT6SITE_ID;
 
-    public static String UpgradeStatusBT1 = "";
-    public static String UpgradeStatusBT2 = "";
-    public static String UpgradeStatusBT3 = "";
-    public static String UpgradeStatusBT4 = "";
-    public static String UpgradeStatusBT5 = "";
-    public static String UpgradeStatusBT6 = "";
-
-    public static boolean isUpgradeInProgress_BT1 = false;
-    public static boolean isUpgradeInProgress_BT2 = false;
-    public static boolean isUpgradeInProgress_BT3 = false;
-    public static boolean isUpgradeInProgress_BT4 = false;
-    public static boolean isUpgradeInProgress_BT5 = false;
-    public static boolean isUpgradeInProgress_BT6 = false;
-    public static String upgradeProgress = "0 %";
-    public static boolean IsFileUploadCompleted = false;
+    public static String BTUpgradeStatus = "";
 
     //date formatters for Old and New version link
     public static SimpleDateFormat dateFormatForOldVersion = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

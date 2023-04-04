@@ -1084,7 +1084,7 @@ public class BackgroundService_AP_PIPE extends Service {
                         System.out.println("APFS_PIPE Auto Stop! Count down timer completed");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
-                        AppConstants.colorToastBigFont(this, AppConstants.FS1_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
+                        AppConstants.colorToastBigFont(BackgroundService_AP_PIPE.this, AppConstants.FS1_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                         this.stopSelf();
                     }
@@ -1258,14 +1258,10 @@ public class BackgroundService_AP_PIPE extends Service {
             secondsTime = 2000; //5000
         }
 
-        if (AppConstants.UP_Upgrade_fs1) {
-
+        /*if (AppConstants.UP_Upgrade_fs1) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-
-//                    String command = "upgrade?command=start";
-//                    new TCPCommandsPOST().execute(HTTP_URL, command);
 
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Sending UPGRADE START command to Link: " + LinkName);
@@ -1276,18 +1272,13 @@ public class BackgroundService_AP_PIPE extends Service {
                     File f = new File(LocalPath);
 
                     if (f.exists()) {
-
                         new OkHttpFileUpload().execute(LocalPath, "application/binary");
-
                     } else {
                         Toast.makeText(getApplicationContext(), "File Not found " + LocalPath, Toast.LENGTH_LONG).show();
                     }
-
-
                 }
-
             }, 3000);
-        }
+        }*/
 
         new Handler().postDelayed(new Runnable() {
             @Override

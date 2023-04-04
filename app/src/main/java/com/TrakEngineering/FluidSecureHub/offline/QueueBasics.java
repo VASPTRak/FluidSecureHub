@@ -28,9 +28,9 @@ import com.microsoft.azure.storage.queue.CloudQueueMessage;
  */
 public class QueueBasics {
 
+    private static final String TAG = "QueueBasics ";
 
-
-     public  static void addMessageOnQueue(Context ctx,String jsonString, String queType)
+     public static void addMessageOnQueue(Context ctx,String jsonString, String queType)
      {
          try
          {
@@ -45,8 +45,6 @@ public class QueueBasics {
                  queTitle=QueueNameForTLD;
              else
                  queTitle=QueueName;
-
-
 
              final String storageConnectionString =QueueConnectionStringValue;
 
@@ -71,15 +69,15 @@ public class QueueBasics {
 
              //String jsonStr="{\"TransactionsModelsObj\":[{\"AppInfo\":\" Version:0.53.8.60 Samsung SM-T385 Android 8.1.0 \",\"CurrentHours\":\"\",\"CurrentOdometer\":\"\",\"FuelQuantity\":\"3.2\",\"HubId\":\"4438\",\"Id\":\"3\",\"OnlineTransactionId\":\"\",\"PersonId\":\"1329\",\"PersonPin\":\"123\",\"Pulses\":\"32\",\"SiteId\":\"157\",\"TransactionDateTime\":\"2019-08-08 14:22\",\"TransactionFrom\":\"AP\",\"VehicleId\":\"131\"},{\"AppInfo\":\" Version:0.53.8.60 Samsung SM-T385 Android 8.1.0 \",\"CurrentHours\":\"25\",\"CurrentOdometer\":\"252\",\"FuelQuantity\":\"3.2\",\"HubId\":\"4438\",\"Id\":\"4\",\"OnlineTransactionId\":\"\",\"PersonId\":\"1329\",\"PersonPin\":\"123\",\"Pulses\":\"32\",\"SiteId\":\"157\",\"TransactionDateTime\":\"2019-08-08 14:23\",\"TransactionFrom\":\"AP\",\"VehicleId\":\"140\"},{\"AppInfo\":\" Version:0.53.8.60 Samsung SM-T385 Android 8.1.0 \",\"CurrentHours\":\"\",\"CurrentOdometer\":\"\",\"FuelQuantity\":\"3.2\",\"HubId\":\"4438\",\"Id\":\"5\",\"OnlineTransactionId\":\"\",\"PersonId\":\"1329\",\"PersonPin\":\"123\",\"Pulses\":\"32\",\"SiteId\":\"157\",\"TransactionDateTime\":\"2019-08-08 14:24\",\"TransactionFrom\":\"AP\",\"VehicleId\":\"131\"},{\"AppInfo\":\" Version:0.53.8.60 Samsung SM-T385 Android 8.1.0 \",\"CurrentHours\":\"\",\"CurrentOdometer\":\"\",\"FuelQuantity\":\"2.4\",\"HubId\":\"4438\",\"Id\":\"6\",\"OnlineTransactionId\":\"\",\"PersonId\":\"1329\",\"PersonPin\":\"123\",\"Pulses\":\"24\",\"SiteId\":\"157\",\"TransactionDateTime\":\"2019-08-08 14:26\",\"TransactionFrom\":\"AP\",\"VehicleId\":\"131\"}]}";
 
-
              // Create a message and add it to the queue.
              CloudQueueMessage message = new CloudQueueMessage(jsonString);
              queue.addMessage(message);
          }
          catch (Exception e)
          {
-             // Output the stack trace.
              e.printStackTrace();
+             if (AppConstants.GenerateLogs)
+                 AppConstants.WriteinFile(TAG + "addMessageOnQueue Exception: " + e.getMessage());
          }
      }
 

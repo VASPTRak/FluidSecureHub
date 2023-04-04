@@ -128,9 +128,22 @@
                     tools:layout_editor_absoluteX="229dp"
                     tools:layout_editor_absoluteY="110dp" />
 
+                <ImageButton
+                    android:id="@+id/iBtn_AddNewTank"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:backgroundTint="@android:color/transparent"
+                    android:contentDescription="@string/AddTankToolTip"
+                    android:longClickable="true"
+                    android:scaleType="fitCenter"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    app:srcCompat="@drawable/question_icon" />
             </TableRow>
 
-            <TableRow
+            <!--<TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="5dp">
@@ -175,7 +188,7 @@
                         app:srcCompat="@drawable/question_icon" />
                 </LinearLayout>
 
-            </TableRow>
+            </TableRow>-->
 
             <TableRow
                 android:layout_width="match_parent"
@@ -209,6 +222,7 @@
                         android:maxLength="4"
                         android:text="60"
                         android:textSize="22sp"
+                        android:gravity="center_horizontal"
                         tools:layout_editor_absoluteX="207dp"
                         tools:layout_editor_absoluteY="165dp" />
 
@@ -267,6 +281,7 @@
                         android:maxLength="4"
                         android:text="60"
                         android:textSize="22sp"
+                        android:gravity="center_horizontal"
                         tools:layout_editor_absoluteX="201dp"
                         tools:layout_editor_absoluteY="211dp" />
 

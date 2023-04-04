@@ -318,7 +318,6 @@ public class BackgroundService_AP extends Service {
                 System.out.println("getDeviceName" + minFuelLimit);
             }
 
-            // AppConstants.colorToastBigFont(getApplicationContext(), "Please wait...", Color.BLACK);
 
             quantityRecords.clear();
 
@@ -985,7 +984,7 @@ public class BackgroundService_AP extends Service {
                         System.out.println("APFS33 Auto Stop! Count down timer completed");
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
-                        AppConstants.colorToastBigFont(this, AppConstants.FS2_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
+                        AppConstants.colorToastBigFont(BackgroundService_AP.this, AppConstants.FS2_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                         this.stopSelf();
                     }
@@ -1158,18 +1157,10 @@ public class BackgroundService_AP extends Service {
             secondsTime = 2000; //5000
         }
 
-
-        if (AppConstants.UP_Upgrade_fs2) {
-
-
+        /*if (AppConstants.UP_Upgrade_fs2) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-
-
-                    /*if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " URL_UPGRADE_START:"+URL_UPGRADE_START);
-                    String command = "upgrade?command=start";
-                    new TCPCommandsPOST().execute(HTTP_URL, command);*/
 
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Sending UPGRADE START command to Link: " + LinkName);
@@ -1180,18 +1171,13 @@ public class BackgroundService_AP extends Service {
                     File f = new File(LocalPath);
 
                     if (f.exists()) {
-
                         new BackgroundService_AP.OkHttpFileUpload().execute(LocalPath, "application/binary");
-
                     } else {
                         Toast.makeText(getApplicationContext(), "File Not found " + LocalPath, Toast.LENGTH_LONG).show();
                     }
-
-
                 }
-
             }, 3000);
-        }
+        }*/
 
         new Handler().postDelayed(new Runnable() {
             @Override

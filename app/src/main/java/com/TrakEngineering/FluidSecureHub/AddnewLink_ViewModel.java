@@ -1,8 +1,5 @@
 package com.TrakEngineering.FluidSecureHub;
 
-import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
-import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -42,6 +39,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleObserver {
@@ -187,10 +187,11 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
         return fuelTypeId;
     }
 
-    public ArrayList<String> getTankSpinnerList() {
+    public ArrayList<String> getTankSpinnerList(Context context) {
 
         ArrayList<String> tankNumbers = new ArrayList<>();
         tankNumbers.clear();
+        tankNumbers.add(context.getResources().getString(R.string.BtnAddTank));
         for (int i = 0; i < CommonUtils.TankDataList.size(); i++) {
             String TankName = CommonUtils.TankDataList.get(i).get("TankName");
             String TankNumber = CommonUtils.TankDataList.get(i).get("TankNumber");

@@ -65,6 +65,8 @@ public class AppConstants {
     public static final String LOG_MAINTAIN = "[MAINTAIN]";
     public static final String LOG_BACKGROUND = "[BACKGROUND]";
     public static final String LOG_RECONFIG = "[RECONFIG]";
+    public static final String LOG_UPGRADE_BT = "[UPGRADE-BT]";
+    public static final String LOG_UPGRADE_HTTP = "[UPGRADE-HTTP]";
 
     public static int ScreenResolutionYOffSet = 0;
     public static int COUNT_HOTSPOT_MAIL;

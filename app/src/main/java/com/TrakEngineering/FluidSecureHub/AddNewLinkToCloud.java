@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -100,7 +101,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     private Spinner Spinner_tankNumber, spin_pulseRatio;
     private EditText edt_linkname, edt_pumpOnTime, edt_pumpOffTime; //, edt_username, edt_enter_password
     private EditText edt_LinkNewName; //, edt_StreetAddress, edt_UnitsMeasured, edt_Pulses
-    private Button btn_cancel, btn_done, btnAddNewTank, btnMap;
+    private Button btn_cancel, btn_done, btnMap; //btnAddNewTank
     private String expression = "^[a-zA-Z0-9-_ ]*$";
     private ProgressDialog pd;
     //private CheckBox chkShowHidePassword;
@@ -132,6 +133,9 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     String HTTP_URL = "";
     String URL_INFO = "";
     String URL_UPDATE_FS_INFO = "";
+
+    int TimeOutInMinutes = 3;
+    boolean IsTimeout_Sec = true;
 
     /*static {
         AzureMaps.setSubscriptionKey("FJ29LaayVFiy20Hp29hEe5mG7F6QTbhfyV6wuWwG7Sg");
@@ -193,7 +197,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
         iBtn_LinkName = (ImageButton) findViewById(R.id.iBtn_LinkName);
         iBtn_NewName = (ImageButton) findViewById(R.id.iBtn_NewName);
-        btnAddNewTank = (Button) findViewById(R.id.btnAddNewTank);
+        //btnAddNewTank = (Button) findViewById(R.id.btnAddNewTank);
         iBtn_AddNewTank = (ImageButton) findViewById(R.id.iBtn_AddNewTank);
         iBtn_PumpOnTime = (ImageButton) findViewById(R.id.iBtn_PumpOnTime);
         iBtn_PumpOffTime = (ImageButton) findViewById(R.id.iBtn_PumpOffTime);
@@ -202,6 +206,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         spin_pulseRatio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                IsTimeout_Sec = false;
                 selectedPulseRatio = spin_pulseRatio.getSelectedItem().toString();
             }
 
@@ -254,16 +259,17 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         spin_pulseRatio.setAdapter(aaPR);
         spin_pulseRatio.setSelection(1);
 
-        btnAddNewTank.setOnClickListener(new View.OnClickListener() {
+        /*btnAddNewTank.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertAddNewTankDialog();
             }
-        });
+        });*/
 
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                IsTimeout_Sec = false;
                 //AlertDialogBox(AddNewLinkToCloud.this, "New success message");
                 if (validateData()) {
                     String UnitsMeasured = "1";
@@ -303,6 +309,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             @Override
             public void onClick(View v) {
 
+                IsTimeout_Sec = false;
                 SetSubscriptionKeyForAzureMap();
 
                 alertMapDialog();
@@ -314,6 +321,18 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         if (AppConstants.showWelcomeDialogForAddNewLink) {
             welcomeDialog();
         }
+
+        long screenTimeOut = TimeOutInMinutes * 60000L;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (IsTimeout_Sec) {
+                    IsTimeout_Sec = false;
+
+                    BackToWelcomeActivity();
+                }
+            }
+        }, screenTimeOut);
 
         /*chkShowHidePassword.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -332,6 +351,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
     @Override
     public void onBackPressed() {
+        IsTimeout_Sec = false;
         BackToWelcomeActivity();
     }
 
@@ -418,12 +438,23 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         }
     }
 
-    public void BindTankList() {
+    public void BindTankList(boolean newTankAdded) {
 
-        ArrayAdapter aa = new ArrayAdapter(this, R.layout.spinner_item_list, addnewlinkViewModel.getTankSpinnerList());
+        ArrayAdapter aa = new ArrayAdapter(this, R.layout.spinner_item_list, addnewlinkViewModel.getTankSpinnerList(this));
         aa.setDropDownViewResource(R.layout.spinner_item_list);
         Spinner_tankNumber.setAdapter(aa);
-
+        if (Spinner_tankNumber.getSelectedItemPosition() == 0) {
+            if (CommonUtils.TankDataList.size() > 0) {
+                Spinner_tankNumber.setSelection(1);
+                addnewlinkViewModel.TankPositionSel = 0;
+            }
+        }
+        if (newTankAdded) {
+            if (CommonUtils.TankDataList.size() > 0) {
+                Spinner_tankNumber.setSelection(CommonUtils.TankDataList.size()); // last item
+                addnewlinkViewModel.TankPositionSel = CommonUtils.TankDataList.size() - 1;
+            }
+        }
     }
 
     public void alertAddNewTankDialog() {
@@ -496,6 +527,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             dialog.setContentView(R.layout.dialog_map);
             dialog.setCancelable(false);
 
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
             mapControl = dialog.findViewById(R.id.map_control);
             mapControl.onCreate(mySavedInstanceState);
 
@@ -540,6 +573,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                         selectedAddressFromMap = searchResults.get(position).toString();
                         //isAddressSelected = false;
                         tv_SearchAddress.dismissDropDown();
+
                         if (listOfPositions != null) {
                             if (listOfPositions.size() > 0) {
                                 String latitude = listOfPositions.get(position).get("latitude");
@@ -745,7 +779,16 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 //        ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
 //        ((TextView) parent.getChildAt(0)).setTextSize(25);
         if (parent.getId() == R.id.spin_tanknumber) {
-            addnewlinkViewModel.TankPositionSel = position;
+            IsTimeout_Sec = false;
+            if (position == 0) {
+                alertAddNewTankDialog();
+                if (CommonUtils.TankDataList.size() > 0) {
+                    Spinner_tankNumber.setSelection(1);
+                    addnewlinkViewModel.TankPositionSel = 0;
+                }
+            } else {
+                addnewlinkViewModel.TankPositionSel = position - 1;
+            }
         }
     }
 
@@ -953,7 +996,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                     String tanksForLinksObj = jsonObject.getString(AppConstants.RES_TANK_DATA);
                     CommonUtils.BindTankData(tanksForLinksObj, true);
-                    BindTankList();
+                    BindTankList(false);
 
                     String productsForTanksObj = jsonObject.getString(AppConstants.RES_PRODUCT_DATA);
                     CommonUtils.BindProductData(productsForTanksObj);
@@ -1050,7 +1093,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            BindTankList();
+                            BindTankList(true);
                             pd.dismiss();
                             if (addTankDialog != null) {
                                 addTankDialog.dismiss();
@@ -1615,7 +1658,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step1 Link Configuration enable wifi manually.");
 
-                    AppConstants.colorToastBigFont(getApplicationContext(), getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
+                    AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
                     startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                     configurationProcessStarted = false;
                     ConfigurationStep1IsInProgress = true;
@@ -1908,7 +1951,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                 if (result.equalsIgnoreCase("exception")) {
                     ChangeWifiState(false);//turn wifi off
-                    AppConstants.colorToastBigFont(getApplicationContext(), "Configuration process fail. Please retry.", Color.BLUE);
+                    AppConstants.colorToastBigFont(AddNewLinkToCloud.this, "Configuration process fail. Please retry.", Color.BLUE);
                     Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step2 Failed while changing Hotspot Settings Please try again.. exception: " + result);
