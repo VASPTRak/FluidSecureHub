@@ -1,35 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_check_all.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_dept.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_hours_acitvity.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_manualvehicle_f.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_odo.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_pin_fob.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_accept_vehicle_fob.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_bt_link_ptype.xml" value="0.2692307692307692" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_device_control_pin.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_device_control_vehicle.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_fobreader.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_read_access_device_fob.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_registration.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_sparehub.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/activity_welcome.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/custom_alertdialouge.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/dialog_bt_link_list.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/item_hose.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/layout_listitem.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/single_list.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/spinner_itemtemp.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/layout/test.xml" value="0.25416666666666665" />
-        <entry key="..\:/Android Workspace/FluidSecureHub/app/src/main/res/menu/reader.xml" value="0.25416666666666665" />
-      </map>
-    </option>
-  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_13" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

@@ -1176,11 +1176,16 @@ public class BackgroundService_AP_PIPE extends Service {
                     public void run() {
 
                         try {
+                            boolean goToFinalStep = false;
                             String cntA = "0", cntB = "0", cntC = "0";
 
                             for (int i = 0; i < 2; i++) {
 
-                                String result = new BackgroundService_AP_PIPE.GETFINALPulsar().execute(URL_GET_PULSAR).get();
+                                String result = new GETFINALPulsar().execute(URL_GET_PULSAR).get();
+
+                                if (i == 1) {
+                                    goToFinalStep = true;
+                                }
 
                                 if (result.contains("pulsar_status")) {
 
@@ -1218,6 +1223,15 @@ public class BackgroundService_AP_PIPE extends Service {
                                         }, 500); //1000
                                     }
                                     Thread.sleep(1000);
+                                } else {
+                                    if (goToFinalStep) { // To stop the transaction even if no response is received from the GETFINALPulsar.
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                finalLastStep();
+                                            }
+                                        }, 500); //1000
+                                    }
                                 }
                             }
                         } catch (Exception e) {
@@ -1304,15 +1318,13 @@ public class BackgroundService_AP_PIPE extends Service {
 
         public String resp = "";
 
-
         protected String doInBackground(String... param) {
-
 
             try {
 
                 //OkHttpClient client = new OkHttpClient();
-                client.setConnectTimeout(15, TimeUnit.SECONDS);
-                client.setReadTimeout(15, TimeUnit.SECONDS);
+                client.setConnectTimeout(AppConstants.CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS);
+                client.setReadTimeout(AppConstants.READ_TIMEOUT_SEC, TimeUnit.SECONDS);
                 Request request = new Request.Builder()
                         .url(param[0])
                         .build();
@@ -1327,13 +1339,11 @@ public class BackgroundService_AP_PIPE extends Service {
 
             }
 
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
 
             try {
 

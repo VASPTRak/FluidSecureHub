@@ -1688,6 +1688,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                 CheckBTConnection(0, selSSID, BTselMacAddress);
+            } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
+                LinkUpgradeFunctionality("HTTP", 0); // To handle Single HTTP link
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
@@ -1726,11 +1728,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "Customer select hose: " + selSSID);
 
                     GoButtonFunctionalityForSingleLink(LinkCommunicationType);
-                    if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                    /*if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                         return;
                     } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
                         LinkUpgradeFunctionality("HTTP", 0); // To handle Single HTTP link
-                    }
+                    }*/
+                    return; // return from here to avoid double callback
                 }
             }
         } catch (Exception ex) {
