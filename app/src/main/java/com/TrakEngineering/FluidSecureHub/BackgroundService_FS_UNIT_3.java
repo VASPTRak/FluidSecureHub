@@ -34,6 +34,7 @@ import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
+import com.example.fs_ipneigh30.FS_ArpNDK;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
@@ -55,6 +56,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -2188,8 +2191,12 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
     public void getipOverOSVersion() {
         listOfConnectedIP_UNIT_3.clear();
+        /*if (Build.VERSION.SDK_INT >= 31) {
+            GetDetailsFromARP();
+        } else*/
         if (Build.VERSION.SDK_INT >= 29) {
-            ListConnectedHotspotIPOS10_FS_UNIT_3AsyncCall();
+            //ListConnectedHotspotIPOS10_FS_UNIT_3AsyncCall(); // Not working with Android 11 and sdk 31 combination
+            GetDetailsFromARP();
         } else {
             ListConnectedHotspotIP_FS_UNIT_3AsyncCall();
         }
@@ -2526,5 +2533,83 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         editor = pref.edit();
         editor.remove(txnId);
         editor.commit();
+    }
+
+    public void GetDetailsFromARP() {
+        try {
+            String arpTable = FS_ArpNDK.getARP();
+            if (!arpTable.isEmpty()) {
+                String[] lines = arpTable.split("\n");
+                if (lines.length > 0) {
+                    for (String line : lines) {
+                        if (!line.isEmpty()) {
+                            String[] splitted = line.split(" ");
+
+                            if (splitted != null && splitted.length >= 4) {
+
+                                String ip = splitted[0];
+                                String mac = splitted[4];
+
+                                if (ip.contains(".") && mac.contains(":")) {
+                                    System.out.println("***IPAddress" + ip);
+                                    System.out.println("***macAddress" + mac);
+
+                                    try {
+                                        boolean isReachable = new checkIpAddressReachable().execute(ip, "80", "2000").get();
+                                        if (!isReachable) {
+                                            continue;
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    listOfConnectedIP_UNIT_3.add("http://" + ip + ":80/");
+                                } else {
+                                    System.out.println("###IPAddress" + ip);
+                                    System.out.println("###macAddress" + mac);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public class checkIpAddressReachable extends AsyncTask<String, Void, Boolean> {
+        String address;
+        int port, timeout;
+
+        protected Boolean doInBackground(String... urls) {
+            try {
+                Socket mSocket = new Socket();
+
+                try {
+                    address = urls[0];
+                    port = Integer.parseInt(urls[1]);
+                    timeout = Integer.parseInt(urls[2]);
+
+                    // Connects this socket to the server with a specified timeout value.
+                    mSocket.connect(new InetSocketAddress(address, port), timeout);
+                    // Return true if connection successful
+                    System.out.println(address + " is reachable");
+                    return true;
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                    // Return false if connection fails
+                    System.out.println(address + " is not reachable");
+                    return false;
+                } finally {
+                    mSocket.close();
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        protected void onPostExecute(String res) {
+        }
     }
 }

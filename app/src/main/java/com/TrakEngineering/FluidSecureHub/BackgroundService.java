@@ -509,7 +509,7 @@ public class BackgroundService extends Service {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " UploadTaskRetroFit onResponse. TransactionId: " + transactionId + "; Exception: " + e.getMessage());
+                        AppConstants.WriteinFile(TAG + "UploadTaskRetroFit onResponse. TransactionId: " + transactionId + "; Exception: " + e.getMessage());
                 }
 
             }
@@ -518,7 +518,7 @@ public class BackgroundService extends Service {
             public void onFailure(Call<ServerResponse> call, Throwable t) {
                 Log.i(TAG, "Something went wrong in UploadTaskRetroFit call No internet connectivity or server connection fail.");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " UploadTaskRetroFit onFailure. TransactionId: " + transactionId + "; Exception: " + t.getMessage());
+                    AppConstants.WriteinFile(TAG + "UploadTaskRetroFit onFailure. TransactionId: " + transactionId + "; Exception: " + t.getMessage());
                 // handle execution failures like no internet connectivity
                 BusProvider.getInstance().post(new ErrorEvent(-2, t.getMessage()));
             }

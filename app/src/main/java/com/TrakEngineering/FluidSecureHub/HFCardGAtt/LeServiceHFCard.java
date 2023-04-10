@@ -128,8 +128,6 @@ public class LeServiceHFCard extends Service {
 
         String str1 = bytesToHex(data);
 
-        // AppConstants.colorToastBigFont(getApplicationContext(),"RFID--"+str1, Color.BLUE);
-
         //System.out.println("HF data1----"+str1);
 
         if (data != null && data.length > 0) {
@@ -362,6 +360,7 @@ public class LeServiceHFCard extends Service {
                 Log.w(TAG, "Failed to read characteristic");
                 //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
                 // Toast.makeText(getApplicationContext(),"Failed to Read Characteristics: ", Toast.LENGTH_LONG).show();
+
 
             } else {
                 Log.w(TAG, "Read Characteristics successfully");

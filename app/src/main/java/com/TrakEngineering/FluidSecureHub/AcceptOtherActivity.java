@@ -146,6 +146,12 @@ public class AcceptOtherActivity extends AppCompatActivity {
             etOther.setInputType(InputType.TYPE_CLASS_TEXT);
         }
 
+        try {
+            etOther.requestFocus();
+        } catch (Exception e) {
+            System.out.println("keyboard open exception");
+        }
+
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

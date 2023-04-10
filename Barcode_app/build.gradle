@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 31
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         //applicationId "com.example.barcodeml"
-        minSdkVersion 16
+        minSdkVersion 25
         multiDexEnabled true
-        targetSdkVersion 27
+        targetSdkVersion 31
         versionCode 1
         versionName "0.2"
 
@@ -42,8 +42,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.1.0'
 
 
-
-
     // Object detection feature with bundled default classifier
     //implementation 'com.google.mlkit:object-detection:16.1.0'
 
@@ -55,11 +53,14 @@ dependencies {
     //implementation "androidx.camera:camera-lifecycle:1.0.0-beta04"
     //implementation "androidx.camera:camera-view:1.0.0-alpha11"
 
-    implementation 'com.google.guava:guava:17.0'
+    implementation 'com.google.guava:guava:21.0'
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+
 }
 
+/*
 configurations {
     // Resolves dependency conflict caused by some dependencies use
     // com.google.guava:guava and com.google.guava:listenablefuture together.
     all*.exclude group: 'com.google.guava', module: 'listenablefuture'
-}
+}*/

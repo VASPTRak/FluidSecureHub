@@ -172,7 +172,6 @@ public class LeServiceQRCode extends Service {
 
         String str1 = bytesToHex(data);
 
-        // AppConstants.colorToastBigFont(getApplicationContext(),"RFID--"+str1, Color.BLUE);
         System.out.println("QR data1----"+str1);
 
         if (data != null && data.length > 0) {

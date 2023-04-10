@@ -144,7 +144,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
                                     if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not within the reasonability");
                                     editOdoManually.setText("");
-                                    AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not in reasonability.", Color.BLUE);//Bad odometer! Please try again.
+                                    AppConstants.colorToastBigFont(AcceptManualOdoActivityFA.this, "The odometer entered is not in reasonability.", Color.BLUE);//Bad odometer! Please try again.
                                 }
                             }
 
@@ -158,7 +158,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                             } else {
                                 editOdoManually.setText("");
                                 if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not in the reasonability");
-                                AppConstants.colorToastBigFont(getApplicationContext(), "The odometer entered is not in the reasonability", Color.BLUE);
+                                AppConstants.colorToastBigFont(AcceptManualOdoActivityFA.this, "The odometer entered is not in the reasonability", Color.BLUE);
                             }
                         }
                     } else {

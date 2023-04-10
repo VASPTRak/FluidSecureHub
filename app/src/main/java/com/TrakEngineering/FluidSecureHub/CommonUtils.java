@@ -20,6 +20,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -62,6 +63,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -85,6 +88,7 @@ import static com.TrakEngineering.FluidSecureHub.Constants.PREF_OFF_DB_SIZE;
 import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.wifiApManager;
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 
+import com.example.fs_ipneigh30.FS_ArpNDK;
 
 /**
  * Created by VASP-LAP on 08-09-2015.
@@ -2417,4 +2421,88 @@ public class CommonUtils {
         }
     }
 
+    public static void GetDetailsFromARP() {
+        try {
+            ArrayList<HashMap<String, String>> ListOfConnectedDevices = new ArrayList<>();
+            String arpTable = FS_ArpNDK.getARP();
+            if (!arpTable.isEmpty()) {
+                String[] lines = arpTable.split("\n");
+                if (lines.length > 0) {
+                    for (String line : lines) {
+                        if (!line.isEmpty()) {
+                            String[] splitted = line.split(" ");
+
+                            if (splitted != null && splitted.length >= 4) {
+
+                                String ip = splitted[0];
+                                String mac = splitted[4];
+
+                                if (ip.contains(".") && mac.contains(":")) {
+                                    System.out.println("***IPAddress" + ip);
+                                    System.out.println("***macAddress" + mac);
+
+                                    try {
+                                        boolean isReachable = new checkIpAddressReachable().execute(ip, "80", "2000").get();
+                                        if (!isReachable) {
+                                            continue;
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    HashMap<String, String> map = new HashMap<>();
+                                    map.put("ipAddress", ip);
+                                    map.put("macAddress", mac);
+
+                                    ListOfConnectedDevices.add(map);
+                                } else {
+                                    System.out.println("###IPAddress" + ip);
+                                    System.out.println("###macAddress" + mac);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            AppConstants.DetailsListOfConnectedDevices = ListOfConnectedDevices;
+            //AppConstants.WriteinFile(TAG + "GetDetailsFromARP Connected Devices: " + ListOfConnectedDevices);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static class checkIpAddressReachable extends AsyncTask<String, Void, Boolean> {
+        String address;
+        int port, timeout;
+
+        protected Boolean doInBackground(String... urls) {
+            try {
+                Socket mSocket = new Socket();
+
+                try {
+                    address = urls[0];
+                    port = Integer.parseInt(urls[1]);
+                    timeout = Integer.parseInt(urls[2]);
+
+                    // Connects this socket to the server with a specified timeout value.
+                    mSocket.connect(new InetSocketAddress(address, port), timeout);
+                    // Return true if connection successful
+                    System.out.println(address + " is reachable");
+                    return true;
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                    // Return false if connection fails
+                    System.out.println(address + " is not reachable");
+                    return false;
+                } finally {
+                    mSocket.close();
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        protected void onPostExecute(String res) {
+        }
+    }
 }

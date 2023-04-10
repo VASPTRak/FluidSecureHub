@@ -30,7 +30,6 @@ public class ConnectionDetector {
 		return false;
 	}
 
-
     public boolean IsTypeStable() {
 
         Constants.CurrentNetworkType = "";

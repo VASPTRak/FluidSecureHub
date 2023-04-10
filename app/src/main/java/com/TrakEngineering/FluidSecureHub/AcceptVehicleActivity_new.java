@@ -303,6 +303,11 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             editVehicleNumber.setInputType(InputType.TYPE_CLASS_TEXT);
         }
 
+        try {
+            editVehicleNumber.requestFocus();
+        } catch (Exception e) {
+            System.out.println("keyboard open exception");
+        }
 
         tv_swipekeybord.setOnClickListener(new View.OnClickListener() {
             @Override

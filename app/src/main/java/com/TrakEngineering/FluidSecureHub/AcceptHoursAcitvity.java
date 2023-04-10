@@ -242,6 +242,12 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             etHours.setInputType(InputType.TYPE_CLASS_TEXT);
         }
 
+        try {
+            etHours.requestFocus();
+        } catch (Exception e) {
+            System.out.println("keyboard open exception");
+        }
+
         tv_swipekeybord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -498,7 +504,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                             if (AppConstants.GenerateLogs)
                                                 AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForHours);
                                             CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", getResources().getString(R.string.IncorrectHours).replace("Hours", ScreenNameForHours));
-                                            //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.BLUE);
                                             Istimeout_Sec = true;
                                             ResetTimeoutHoursScreen();
                                         }
@@ -518,7 +523,6 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
                                         if (AppConstants.GenerateLogs)
                                             AppConstants.WriteinFile(TAG + "Please enter Correct " + ScreenNameForHours);
                                         CommonUtils.showMessageDilaog(AcceptHoursAcitvity.this, "Message", getResources().getString(R.string.IncorrectHours).replace("Hours", ScreenNameForHours));
-                                        //AppConstants.colorToastBigFont(getApplicationContext(), AppConstants.OFF1, Color.BLUE);
                                         Istimeout_Sec = true;
                                         ResetTimeoutHoursScreen();
                                     }

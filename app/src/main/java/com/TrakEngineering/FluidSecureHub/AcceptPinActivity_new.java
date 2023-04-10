@@ -461,6 +461,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             etPersonnelPin.setInputType(InputType.TYPE_CLASS_TEXT);
         }
 
+        try {
+            etPersonnelPin.requestFocus();
+        } catch (Exception e) {
+            System.out.println("keyboard open exception");
+        }
+
         tv_swipekeybord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

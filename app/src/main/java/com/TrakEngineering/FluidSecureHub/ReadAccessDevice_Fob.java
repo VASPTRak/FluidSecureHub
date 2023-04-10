@@ -238,8 +238,8 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         } else if (FobKey != null && !FobKey.isEmpty()) {
             Log.i(TAG, "FobreadSuccess FobKey" + FobKey);
         } else {
-            //AppConstants.colorToastBigFont(getApplicationContext(), "Access Device not found", Color.BLUE);
-            AppConstants.WriteinFile(TAG + " Access Device not found");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Access Device not found");
         }
     }
 
@@ -561,7 +561,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
                     if (data != null) {
 
                         Barcode_val = data.getStringExtra("Barcode").trim();
-                        AppConstants.colorToast(getApplicationContext(), "Barcode Read: " + Barcode_val, Color.BLACK);
+                        AppConstants.colorToast(ReadAccessDevice_Fob.this, "Barcode Read: " + Barcode_val, Color.BLACK);
                         Log.d(TAG, "Barcode read: " + data.getStringExtra("Barcode").trim());
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile("Vehicle Barcode read success: " + Barcode_val);

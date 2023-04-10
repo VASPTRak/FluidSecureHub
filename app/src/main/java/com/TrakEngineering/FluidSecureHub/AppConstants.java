@@ -16,6 +16,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Environment;
 
 import androidx.core.app.NotificationCompat;
@@ -618,23 +619,86 @@ public class AppConstants {
     }
 
     public static void colorToast(Context ctx, String msg, int colr) {
-        Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_LONG);
+        /*Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_LONG);
         toast.getView().setBackgroundColor(colr);
         toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
+        toast.show();*/ // toast.getView() is deprecated. Removed toast and used custom dialog.
 
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_toast);
+        dialog.setCancelable(false);
+
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.CENTER;
+        window.setAttributes(wlp);
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        TextView toastMessage = (TextView) dialog.findViewById(R.id.toastMessage);
+        toastMessage.setText(" " + msg + " ");
+        toastMessage.setBackgroundColor(colr);
+
+        CountDownTimer cTimer = null;
+        cTimer = new CountDownTimer(4000, 4000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                if (dialog != null) {
+                    if (dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                }
+            }
+        };
+        cTimer.start();
+        dialog.show();
     }
 
 
-    public static void colorToastBigFont(Context ctx, String msg, int colr) {
-        Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_LONG);
+    public static Dialog colorToastBigFont(Context ctx, String msg, int colr) {
+        /*Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_LONG);
         toast.getView().setBackgroundColor(colr);
         toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 280);
         ViewGroup group = (ViewGroup) toast.getView();
         TextView messageTextView = (TextView) group.getChildAt(0);
         messageTextView.setTextSize(25);
-        toast.show();
+        toast.show();*/ // toast.getView() is deprecated. Removed toast and used custom dialog.
 
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_toast);
+        dialog.setCancelable(false);
+
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.TOP | Gravity.CENTER;
+        wlp.y = 280;
+        window.setAttributes(wlp);
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        TextView toastMessage = (TextView) dialog.findViewById(R.id.toastMessage);
+        toastMessage.setText(" " + msg + " ");
+        toastMessage.setBackgroundColor(colr);
+        toastMessage.setTextSize(25);
+
+        CountDownTimer cTimer = null;
+        cTimer = new CountDownTimer(3000, 3000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                if (dialog != null) {
+                    if (dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                }
+            }
+        };
+        cTimer.start();
+        dialog.show();
+        return dialog;
     }
 
     public static void colorToastHotspotOn(Context ctx, String msg, int backColor, int textColor) {

@@ -81,8 +81,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
         Istimeout_Sec = true;
         TimeoutDeptScreen();
-
-
     }
 
     @Override
@@ -227,6 +225,12 @@ public class AcceptDeptActivity extends AppCompatActivity {
         {
             System.out.println("keyboard exception");
             etDeptNumber.setInputType(InputType.TYPE_CLASS_TEXT);
+        }
+
+        try {
+            etDeptNumber.requestFocus();
+        } catch (Exception e) {
+            System.out.println("keyboard open exception");
         }
 
         tv_swipekeybord.setOnClickListener(new View.OnClickListener() {

@@ -489,8 +489,8 @@ public class OfflineConstants {
             int HourOfDay = sharedPref.getInt("HourOfDay", 2);
             int MinuteOfHour = sharedPref.getInt("MinuteOfHour", 22);
 
-            PendingIntent alarmIntent = PendingIntent.getService(ctx, 0,
-                    new Intent(ctx, OffBackgroundService.class), 0);
+            PendingIntent alarmIntent = PendingIntent.getService(ctx, 0, new Intent(ctx, OffBackgroundService.class), PendingIntent.FLAG_IMMUTABLE);
+
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.set(Calendar.HOUR_OF_DAY, HourOfDay);

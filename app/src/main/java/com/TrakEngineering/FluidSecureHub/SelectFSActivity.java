@@ -528,7 +528,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
                     case Activity.RESULT_OK:
                         Log.i("Splash", "User agreed to make required location settings changes.");
 
-                        AppConstants.colorToast(getApplicationContext(), getResources().getString(R.string.PleaseWait), Color.BLACK);
+                        AppConstants.colorToast(SelectFSActivity.this, getResources().getString(R.string.PleaseWait), Color.BLACK);
 
 
                         goButtonAction(null);
@@ -537,7 +537,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
                     case Activity.RESULT_CANCELED:
                         Log.i("Splash", "User chose not to make required location settings changes.");
 
-                        AppConstants.colorToastBigFont(getApplicationContext(), "Please On GPS to connect WiFi", Color.BLUE);
+                        AppConstants.colorToastBigFont(SelectFSActivity.this, "Please On GPS to connect WiFi", Color.BLUE);
 
                         break;
                 }

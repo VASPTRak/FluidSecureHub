@@ -1135,7 +1135,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         Calendar cal = Calendar.getInstance();
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceFSNP.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 60000, pintent);
     }
@@ -1145,7 +1145,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         boolean screenOff = true;
         Calendar cal = Calendar.getInstance();
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceHotspotCheck.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 60000 * 60, pintent); //60000 * 60 = 1 hour
         //scan and enable hotspot if OFF
@@ -1169,7 +1169,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
 
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceScheduleReboot.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), REBOOT_INTENT_ID, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), REBOOT_INTENT_ID, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pintent);
         //alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pintent);
@@ -1184,7 +1184,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         cal.set(Calendar.MINUTE, 1);
 
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceMidNightTasks.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), REBOOT_INTENT_ID, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), REBOOT_INTENT_ID, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pintent);
 
@@ -1194,7 +1194,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     public void clearOlderPictures() {
         Calendar cal = Calendar.getInstance();
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceClearOlderPictures.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 86400000, pintent); //86400000
     }
@@ -1203,7 +1203,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         Calendar cal = Calendar.getInstance();
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceKeepDataTransferAlive.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 20000, pintent); //180000
 
@@ -3711,8 +3711,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     public void getipOverOSVersion() {
+        /*if (Build.VERSION.SDK_INT >= 31) {
+            CommonUtils.GetDetailsFromARP();
+        } else*/
         if (Build.VERSION.SDK_INT >= 29) {
-            new GetConnectedDevicesIPOS10().execute();
+            //new GetConnectedDevicesIPOS10().execute(); // Not working with Android 11 and sdk 31 combination
+            CommonUtils.GetDetailsFromARP();
         } else {
             new GetConnectedDevicesIP().execute();
         }
@@ -9734,7 +9738,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                                             try {
                                                 Intent name = new Intent(WelcomeActivity.this, BackgroundServiceScheduleReboot.class);
-                                                PendingIntent pintent = PendingIntent.getService(getApplicationContext(), REBOOT_INTENT_ID, name, 0);
+                                                PendingIntent pintent = PendingIntent.getService(getApplicationContext(), REBOOT_INTENT_ID, name, PendingIntent.FLAG_IMMUTABLE);
                                                 AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                                                 pintent.cancel();
                                                 alarm.cancel(pintent);
@@ -10965,7 +10969,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         Calendar cal = Calendar.getInstance();
         Intent name = new Intent(WelcomeActivity.this, BatteryBackgroundService.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, 0);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 1800000, pintent);
 
@@ -11037,6 +11041,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.AlertDialogBoxCanecl(WelcomeActivity.this, R.string.HoseListIsNotAvailable);
                 }
 
+                AppConstants.DetailsServerSSIDList = serverSSIDList;
+                BackgroundServiceKeepDataTransferAlive.SSIDList = serverSSIDList;
                 AppConstants.temp_serverSSIDList = serverSSIDList;
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)

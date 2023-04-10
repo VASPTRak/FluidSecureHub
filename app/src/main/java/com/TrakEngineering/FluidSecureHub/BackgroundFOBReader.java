@@ -72,12 +72,12 @@ public class BackgroundFOBReader extends Service{
 
 
 
-                                AppConstants.colorToastBigFont(getApplicationContext(),"Bluetooth is Connected", Color.BLUE);
+                                AppConstants.colorToastBigFont(BackgroundFOBReader.this,"Bluetooth is Connected", Color.BLUE);
 
                             } else if (newState == BluetoothReader.STATE_DISCONNECTED) {
                                 // mTxtConnectionState.setText(R.string.disconnect_fail);
 
-                                AppConstants.colorToastBigFont(getApplicationContext(),"Bluetooth is disconnected\nReconnecting...", Color.BLUE);
+                                AppConstants.colorToastBigFont(BackgroundFOBReader.this, "Bluetooth is disconnected\nReconnecting...", Color.BLUE);
                                 System.out.println("Bluetooth is disconnectedBluetooth is disconnected");
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)

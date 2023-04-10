@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 31
+    buildToolsVersion "30.0.3"
 
     dexOptions {
         preDexLibraries = false
@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.TrakEngineering.FluidSecureHub"
         minSdkVersion 25
-        targetSdkVersion 27
+        targetSdkVersion 31
         versionCode 49
-        versionName "0.75"
+        versionName "0.76"
         multiDexEnabled true
     }
     buildTypes {
@@ -87,15 +87,15 @@ dependencies {
     androidTestImplementation 'androidx.annotation:annotation:1.1.0'
 
     implementation project(":Barcode_app")
-
+    implementation project(path: ':fs_ipneigh30')
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation "com.google.android.gms:play-services-base:17.3.0"
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.xizzhu:simple-tool-tip:0.7.0'
 
-    implementation 'com.azure.android:azure-maps-control:1.+'
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.azure.android:azure-maps-control:1.3.0'
 
 }

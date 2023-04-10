@@ -82,11 +82,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private double latitude;
     private double longitude;
     private GPSTracker gps;
-    private static final int PERMISSION_REQUEST_CODE_READ_phone = 1;
-    private static final int PERMISSION_REQUEST_CODE_READ = 3;
-    private static final int PERMISSION_REQUEST_CODE_WRITE = 2;
-    private static final int PERMISSION_REQUEST_CODE_CORSE_LOCATION = 4;
-    private static final int CODE_WRITE_SETTINGS_PERMISSION = 55;
+    private static final int CODE_CORSE_LOCATION = 1;
+    private static final int CODE_READ_PHONE_STATE = 2;
+    private static final int CODE_READ_STORAGE = 3;
+    private static final int CODE_WRITE_STORAGE = 4;
+    private static final int CODE_WRITE_SETTINGS_PERMISSION = 5;
+    private static final int CODE_MANAGE_ALL_FILES_PERMISSION = 6;
+    private static final int CODE_BLUETOOTH_CONNECT = 7;
 
     GoogleApiClient mGoogleApiClient;
 
@@ -131,7 +133,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         if (permission) {
             //do your code
         } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData(Uri.parse("package:" + SplashActivity.this.getPackageName()));
                 startActivityForResult(intent, CODE_WRITE_SETTINGS_PERMISSION);
@@ -140,8 +142,19 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
             }
         }
 
+        boolean storagePermission;
+        storagePermission = ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+        if (!storagePermission) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                }
+            }
+        }
+
         if (!cd.isConnecting() && OfflineConstants.isOfflineAccess(SplashActivity.this)) {
-            // AppConstants.colorToastBigFont(getApplicationContext(), "OFFLINE MODE", Color.BLUE);
 
             try {
                 checkPermissionTask checkPermissionTask = new checkPermissionTask();
@@ -396,7 +409,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         boolean isGranted = false;
 
         try {
-            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.CAMERA};
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                permissions = new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.CAMERA, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN};
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                permissions = new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.CAMERA, Manifest.permission.READ_PHONE_NUMBERS};
+            }
 
             for (int i = 0; i < permissions.length; i++) {
                 isGranted = checkPermission(SplashActivity.this, permissions[i]);
@@ -406,7 +425,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
             }
 
             if (!isGranted) {
-                ActivityCompat.requestPermissions(SplashActivity.this, permissions, PERMISSION_REQUEST_CODE_CORSE_LOCATION);
+                ActivityCompat.requestPermissions(SplashActivity.this, permissions, CODE_WRITE_STORAGE);
                 isValue = false;
             } else {
                 isValue = true;
@@ -880,36 +899,20 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         switch (requestCode) {
 
-            case PERMISSION_REQUEST_CODE_WRITE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok and Restart the app.");
-                    Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app.", Toast.LENGTH_SHORT).show();
-
-                } else {
-
-
-                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No read state for Storage.", "Please enable 'Read Storage Permission' for this app to continue.");
-
-                }
-                break;
-
-            case PERMISSION_REQUEST_CODE_READ:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case CODE_CORSE_LOCATION:
+                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                     showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
-
                     Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app", Toast.LENGTH_SHORT).show();
 
                 } else {
-
 
                     CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No GPS Permission", "Please enable gps and Allow the gps permission for this app to continue.");
 
                 }
                 break;
 
-            case PERMISSION_REQUEST_CODE_READ_phone:
+            case CODE_READ_PHONE_STATE:
                 if (grantResults.length > 0 && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
 
                     showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
@@ -922,9 +925,47 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 }
                 break;
 
+            case CODE_READ_STORAGE:
+                if (grantResults.length > 0 && grantResults[3] == PackageManager.PERMISSION_GRANTED) {
 
-            case PERMISSION_REQUEST_CODE_CORSE_LOCATION:
-                if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
+                    Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No read state for Storage.", "Please enable 'Read Storage Permission' for this app to continue.");
+
+                }
+                break;
+
+            case CODE_WRITE_STORAGE:
+                if (grantResults.length > 0 && grantResults[4] == PackageManager.PERMISSION_GRANTED) {
+
+                    showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok and Restart the app.");
+                    Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app.", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No write state for Storage.", "Please enable 'Write Storage Permission' for this app to continue.");
+
+                }
+                break;
+
+            case CODE_BLUETOOTH_CONNECT:
+                if (grantResults.length > 9 && grantResults[9] == PackageManager.PERMISSION_GRANTED) {
+
+                    showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok and Restart the app.");
+                    Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app.", Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "Bluetooth Connect permission not allowed.", "Please enable 'Bluetooth Connect Permission' for this app to continue.");
+
+                }
+                break;
+
+            /*case CODE_WRITE_SETTINGS_PERMISSION:
+                if (grantResults.length > 0 && grantResults[8] == PackageManager.PERMISSION_GRANTED) {
 
 
                     showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
@@ -933,13 +974,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 } else {
 
-                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No GPS Permission", "Please enable gps and Allow the gps permission for this app to continue.");
+                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Change System Settings Permission", "Please enable 'Change System Settings Permission' for this app to continue.");
 
                 }
                 break;
 
-            case CODE_WRITE_SETTINGS_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case CODE_MANAGE_ALL_FILES_PERMISSION:
+                if (grantResults.length > 0 && grantResults[9] == PackageManager.PERMISSION_GRANTED) {
 
 
                     showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
@@ -948,10 +989,10 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 } else {
 
-                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Write Permission", "dfsdfsd");
+                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Manage All Files Permission", "Please enable 'Manage All Files Permission' for this app to continue.");
 
                 }
-                break;
+                break;*/
 
 
         }
