@@ -3784,7 +3784,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     private void retryConnect() {
 
         if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True") && !VehicleValidationInProgress) {
-            AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
             sec_count = 0;
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
             recreate();
