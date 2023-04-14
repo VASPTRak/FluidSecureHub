@@ -14,8 +14,12 @@ android {
         minSdkVersion 25
         targetSdkVersion 31
         versionCode 49
-        versionName "0.77"
+        versionName "0.77(1)"
         multiDexEnabled true
+
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
     }
     buildTypes {
         release {
