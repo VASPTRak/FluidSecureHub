@@ -1142,6 +1142,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }*/
             }
         } else {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
             toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
             Istimeout_Sec = true;
             ResetTimeoutDisplayMeterScreen();
@@ -1164,6 +1166,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
             new GetUpgradeFirmwareStatus().execute(FS_selected, jsonData, authString);
         else {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
             toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
             Istimeout_Sec = true;
             ResetTimeoutDisplayMeterScreen();
@@ -1472,6 +1476,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         if (qtyFrequencyCount()) {
 
                             //qty is same for some time
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.");
                             toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
                             stopButtonFunctionality();
                             stopTimer = false;
@@ -1798,6 +1804,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                     pulsarConnected = false;
                     if (!pulsarConnected) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Auto Stop!\n\nPulsar disconnected");
                         toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nPulsar disconnected", Color.BLUE);
                         stopButtonFunctionality();
                     }
@@ -1834,6 +1842,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         linearTimer.setVisibility(View.GONE);
                         tvCountDownTimer.setText("1");
 
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Auto Stop!\n\nCount down timer completed.");
                         toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                     }
@@ -1860,6 +1870,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     if (minFuelLimit > 0) {
                         if (fillqty >= minFuelLimit) {
 
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Auto Stop!\n\nYou reached MAX fuel limit.");
                             toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nYou reached MAX fuel limit.", Color.BLUE);
                             Istimeout_Sec = true;
                             ResetTimeoutDisplayMeterScreen();

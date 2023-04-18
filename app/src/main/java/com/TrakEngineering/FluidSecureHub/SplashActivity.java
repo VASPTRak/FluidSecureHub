@@ -102,6 +102,9 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager wifiApManager;
     ConnectivityManager connection_manager;
 
+    public boolean checkSystemPermission = false;
+    public boolean isSystemPermissionPrompted = false;
+    public int SystemPermissionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,10 +136,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         if (permission) {
             //do your code
         } else {
+            checkSystemPermission = true;
+            SystemPermissionCode = CODE_WRITE_SETTINGS_PERMISSION;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData(Uri.parse("package:" + SplashActivity.this.getPackageName()));
                 startActivityForResult(intent, CODE_WRITE_SETTINGS_PERMISSION);
+                return;
             } else {
                 ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_SETTINGS}, CODE_WRITE_SETTINGS_PERMISSION);
             }
@@ -148,8 +154,20 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         if (!storagePermission) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (!Environment.isExternalStorageManager()) {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                    startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                    checkSystemPermission = true;
+                    SystemPermissionCode = CODE_MANAGE_ALL_FILES_PERMISSION;
+                    //Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    //startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                    try {
+                        Uri uri = Uri.parse("package:" + SplashActivity.this.getPackageName());
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri);
+                        startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                    } catch (Exception ex) {
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                        startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                    }
+                    return;
                 }
             }
         }
@@ -283,6 +301,50 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
             //Intent in = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             //startActivity(in);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try {
+            if (isSystemPermissionPrompted) {
+                switch (SystemPermissionCode) {
+                    case CODE_WRITE_SETTINGS_PERMISSION:
+                        boolean permission;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            permission = Settings.System.canWrite(SplashActivity.this);
+                        } else {
+                            permission = ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED;
+                        }
+                        if (permission) {
+                            showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
+                            Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app", Toast.LENGTH_SHORT).show();
+                        } else {
+                            CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Change System Settings Permission", "Please enable 'Change System Settings Permission' for this app to continue.");
+                        }
+                        break;
+
+                    case CODE_MANAGE_ALL_FILES_PERMISSION:
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            if (Environment.isExternalStorageManager()) {
+                                showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
+                                Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app", Toast.LENGTH_SHORT).show();
+                            } else {
+                                CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Manage All Files Permission", "Please enable 'Manage All Files Permission' for this app to continue.");
+                            }
+                        }
+                        break;
+                }
+            } else {
+                if (checkSystemPermission) {
+                    isSystemPermissionPrompted = true;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -963,38 +1025,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 }
                 break;
-
-            /*case CODE_WRITE_SETTINGS_PERMISSION:
-                if (grantResults.length > 0 && grantResults[8] == PackageManager.PERMISSION_GRANTED) {
-
-
-                    showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
-
-                    Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app", Toast.LENGTH_SHORT).show();
-
-                } else {
-
-                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Change System Settings Permission", "Please enable 'Change System Settings Permission' for this app to continue.");
-
-                }
-                break;
-
-            case CODE_MANAGE_ALL_FILES_PERMISSION:
-                if (grantResults.length > 0 && grantResults[9] == PackageManager.PERMISSION_GRANTED) {
-
-
-                    showMessageDilaog(SplashActivity.this, "Permission Granted", "Please press to ok for restart the app.");
-
-                    Toast.makeText(SplashActivity.this, "Permission Granted, Now you can access app", Toast.LENGTH_SHORT).show();
-
-                } else {
-
-                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Manage All Files Permission", "Please enable 'Manage All Files Permission' for this app to continue.");
-
-                }
-                break;*/
-
-
         }
 
     }

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -818,10 +819,14 @@ public class AcceptServiceCall {
                             ActivityHandler.removeActivity(4);
                             ActivityHandler.removeActivity(5);
 
-                            Intent intent = new Intent(activity, WelcomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            activity.startActivity(intent);
-
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(activity, WelcomeActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    activity.startActivity(intent);
+                                }
+                            }, 3000);
 
                         } else if (ValidationFailFor.equalsIgnoreCase("Odo")) {
 
@@ -1200,10 +1205,14 @@ public class AcceptServiceCall {
                     if (IsGateHub.equalsIgnoreCase("True")) {
                         CommonUtils.UpgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
                     }
-                    Intent intent = new Intent(activity, WelcomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    activity.startActivity(intent);
-
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(activity, WelcomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            activity.startActivity(intent);
+                        }
+                    }, 3000);
                 }
 
 

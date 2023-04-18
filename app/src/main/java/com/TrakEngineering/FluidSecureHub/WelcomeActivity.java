@@ -527,6 +527,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
                 new GetOfflineSSIDUsingLocationOnResume().execute();
             } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + AppConstants.OFF1);
                 AppConstants.colorToastBigFont(WelcomeActivity.this, AppConstants.OFF1, Color.BLUE);
             }
         }
@@ -1949,6 +1951,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
 
             } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + AppConstants.OFF1);
                 AppConstants.colorToastBigFont(WelcomeActivity.this, AppConstants.OFF1, Color.BLUE);
             }
         }
@@ -2856,6 +2860,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } else {
                 hoseClicked = false;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + AppConstants.OFF1);
                 AppConstants.colorToastBigFont(WelcomeActivity.this, AppConstants.OFF1, Color.BLUE);
             }
         }
@@ -3277,6 +3283,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                             }
 
                                         } else {
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseIsBusy));
                                             AppConstants.colorToastBigFont(WelcomeActivity.this, getResources().getString(R.string.HoseIsBusy), Color.BLUE);
                                         }
                                     } else if (IsLinkFlagged != null && IsLinkFlagged.equalsIgnoreCase("True")) {
@@ -6730,7 +6738,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }
 
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "Hose In Use. Please retry once the ongoing transaction has been completed.");
+                            AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + getResources().getString(R.string.HoseInUseRetry));
                     } else {
                         new handleGetAndroidSSID().execute(AppConstants.LAST_CONNECTED_SSID, LinkCommType);//AppConstants.LAST_CONNECTED_SSID = selectedSSID
                         //startWelcomeActivity();
@@ -10232,21 +10240,20 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 //new WiFiConnectTask().execute();
 
             } else {
-
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Connected to wrong Wifi Please try again..");
                 AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wrong Wifi Please try again..", Color.BLUE);
 
             }
 
         } else {
-
-
             AppConstants.ManuallReconfigure = false;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt " + 2);
             AppConstants.colorToastBigFont(WelcomeActivity.this, "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt " + 2, Color.BLUE);
             connectWiFiLibrary2Attempt();
 
-
         }
-
     }
 
     public void connectWiFiLibrary2Attempt() {
@@ -10316,18 +10323,18 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 //new WiFiConnectTask().execute();
 
             } else {
-
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Connected to wrong Wifi Please try again..");
                 AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wrong Wifi Please try again..", Color.BLUE);
 
             }
 
         } else {
-
-
             AppConstants.ManuallReconfigure = false;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt 3");
             AppConstants.colorToastBigFont(WelcomeActivity.this, "Connecting to " + AppConstants.CURRENT_SELECTED_SSID + " Attempt 3", Color.BLUE);
             connectWiFiLibrary3Attempt();
-
 
         }
 
@@ -10400,7 +10407,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 //new WiFiConnectTask().execute();
 
             } else {
-
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "Connected to wrong Wifi Please try again..");
                 AppConstants.colorToastBigFont(WelcomeActivity.this, "Connected to wrong Wifi Please try again..", Color.BLUE);
 
             }
@@ -12954,6 +12962,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -12998,6 +13008,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -13043,6 +13055,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -13089,6 +13103,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -13134,6 +13150,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -13179,6 +13197,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -14605,6 +14625,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -14635,6 +14657,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -14666,6 +14690,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -14696,6 +14722,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -14726,6 +14754,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }
@@ -14756,6 +14786,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         }, delay);
 
                     } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.MakeSureBTMacIsSet));
                         AppConstants.colorToast(WelcomeActivity.this, getResources().getString(R.string.MakeSureBTMacIsSet), Color.BLUE);
                     }
                 }

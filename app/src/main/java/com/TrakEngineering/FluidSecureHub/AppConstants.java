@@ -871,8 +871,8 @@ public class AppConstants {
             bufferWritter.close();
 
         } catch (IOException e) {
-            WriteinFile("WriteinFile Exception" + e);
-
+            //WriteinFile("WriteinFile Exception: " + e);
+            System.out.println("WriteinFile Exception: " + e);
         }
     }
 
