@@ -54,6 +54,7 @@
     <string name="OfflineMenu">Offline</string>
     <string name="CameraMenu">Camera</string>
     <string name="ReloadMenu">Reload</string>
+    <string name="TestTransactionMenu">Test Transaction</string>
     <string name="PleaseWaitForHotspotConnect">Connecting to the hotspot. Please wait...</string>
     <string name="EmptyTankWarning">This tank level is low. Please contact your Manager.</string>
 

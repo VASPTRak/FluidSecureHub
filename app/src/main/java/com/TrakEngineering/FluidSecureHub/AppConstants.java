@@ -301,6 +301,7 @@ public class AppConstants {
     public static String FOB_KEY_VEHICLE = "";
     public static String HUB_ID = "";
 
+    public static boolean isTestTransaction = false;
 
     public static String FS1_CONNECTED_SSID;
     public static String FS2_CONNECTED_SSID;

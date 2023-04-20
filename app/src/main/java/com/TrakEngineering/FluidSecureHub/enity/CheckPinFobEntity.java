@@ -18,4 +18,5 @@ public class CheckPinFobEntity {
 
     public String HFVersion;
     public String LFVersion;
+    public String IsTestTransaction;
 }

@@ -1538,13 +1538,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             //Reconnect BT reader if disconnected
             ConnectCount = 0;
-            ReConnectBTReader();
+            if (v != null) {
+                ReConnectBTReader();
+            }
 
             if (AppConstants.DetailsListOfConnectedDevices == null || AppConstants.DetailsListOfConnectedDevices.size() == 0) {
                 getipOverOSVersion();//Refreshed donnected devices list on hose selection.
             }
 
-            refreshWiFiList();
+            refreshWiFiList(v);
         }
 
 
@@ -1684,7 +1686,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 FirmwareFileName = "";
             }
 
-            if (!IsUpgrade.isEmpty()) {
+            if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                 SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
             }
 
@@ -1724,6 +1726,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         txtnTypeForLog = AppConstants.LOG_TXTN_BT;
                     } else {
                         txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
+                    }
+
+                    if (AppConstants.isTestTransaction) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "~~~~~TEST TRANSACTION~~~~~");
                     }
 
                     if (AppConstants.GenerateLogs)
@@ -2122,7 +2129,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 Constants.AccPersonnelPIN_FS6 = "";
             }
 
-        if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True") && (!Constants.GateHubPinNo.equalsIgnoreCase("") || !Constants.GateHubvehicleNo.equalsIgnoreCase(""))) {
+        if (AppConstants.isTestTransaction) {
+            AppConstants.isTestTransaction = false;
+            btnGo.setClickable(false);
+            Constants.GateHubPinNo = "";
+            Constants.GateHubvehicleNo = "";
+            Intent intent = new Intent(WelcomeActivity.this, TestTransactionPinActivity.class);
+            startActivity(intent);
+
+        } else if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True") && (!Constants.GateHubPinNo.equalsIgnoreCase("") || !Constants.GateHubvehicleNo.equalsIgnoreCase(""))) {
 
             //Toast.makeText(getApplicationContext()," IsStayOpenGate True",Toast.LENGTH_LONG).show();
             AcceptServiceCall asc = new AcceptServiceCall();
@@ -2845,14 +2860,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
-    public void refreshWiFiList() {
+    public void refreshWiFiList(View v) {
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
             new GetSSIDUsingLocation().execute();
         } else {
 
-            if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
+            if (OfflineConstants.isOfflineAccess(WelcomeActivity.this) && (v != null)) {
 
                 if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "OFFLINE MODE");
 
@@ -3117,6 +3132,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
                     }
 
+                    if (AppConstants.isTestTransaction) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "~~~~~TEST TRANSACTION~~~~~");
+                    }
+
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(txtnTypeForLog + "-" + TAG + "Customer select hose: " + selSSID + " (position: " + (position + 1) + " of " + serverSSIDList.size() + ")");
 
@@ -3146,7 +3166,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
                             OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", selSiteId, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"), "", "", "", "");
 
-                            if (!IsUpgrade.isEmpty()) {
+                            if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                                 SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
                             }
 
@@ -3231,7 +3251,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                             /////////////////////////////////////////////////////
 
-                            if (!IsUpgrade.isEmpty()) {
+                            if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                                 SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
                             }
 
@@ -3258,7 +3278,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 } else {
 
                                     //Link ReConfiguration process start
-                                    if (ReconfigureLink != null && ReconfigureLink.equalsIgnoreCase("true")) {
+                                    if (ReconfigureLink != null && ReconfigureLink.equalsIgnoreCase("true") && (!AppConstants.isTestTransaction)) {
                                         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
                                             SharedPreferences sharedPref = WelcomeActivity.this.getSharedPreferences("HotSpotDetails", Context.MODE_PRIVATE);
@@ -7606,6 +7626,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         menu.findItem(R.id.btLinkScope).setVisible(true);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
+        menu.findItem(R.id.testTransaction).setVisible(true);
         //menu.findItem(R.id.m_p_type).setVisible(true);
 
         if (cd.isConnectingToInternet()) {
@@ -7723,6 +7744,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
+                break;
+
+            case R.id.testTransaction:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Test Transaction option selected.>");
+                LinkSelectionForTestTransaction();
                 break;
 
         }
@@ -15125,7 +15152,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public void LinkUpgradeFunctionality(String linkType, int linkPosition) {
         try {
-            if (AppConstants.UP_Upgrade) {
+            if (AppConstants.UP_Upgrade && !AppConstants.isTestTransaction) {
                 FirmwareFileCheckAndDownload(linkType, linkPosition);
             } else {
                 ContinueToTheTransaction();
@@ -16427,4 +16454,26 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
     //endregion
+
+    //region Test Transaction
+    public void LinkSelectionForTestTransaction() {
+        try {
+            AppConstants.isTestTransaction = true;
+            if (serverSSIDList != null && serverSSIDList.size() > 1) {
+                selectHoseAction(null);
+            } else {
+                if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) { // Single LINK Auto Selection
+                    btnGo.performClick();
+                } else {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseInUse), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in LinkSelectionForTestTransaction. " + ex.getMessage());
+        }
+    }
+
+    //endregion
+
 }

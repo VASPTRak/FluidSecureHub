@@ -47,6 +47,8 @@ public class AcceptServiceCall {
 
     private ConnectionDetector cd;
     public Activity activity;
+    public String ServerCallName = "AuthorizationSequence";
+    public String IsTestTransaction = "n";
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub = "";
     private static final String TAG = "AcceptServiceCall ";
     long stopAutoFuelSecondstemp = 0;
@@ -261,6 +263,7 @@ public class AcceptServiceCall {
                 authEntityClass.CurrentLng = "" + Constants.Longitude;
 
                 authEntityClass.AppInfo = " Version " + CommonUtils.getVersionCode(activity) + " " + AppConstants.getDeviceName().toLowerCase() + " ";
+                authEntityClass.IsTestTransaction = IsTestTransaction;
 
                 Gson gson = new Gson();
                 String jsonData = gson.toJson(authEntityClass);
@@ -269,7 +272,7 @@ public class AcceptServiceCall {
 
                 //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Authorization Sequence Data: " + jsonData);
 
-                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + CommonUtils.getCustomerDetails(activity).Email + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
+                String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + CommonUtils.getCustomerDetails(activity).Email + ":" + ServerCallName + AppConstants.LANG_PARAM);
 
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
@@ -379,7 +382,7 @@ public class AcceptServiceCall {
                             String ProductPrice_FS1 = jsonObjectRD.getString("ProductPrice");
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " AuthorizationSequence>> TransactionId: " + TransactionId_FS1 + "; Limit: " + MinLimit_FS1);
+                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS1 + "; Limit: " + MinLimit_FS1);
 
                             CommonUtils.SaveVehiFuelInPref_FS1(activity, TransactionId_FS1, VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1, PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1, PrintDate_FS1, Company_FS1, Location_FS1, PersonName_FS1, PrinterMacAddress_FS1, PrinterName_FS1, vehicleNumber, accOther, VehicleSum_FS1, DeptSum_FS1, VehPercentage_FS1, DeptPercentage_FS1, SurchargeType_FS1, ProductPrice_FS1, IsTLDCall_FS1,EnablePrinter_FS1,OdoMeter_FS1,Hours_FS1,PumpOnTime_FS1,LimitReachedMessage_FS1,VehicleNumber_FS1,TransactionDateWithFormat_FS1,SiteId_FS1);
 
@@ -541,7 +544,7 @@ public class AcceptServiceCall {
                             String ProductPrice = jsonObjectRD.getString("ProductPrice");
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " AuthorizationSequence>> TransactionId: " + TransactionId + "; Limit: " + MinLimit);
+                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId + "; Limit: " + MinLimit);
 
                             CommonUtils.SaveVehiFuelInPref(activity, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, PrintDate, Company, Location, PersonName, PrinterMacAddress, PrinterName, vehicleNumber, accOther, VehicleSum, DeptSum, VehPercentage, DeptPercentage, SurchargeType, ProductPrice, IsTLDCall1,EnablePrinter,OdoMeter,Hours,PumpOnTime,LimitReachedMessage,VehicleNumber,TransactionDateWithFormat,SiteId);
 
@@ -601,7 +604,7 @@ public class AcceptServiceCall {
                             String ProductPrice_FS3 = jsonObjectRD.getString("ProductPrice");
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " AuthorizationSequence>> TransactionId: " + TransactionId_FS3 + "; Limit: " + MinLimit_FS3);
+                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS3 + "; Limit: " + MinLimit_FS3);
 
                             CommonUtils.SaveVehiFuelInPref_FS3(activity, TransactionId_FS3, VehicleId_FS3, PhoneNumber_FS3, PersonId_FS3, PulseRatio_FS3, MinLimit_FS3, FuelTypeId_FS3, ServerDate_FS3, IntervalToStopFuel_FS3, PrintDate_FS3, Company_FS3, Location_FS3, PersonName_FS3, PrinterMacAddress_FS3, PrinterName_FS3, vehicleNumber, accOther, VehicleSum_FS3, DeptSum_FS3, VehPercentage_FS3, DeptPercentage_FS3, SurchargeType_FS3, ProductPrice_FS3, IsTLDCall_FS3,EnablePrinter_FS3,OdoMeter_FS3,Hours_FS3,PumpOnTime_FS3,LimitReachedMessage_FS3,VehicleNumber_FS3,TransactionDateWithFormat_FS3,SiteId_FS3);
 
@@ -662,7 +665,7 @@ public class AcceptServiceCall {
                             String ProductPrice_FS4 = jsonObjectRD.getString("ProductPrice");
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " AuthorizationSequence>> TransactionId: " + TransactionId_FS4 + "; Limit: " + MinLimit_FS4);
+                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS4 + "; Limit: " + MinLimit_FS4);
 
                             CommonUtils.SaveVehiFuelInPref_FS4(activity, TransactionId_FS4, VehicleId_FS4, PhoneNumber_FS4, PersonId_FS4, PulseRatio_FS4, MinLimit_FS4, FuelTypeId_FS4, ServerDate_FS4, IntervalToStopFuel_FS4, PrintDate_FS4, Company_FS4, Location_FS4, PersonName_FS4, PrinterMacAddress_FS4, PrinterName_FS4, vehicleNumber, accOther, VehicleSum_FS4, DeptSum_FS4, VehPercentage_FS4, DeptPercentage_FS4, SurchargeType_FS4, ProductPrice_FS4, IsTLDCall_FS4,EnablePrinter_FS4,OdoMeter_FS4,Hours_FS4,PumpOnTime_FS4,LimitReachedMessage_FS4,VehicleNumber_FS4,TransactionDateWithFormat_FS4,SiteId_FS4);
 
@@ -723,7 +726,7 @@ public class AcceptServiceCall {
                             String ProductPrice_FS5 = jsonObjectRD.getString("ProductPrice");
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " AuthorizationSequence>> TransactionId: " + TransactionId_FS5 + "; Limit: " + MinLimit_FS5);
+                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS5 + "; Limit: " + MinLimit_FS5);
 
                             CommonUtils.SaveVehiFuelInPref_FS5(activity, TransactionId_FS5, VehicleId_FS5, PhoneNumber_FS5, PersonId_FS5, PulseRatio_FS5, MinLimit_FS5, FuelTypeId_FS5, ServerDate_FS5, IntervalToStopFuel_FS5, PrintDate_FS5, Company_FS5, Location_FS5, PersonName_FS5, PrinterMacAddress_FS5, PrinterName_FS5, vehicleNumber, accOther, VehicleSum_FS5, DeptSum_FS5, VehPercentage_FS5, DeptPercentage_FS5, SurchargeType_FS5, ProductPrice_FS5, IsTLDCall_FS5,EnablePrinter_FS5,OdoMeter_FS5,Hours_FS5,PumpOnTime_FS5,LimitReachedMessage_FS5,VehicleNumber_FS5,TransactionDateWithFormat_FS5,SiteId_FS5);
 
@@ -783,7 +786,7 @@ public class AcceptServiceCall {
                             String ProductPrice_FS6 = jsonObjectRD.getString("ProductPrice");
 
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " AuthorizationSequence>> TransactionId: " + TransactionId_FS6 + "; Limit: " + MinLimit_FS6);
+                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS6 + "; Limit: " + MinLimit_FS6);
 
                             CommonUtils.SaveVehiFuelInPref_FS6(activity, TransactionId_FS6, VehicleId_FS6, PhoneNumber_FS6, PersonId_FS6, PulseRatio_FS6, MinLimit_FS6, FuelTypeId_FS6, ServerDate_FS6, IntervalToStopFuel_FS6, PrintDate_FS6, Company_FS6, Location_FS6, PersonName_FS6, PrinterMacAddress_FS6, PrinterName_FS6, vehicleNumber, accOther, VehicleSum_FS6, DeptSum_FS6, VehPercentage_FS6, DeptPercentage_FS6, SurchargeType_FS6, ProductPrice_FS6, IsTLDCall_FS6,EnablePrinter_FS6,OdoMeter_FS6,Hours_FS6,PumpOnTime_FS6,LimitReachedMessage_FS6,VehicleNumber_FS6,TransactionDateWithFormat_FS6,SiteId_FS6);
 

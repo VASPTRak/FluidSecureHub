@@ -148,29 +148,29 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
             }
         }
 
-        boolean storagePermission;
-        storagePermission = ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        //boolean storagePermission;
+        //storagePermission = ContextCompat.checkSelfPermission(SplashActivity.this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 
-        if (!storagePermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (!Environment.isExternalStorageManager()) {
-                    checkSystemPermission = true;
-                    SystemPermissionCode = CODE_MANAGE_ALL_FILES_PERMISSION;
-                    //Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                    //startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
-                    try {
-                        Uri uri = Uri.parse("package:" + SplashActivity.this.getPackageName());
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri);
-                        startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
-                    } catch (Exception ex) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                        startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
-                    }
-                    return;
+        //if (!storagePermission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                checkSystemPermission = true;
+                SystemPermissionCode = CODE_MANAGE_ALL_FILES_PERMISSION;
+                //Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                //startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                try {
+                    Uri uri = Uri.parse("package:" + SplashActivity.this.getPackageName());
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri);
+                    startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
+                } catch (Exception ex) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    startActivityForResult(intent, CODE_MANAGE_ALL_FILES_PERMISSION);
                 }
+                return;
             }
         }
+        //}
 
         if (!cd.isConnecting() && OfflineConstants.isOfflineAccess(SplashActivity.this)) {
 
@@ -982,7 +982,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
                 } else {
 
-                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Phone State.", "Please enable read phone permission for this app to continue.");
+                    CommonUtils.showMessageDilaogFinish(SplashActivity.this, "No Phone State Permission", "Please enable read phone permission for this app to continue.");
 
                 }
                 break;

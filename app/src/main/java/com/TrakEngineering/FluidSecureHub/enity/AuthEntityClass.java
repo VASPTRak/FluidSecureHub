@@ -27,5 +27,6 @@ public class AuthEntityClass {
 
     public String TransactionId;
     public String Status;
+    public String IsTestTransaction;
 
 }

@@ -109,4 +109,11 @@
         android:title="@string/CloseApp"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/testTransaction"
+        android:orderInCategory="104"
+        android:title="@string/TestTransactionMenu"
+        android:visible="false"
+        app:showAsAction="never" />
+
 </menu>
