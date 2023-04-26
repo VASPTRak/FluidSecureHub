@@ -176,7 +176,11 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
         try {
             System.out.println(str);
 
-            File file = new File(Environment.getExternalStorageDirectory() + "/FSLog");
+            //File file = new File(Environment.getExternalStorageDirectory() + "/FSLog");
+            File file = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSLog");
+            }
 
             if (!file.exists()) {
                 if (file.mkdirs()) {

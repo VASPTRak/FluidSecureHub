@@ -254,13 +254,15 @@ public class ServiceQRCode extends Service {
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
         IsQRUpdate = myPrefslo.getString("IsQRUpdate", "");
         BLEVersion = myPrefslo.getString("BLEVersion", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
+        //FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader_" + BLEType + "/";
+        FOLDER_PATH_BLE = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSCardReader_" + BLEType + "/";
         String CheckVersionFileLocation = FOLDER_PATH_BLE + BLEVersion + "_check.txt";
 
         if (IsQRUpdate.trim().equalsIgnoreCase("Y")) {
 
             DeleteOldVersionTxtFiles(FOLDER_PATH_BLE);
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader_" + BLEType);
+            //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader_" + BLEType);
+            File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSCardReader_" + BLEType);
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();

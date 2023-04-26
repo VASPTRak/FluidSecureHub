@@ -60,7 +60,8 @@ public class MyServer extends NanoHTTPD {
         String FSTag = "", FirmwareVersion = "", fsvmData = "", RequestBody = "", ContentLength = "", host = "", ODOK = "", VIN = "";
         String ResMsg = "";
         // Accessfile from Internal storage
-        File f = new File(Environment.getExternalStorageDirectory() + "/FA_FileDownload/Download.txt");
+        //File f = new File(Environment.getExternalStorageDirectory() + "/FA_FileDownload/Download.txt");
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FA_FileDownload/Download.txt");
         String mimeType = "text/plain";
 
         Log.i(TAG, "http server called");

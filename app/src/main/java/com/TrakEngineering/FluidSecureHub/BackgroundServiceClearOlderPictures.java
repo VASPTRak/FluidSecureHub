@@ -38,7 +38,8 @@ public class BackgroundServiceClearOlderPictures extends BackgroundService {
 
     public void clearOlderPictures(){
         Calendar time = Calendar.getInstance();
-        File dir = new File(Environment.getExternalStorageDirectory() + "/FSPictureData");
+        //File dir = new File(Environment.getExternalStorageDirectory() + "/FSPictureData");
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSPictureData");
         if (dir.exists()) {
             File[] files = dir.listFiles();
             for (int i = 0; i < files.length; ++i) {

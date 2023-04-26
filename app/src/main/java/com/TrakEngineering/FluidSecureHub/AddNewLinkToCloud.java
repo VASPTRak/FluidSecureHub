@@ -809,19 +809,19 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     private boolean validateData() {
 
         if (edt_linkname.getText().toString().trim().isEmpty()) {
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameRequired));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameRequired), "");
             return false;
         } else if (!edt_linkname.getText().toString().trim().matches(expression)) {
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameInvalid));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameInvalid), " (Entered Link Name: " + edt_linkname.getText().toString() + ")");
             return false;
         } else if (!validateLinkNameForMac(edt_linkname.getText().toString().trim())) {
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameInvalid));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameInvalid), " (Entered Link Name: " + edt_linkname.getText().toString() + ")");
             return false;
         } else if (edt_pumpOnTime.getText().toString().trim().isEmpty()) {
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOnTimeRequired));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOnTimeRequired), "");
             return false;
         } else if (edt_pumpOffTime.getText().toString().trim().isEmpty()) {
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOffTimeRequired));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOffTimeRequired), "");
             return false;
         /*} else if (edt_username.getText().toString().trim().isEmpty()) {
             edt_username.setError("Enter valid data");
@@ -837,11 +837,11 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             return false;*/
         } else if (!edt_LinkNewName.getText().toString().trim().isEmpty()) {
             if (!edt_LinkNewName.getText().toString().trim().matches(expression)) {
-                showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.NewNameInvalid));
+                showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.NewNameInvalid), " (Entered New Name: " + edt_LinkNewName.getText().toString() + ")");
                 return false;
             }
         } else if (!AppConstants.isLocationSelected) {
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LocationRequired));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LocationRequired), "");
             return false;
         }
         /*else if (edt_StreetAddress.getText().toString().trim().isEmpty()) {
@@ -878,11 +878,11 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
         if (edt_TankNumber.getText().toString().trim().isEmpty()) {
             //edt_TankNumber.setError(getResources().getString(R.string.TankNumberRequired));
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.TankNumberRequired));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.TankNumberRequired), "");
             return false;
         } else if (edt_TankName.getText().toString().trim().isEmpty()) {
             //edt_TankName.setError(getResources().getString(R.string.TankNameRequired));
-            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.TankNameRequired));
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.TankNameRequired), "");
             return false;
         }
         return true;
@@ -1142,7 +1142,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     pd.dismiss();
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " AddTankFromAPP Response: " + ResponseText);
-                    showCustomMessageDialog(AddNewLinkToCloud.this, ResponseText);
+                    showCustomMessageDialog(AddNewLinkToCloud.this, ResponseText, "");
                 }
 
             } catch (Exception e) {
@@ -1157,9 +1157,9 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         }
     }
 
-    public void showCustomMessageDialog(final Activity context, String message) {
+    public void showCustomMessageDialog(final Activity context, String message, String input) {
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " " + message);
+            AppConstants.WriteinFile(TAG + " " + message + input);
         androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setCancelable(false);

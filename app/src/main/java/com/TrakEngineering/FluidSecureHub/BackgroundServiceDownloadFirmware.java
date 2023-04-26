@@ -265,7 +265,8 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 String IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
                 String IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
                 String BLEVersion = myPrefslo.getString("BLEVersion", "");
-                String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+                //String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+                String FOLDER_PATH_BLE = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSCardReader/";
                 //String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
 
                 URL url = new URL(f_url[0]);
@@ -353,7 +354,8 @@ public class BackgroundServiceDownloadFirmware extends BackgroundService {
                 String IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
                 String IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
                 String BLEVersion = myPrefslo.getString("BLEVersion", "");
-                String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+                //String FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+                String FOLDER_PATH_BLE = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSCardReader/";
                 //String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
 
                 URL url = new URL(f_url[0]);

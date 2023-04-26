@@ -26,7 +26,8 @@ public class BackgroundServiceUpgradeFirmware extends BackgroundService {
     String URL_UPGRADE_START = FUpgrade_URL + "upgrade?command=start";
     String URL_RESET = FUpgrade_URL + "upgrade?command=reset";
     private static final String TAG = "BackgroundService_UpgradeFirmware";
-    public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+    //public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
+    public static String FOLDER_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSBin/";
     public static String PATH_BIN_FILE1 = "user1.2048.new.5.bin";
 
 

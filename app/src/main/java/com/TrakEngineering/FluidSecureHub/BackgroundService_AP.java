@@ -2234,12 +2234,11 @@ public class BackgroundService_AP extends Service {
 
     public void getipOverOSVersion() {
         listOfConnectedIP_AP.clear();
-        /*if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 31) {
             GetDetailsFromARP();
-        } else*/
-        if (Build.VERSION.SDK_INT >= 29) {
-            //ListConnectedHotspotIPOS10_APAsyncCall(); // Not working with Android 11 and sdk 31 combination
-            GetDetailsFromARP();
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            ListConnectedHotspotIPOS10_APAsyncCall(); // Not working with Android 11 and sdk 31 combination
+            //GetDetailsFromARP();
         } else {
             ListConnectedHotspotIP_APAsyncCall();
         }

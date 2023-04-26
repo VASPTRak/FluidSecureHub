@@ -2224,12 +2224,11 @@ public class BackgroundService_FS_UNIT_4 extends Service {
 
     public void getipOverOSVersion() {
         listOfConnectedIP_FS_UNIT_4.clear();
-        /*if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 31) {
             GetDetailsFromARP();
-        } else*/
-        if (Build.VERSION.SDK_INT >= 29) {
-            //ListConnectedHotspotIPOS10_FS_UNIT_4AsyncCall(); // Not working with Android 11 and sdk 31 combination
-            GetDetailsFromARP();
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            ListConnectedHotspotIPOS10_FS_UNIT_4AsyncCall(); // Not working with Android 11 and sdk 31 combination
+            //GetDetailsFromARP();
         } else {
             ListConnectedHotspotIP_FS_UNIT_4AsyncCall();
         }

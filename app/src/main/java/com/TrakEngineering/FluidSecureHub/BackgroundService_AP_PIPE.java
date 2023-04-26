@@ -2405,12 +2405,11 @@ public class BackgroundService_AP_PIPE extends Service {
 
     public void getipOverOSVersion() {
         listOfConnectedIP_AP_PIPE.clear();
-        /*if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 31) {
             GetDetailsFromARP();
-        } else*/
-        if (Build.VERSION.SDK_INT >= 29) {
-            //ListConnectedHotspotIPOS10_AP_PIPEAsyncCall(); // Not working with Android 11 and sdk 31 combination
-            GetDetailsFromARP();
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            ListConnectedHotspotIPOS10_AP_PIPEAsyncCall(); // Not working with Android 11 and sdk 31 combination
+            //GetDetailsFromARP();
         } else {
             ListConnectedHotspotIP_AP_PIPEAsyncCall();
         }

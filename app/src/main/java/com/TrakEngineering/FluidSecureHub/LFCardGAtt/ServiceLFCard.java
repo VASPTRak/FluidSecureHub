@@ -248,13 +248,15 @@ public class ServiceLFCard extends Service {
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
         BLEVersion = myPrefslo.getString("BLEVersion", "");
         IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+        //FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/www/FSCardReader/";
+        FOLDER_PATH_BLE = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSCardReader/";
         String CheckVersionFileLocation = FOLDER_PATH_BLE + BLEVersion + "_check.txt";
 
         if (IsLFUpdate.trim().equalsIgnoreCase("Y")) {
 
             DeleteOldVersionTxtFiles(FOLDER_PATH_BLE);
-            File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader");
+            //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "/www/FSCardReader");
+            File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSCardReader");
             boolean success = true;
             if (!folder.exists()) {
                 success = folder.mkdirs();

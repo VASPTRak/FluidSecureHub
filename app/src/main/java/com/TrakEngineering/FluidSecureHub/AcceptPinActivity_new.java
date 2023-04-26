@@ -274,7 +274,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         BLEFileLocation = myPrefslo.getString("BLEFileLocation", "");
         IsLFUpdate = myPrefslo.getString("IsLFUpdate", "");
         IsHFUpdate = myPrefslo.getString("IsHFUpdate", "");
-        FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSCardReader_" + BLEType + "/";
+        //FOLDER_PATH_BLE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSCardReader_" + BLEType + "/";
+        FOLDER_PATH_BLE = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSCardReader_" + BLEType + "/";
 
         if (!IsVehicleNumberRequire.equalsIgnoreCase("True")) {
             //CheckForFirmwareUpgrade();

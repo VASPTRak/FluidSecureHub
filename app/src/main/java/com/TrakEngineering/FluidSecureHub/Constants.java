@@ -156,9 +156,10 @@ public class Constants {
     static List<String> BusyVehicleNumberList = new ArrayList<String>();
 
 
-    public static String exrSdDir= Environment.getExternalStorageDirectory()+ File.separator;
-    public static String logFolderName="FuelSecureAP";
-    public static String LogPath=exrSdDir+logFolderName+File.separator+"Logs";
+    //public static String exrSdDir= Environment.getExternalStorageDirectory()+ File.separator;
+    public static String exrSdDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator;
+    public static String logFolderName = "FuelSecureAP";
+    public static String LogPath = exrSdDir + logFolderName + File.separator + "Logs";
 
     private static final int SERVER_PORT = 2901;
     private static final String SERVER_IP = "192.168.4.1";

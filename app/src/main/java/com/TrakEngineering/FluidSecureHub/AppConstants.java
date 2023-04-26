@@ -810,7 +810,8 @@ public class AppConstants {
 
     public static void WriteTimeStamp(String str) {
         try {
-            File file = new File(Environment.getExternalStorageDirectory() + "/FSTimeStamp");
+            //File file = new File(Environment.getExternalStorageDirectory() + "/FSTimeStamp");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSTimeStamp");
 
             if (!file.exists()) {
                 if (file.mkdirs()) {
@@ -846,7 +847,8 @@ public class AppConstants {
 
             System.out.println(str);
 
-            File file = new File(Environment.getExternalStorageDirectory() + "/FSLog");
+            //File file = new File(Environment.getExternalStorageDirectory() + "/FSLog");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSLog");
 
             if (!file.exists()) {
                 if (file.mkdirs()) {

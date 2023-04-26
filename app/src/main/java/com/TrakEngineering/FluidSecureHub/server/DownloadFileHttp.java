@@ -38,7 +38,8 @@ public class DownloadFileHttp extends NanoHTTPD {
 
         String filenamefromUrl = uri;
 
-        File root = Environment.getExternalStorageDirectory();
+        //File root = Environment.getExternalStorageDirectory();
+        File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         FileInputStream fis = null;
 
         //File file = new File(root.getAbsolutePath() + "/www/pie.jpg");

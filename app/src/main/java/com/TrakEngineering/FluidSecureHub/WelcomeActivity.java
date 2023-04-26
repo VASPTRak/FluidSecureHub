@@ -870,7 +870,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }, 2000);
 
         //Delete Log file Older then month
-        File file = new File(Environment.getExternalStorageDirectory() + "/FSTimeStamp");
+        //File file = new File(Environment.getExternalStorageDirectory() + "/FSTimeStamp");
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSTimeStamp");
         if (file.exists()) {
             AppConstants.getAllFilesInDir(file);
         }
@@ -1123,7 +1124,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     public void deleteIncompleteOfflineDataFiles() {
-        File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+        //File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSdata");
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
@@ -1230,7 +1232,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     private void DeleteOldLogFiles() {
 
         try {
-            File file = new File(Environment.getExternalStorageDirectory() + "/FSLog");
+            //File file = new File(Environment.getExternalStorageDirectory() + "/FSLog");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSLog");
             boolean exists = file.exists();
             if (exists) {
                 CommonUtils.getAllFilesInDir(file);
@@ -1589,7 +1592,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                     String fileName = "IMG_" + timeStamp;
 
-                    File path = new File(Environment.getExternalStorageDirectory() + "/FSPictureData");
+                    //File path = new File(Environment.getExternalStorageDirectory() + "/FSPictureData");
+                    File path = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSPictureData");
 
                     if (!path.exists()) {
                         File wallpaperDirectory = new File("/sdcard/FSPictureData/");
@@ -3739,12 +3743,11 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     public void getipOverOSVersion() {
-        /*if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 31) {
             CommonUtils.GetDetailsFromARP();
-        } else*/
-        if (Build.VERSION.SDK_INT >= 29) {
-            //new GetConnectedDevicesIPOS10().execute(); // Not working with Android 11 and sdk 31 combination
-            CommonUtils.GetDetailsFromARP();
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            new GetConnectedDevicesIPOS10().execute(); // Not working with Android 11 and sdk 31 combination
+            //CommonUtils.GetDetailsFromARP();
         } else {
             new GetConnectedDevicesIP().execute();
         }
@@ -4431,7 +4434,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "WiFiConnectTask => Connected SSID: " + ssid +"; Selected SSID: " + AppConstants.CURRENT_SELECTED_SSID);
-                        AppConstants.colorToastBigFont(WelcomeActivity.this, " Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; WiFi Connected to: " + ssid, Color.BLUE);
+                        AppConstants.colorToastBigFont(WelcomeActivity.this, " Selected SSID: " + AppConstants.CURRENT_SELECTED_SSID +"; WiFi Connected to: " + ssid, Color.BLUE);
                         if (loading != null)
                             loading.dismiss();
                         ChangeWifiState(false);//turn wifi off
@@ -8983,8 +8986,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     public static void DownloadFile() {
-        File fileFsvm = new File(Environment.getExternalStorageDirectory() + "/www/FSVM/");
-        File fileFsnp = new File(Environment.getExternalStorageDirectory() + "/www/FSNP/");
+        //File fileFsvm = new File(Environment.getExternalStorageDirectory() + "/www/FSVM/");
+        File fileFsvm = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSVM/");
+        //File fileFsnp = new File(Environment.getExternalStorageDirectory() + "/www/FSNP/");
+        File fileFsnp = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/www/FSNP/");
 
         if (!fileFsvm.exists()) {
             if (fileFsvm.mkdirs()) {

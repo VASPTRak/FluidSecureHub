@@ -4956,12 +4956,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void getIpOverOSVersion() {
-        /*if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 31) {
             CommonUtils.GetDetailsFromARP();
-        } else*/
-        if (Build.VERSION.SDK_INT >= 29) {
-            //new GetConnectedDevicesIPOS10().execute(); // Not working with Android 11 and sdk 31 combination
-            CommonUtils.GetDetailsFromARP();
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            new GetConnectedDevicesIPOS10().execute(); // Not working with Android 11 and sdk 31 combination
+            //CommonUtils.GetDetailsFromARP();
         } else {
             new GetConnectedDevicesIP().execute();
         }
