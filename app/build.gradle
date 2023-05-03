@@ -17,7 +17,7 @@ android {
         targetSdkVersion 28
         //targetSdkVersion 31
         versionCode 51
-        versionName "0.80"
+        versionName "0.81"
         multiDexEnabled true
 
         ndk {
@@ -106,6 +106,6 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.xizzhu:simple-tool-tip:0.7.0'
 
-    implementation 'com.azure.android:azure-maps-control:1.1.0'
+    implementation 'com.azure.android:azure-maps-control:1.0.0'
 
 }

@@ -1,6 +1,5 @@
 package com.TrakEngineering.FluidSecureHub;
 
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -74,11 +73,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.SocketTimeoutException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
-
 
 public class SplashActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -237,8 +232,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     if (checkPermissionTask.isValue) {
 
                         Log.i(TAG, "SplashActivity executeTask OnCreate");
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "SplashActivity executeTask OnCreate");
+                        AppConstants.WriteinFile(TAG + "SplashActivity executeTask OnCreate");
 
                         executeTask();
                     }
@@ -252,8 +246,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     public void turnGPSOn() {
 
         try {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SplashActivity In turnGPSOn");
+            AppConstants.WriteinFile(TAG + "SplashActivity In turnGPSOn");
             @SuppressLint("RestrictedApi") LocationRequest mLocationRequest = new LocationRequest();
             //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
@@ -383,8 +376,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                             if (checkPermissionTask.isValue) {
 
                                 Log.i(TAG, "SplashActivity executeTask L1");
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "SplashActivity executeTask L1");
+                                AppConstants.WriteinFile(TAG + "SplashActivity executeTask L1");
 
                                 executeTask();
                             }
@@ -407,8 +399,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                             if (checkPermissionTask.isValue) {
 
                                 Log.i(TAG, "SplashActivity executeTask L2");
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "SplashActivity executeTask L2");
+                                AppConstants.WriteinFile(TAG + "SplashActivity executeTask L2");
 
                                 executeTask();
                             }
@@ -604,8 +595,6 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         try {
 
-            //CheckAllPermissions();
-
             JSONObject jsonObj = new JSONObject(response);
 
             String ResponceMessage = jsonObj.getString(AppConstants.RES_MESSAGE);
@@ -799,8 +788,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                             }
                         }
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile( "CheckApproved: " + getResources().getString(R.string.RegistrationNotApproved));
+                        AppConstants.WriteinFile( "CheckApproved: " + getResources().getString(R.string.RegistrationNotApproved));
                         CommonUtils.showMessageDilaog(SplashActivity.this, "Error Message", getResources().getString(R.string.RegistrationNotApproved));
                     }
                 } catch (Exception ex) {
@@ -816,50 +804,30 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     finish();
 
                 } else if (ResponceText.equalsIgnoreCase("notapproved")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile( "CheckApproved: " + getResources().getString(R.string.regiNotApproved));
+                    AppConstants.WriteinFile( "CheckApproved: " + getResources().getString(R.string.regiNotApproved));
                     AlertDialogBox(SplashActivity.this, getResources().getString(R.string.regiNotApproved));
 
                 } else if (ResponceText.equalsIgnoreCase("IMEI not exists")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
+                    AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
                     AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
 
                 } else if (ResponceText.equalsIgnoreCase("No data found")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
+                    AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
                     AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
+                    AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
                     AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
                 }
 
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile( "CheckApproved: No Internet");
+                AppConstants.WriteinFile( "CheckApproved: No Internet");
                 AppConstants.AlertDialogFinishWithTitle(SplashActivity.this, "", "No Internet");
             }
 
 
         } catch (Exception e) {
             CommonUtils.LogMessage(TAG, "", e);
-        }
-    }
-
-    private void CheckAllPermissions() {
-        try {
-            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA};
-            String grantedPermissions = "";
-            for (int i = 0; i < permissions.length; i++) {
-                boolean isGranted = checkPermission(SplashActivity.this, permissions[i]);
-                grantedPermissions = grantedPermissions + "(" + permissions[i] + " => IsGranted: " + isGranted + "); ";
-            }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "grantedPermissions: [" + grantedPermissions + "]");
-        } catch (Exception e) {
-            CommonUtils.LogMessage(TAG, "CheckAllPermissions", e);
         }
     }
 
@@ -890,8 +858,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Exception in CheckApproved: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "Exception in CheckApproved: " + e.getMessage());
 
             }
             return resp;
@@ -908,8 +875,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
                         AppConstants.NETWORK_STRENGTH = false;
                     }
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Server response null ~Switching to offline mode!!");
+                    AppConstants.WriteinFile(TAG + "Server response null ~Switching to offline mode!!");
                     SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
                     HubType = sharedPrefODO.getString("HubType", "");
 
@@ -927,8 +893,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     }
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.server_connection_problem) + "; response: " + response);
+                    AppConstants.WriteinFile(TAG + getResources().getString(R.string.server_connection_problem) + "; response: " + response);
                     RetryAlertDialogButtonClicked(getString(R.string.server_connection_problem));
                 }
 
@@ -1227,8 +1192,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
             bufferWritter.close();
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile("writeIMEI_UUIDInFile- " + e.getMessage());
+            AppConstants.WriteinFile("writeIMEI_UUIDInFile- " + e.getMessage());
         }
     }
 
@@ -1272,8 +1236,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
             file_content = text.toString();
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile( "readIMEIMobileNumFile- " + e.getMessage());
+            AppConstants.WriteinFile( "readIMEIMobileNumFile- " + e.getMessage());
         }
 
         return file_content;
