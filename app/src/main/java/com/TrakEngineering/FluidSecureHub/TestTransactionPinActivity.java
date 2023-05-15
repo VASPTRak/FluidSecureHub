@@ -110,7 +110,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
         btnSave = (Button) findViewById(R.id.btnSave);
         btnCancel = (Button) findViewById(R.id.btnCancel);
 
-        tv_title.setText(getResources().getString(R.string.PersonnelIdentification).replace("PERSONNEL", ScreenNameForPersonnel.toUpperCase()));
+        tv_title.setText(getResources().getString(R.string.PersonnelIdHeading).replace("PERSONNEL", ScreenNameForPersonnel.toUpperCase()));
         etPersonnelPin.setText("");
 
         getSupportActionBar().setTitle(R.string.fs_name);

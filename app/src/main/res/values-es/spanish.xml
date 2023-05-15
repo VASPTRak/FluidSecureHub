@@ -317,7 +317,8 @@
 
     <string name="BTLinkPageMsg">El LINK que ha seleccionado no está configurado. Seleccione el enlace de la siguiente lista. Si el enlace no está en la lista, haga clic en el botón "Emparejar nuevo ENLACE" que avanzará a la página de Bluetooth. Una vez que vea el nombre del ENLACE que está intentando seleccionar, selecciónelo en la página siguiente y luego haga clic en emparejar. Si no ve este ENLACE en la página siguiente, reajustar la energía y vuelva a intentarlo. Si después de restablecer la energía, aún no ve este nombre de ENLACE, llame a Soporte.</string>
     <string name="BTLinkNotInPairList">El LINK que ha seleccionado no está emparejado actualmente. Nosotros estamos avanzando a la página de BlueTooth. Una vez que vea el nombre del ENLACE que está intentando seleccionar, selecciónelo en la página siguiente y luego haga clic en emparejar. Si no ve este ENLACE en la página siguiente, reajustar la energía y vuelva a intentarlo. Si después de restablecer la energía, aún no ve este nombre de ENLACE, llame a Soporte.</string>
-    <string name="askreplacehub">Se ingresa el nombre del HUB que ya tiene asignado un dispositivo existente. ¿Le gustaría reemplazar su dispositivo existente con este? Al presionar continuar aquí, reemplazará el dispositivo existente de este HUB con esta unidad. Esta Acción debe ser realizada por alguien que tenga Acceso a la Nube. Si tiene un perfil de CustomerAdmin en la nube, ingrese el correo electrónico y la contraseña que usa para iniciar sesión en la nube a continuación. ¿Le gustaría continuar?</string>
+    <!--<string name="askreplacehub">Se ingresa el nombre del HUB que ya tiene asignado un dispositivo existente. ¿Le gustaría reemplazar su dispositivo existente con este? Al presionar continuar aquí, reemplazará el dispositivo existente de este HUB con esta unidad. Esta Acción debe ser realizada por alguien que tenga Acceso a la Nube. Si tiene un perfil de CustomerAdmin en la nube, ingrese el correo electrónico y la contraseña que usa para iniciar sesión en la nube a continuación. ¿Le gustaría continuar?</string>-->
+    <string name="askreplacehub">¿Estás seguro de que quieres reemplazar el HUB?</string>
     <string name="conn_error">Hubo un error al conectarse al LINK. Haga clic en Aceptar y vuelva a realizar su selección. Si continúa teniendo más problemas, llame a Soporte.</string>
 
     <string name="prevReading">Ha ingresado una lectura que se ingresó anteriormente. Por favor revisa e intenta de nuevo. Si el problema persiste, comuníquese con su gerente.</string>
@@ -388,9 +389,11 @@
     <string name="HubNameHint">INSINUACIÓN: Su nombre HUB consistirá en las palabras HUB seguidas de 8 números.</string>
     <string name="Example">Ejemplo</string>
     <string name="HUBNameRequired">Ingrese el nombre del HUB</string>
+    <string name="HUBNameInvalid">Ingrese un nombre de HUB válido</string>
     <string name="regiThankYou">Gracias por registrarte.</string>
-    <string name="RegistrationSuccess">Gracias por registrarte. \n\nSu solicitud ha sido enviada para su aprobación. Podrá continuar con la aplicación después de que el administrador haya aprobado su solicitud.</string>
+    <string name="RegistrationSuccess">Gracias por registrarte.</string>
     <string name="regiNotApproved">Su solicitud de registro aún no ha sido aprobada.\nEstá marcado como Inactivo en el Software de la empresa.\nPóngase en contacto con el administrador de su empresa.</string>
+    <string name="ReplacementSuccess">Reemplazo exitoso. Espere 1 minuto para permitir que los LINKS se conecten a este dispositivo. Si tiene algún problema, llame a nuestro soporte 24/7.</string>
 
     <!-- Access Device Assignment -->
     <string name="CompanyName">Nombre de empresa:</string>
@@ -477,4 +480,6 @@
     <string name="LocationRequired">Por favor, seleccione una ubicación en el mapa.</string>
     <string name="SearchAddressHint">Busca aquí..</string>
 
+    <!-- PIN Screen (Test Transaction) -->
+    <string name="PersonnelIdHeading">ID DE PERSONAL</string>
 </resources>

@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/PersonnelIdentification"
+                    android:text="@string/PersonnelIdHeading"
                     android:textAllCaps="false"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/black"
@@ -97,9 +97,9 @@
                     android:layout_marginRight="25dp"
                     android:layout_weight="1"
                     android:background="@color/backbtn"
-                    android:text="@string/previousScreen"
-                    android:textSize="@dimen/previous_button_text"
-                    android:textColor="@color/black" />
+                    android:text="@string/Cancel"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/previous_button_text" />
 
                 <Button
                     android:id="@+id/btnSave"
