@@ -300,6 +300,7 @@
     <string name="SelectHoseAlert">Por favor, seleccione Manguera</string>
     <string name="UnableToGetHoseList">No se puede obtener la lista de mangueras desde el servidor</string>
     <string name="HoseListIsNotAvailable">Lista de mangueras no disponible</string>
+    <string name="OneOfTheHoseIsBusy">Una de las mangueras está ocupada, inténtelo de nuevo más tarde.</string>
 
     <string name="Quantity">Cantidad:</string>
     <string name="Pulse">pulso:</string>
@@ -408,7 +409,7 @@
     <string name="HotSpotSSIDCannotBeBlank">HotSpot SSID no puede estar en blanco. Póngase en contacto con Soporte.</string>
     <string name="HotSpotPasswordCannotBeBlank">La contraseña de HotSpot no puede estar en blanco. Póngase en contacto con Soporte.</string>
     <string name="CannotUpdateMac">No se puede actualizar la dirección mac, la manguera está ocupada. Por favor, inténtelo de nuevo más tarde.</string>
-    <string name="HoseIsBusy">Una de las mangueras está ocupada, inténtelo de nuevo más tarde.</string>
+    <string name="HoseIsBusy">Manguera en uso. Espere para reconfigurar esta manguera cuando no haya otras en uso.</string>
     <string name="UnableToAutoConnect">No se puede conectar automáticamente a</string>
     <string name="StartedManualProcess">Proceso manual iniciado...</string>
     <string name="EnableWifiManually">Habilitar Wi-Fi manualmente y conectarse a</string>

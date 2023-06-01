@@ -222,7 +222,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     long sqlite_id = 0;
     Timer ScreenOutTime;
     public boolean onResumeAlreadyCalled = false;
-    private boolean skipOnResumeForHotspot = false;
+    //private boolean skipOnResumeForHotspot = false;
     private boolean skipOnPostResumeForHotspot = false;
     private Dialog toastDialog = null;
 
@@ -261,10 +261,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         super.onResume();
 
         //checkBusyhose();
-        if (skipOnResumeForHotspot) { // To handle app crash due to double onResume call after disabling the hotspot.
+        /*if (skipOnResumeForHotspot) { // To handle app crash due to double onResume call after disabling the hotspot.
             skipOnResumeForHotspot = false;
             return;
-        }
+        }*/
 
         invalidateOptionsMenu();
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
@@ -384,7 +384,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             LinkName = "";
         }
 
-        if ((LinkCommunicationType.equalsIgnoreCase("BT") || BTConstants.CurrentTransactionIsBT) && CommonUtils.CheckAllHTTPLinksAreFree()) {
+        /*if ((LinkCommunicationType.equalsIgnoreCase("BT") || BTConstants.CurrentTransactionIsBT) && CommonUtils.CheckAllHTTPLinksAreFree()) {
             if (CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
                 skipOnResumeForHotspot = true;
                 if (AppConstants.GenerateLogs)
@@ -405,7 +405,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
 
             }
-        }
+        }*/
 
         //offline-----------start
         if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
@@ -2849,8 +2849,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             }
 
                         }
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MACADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
+                        //if (AppConstants.GenerateLogs)
+                        //    AppConstants.WriteinFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MACADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -5027,7 +5027,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this))
                 SyncOfflineData();
 
-            if (BTConstants.isHotspotDisabled) {
+            /*if (BTConstants.isHotspotDisabled) {
                 //Enable Hotspot
                 if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.isAllLinksAreBTLinks) {
                     skipOnResumeForHotspot = true;
@@ -5036,7 +5036,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     wifiApManager.setWifiApEnabled(null, true);
                 }
                 BTConstants.isHotspotDisabled = false;
-            }
+            }*/
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "PostTransactionBackgroundTasks Exception: " + e.getMessage());

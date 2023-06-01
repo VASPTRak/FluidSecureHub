@@ -43,7 +43,7 @@ public class BTConstants {
     public static boolean SwitchedBTToUDP4 = false;
     public static boolean SwitchedBTToUDP5 = false;
     public static boolean SwitchedBTToUDP6 = false;
-    public static boolean isHotspotDisabled = false;
+    //public static boolean isHotspotDisabled = false;
 
     public static String info_cmd = "LK_COMM=info";
     public static String transaction_id_cmd = "LK_COMM=txtnid:";
@@ -74,6 +74,13 @@ public class BTConstants {
     public static boolean isNewVersionLinkFour = false;
     public static boolean isNewVersionLinkFive = false;
     public static boolean isNewVersionLinkSix = false;
+
+    public static boolean isPTypeSupportedLinkOne = false;
+    public static boolean isPTypeSupportedLinkTwo = false;
+    public static boolean isPTypeSupportedLinkThree = false;
+    public static boolean isPTypeSupportedLinkFour = false;
+    public static boolean isPTypeSupportedLinkFive = false;
+    public static boolean isPTypeSupportedLinkSix = false;
 
     public static boolean isRelayOnAfterReconnect1 = false;
     public static boolean isRelayOnAfterReconnect2 = false;

@@ -90,6 +90,7 @@ public class BackgroundService_BTFive extends Service {
     String ipForUDP = "192.168.4.1";
     public int infoCommandAttempt = 0;
     public boolean isConnected = false;
+    public boolean isHotspotDisabled = false;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -197,6 +198,17 @@ public class BackgroundService_BTFive extends Service {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink 5: Link not connected. Switching to UDP connection...");
 
+                // Disable Hotspot
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
+                WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTFive.this);
+                wifiApManager.setWifiApEnabled(null, false);
+                isHotspotDisabled = true;
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // Enable Wi-Fi
                 WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
                 wifiManagerMM.setWifiEnabled(true);
@@ -426,7 +438,8 @@ public class BackgroundService_BTFive extends Service {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkFive) {
+                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkFive && BTConstants.isPTypeSupportedLinkFive) {
+                                            BTConstants.isPTypeSupportedLinkFive = false; // reset
                                             P_Type_Command();
                                         } else {
                                             transactionIdCommand(TransactionId);
@@ -468,7 +481,8 @@ public class BackgroundService_BTFive extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkFive) {
+                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkFive && BTConstants.isPTypeSupportedLinkFive) {
+                                        BTConstants.isPTypeSupportedLinkFive = false; // reset
                                         P_Type_Command();
                                     } else {
                                         transactionIdCommand(TransactionId);
@@ -1107,7 +1121,7 @@ public class BackgroundService_BTFive extends Service {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (BTConstants.isHotspotDisabled) {
+                    if (isHotspotDisabled) {
                         //Enable Hotspot
                         WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTFive.this);
                         if (!CommonUtils.isHotspotEnabled(BackgroundService_BTFive.this) && !AppConstants.isAllLinksAreBTLinks) {
@@ -1115,7 +1129,7 @@ public class BackgroundService_BTFive extends Service {
                                 AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
                             wifiApManager.setWifiApEnabled(null, true);
                         }
-                        BTConstants.isHotspotDisabled = false;
+                        isHotspotDisabled = false;
                     }
                     if (cd.isConnectingToInternet()) {
                         boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTFive.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
@@ -1612,6 +1626,7 @@ public class BackgroundService_BTFive extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 5: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTFive.this, AppConstants.UP_HoseId_fs5, version);
+            BTConstants.isPTypeSupportedLinkFive = CommonUtils.CheckPTypeSupportedLink(version);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -300,6 +300,7 @@
     <string name="SelectHoseAlert">Please select Hose</string>
     <string name="UnableToGetHoseList">Unable to get hose list from server</string>
     <string name="HoseListIsNotAvailable">Hose list is not available</string>
+    <string name="OneOfTheHoseIsBusy">One of the hose is busy, please try again later.</string>
 
     <string name="Quantity">Quantity:</string>
     <string name="Pulse">Pulse:</string>
@@ -408,7 +409,7 @@
     <string name="HotSpotSSIDCannotBeBlank">HotSpot SSID cannot be blank. Please contact Support.</string>
     <string name="HotSpotPasswordCannotBeBlank">HotSpot Password cannot be blank. Please contact Support.</string>
     <string name="CannotUpdateMac">Cannot update mac address, Hose is busy. Please try again later.</string>
-    <string name="HoseIsBusy">One of the hose is busy, please try again later.</string>
+    <string name="HoseIsBusy">Hose in use. Please wait to reconfigure this hose when no others are in use.</string>
     <string name="UnableToAutoConnect">Unable to auto connect to</string>
     <string name="StartedManualProcess">Started manual process...</string>
     <string name="EnableWifiManually">Enable Wifi Manually and Connect to</string>

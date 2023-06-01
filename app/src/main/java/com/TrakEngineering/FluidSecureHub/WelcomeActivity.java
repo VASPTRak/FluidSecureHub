@@ -7717,7 +7717,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (AppConstants.IsHoseBusyCheckLocally()) {
                     AddNewLinkScreen();
                 } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -7725,7 +7725,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (AppConstants.IsHoseBusyCheckLocally()) {
                     OscilloscopeLinkSelection();
                 } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -7735,7 +7735,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (AppConstants.IsHoseBusyCheckLocally()) {
                     CommonUtils.StoreLanguageSettings(WelcomeActivity.this, "es", true);
                 } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -7745,7 +7745,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (AppConstants.IsHoseBusyCheckLocally()) {
                     CommonUtils.StoreLanguageSettings(WelcomeActivity.this, "en", true);
                 } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.HoseIsBusy), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -13352,60 +13352,75 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         try {
             if (serverSSIDList != null) {
                 for (int i = 0; i < serverSSIDList.size(); i++) {
-                    String MacAddress = serverSSIDList.get(i).get("MacAddress");
+                    //String MacAddress = serverSSIDList.get(i).get("MacAddress");
                     String BTMacAddress = serverSSIDList.get(i).get("BTMacAddress");
+                    String LinkCommunicationType = serverSSIDList.get(i).get("LinkCommunicationType");
 
-                    switch (i) {
-                        case 0:
-                            if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkOneStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
-                                //Connect to Link one
-                                BTSPPMain btspp1 = new BTSPPMain();
-                                btspp1.activity = WelcomeActivity.this;
-                                btspp1.connect1();
-                            }
-                            break;
-                        case 1://Link Two
-                            if (!BTMacAddress.isEmpty() && !BTConstants.BTLinkTwoStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connecting...")) {
-                                //Connect to Link two
-                                BTSPPMain btspp2 = new BTSPPMain();
-                                btspp2.activity = WelcomeActivity.this;
-                                btspp2.connect2();
-                            }
-                            break;
-                        case 2://Link Three
-                            if (!BTMacAddress.isEmpty() && !BTConstants.BTLinkThreeStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrThree.equalsIgnoreCase("Connecting...")) {
-                                //Connect to Link three
-                                BTSPPMain btspp3 = new BTSPPMain();
-                                btspp3.activity = WelcomeActivity.this;
-                                btspp3.connect3();
-                            }
-                            break;
-                        case 3://Link Four
-                            if (!BTMacAddress.isEmpty() && !BTConstants.BTLinkFourStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrFour.equalsIgnoreCase("Connecting...")) {
-                                //Connect to Link Four
-                                BTSPPMain btspp4 = new BTSPPMain();
-                                btspp4.activity = WelcomeActivity.this;
-                                btspp4.connect4();
-                            }
-                            break;
-                        case 4://Link Five
-                            if (!BTMacAddress.isEmpty() && !BTConstants.BTLinkFiveStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrFive.equalsIgnoreCase("Connecting...")) {
-                                //Connect to Link Five
-                                BTSPPMain btspp5 = new BTSPPMain();
-                                btspp5.activity = WelcomeActivity.this;
-                                btspp5.connect5();
-                            }
-                            break;
-                        case 5://Link Six
-                            if (!BTMacAddress.isEmpty() && !BTConstants.BTLinkSixStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrSix.equalsIgnoreCase("Connecting...")) {
-                                //Connect to Link Six
-                                BTSPPMain btspp6 = new BTSPPMain();
-                                btspp6.activity = WelcomeActivity.this;
-                                btspp6.connect6();
-                            }
-                            break;
-                        default://Something went wrong in link selection please try again.
-                            break;
+                    if (LinkCommunicationType != null && LinkCommunicationType.equalsIgnoreCase("BT")) {
+                        switch (i) {
+                            case 0:
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkOneStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
+                                    //Connect to Link one
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<BTLink 1: Trying to connect.>");
+                                    BTSPPMain btspp1 = new BTSPPMain();
+                                    btspp1.activity = WelcomeActivity.this;
+                                    btspp1.connect1();
+                                }
+                                break;
+                            case 1://Link Two
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkTwoStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connecting...")) {
+                                    //Connect to Link two
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<BTLink 2: Trying to connect.>");
+                                    BTSPPMain btspp2 = new BTSPPMain();
+                                    btspp2.activity = WelcomeActivity.this;
+                                    btspp2.connect2();
+                                }
+                                break;
+                            case 2://Link Three
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkThreeStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrThree.equalsIgnoreCase("Connecting...")) {
+                                    //Connect to Link three
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<BTLink 3: Trying to connect.>");
+                                    BTSPPMain btspp3 = new BTSPPMain();
+                                    btspp3.activity = WelcomeActivity.this;
+                                    btspp3.connect3();
+                                }
+                                break;
+                            case 3://Link Four
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkFourStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrFour.equalsIgnoreCase("Connecting...")) {
+                                    //Connect to Link Four
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<BTLink 4: Trying to connect.>");
+                                    BTSPPMain btspp4 = new BTSPPMain();
+                                    btspp4.activity = WelcomeActivity.this;
+                                    btspp4.connect4();
+                                }
+                                break;
+                            case 4://Link Five
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkFiveStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrFive.equalsIgnoreCase("Connecting...")) {
+                                    //Connect to Link Five
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<BTLink 5: Trying to connect.>");
+                                    BTSPPMain btspp5 = new BTSPPMain();
+                                    btspp5.activity = WelcomeActivity.this;
+                                    btspp5.connect5();
+                                }
+                                break;
+                            case 5://Link Six
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkSixStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrSix.equalsIgnoreCase("Connecting...")) {
+                                    //Connect to Link Six
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<BTLink 6: Trying to connect.>");
+                                    BTSPPMain btspp6 = new BTSPPMain();
+                                    btspp6.activity = WelcomeActivity.this;
+                                    btspp6.connect6();
+                                }
+                                break;
+                            default://Something went wrong in link selection please try again.
+                                break;
+                        }
                     }
                 }
             }

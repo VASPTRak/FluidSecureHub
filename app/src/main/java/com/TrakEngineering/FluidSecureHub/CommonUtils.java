@@ -2508,4 +2508,19 @@ public class CommonUtils {
         protected void onPostExecute(String res) {
         }
     }
+
+    public static boolean CheckPTypeSupportedLink(String versionFromLink) {
+        boolean isSupported = false;
+        try {
+            String version = versionFromLink.replaceAll("[^0-9]", "");
+            int versionNum = Integer.parseInt(version);
+            if (versionNum >= 123) {
+                isSupported = true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return isSupported;
+    }
+
 }

@@ -168,7 +168,7 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                         public void run() {
                             if (BTConstants.ScopeStatus.equalsIgnoreCase("DONE")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Read end.");
+                                    AppConstants.WriteinFile(TAG + "Read end. (" + readCounter + " seconds)");
                                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -504,7 +504,7 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                         if (stopCounter < 30) {
                             if (BTConstants.ScopeStatus.equalsIgnoreCase("OVER")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Record end.");
+                                    AppConstants.WriteinFile(TAG + "Record end. (" + stopCounter + " seconds)");
                                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                     @Override
                                     public void run() {

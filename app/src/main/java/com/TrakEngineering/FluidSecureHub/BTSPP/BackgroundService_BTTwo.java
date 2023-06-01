@@ -90,6 +90,7 @@ public class BackgroundService_BTTwo extends Service {
     String ipForUDP = "192.168.4.1";
     public int infoCommandAttempt = 0;
     public boolean isConnected = false;
+    public boolean isHotspotDisabled = false;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -197,6 +198,17 @@ public class BackgroundService_BTTwo extends Service {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink 2: Link not connected. Switching to UDP connection...");
 
+                // Disable Hotspot
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
+                WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTTwo.this);
+                wifiApManager.setWifiApEnabled(null, false);
+                isHotspotDisabled = true;
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // Enable Wi-Fi
                 WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
                 wifiManagerMM.setWifiEnabled(true);
@@ -426,7 +438,8 @@ public class BackgroundService_BTTwo extends Service {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo) {
+                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo && BTConstants.isPTypeSupportedLinkTwo) {
+                                            BTConstants.isPTypeSupportedLinkTwo = false; // reset
                                             P_Type_Command();
                                         } else {
                                             transactionIdCommand(TransactionId);
@@ -468,7 +481,8 @@ public class BackgroundService_BTTwo extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo) {
+                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo && BTConstants.isPTypeSupportedLinkTwo) {
+                                        BTConstants.isPTypeSupportedLinkTwo = false; // reset
                                         P_Type_Command();
                                     } else {
                                         transactionIdCommand(TransactionId);
@@ -1108,7 +1122,7 @@ public class BackgroundService_BTTwo extends Service {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (BTConstants.isHotspotDisabled) {
+                    if (isHotspotDisabled) {
                         //Enable Hotspot
                         WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTTwo.this);
                         if (!CommonUtils.isHotspotEnabled(BackgroundService_BTTwo.this) && !AppConstants.isAllLinksAreBTLinks) {
@@ -1116,7 +1130,7 @@ public class BackgroundService_BTTwo extends Service {
                                 AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
                             wifiApManager.setWifiApEnabled(null, true);
                         }
-                        BTConstants.isHotspotDisabled = false;
+                        isHotspotDisabled = false;
                     }
                     if (cd.isConnectingToInternet()) {
                         boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTTwo.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
@@ -1613,6 +1627,7 @@ public class BackgroundService_BTTwo extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 2: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTTwo.this, AppConstants.UP_HoseId_fs2, version);
+            BTConstants.isPTypeSupportedLinkTwo = CommonUtils.CheckPTypeSupportedLink(version);
 
         } catch (Exception e) {
             e.printStackTrace();

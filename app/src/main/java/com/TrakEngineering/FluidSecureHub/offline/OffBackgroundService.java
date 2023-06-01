@@ -58,6 +58,7 @@ public class OffBackgroundService extends Service {
     TimerTask repeatedTask;
     SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
     public String IsDepartmentRequire = "false";
+    public boolean isDownloadStarted = false;
 
     public OffBackgroundService() {
     }
@@ -100,33 +101,40 @@ public class OffBackgroundService extends Service {
                 int CurrentMinutes = calendar.get(Calendar.MINUTE);
 
                 if (cd.isConnecting() && isOffline.equalsIgnoreCase("True")) {
-                    if (checkSharedPrefOfflineData()) {
-                        if (checkOfflineDataTime(CurrentHour24, CurrentMinutes, SavedOfflineHourOfDay, SavedOfflineMinuteOfHour)) {
-                            if (OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) {
-                                //Weekly logic
-                                Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                                deleteAllDownloadedFiles();
+                    if (!isDownloadStarted) {
+                        if (checkSharedPrefOfflineData()) {
+                            if (checkOfflineDataTime(CurrentHour24, CurrentMinutes, SavedOfflineHourOfDay, SavedOfflineMinuteOfHour)) {
+                                if (OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) {
+                                    //Weekly logic
+                                    Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                    isDownloadStarted = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                    deleteAllDownloadedFiles();
 
-                                new GetAPIToken().execute();
+                                    new GetAPIToken().execute();
 
-                            } else if (OFFLineDataDwnldFreq.equalsIgnoreCase("Daily")) {
-                                //Everyday logic
-                                Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                                deleteAllDownloadedFiles();
+                                } else if (OFFLineDataDwnldFreq.equalsIgnoreCase("Daily")) {
+                                    //Everyday logic
+                                    Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                    isDownloadStarted = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                    deleteAllDownloadedFiles();
 
-                                new GetAPIToken().execute();
+                                    new GetAPIToken().execute();
 
-                            } else {
-                                //WeekDay did not match
-                                Log.i(TAG, " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
+                                } else {
+                                    //WeekDay did not match
+                                    Log.i(TAG, " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
+                                }
                             }
                         }
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " Offline data download already started");
                     }
                 } else {
                     //NO internet connection 0r  Offline status False
@@ -502,10 +510,10 @@ public class OffBackgroundService extends Service {
 
                     if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1") && !AppConstants.selectHosePressed) {
 
+                        isDownloadStarted = false;
                         if (IsDepartmentRequire.equalsIgnoreCase("true")) {
                             if (status_d.equalsIgnoreCase("1")) {
                                 setSharedPrefOfflineData(getApplicationContext());
-
                                 if (timer != null)
                                     timer.cancel();
 
