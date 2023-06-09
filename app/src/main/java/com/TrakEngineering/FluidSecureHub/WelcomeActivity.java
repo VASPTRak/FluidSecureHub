@@ -13359,7 +13359,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     if (LinkCommunicationType != null && LinkCommunicationType.equalsIgnoreCase("BT")) {
                         switch (i) {
                             case 0:
-                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkOneStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkOneStatus && !BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)
                                     //Connect to Link one
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "<BTLink 1: Trying to connect.>");
@@ -13369,7 +13369,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
                                 break;
                             case 1://Link Two
-                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkTwoStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connecting...")) {
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkTwoStatus && !BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connecting...")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)
                                     //Connect to Link two
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "<BTLink 2: Trying to connect.>");
@@ -13379,7 +13379,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
                                 break;
                             case 2://Link Three
-                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkThreeStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrThree.equalsIgnoreCase("Connecting...")) {
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkThreeStatus && !BTConstants.BTStatusStrThree.equalsIgnoreCase("Connecting...")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)
                                     //Connect to Link three
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "<BTLink 3: Trying to connect.>");
@@ -13389,7 +13389,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
                                 break;
                             case 3://Link Four
-                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkFourStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrFour.equalsIgnoreCase("Connecting...")) {
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkFourStatus && !BTConstants.BTStatusStrFour.equalsIgnoreCase("Connecting...")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)
                                     //Connect to Link Four
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "<BTLink 4: Trying to connect.>");
@@ -13399,7 +13399,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
                                 break;
                             case 4://Link Five
-                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkFiveStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrFive.equalsIgnoreCase("Connecting...")) {
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkFiveStatus && !BTConstants.BTStatusStrFive.equalsIgnoreCase("Connecting...")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)
                                     //Connect to Link Five
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "<BTLink 5: Trying to connect.>");
@@ -13409,7 +13409,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                 }
                                 break;
                             case 5://Link Six
-                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkSixStatus && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress) && !BTConstants.BTStatusStrSix.equalsIgnoreCase("Connecting...")) {
+                                if (BTMacAddress != null && !BTMacAddress.isEmpty() && !BTConstants.BTLinkSixStatus && !BTConstants.BTStatusStrSix.equalsIgnoreCase("Connecting...")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(BTMacAddress)
                                     //Connect to Link Six
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "<BTLink 6: Trying to connect.>");

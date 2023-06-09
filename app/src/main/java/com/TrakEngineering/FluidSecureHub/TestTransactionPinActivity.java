@@ -145,8 +145,9 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
                 String pin = etPersonnelPin.getText().toString().trim();
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Entered PIN num: " + pin);
+                // As per #2252, Removed PIN from the logs (Only for Test Transaction)
+                //if (AppConstants.GenerateLogs)
+                //    AppConstants.WriteinFile(TAG + "Entered PIN num: " + pin);
 
                 if (cd.isConnectingToInternet()) {
 
@@ -157,7 +158,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                             AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
                         CommonUtils.showCustomMessageDilaog(TestTransactionPinActivity.this, "Error Message", getResources().getString(R.string.pePersonnel).replace("Personnel", ScreenNameForPersonnel));
                     }
-                } else if (AppConstants.GenerateLogs) {
+                } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
                     AppConstants.colorToastBigFont(TestTransactionPinActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
@@ -264,8 +265,8 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                     objEntityClass.Barcode = "";
                     objEntityClass.IsTestTransaction = "y";
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "PIN Entered Manually: " + etPersonnelPin.getText().toString().trim());
+                    //if (AppConstants.GenerateLogs)
+                    //    AppConstants.WriteinFile(TAG + "PIN Entered Manually: " + etPersonnelPin.getText().toString().trim());
 
                     Gson gson = new Gson();
                     String jsonData = gson.toJson(objEntityClass);

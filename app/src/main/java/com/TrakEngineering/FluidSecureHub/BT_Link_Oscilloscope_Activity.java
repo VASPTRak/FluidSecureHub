@@ -136,8 +136,8 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                         AppConstants.WriteinFile(TAG + "Start button clicked");
                     ClearPreviousChartAndData();
 
-                    btnDisplay.setAlpha(0.5f);
-                    btnDisplay.setEnabled(false);
+                    //btnDisplay.setAlpha(0.5f); // #2240
+                    //btnDisplay.setEnabled(false);
 
                     scopeOnCommand();
 
@@ -189,7 +189,7 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                                 readCounter++;
                             }
 
-                            if (readCounter > 60) {
+                            /*if (readCounter > 60) { // #2240
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + "Read process not completed.");
                                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -200,7 +200,7 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                                 }, 50);
                                 hideLoader();
                                 cancel();
-                            }
+                            }*/
                         }
                     };
                     timerBtScope.schedule(tt, 1000, 1000);
@@ -501,22 +501,22 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                     }
 
                     if (isScopeRecordStarted) {
-                        if (stopCounter < 30) {
-                            if (BTConstants.ScopeStatus.equalsIgnoreCase("OVER")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Record end. (" + stopCounter + " seconds)");
-                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showToast(BT_Link_Oscilloscope_Activity.this, "over");
-                                        showDisplayButton();
-                                    }
-                                }, 100);
-                                cancel();
-                            } else {
-                                stopCounter++;
-                            }
+                        //if (stopCounter < 30) { // #2240
+                        if (BTConstants.ScopeStatus.equalsIgnoreCase("OVER")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Record end. (" + stopCounter + " seconds)");
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast(BT_Link_Oscilloscope_Activity.this, "over");
+                                    //showDisplayButton(); // #2240
+                                }
+                            }, 100);
+                            cancel();
                         } else {
+                            stopCounter++;
+                        }
+                        /*} else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Failed to over Record.");
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -526,7 +526,7 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                                 }
                             }, 50);
                             cancel();
-                        }
+                        }*/
                     } else {
                         scopeWaitCounter++;
                     }
