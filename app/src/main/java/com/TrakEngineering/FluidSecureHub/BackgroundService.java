@@ -149,6 +149,8 @@ public class BackgroundService extends Service {
 
         UpdateSwitchTimeBounceForLink();
 
+        UpdatePulserTypeOfLINKMaster();
+
         uploadLast20TransactionOnce(); // last 20 trxn
 
         uploadConnectionissueLogtoserver();// upload connection issue log.
@@ -267,6 +269,109 @@ public class BackgroundService extends Service {
                     editor.clear();
                     editor.commit();
 
+                }
+            } catch (Exception e) {
+                System.out.println("onPostExecute" + e);
+            }
+        }
+    }
+
+    private void UpdatePulserTypeOfLINKMaster() {
+        try {
+            //For Hose One......1
+            SharedPreferences FS1Pref = this.getSharedPreferences("UpdatePulserType1", 0);
+            String jsonData1 = FS1Pref.getString("jsonData", "");
+            String authString1 = FS1Pref.getString("authString", "");
+
+            if (!jsonData1.trim().isEmpty() && !authString1.trim().isEmpty()) {
+                new UpdatePulserTypeOfLINK().execute(jsonData1, authString1, "UpdatePulserType1");
+            }
+
+            //For Hose Two......2
+            SharedPreferences FS2Pref = this.getSharedPreferences("UpdatePulserType2", 0);
+            String jsonData2 = FS2Pref.getString("jsonData", "");
+            String authString2 = FS2Pref.getString("authString", "");
+
+            if (!jsonData2.trim().isEmpty() && !authString2.trim().isEmpty()) {
+                new UpdatePulserTypeOfLINK().execute(jsonData2, authString2, "UpdatePulserType2");
+            }
+
+            //For Hose Three......3
+            SharedPreferences FS3Pref = this.getSharedPreferences("UpdatePulserType3", 0);
+            String jsonData3 = FS3Pref.getString("jsonData", "");
+            String authString3 = FS3Pref.getString("authString", "");
+
+            if (!jsonData3.trim().isEmpty() && !authString3.trim().isEmpty()) {
+                new UpdatePulserTypeOfLINK().execute(jsonData3, authString3, "UpdatePulserType3");
+            }
+
+            //For Hose Four......4
+            SharedPreferences FS4Pref = this.getSharedPreferences("UpdatePulserType4", 0);
+            String jsonData4 = FS4Pref.getString("jsonData", "");
+            String authString4 = FS4Pref.getString("authString", "");
+
+            if (!jsonData4.trim().isEmpty() && !authString4.trim().isEmpty()) {
+                new UpdatePulserTypeOfLINK().execute(jsonData4, authString4, "UpdatePulserType4");
+            }
+
+            //For Hose Five......5
+            SharedPreferences FS5Pref = this.getSharedPreferences("UpdatePulserType5", 0);
+            String jsonData5 = FS5Pref.getString("jsonData", "");
+            String authString5 = FS5Pref.getString("authString", "");
+
+            if (!jsonData5.trim().isEmpty() && !authString5.trim().isEmpty()) {
+                new UpdatePulserTypeOfLINK().execute(jsonData5, authString5, "UpdatePulserType5");
+            }
+
+            //For Hose Six......6
+            SharedPreferences FS6Pref = this.getSharedPreferences("UpdatePulserType6", 0);
+            String jsonData6 = FS6Pref.getString("jsonData", "");
+            String authString6 = FS6Pref.getString("authString", "");
+
+            if (!jsonData6.trim().isEmpty() && !authString6.trim().isEmpty()) {
+                new UpdatePulserTypeOfLINK().execute(jsonData6, authString6, "UpdatePulserType6");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "UpdatePulserTypeOfLINK Exception: " + e.getMessage());
+        }
+    }
+
+    public class UpdatePulserTypeOfLINK extends AsyncTask<String, Void, String> {
+
+        String PrefName = "";
+        protected String doInBackground(String... param) {
+            String resp = "";
+            PrefName = param[2];
+
+            try {
+                OkHttpClient client = new OkHttpClient();
+                MediaType TEXT = MediaType.parse("application/text;charset=UTF-8");
+
+                RequestBody body = RequestBody.create(TEXT, param[0]);
+                Request request = new Request.Builder()
+                        .url(AppConstants.webURL)
+                        .post(body)
+                        .addHeader("Authorization", param[1])
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                if (result.contains("success") && !PrefName.isEmpty()) {
+                    SharedPreferences preferences = getSharedPreferences(PrefName, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.clear();
+                    editor.commit();
                 }
             } catch (Exception e) {
                 System.out.println("onPostExecute" + e);

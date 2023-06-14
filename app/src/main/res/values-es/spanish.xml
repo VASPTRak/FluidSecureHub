@@ -482,5 +482,6 @@
     <string name="SearchAddressHint">Busca aquí..</string>
 
     <!-- PIN Screen (Test Transaction) -->
-    <string name="PersonnelIdHeading">ID DE PERSONAL</string>
+    <string name="TestTxnPINScreenHeading">PIN de representante de soporte</string>
+    <string name="TestTxnPINScreenWarning">***Esta pantalla es solo para uso del personal de soporte***</string>
 </resources>

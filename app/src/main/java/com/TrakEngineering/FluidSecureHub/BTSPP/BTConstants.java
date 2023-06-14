@@ -55,6 +55,7 @@ public class BTConstants {
     //public static String linkUpgrade_cmd = "upgrade:";
     public static String linkUpgrade_cmd = "LK_COMM=upgrade ";
     public static String p_type_command = "LK_COMM=p_type:";
+    public static String get_p_type_command = "LK_COMM=p_type?";
     public static String p_type = "";
     public static String scope_ON_cmd = "LK_COMM=scope=ON";
     public static String scope_READ_cmd = "LK_COMM=scope=READ";

@@ -69,11 +69,12 @@ public class ActivitySparehub extends AppCompatActivity {
         String CompanyBrandLogoLink = sharedBrd.getString("CompanyBrandLogoLink", "");
         Picasso.get().load(CompanyBrandLogoLink).into((ImageView) findViewById(R.id.imageView));*/
 
-        Button btn_read_acessdevice = (Button) findViewById(R.id.btn_read_acessdevice);
+        //Button btn_read_acessdevice = (Button) findViewById(R.id.btn_read_acessdevice);
         Button btn_disconnect = (Button) findViewById(R.id.btn_disconnect);
         TextView tvVersionNum = (TextView) findViewById(R.id.tvVersionNum);
         tvVersionNum.setText("Version " + CommonUtils.getVersionCode(ActivitySparehub.this));
-        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " UserInfo" +AppConstants.Title + "\n AppVersion " + CommonUtils.getVersionCode(ActivitySparehub.this));
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "UserInfo: \n" +AppConstants.Title + "\nApp Version: " + CommonUtils.getVersionCode(ActivitySparehub.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " " + "\n");
 
         InItGUI();
 

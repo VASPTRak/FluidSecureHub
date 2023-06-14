@@ -29,6 +29,7 @@ import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.enity.SwitchTimeBounce;
 import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
+import com.TrakEngineering.FluidSecureHub.enity.UpdatePulserTypeOfLINK_entity;
 import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
@@ -592,10 +593,12 @@ public class BackgroundService_BTThree extends Service {
                         }
                     }.start();
                 } else {
-                    transactionIdCommand(TransactionId); // Continue to transactionId Command
+                    GetPulserTypeCommand();
+                    //transactionIdCommand(TransactionId); // Continue to transactionId Command
                 }
             } else {
-                transactionIdCommand(TransactionId); // Continue to transactionId Command
+                GetPulserTypeCommand();
+                //transactionIdCommand(TransactionId); // Continue to transactionId Command
             }
 
         } catch (Exception e) {
@@ -651,6 +654,99 @@ public class BackgroundService_BTThree extends Service {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 3: WaitForReconnectToLink Exception:>>" + e.getMessage());
+        }
+    }
+
+    private void GetPulserTypeCommand() {
+        try {
+            //Execute p_type Command (to get the pulser type from LINK)
+            Request = "";
+            Response = "";
+
+            if (IsThisBTTrnx) {
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.send3(BTConstants.get_p_type_command);
+            }
+
+            new CountDownTimer(4000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    long attempt = (4 - (millisUntilFinished / 1000));
+                    if (attempt > 0) {
+                        if (Request.contains(BTConstants.get_p_type_command) && Response.contains("pulser_type")) {
+                            ParsePulserTypeCommandResponse(Response.trim());
+                            transactionIdCommand(TransactionId); // Continue to transactionId Command
+                            cancel();
+                        }
+                    }
+                }
+
+                public void onFinish() {
+                    if (Request.contains(BTConstants.get_p_type_command) && Response.contains("pulser_type")) {
+                        ParsePulserTypeCommandResponse(Response.trim());
+                    }
+                    transactionIdCommand(TransactionId); // Continue to transactionId Command
+                }
+            }.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: P_Type_Command (to get the pulser type from LINK) Exception:>>" + e.getMessage());
+            transactionIdCommand(TransactionId); // Continue to transactionId Command
+        }
+    }
+
+    private void ParsePulserTypeCommandResponse(String response) {
+        try {
+            String pulserType;
+
+            if (response.contains("pulser_type")) {
+                JSONObject jsonObj = new JSONObject(response);
+                pulserType = jsonObj.getString("pulser_type");
+
+                if (!pulserType.isEmpty() && Arrays.asList(BTConstants.p_types).contains(pulserType)) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink 3: Pulser Type: " + pulserType);
+                    // Create object and save data to upload
+                    String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTThree.this).PersonEmail;
+
+                    String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTThree.this) + ":" + userEmail + ":" + "UpdatePulserTypeOfLINK" + AppConstants.LANG_PARAM);
+
+                    UpdatePulserTypeOfLINK_entity updatePulserTypeOfLINK = new UpdatePulserTypeOfLINK_entity();
+                    updatePulserTypeOfLINK.IMEIUDID = AppConstants.getIMEI(BackgroundService_BTThree.this);
+                    updatePulserTypeOfLINK.Email = userEmail;
+                    updatePulserTypeOfLINK.SiteId = BTConstants.BT3SITE_ID;
+                    updatePulserTypeOfLINK.PulserType = pulserType;
+                    updatePulserTypeOfLINK.DateTimeFromApp = AppConstants.currentDateFormat("MM/dd/yyyy HH:mm:ss");
+
+                    Gson gson = new Gson();
+                    String jsonData = gson.toJson(updatePulserTypeOfLINK);
+
+                    storePulserTypeDetails(BackgroundService_BTThree.this, jsonData, authString);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink 3: Exception in ParsePulserTypeCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+        }
+    }
+
+    private void storePulserTypeDetails(Context context, String jsonData, String authString) {
+        try {
+            SharedPreferences pref;
+            SharedPreferences.Editor editor;
+
+            pref = context.getSharedPreferences("UpdatePulserType3", 0);
+            editor = pref.edit();
+
+            // Storing
+            editor.putString("jsonData", jsonData);
+            editor.putString("authString", authString);
+
+            // commit changes
+            editor.commit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
