@@ -5885,16 +5885,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.IsTransactionFailed1 = false;
                 if (BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Hose is Unavailable.");
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: Hose is Unavailable.");
-                }
-                if (AppConstants.TxnFailedCount1 == 1) {
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                 } else {
-                    AppConstants.TxnFailedCount1 = 0;
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    if (AppConstants.TxnFailedCount1 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    } else {
+                        AppConstants.TxnFailedCount1 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    }
                 }
             }
 
@@ -6003,16 +6006,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.IsTransactionFailed2 = false;
                 if (BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Hose is Unavailable.");
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: Hose is Unavailable.");
-                }
-                if (AppConstants.TxnFailedCount2 == 1) {
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                 } else {
-                    AppConstants.TxnFailedCount2 = 0;
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    if (AppConstants.TxnFailedCount2 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    } else {
+                        AppConstants.TxnFailedCount2 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    }
                 }
             }
 
@@ -6118,16 +6124,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.IsTransactionFailed3 = false;
                 if (BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Hose is Unavailable.");
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: Hose is Unavailable.");
-                }
-                if (AppConstants.TxnFailedCount3 == 1) {
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                 } else {
-                    AppConstants.TxnFailedCount3 = 0;
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    if (AppConstants.TxnFailedCount3 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    } else {
+                        AppConstants.TxnFailedCount3 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    }
                 }
             }
 
@@ -6233,16 +6242,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.IsTransactionFailed4 = false;
                 if (BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Hose is Unavailable.");
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: Hose is Unavailable.");
-                }
-                if (AppConstants.TxnFailedCount4 == 1) {
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                 } else {
-                    AppConstants.TxnFailedCount4 = 0;
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    if (AppConstants.TxnFailedCount4 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    } else {
+                        AppConstants.TxnFailedCount4 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    }
                 }
             }
 
@@ -6349,16 +6361,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.IsTransactionFailed5 = false;
                 if (BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Hose is Unavailable.");
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: Hose is Unavailable.");
-                }
-                if (AppConstants.TxnFailedCount5 == 1) {
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                 } else {
-                    AppConstants.TxnFailedCount5 = 0;
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    if (AppConstants.TxnFailedCount5 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    } else {
+                        AppConstants.TxnFailedCount5 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    }
                 }
             }
 
@@ -6464,16 +6479,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 AppConstants.IsTransactionFailed6 = false;
                 if (BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Hose is Unavailable.");
-                } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: Hose is Unavailable.");
-                }
-                if (AppConstants.TxnFailedCount6 == 1) {
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                 } else {
-                    AppConstants.TxnFailedCount6 = 0;
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    if (AppConstants.TxnFailedCount6 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                    } else {
+                        AppConstants.TxnFailedCount6 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    }
                 }
             }
 

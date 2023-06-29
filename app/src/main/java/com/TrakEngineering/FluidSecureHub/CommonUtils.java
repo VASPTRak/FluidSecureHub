@@ -2352,10 +2352,13 @@ public class CommonUtils {
             DisplayMetrics dm = res.getDisplayMetrics();
             Configuration conf = res.getConfiguration();
 
-            if (language.trim().equalsIgnoreCase("es"))
+            if (language.trim().equalsIgnoreCase("es")) {
                 conf.setLocale(new Locale("es"));
-            else
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en"));
+            } else {
                 conf.setLocale(Locale.getDefault());
+            }
 
             res.updateConfiguration(conf, dm);
 

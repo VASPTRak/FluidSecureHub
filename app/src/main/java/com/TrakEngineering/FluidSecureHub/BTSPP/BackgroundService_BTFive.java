@@ -92,6 +92,7 @@ public class BackgroundService_BTFive extends Service {
     public int infoCommandAttempt = 0;
     public boolean isConnected = false;
     public boolean isHotspotDisabled = false;
+    public boolean isOnlineTxn = true;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -150,9 +151,12 @@ public class BackgroundService_BTFive extends Service {
 
                 // Offline functionality
                 if (!cd.isConnectingToInternet()) {
+                    isOnlineTxn = false;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink 5:-Offline mode--");
                     offlineLogicBT5();
+                } else {
+                    isOnlineTxn = true;
                 }
 
                 //Register Broadcast receiver
@@ -1274,14 +1278,14 @@ public class BackgroundService_BTFive extends Service {
             Constants.FS_5Gallons = (precision.format(fillqty));
             Constants.FS_5Pulse = outputQuantity;
 
-            if (cd.isConnectingToInternet() || BTConstants.SwitchedBTToUDP5) {
-                UpdatetransactionToSqlite(outputQuantity);
+            if (isOnlineTxn || BTConstants.SwitchedBTToUDP5) { //cd.isConnectingToInternet()
+                UpdateTransactionToSqlite(outputQuantity);
             } else {
                 if (fillqty > 0) {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline >> BTLink 5:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
+                    AppConstants.WriteinFile(TAG + " Offline >> BTLink 5: LINK:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
             }
 
             reachMaxLimit();
@@ -1378,7 +1382,7 @@ public class BackgroundService_BTFive extends Service {
 
     }
 
-    private void UpdatetransactionToSqlite(String outputQuantity) {
+    private void UpdateTransactionToSqlite(String outputQuantity) {
 
         ////////////////////////////////////-Update transaction ---
         TrazComp authEntityClass = new TrazComp();
