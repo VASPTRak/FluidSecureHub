@@ -57,6 +57,7 @@ import com.TrakEngineering.FluidSecureHub.EddystoneScanner.SampleBeacon;
 import com.TrakEngineering.FluidSecureHub.HFCardGAtt.ServiceHFCard;
 import com.TrakEngineering.FluidSecureHub.LFCardGAtt.ServiceLFCard;
 import com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard;
+import com.TrakEngineering.FluidSecureHub.QRCodeGAtt.ServiceQRCode;
 import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.enity.VehicleRequireEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
@@ -111,7 +112,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     private NetworkReceiver receiver = new NetworkReceiver();
 
-    private TextView tv_fobkey, tv_hf_status, tv_lf_status, tv_mag_status, tv_reader_status;
+    private TextView tv_fobkey, tv_hf_status, tv_lf_status, tv_mag_status, tv_qr_status, tv_reader_status;
     private LinearLayout layout_reader_status;
     private String mDeviceName;
     private String mDisableFOBReadingForVehicle;
@@ -183,7 +184,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     boolean bleLFUpdateSuccessFlag = false;
     boolean bleHFUpdateSuccessFlag = false;
     HashMap<String, String> hmapSwitchOffline = new HashMap<>();
-    String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "";
+    String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "", QRReaderStatus = "";
     public boolean VehicleValidationInProgress = false;
 
     //-------------------------
@@ -1052,6 +1053,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         tv_hf_status = (TextView) findViewById(R.id.tv_hf_status);
         tv_lf_status = (TextView) findViewById(R.id.tv_lf_status);
         tv_mag_status = (TextView) findViewById(R.id.tv_mag_status);
+        tv_qr_status = (TextView) findViewById(R.id.tv_qr_status);
         tv_reader_status = (TextView) findViewById(R.id.tv_reader_status);
         tv_fob_Reader = (TextView) findViewById(R.id.tv_fob_Reader);
         tv_or = (TextView) findViewById(R.id.tv_or);
@@ -3476,7 +3478,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 }
 
                 //Magnetic reader status on UI
-                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                     if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
                         MagReaderStatus = Constants.Mag_ReaderStatus;
                         if (AppConstants.GenerateLogs)
@@ -3499,6 +3501,32 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     }
                 } else {
                     tv_mag_status.setVisibility(View.GONE);
+                }
+
+                //QR reader status on UI
+                if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                    if (!Constants.QR_ReaderStatus.equalsIgnoreCase(QRReaderStatus)) {
+                        QRReaderStatus = Constants.QR_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "<QR Reader Status: " + QRReaderStatus + ">");
+                    }
+                    if (Constants.QR_ReaderStatus.equals("QR Disconnected") && !AppConstants.showReaderStatus) {
+                        retryConnect();
+                    }
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_qr_status.setVisibility(View.VISIBLE);
+                        if (Constants.QR_ReaderStatus.equals("QR Connected") || Constants.QR_ReaderStatus.equals("QR Discovered")) {
+                            tv_qr_status.setText(Constants.QR_ReaderStatus);
+                            tv_qr_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_qr_status.setText(Constants.QR_ReaderStatus);
+                            tv_qr_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
+                    }
+                } else {
+                    tv_qr_status.setVisibility(View.GONE);
                 }
 
                 if (ReaderStatusUI) {
@@ -3531,9 +3559,11 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N"))
                 stopService(new Intent(AcceptVehicleActivity_new.this, ServiceHFCard.class));
 
-            if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
+            if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
                 stopService(new Intent(AcceptVehicleActivity_new.this, ServiceMagCard.class));
 
+            if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N"))
+                stopService(new Intent(AcceptVehicleActivity_new.this, ServiceQRCode.class));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -3559,8 +3589,12 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N"))
                     startService(new Intent(AcceptVehicleActivity_new.this, ServiceHFCard.class));
 
-                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
+                if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
                     startService(new Intent(AcceptVehicleActivity_new.this, ServiceMagCard.class));
+
+                if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N"))
+                    startService(new Intent(AcceptVehicleActivity_new.this, ServiceQRCode.class));
+
             }
 
         } catch (Exception e) {
@@ -3694,6 +3728,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     } else if (!Constants.Mag_ReaderStatus.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2")) {
                         new ReconnectBleReaders().execute();
                         //Toast.makeText(getApplicationContext(), "Reconnecting Mag reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
+                    } else if (!Constants.QR_ReaderStatus.equals("QR Connected") && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
+                        new ReconnectBleReaders().execute();
                     } else {
                         //Toast.makeText(getApplicationContext(), "Reader connected " + sec_count, Toast.LENGTH_SHORT).show();
                     }

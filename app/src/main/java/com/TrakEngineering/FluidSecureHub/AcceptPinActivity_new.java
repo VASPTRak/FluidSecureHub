@@ -51,6 +51,7 @@ import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 import com.TrakEngineering.FluidSecureHub.HFCardGAtt.ServiceHFCard;
 import com.TrakEngineering.FluidSecureHub.LFCardGAtt.ServiceLFCard;
 import com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard;
+import com.TrakEngineering.FluidSecureHub.QRCodeGAtt.ServiceQRCode;
 import com.TrakEngineering.FluidSecureHub.enity.CheckPinFobEntity;
 import com.TrakEngineering.FluidSecureHub.enity.VehicleRequireEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
@@ -114,6 +115,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private String HFDeviceAddress;
     private String mMagCardDeviceName;
     private String mMagCardDeviceAddress;
+    private String QRCodeReaderForBarcode, QRCodeBluetoothMacAddressForBarcode;
     private EditText etInput;
     String Barcode_pin_val = "", LF_FobKey = "", ScreenNameForPersonnel = "PERSONNEL", ScreenNameForVehicle = "VEHICLE", KeyboardType = "2", MagCard_personnel = "";
     int Count = 1, LF_ReaderConnectionCountPin = 0, sec_count = 0;
@@ -131,7 +133,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     Button btnSaveBar;
     EditText etPersonnelPin, etBarcode;
     private LinearLayout layout_reader_status;
-    TextView tv_enter_pin_no, tv_ok, tv_hf_status, tv_lf_status, tv_mag_status, tv_reader_status;
+    TextView tv_enter_pin_no, tv_ok, tv_hf_status, tv_lf_status, tv_mag_status, tv_qr_status, tv_reader_status;
     Button btnSave, btnCancel, btn_ReadFobAgain, btn_barcode;
     String IsPersonHasFob = "", IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", IsVehicleNumberRequire = "", IsStayOpenGate = "", IsGateHub, IsOffvehicleScreenRequired = "", IsPersonPinAndFOBRequire = "", AllowAccessDeviceORManualEntry = "";
     String TimeOutinMinute;
@@ -161,7 +163,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     String FOLDER_PATH_BLE = null;
     HashMap<String, String> hmapSwitchOfflinepin = new HashMap<>();
-    String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "";
+    String LFReaderStatus = "", HFReaderStatus = "", MagReaderStatus = "", QRReaderStatus = "";
     public boolean PersonValidationInProgress = false;
 
     private static final int EXPIRE_TIMEOUT = 5000;
@@ -188,6 +190,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         HFDeviceAddress = sharedPre2.getString("BTMacAddress", "");
         mMagCardDeviceName = sharedPre2.getString("MagneticCardReader", ""); //
         mMagCardDeviceAddress = sharedPre2.getString("MagneticCardReaderMacAddress", ""); //
+        QRCodeReaderForBarcode = sharedPre2.getString("QRCodeReaderForBarcode", ""); //
+        QRCodeBluetoothMacAddressForBarcode = sharedPre2.getString("QRCodeBluetoothMacAddressForBarcode", ""); //
 
         mDeviceName_hf_trak = sharedPre2.getString("HFTrakCardReader", ""); //
         mDeviceAddress_hf_trak = sharedPre2.getString("HFTrakCardReaderMacAddress", ""); //
@@ -1100,6 +1104,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         tv_hf_status = (TextView) findViewById(R.id.tv_hf_status);
         tv_lf_status = (TextView) findViewById(R.id.tv_lf_status);
         tv_mag_status = (TextView) findViewById(R.id.tv_mag_status);
+        tv_qr_status = (TextView) findViewById(R.id.tv_qr_status);
         tv_reader_status = (TextView) findViewById(R.id.tv_reader_status);
 
     }
@@ -2704,7 +2709,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 }
 
                 //Magnetic reader status on UI
-                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                     if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
                         MagReaderStatus = Constants.Mag_ReaderStatus;
                         if (AppConstants.GenerateLogs)
@@ -2727,6 +2732,32 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     }
                 } else {
                     tv_mag_status.setVisibility(View.GONE);
+                }
+
+                //QR reader status on UI
+                if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    if (!Constants.QR_ReaderStatus.equalsIgnoreCase(QRReaderStatus)) {
+                        QRReaderStatus = Constants.QR_ReaderStatus;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "<QR Reader Status: " + QRReaderStatus + ">");
+                    }
+                    if (Constants.QR_ReaderStatus.equals("QR Disconnected") && !AppConstants.showReaderStatus) {
+                        retryConnect();
+                    }
+                    if (AppConstants.showReaderStatus) {
+                        ReaderStatusUI = true;
+                        tv_qr_status.setVisibility(View.VISIBLE);
+                        if (Constants.QR_ReaderStatus.equals("QR Connected") || Constants.QR_ReaderStatus.equals("QR Discovered")) {
+                            tv_qr_status.setText(Constants.QR_ReaderStatus);
+                            tv_qr_status.setTextColor(Color.parseColor("#4CAF50"));
+                        } else {
+                            retryConnect();
+                            tv_qr_status.setText(Constants.QR_ReaderStatus);
+                            tv_qr_status.setTextColor(Color.parseColor("#ff0000"));
+                        }
+                    }
+                } else {
+                    tv_qr_status.setVisibility(View.GONE);
                 }
 
                 if (ReaderStatusUI) {
@@ -2759,9 +2790,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
                 stopService(new Intent(AcceptPinActivity_new.this, ServiceHFCard.class));
 
-            if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
+            if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
                 stopService(new Intent(AcceptPinActivity_new.this, ServiceMagCard.class));
 
+            if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
+                stopService(new Intent(AcceptPinActivity_new.this, ServiceQRCode.class));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -2772,7 +2805,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     }
 
     private void RegisterBroadcastForReader() {
-
 
         try {
 
@@ -2787,8 +2819,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
                     startService(new Intent(AcceptPinActivity_new.this, ServiceHFCard.class));
 
-                if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
+                if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
                     startService(new Intent(AcceptPinActivity_new.this, ServiceMagCard.class));
+
+                if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
+                    startService(new Intent(AcceptPinActivity_new.this, ServiceQRCode.class));
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -2910,9 +2946,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else if (!Constants.LF_ReaderStatus.equals("LF Connected") && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
                         //Toast.makeText(getApplicationContext(), "Reconnecting LF reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
-                    } else if (!Constants.Mag_ReaderStatus.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    } else if (!Constants.Mag_ReaderStatus.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2")) {
                         new ReconnectBleReaders().execute();
                         //Toast.makeText(getApplicationContext(), "Reconnecting Mag reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
+                    } else if (!Constants.QR_ReaderStatus.equals("QR Connected") && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                        new ReconnectBleReaders().execute();
                     } else {
                         // Toast.makeText(getApplicationContext(), "Reader connected " + sec_count, Toast.LENGTH_SHORT).show();
                     }

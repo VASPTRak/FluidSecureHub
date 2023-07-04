@@ -13662,10 +13662,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         try {
 
-            if (QRCodeBluetoothMacAddressForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty())
+            if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty())
                 stopService(new Intent(WelcomeActivity.this, ServiceQRCode.class));
 
-            if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mMagCardDeviceName.contains("MAGCARD_READERV2"))
+            if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mMagCardDeviceName.contains("MAGCARD_READERV2"))
                 stopService(new Intent(WelcomeActivity.this, ServiceMagV2.class));
 
         } catch (Exception e) {
@@ -13677,10 +13677,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     private void qrcodebleServiceOn() {
 
         try {
-            if (QRCodeBluetoothMacAddressForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && !Constants.QR_ReaderStatus.equalsIgnoreCase("QR Connected"))
+            if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && !Constants.QR_ReaderStatus.equalsIgnoreCase("QR Connected"))
                 startService(new Intent(WelcomeActivity.this, ServiceQRCode.class));
 
-            if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mMagCardDeviceName.contains("MAGCARD_READERV2") && !Constants.Mag_ReaderStatus.equalsIgnoreCase("Mag Connected"))
+            if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mMagCardDeviceName.contains("MAGCARD_READERV2") && !Constants.Mag_ReaderStatus.equalsIgnoreCase("Mag Connected"))
                 startService(new Intent(WelcomeActivity.this, ServiceMagV2.class));
 
         } catch (Exception e) {
