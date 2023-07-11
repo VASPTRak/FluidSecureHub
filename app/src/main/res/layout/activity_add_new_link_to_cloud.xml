@@ -36,7 +36,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:background="@drawable/layout_border"
+                    android:background="@color/colorFluid"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textColorHint="#fff"
                     android:hint="@string/LinkNameHint"
                     android:imeOptions="actionNext"
                     android:inputType="text"
@@ -80,7 +83,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:background="@drawable/layout_border"
+                    android:background="@color/colorFluid"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textColorHint="#fff"
                     android:hint="@string/NewNameHint"
                     android:imeOptions="actionNext"
                     android:inputType="text"
@@ -104,7 +110,7 @@
             </TableRow>
 
             <TableRow
-                android:layout_height="28dp"
+                android:layout_height="30dp"
                 android:layout_marginTop="5dp">
 
                 <TextView
@@ -208,21 +214,24 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <EditText
                         android:id="@+id/edt_pumpOnTime"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_marginStart="5dp"
+                        android:background="@color/colorFluid"
                         android:ems="5"
+                        android:gravity="center_horizontal|center_vertical"
                         android:inputType="number"
                         android:maxLength="4"
                         android:text="60"
+                        android:textColor="@color/white"
+                        android:textColorHint="#fff"
                         android:textSize="22sp"
-                        android:gravity="center_horizontal"
                         tools:layout_editor_absoluteX="207dp"
                         tools:layout_editor_absoluteY="165dp" />
 
@@ -251,7 +260,7 @@
                     app:srcCompat="@drawable/question_icon" />
             </TableRow>
 
-            <TableRow android:layout_marginTop="5dp">
+            <TableRow android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/tv_pumpofftime"
@@ -267,21 +276,24 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <EditText
                         android:id="@+id/edt_pumpOffTime"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_marginStart="5dp"
+                        android:background="@color/colorFluid"
                         android:ems="5"
+                        android:gravity="center_horizontal|center_vertical"
                         android:inputType="number"
                         android:maxLength="4"
                         android:text="60"
+                        android:textColor="@color/white"
+                        android:textColorHint="#fff"
                         android:textSize="22sp"
-                        android:gravity="center_horizontal"
                         tools:layout_editor_absoluteX="201dp"
                         tools:layout_editor_absoluteY="211dp" />
 
@@ -546,7 +558,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:background="@drawable/layout_border"
+                    android:background="@color/backbtn"
+                    android:textColor="@color/black"
                     android:text="@string/Cancel"
                     android:textSize="22sp" />
 
@@ -555,7 +568,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:background="@drawable/layout_border"
+                    android:background="@color/colorFluid"
+                    android:textColor="@color/white"
                     android:text="@string/SaveBtn"
                     android:textSize="22sp"/>
 

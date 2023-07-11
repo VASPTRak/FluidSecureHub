@@ -855,15 +855,19 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         try {
             String macAddress = "";
             if (!linkName.isEmpty()) {
-                String[] split = linkName.split("-");
+                if (linkName.toUpperCase().startsWith("FS-")) {
+                    return true;
+                } else {
+                    String[] split = linkName.split("-");
 
-                if (split.length > 1) {
-                    macAddress = split[1];
+                    if (split.length > 1) {
+                        macAddress = split[1];
 
-                    if (macAddress.length() == 12) {
-                        return true;
-                    } else {
-                        return false;
+                        if (macAddress.length() == 12) {
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
                 }
             }
