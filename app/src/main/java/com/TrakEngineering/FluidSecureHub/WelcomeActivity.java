@@ -1690,6 +1690,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 FirmwareFileName = "";
             }
 
+            SetHoseIdByLinkPosition(0, hoseID);
             if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                 SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
             }
@@ -3169,7 +3170,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         } else if (CommonFunctions.CheckIfPresentInPairedDeviceList(BTselMacAddress)) {
                             AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
                             OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", selSiteId, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"), "", "", "", "");
-
+                            SetHoseIdByLinkPosition(position, hoseID);
                             if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                                 SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
                             }
@@ -3254,7 +3255,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             CommonUtils.SaveTldDetailsInPref(WelcomeActivity.this, IsTLDCall, IsTLDFirmwareUpgrade, TLDFirmwareFilePath, TLDFIrmwareVersion, PROBEMacAddress, selMacAddress);
 
                             /////////////////////////////////////////////////////
-
+                            SetHoseIdByLinkPosition(position, hoseID);
                             if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                                 SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
                             }
@@ -14404,6 +14405,28 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
+    public void SetHoseIdByLinkPosition(int position, String hoseId) {
+        try {
+            if (String.valueOf(position).equalsIgnoreCase("0")) {
+                AppConstants.UP_HoseId_fs1 = hoseId;
+            } else if (String.valueOf(position).equalsIgnoreCase("1")) {
+                AppConstants.UP_HoseId_fs2 = hoseId;
+            } else if (String.valueOf(position).equalsIgnoreCase("2")) {
+                AppConstants.UP_HoseId_fs3 = hoseId;
+            } else if (String.valueOf(position).equalsIgnoreCase("3")) {
+                AppConstants.UP_HoseId_fs4 = hoseId;
+            } else if (String.valueOf(position).equalsIgnoreCase("4")) {
+                AppConstants.UP_HoseId_fs5 = hoseId;
+            } else if (String.valueOf(position).equalsIgnoreCase("5")) {
+                AppConstants.UP_HoseId_fs6 = hoseId;
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in SetHoseIdByLinkPosition. " + ex.getMessage() + ";position: " + position);
+            System.out.println(ex);
+        }
+    }
+    
     public boolean HoseAvailabilityCheckTwoAttempts(ArrayList<String> NearByBTDevices, String deviceAddress) {
         boolean isConnected = false;
         try {
