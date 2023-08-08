@@ -27,9 +27,9 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
-import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.AuthEntityClass;
+import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

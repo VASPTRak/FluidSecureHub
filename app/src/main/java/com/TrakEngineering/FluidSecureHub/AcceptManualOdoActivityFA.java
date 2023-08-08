@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.TrakEngineering.FluidSecureHub.EddystoneScanner.EddystoneScannerService;
-import com.TrakEngineering.FluidSecureHub.enity.FsnpInfo;
+import com.TrakEngineering.FluidSecureHub.entity.FsnpInfo;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.gson.Gson;
 

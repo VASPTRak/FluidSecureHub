@@ -3,14 +3,10 @@ package com.TrakEngineering.FluidSecureHub;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -18,10 +14,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.squareup.picasso.Picasso;
-
-import java.util.Locale;
 
 public class ActivitySparehub extends AppCompatActivity {
 

@@ -28,11 +28,11 @@ import com.TrakEngineering.FluidSecureHub.Constants;
 import com.TrakEngineering.FluidSecureHub.DBController;
 import com.TrakEngineering.FluidSecureHub.R;
 import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
-import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
-import com.TrakEngineering.FluidSecureHub.enity.SwitchTimeBounce;
-import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
-import com.TrakEngineering.FluidSecureHub.enity.UpdatePulserTypeOfLINK_entity;
-import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
+import com.TrakEngineering.FluidSecureHub.entity.SwitchTimeBounce;
+import com.TrakEngineering.FluidSecureHub.entity.TrazComp;
+import com.TrakEngineering.FluidSecureHub.entity.UpdatePulserTypeOfLINK_entity;
+import com.TrakEngineering.FluidSecureHub.entity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
@@ -45,9 +45,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,6 +90,9 @@ public class BackgroundService_BTSix extends Service {
     public boolean isConnected = false;
     public boolean isHotspotDisabled = false;
     public boolean isOnlineTxn = true;
+    public int versionNumberOfLinkSix = 0;
+    public String PulserTimingAdjust;
+    public String IsResetSwitchTimeBounce;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -142,6 +142,10 @@ public class BackgroundService_BTSix extends Service {
                 numPulseRatio = Double.parseDouble(PulseRatio);
                 minFuelLimit = Double.parseDouble(MinLimit);
                 stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
+
+                SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS6", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS6", "");
 
                 //UDP Connection..!!
                 if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() > 0) {
@@ -405,6 +409,7 @@ public class BackgroundService_BTSix extends Service {
         try {
             BTConstants.isNewVersionLinkSix = false;
             AppConstants.TxnFailedCount6 = 0;
+            AppConstants.isInfoCommandSuccess_fs6 = false;
             //Execute info command
             Request = "";
             Response = "";
@@ -443,8 +448,8 @@ public class BackgroundService_BTSix extends Service {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkSix && BTConstants.isPTypeSupportedLinkSix) {
-                                            BTConstants.isPTypeSupportedLinkSix = false; // reset
+                                        AppConstants.isInfoCommandSuccess_fs6 = true;
+                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkSix && (versionNumberOfLinkSix >= 123)) {
                                             P_Type_Command();
                                         } else {
                                             transactionIdCommand(TransactionId);
@@ -486,8 +491,8 @@ public class BackgroundService_BTSix extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkSix && BTConstants.isPTypeSupportedLinkSix) {
-                                        BTConstants.isPTypeSupportedLinkSix = false; // reset
+                                    AppConstants.isInfoCommandSuccess_fs6 = true;
+                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkSix && (versionNumberOfLinkSix >= 123)) {
                                         P_Type_Command();
                                     } else {
                                         transactionIdCommand(TransactionId);
@@ -528,8 +533,8 @@ public class BackgroundService_BTSix extends Service {
 
     private void P_Type_Command() {
         try {
-            if (AppConstants.IsResetSwitchTimeBounce != null) {
-                if (AppConstants.IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1") && !AppConstants.PulserTimingAdjust.isEmpty() && Arrays.asList(BTConstants.p_types).contains(AppConstants.PulserTimingAdjust) && !CommonUtils.CheckP_TypeCommandIsSent(BackgroundService_BTSix.this, "storeSwitchTimeBounceFlag6")) {
+            if (IsResetSwitchTimeBounce != null) {
+                if (IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1") && !PulserTimingAdjust.isEmpty() && Arrays.asList(BTConstants.p_types).contains(PulserTimingAdjust) && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTSix.this, "storeSwitchTimeBounceFlag6")) {
                     //Execute p_type Command
                     Request = "";
                     Response = "";
@@ -538,7 +543,7 @@ public class BackgroundService_BTSix extends Service {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 6: Sending p_type command to Link: " + LinkName);
                         BTSPPMain btspp = new BTSPPMain();
-                        btspp.send6(BTConstants.p_type_command + AppConstants.PulserTimingAdjust);
+                        btspp.send6(BTConstants.p_type_command + PulserTimingAdjust);
                     }
 
                     new CountDownTimer(4000, 1000) {
@@ -554,7 +559,6 @@ public class BackgroundService_BTSix extends Service {
                                         @Override
                                         public void run() {
                                             BTConstants.isPTypeCommandExecuted6 = true;
-                                            AppConstants.IsResetSwitchTimeBounce = "0";
                                             UpdateSwitchTimeBounceForLink();
                                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                                 @Override
@@ -581,7 +585,6 @@ public class BackgroundService_BTSix extends Service {
                                     @Override
                                     public void run() {
                                         BTConstants.isPTypeCommandExecuted6 = true;
-                                        AppConstants.IsResetSwitchTimeBounce = "0";
                                         UpdateSwitchTimeBounceForLink();
                                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                             @Override
@@ -592,24 +595,22 @@ public class BackgroundService_BTSix extends Service {
                                     }
                                 }, 8000); // Tried to reconnect and continue after 8 seconds because the link disconnects after 8 seconds.
                             } else {
-                                transactionIdCommand(TransactionId); // Continue to transactionId Command
+                                ContinueToNextCommand();
                             }
                         }
                     }.start();
                 } else {
                     GetPulserTypeCommand();
-                    //transactionIdCommand(TransactionId); // Continue to transactionId Command
                 }
             } else {
                 GetPulserTypeCommand();
-                //transactionIdCommand(TransactionId); // Continue to transactionId Command
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 6: P_Type_Command Exception:>>" + e.getMessage());
-            transactionIdCommand(TransactionId); // Continue to transactionId Command
+            ContinueToNextCommand();
         }
     }
 
@@ -627,7 +628,7 @@ public class BackgroundService_BTSix extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    transactionIdCommand(TransactionId); // Continue to transactionId Command
+                                    ContinueToNextCommand();
                                 }
                             }, 500);
                             cancel();
@@ -646,7 +647,7 @@ public class BackgroundService_BTSix extends Service {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                transactionIdCommand(TransactionId); // Continue to transactionId Command
+                                ContinueToNextCommand();
                             }
                         }, 500);
                     } else {
@@ -678,7 +679,7 @@ public class BackgroundService_BTSix extends Service {
                     if (attempt > 0) {
                         if (Request.contains(BTConstants.get_p_type_command) && Response.contains("pulser_type")) {
                             ParsePulserTypeCommandResponse(Response.trim());
-                            transactionIdCommand(TransactionId); // Continue to transactionId Command
+                            ContinueToNextCommand();
                             cancel();
                         }
                     }
@@ -688,14 +689,14 @@ public class BackgroundService_BTSix extends Service {
                     if (Request.contains(BTConstants.get_p_type_command) && Response.contains("pulser_type")) {
                         ParsePulserTypeCommandResponse(Response.trim());
                     }
-                    transactionIdCommand(TransactionId); // Continue to transactionId Command
+                    ContinueToNextCommand();
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 6: P_Type_Command (to get the pulser type from LINK) Exception:>>" + e.getMessage());
-            transactionIdCommand(TransactionId); // Continue to transactionId Command
+            ContinueToNextCommand();
         }
     }
 
@@ -709,7 +710,7 @@ public class BackgroundService_BTSix extends Service {
 
                 if (!pulserType.isEmpty() && Arrays.asList(BTConstants.p_types).contains(pulserType)) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: Pulser Type: " + pulserType);
+                        AppConstants.WriteinFile(TAG + " BTLink 6: Pulser Type from Link >> " + pulserType);
                     // Create object and save data to upload
                     String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTSix.this).PersonEmail;
 
@@ -752,6 +753,11 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void ContinueToNextCommand() {
+        // Continue to transactionId Command
+        transactionIdCommand(TransactionId);
     }
 
     private void transactionIdCommand(String transactionId) {
@@ -1018,6 +1024,7 @@ public class BackgroundService_BTSix extends Service {
             CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);
             Constants.FS_6STATUS = "FREE";
             Constants.FS_6Pulse = "00";
+            AppConstants.isInfoCommandSuccess_fs6 = false;
             BTConstants.SwitchedBTToUDP6 = false;
             DisableWifiConnection();
             CancelTimer();
@@ -1721,12 +1728,12 @@ public class BackgroundService_BTSix extends Service {
             editor.putString("LINK6", json20txn);
             editor.apply();
 
-            JSONObject versionJsonArray = jsonObject.getJSONObject("version");
-            String version = versionJsonArray.getString("version");
+            JSONObject versionJsonObj = jsonObject.getJSONObject("version");
+            String version = versionJsonObj.getString("version");
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 6: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTSix.this, AppConstants.UP_HoseId_fs6, version);
-            BTConstants.isPTypeSupportedLinkSix = CommonUtils.CheckPTypeSupportedLink(version);
+            versionNumberOfLinkSix = CommonUtils.GetVersionNumberFromLink(version);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1940,7 +1947,9 @@ public class BackgroundService_BTSix extends Service {
                 String ResponceText = jsonObject.getString("ResponceText");
 
                 if (ResponceMessage.equalsIgnoreCase("success")) {
-                    AppConstants.clearSharedPrefByName(BackgroundService_BTSix.this, Constants.PREF_FS_UPGRADE);
+                    //AppConstants.clearSharedPrefByName(BackgroundService_BTSix.this, Constants.PREF_FS_UPGRADE);
+                    // Saving empty value to clear sharedPref
+                    storeUpgradeFSVersion(BackgroundService_BTSix.this, "", "");
                 }
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)

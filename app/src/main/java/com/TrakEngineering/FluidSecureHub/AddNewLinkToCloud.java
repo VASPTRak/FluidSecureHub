@@ -51,8 +51,8 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager;
-import com.TrakEngineering.FluidSecureHub.enity.AddTankFromAPP_entity;
-import com.TrakEngineering.FluidSecureHub.enity.UpdateMacAddressClass;
+import com.TrakEngineering.FluidSecureHub.entity.AddTankFromAPP_entity;
+import com.TrakEngineering.FluidSecureHub.entity.UpdateMacAddressClass;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.retrofit.AzureMapApi;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
@@ -110,6 +110,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     public String selectedPulseRatio = "";
     Bundle mySavedInstanceState;
     public int selectedProductPosition = 0;
+    public boolean isLocationSelected = false;
     public Dialog addTankDialog;
     private String SubscriptionKeyForAzureMap = "";
     MapControl mapControl;
@@ -195,7 +196,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         //edt_UnitsMeasured = (EditText) findViewById(R.id.edt_UnitsMeasured);
         //edt_Pulses = (EditText) findViewById(R.id.edt_Pulses);
         //edt_StreetAddress = (EditText) findViewById(R.id.edt_StreetAddress);
-        AppConstants.isLocationSelected = false;
+        isLocationSelected = false;
 
         iBtn_LinkName = (ImageButton) findViewById(R.id.iBtn_LinkName);
         iBtn_NewName = (ImageButton) findViewById(R.id.iBtn_NewName);
@@ -602,7 +603,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 public void onClick(View v) {
                     AppConstants.Latitude = selectedLatitude;
                     AppConstants.Longitude = selectedLongitude;
-                    AppConstants.isLocationSelected = true;
+                    isLocationSelected = true;
                     GetAddressByLatLng(Double.parseDouble(AppConstants.Latitude), Double.parseDouble(AppConstants.Longitude));
                     mapControl.onDestroy();
                     dialog.dismiss();
@@ -839,8 +840,11 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             if (!edt_LinkNewName.getText().toString().trim().matches(expression)) {
                 showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.NewNameInvalid), " (Entered New Name: " + edt_LinkNewName.getText().toString() + ")");
                 return false;
+            } else if (!isLocationSelected) {
+                showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LocationRequired), "");
+                return false;
             }
-        } else if (!AppConstants.isLocationSelected) {
+        } else if (!isLocationSelected) {
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LocationRequired), "");
             return false;
         }
@@ -937,7 +941,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     }
 
     public void clearEditTextFields() {
-        AppConstants.isLocationSelected = false;
+        isLocationSelected = false;
         StreetAddress = "";
         edt_linkname.getText().clear();
         edt_LinkNewName.getText().clear();

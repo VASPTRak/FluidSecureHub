@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
+import com.TrakEngineering.FluidSecureHub.entity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.gson.Gson;
 

@@ -1,4 +1,4 @@
-package com.TrakEngineering.FluidSecureHub.enity;
+package com.TrakEngineering.FluidSecureHub.entity;
 
 /**
  * Created by User on 12/4/2017.

@@ -1,4 +1,4 @@
-package com.TrakEngineering.FluidSecureHub.enity;
+package com.TrakEngineering.FluidSecureHub.entity;
 
 /**
  * Created by intel on 4/15/2016.

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -32,18 +30,14 @@ import android.text.Html;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.TrakEngineering.FluidSecureHub.BackgroundServiceNew.MyService_FSNP;
 import com.TrakEngineering.FluidSecureHub.EddystoneScanner.EddystoneScannerService;
-import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
-import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.AuthEntityClass;
+import com.TrakEngineering.FluidSecureHub.entity.StatusForUpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
@@ -2397,21 +2391,21 @@ public class CommonUtils {
 
     }
 
-    public static boolean CheckP_TypeCommandIsSent(Context activity, String prefName) {
-        boolean isAlreadySent = false;
+    public static boolean CheckDataStoredInSharedPref(Context activity, String prefName) {
+        boolean isDataFound = false;
         try {
             SharedPreferences FSPref = activity.getSharedPreferences(prefName, 0);
             String jsonData = FSPref.getString("jsonData", "");
             String authString = FSPref.getString("authString", "");
 
             if (!jsonData.trim().isEmpty() && !authString.trim().isEmpty()) {
-                isAlreadySent = true;
+                isDataFound = true;
             }
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in CheckP_TypeCommandIsSent: " + ex.getMessage());
+                AppConstants.WriteinFile(TAG + "Exception occurred in CheckDataStoredInSharedPref: " + ex.getMessage());
         }
-        return isAlreadySent;
+        return isDataFound;
     }
 
     public static void ClearOfflineData(Context context) {
@@ -2512,18 +2506,15 @@ public class CommonUtils {
         }
     }
 
-    public static boolean CheckPTypeSupportedLink(String versionFromLink) {
-        boolean isSupported = false;
+    public static int GetVersionNumberFromLink(String versionFromLink) {
+        int versionNum = 0;
         try {
             String version = versionFromLink.replaceAll("[^0-9]", "");
-            int versionNum = Integer.parseInt(version);
-            if (versionNum >= 123) {
-                isSupported = true;
-            }
+            versionNum = Integer.parseInt(version);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return isSupported;
+        return versionNum;
     }
 
 }

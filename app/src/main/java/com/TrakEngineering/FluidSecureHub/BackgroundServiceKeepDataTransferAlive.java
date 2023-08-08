@@ -6,14 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.StatusForUpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
@@ -50,7 +49,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.wifiApManager;
 import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 
 public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {

@@ -1,16 +1,10 @@
 package com.TrakEngineering.FluidSecureHub;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,10 +17,8 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.squareup.picasso.Picasso;
-
-import java.util.Locale;
 
 public class FOBReaderActivity extends AppCompatActivity {
 

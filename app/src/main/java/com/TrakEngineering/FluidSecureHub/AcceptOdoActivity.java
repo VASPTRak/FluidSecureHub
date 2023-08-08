@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
+import com.TrakEngineering.FluidSecureHub.entity.AuthEntityClass;
 import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;

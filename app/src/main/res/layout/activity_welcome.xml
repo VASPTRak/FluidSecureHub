@@ -628,13 +628,13 @@
                                 style="@style/TextViewStyleDashboard"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:id="@+id/tvFs1_beginFuel"
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
                                 android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
-
 
                         </LinearLayout>
 
@@ -747,7 +747,7 @@
                         android:orientation="vertical">
 
 
-                        <!--Hose One Fake Message-->
+                        <!--Hose Two Fake Message-->
                         <LinearLayout
                             android:id="@+id/Fs2_beginFuel"
                             android:layout_width="match_parent"
@@ -760,13 +760,13 @@
                                 style="@style/TextViewStyleDashboard"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:id="@+id/tvFs2_beginFuel"
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
                                 android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
-
 
                         </LinearLayout>
 
@@ -900,13 +900,13 @@
                                 style="@style/TextViewStyleDashboard"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:id="@+id/tvFs3_beginFuel"
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
                                 android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
-
 
                         </LinearLayout>
 
@@ -1032,13 +1032,13 @@
                                 style="@style/TextViewStyleDashboard"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:id="@+id/tvFs4_beginFuel"
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
                                 android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
-
 
                         </LinearLayout>
 
@@ -1170,13 +1170,13 @@
                                 style="@style/TextViewStyleDashboard"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:id="@+id/tvFs5_beginFuel"
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
                                 android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
-
 
                         </LinearLayout>
 
@@ -1302,13 +1302,13 @@
                                 style="@style/TextViewStyleDashboard"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:id="@+id/tvFs6_beginFuel"
                                 android:background="@color/Red"
                                 android:gravity="center"
                                 android:padding="5dp"
                                 android:text="@string/BeforeStartFueling"
                                 android:textColor="@color/white"
                                 android:textSize="25dp" />
-
 
                         </LinearLayout>
 

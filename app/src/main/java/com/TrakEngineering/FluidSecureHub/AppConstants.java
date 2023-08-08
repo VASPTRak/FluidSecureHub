@@ -117,6 +117,13 @@ public class AppConstants {
     public static boolean isRelayON_fs5 = false;
     public static boolean isRelayON_fs6 = false;
 
+    public static boolean isInfoCommandSuccess_fs1 = false;
+    public static boolean isInfoCommandSuccess_fs2 = false;
+    public static boolean isInfoCommandSuccess_fs3 = false;
+    public static boolean isInfoCommandSuccess_fs4 = false;
+    public static boolean isInfoCommandSuccess_fs5 = false;
+    public static boolean isInfoCommandSuccess_fs6 = false;
+
     public static final String LinkConnectionIssuePref = "LinkConnectionIssuePref";
 
     public static final String IsGateHub = "IsGateHub";
@@ -249,8 +256,8 @@ public class AppConstants {
     public static String BLUETOOTH_PRINTER_NAME;
     public static String PrinterMacAddress;
     public static String BT_READER_NAME;
-    public static String PulserTimingAdjust;
-    public static String IsResetSwitchTimeBounce;
+    //public static String PulserTimingAdjust;
+    //public static String IsResetSwitchTimeBounce;
 
     public static String UP_FirmwareVersion;
     public static String UP_FilePath;
@@ -357,7 +364,6 @@ public class AppConstants {
 
     public static String Latitude = "0.00";
     public static String Longitude = "0.00";
-    public static boolean isLocationSelected = false;
 
     public static ArrayList<HashMap<String, String>> DetailsServerSSIDList;
     public static ArrayList<HashMap<String, String>> DetailsListOfConnectedDevices;

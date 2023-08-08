@@ -4,21 +4,15 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -33,7 +27,7 @@ import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPPMain;
-import com.TrakEngineering.FluidSecureHub.enity.LINKPulserDataEntity;
+import com.TrakEngineering.FluidSecureHub.entity.LINKPulserDataEntity;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -42,13 +36,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 

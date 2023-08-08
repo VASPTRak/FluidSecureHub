@@ -2,7 +2,7 @@ package com.TrakEngineering.FluidSecureHub.offline;
 
 import java.util.ArrayList;
 
-public class EnityTranzSync {
+public class EntityTranzSync {
 
     ArrayList<EntityOffTranz> TransactionsModelsObj;
 }

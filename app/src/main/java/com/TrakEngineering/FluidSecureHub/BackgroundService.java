@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import android.util.Log;
 
-import com.TrakEngineering.FluidSecureHub.enity.TransactionStatus;
+import com.TrakEngineering.FluidSecureHub.entity.TransactionStatus;
 import com.TrakEngineering.FluidSecureHub.retrofit.BusProvider;
 import com.TrakEngineering.FluidSecureHub.retrofit.ErrorEvent;
 import com.TrakEngineering.FluidSecureHub.retrofit.Interface;

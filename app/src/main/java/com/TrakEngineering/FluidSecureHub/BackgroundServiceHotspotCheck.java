@@ -14,8 +14,8 @@ import android.util.Log;
 import android.view.Display;
 
 
-import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.StatusForUpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;

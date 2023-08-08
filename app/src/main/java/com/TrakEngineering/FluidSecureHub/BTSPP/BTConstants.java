@@ -76,13 +76,6 @@ public class BTConstants {
     public static boolean isNewVersionLinkFive = false;
     public static boolean isNewVersionLinkSix = false;
 
-    public static boolean isPTypeSupportedLinkOne = false;
-    public static boolean isPTypeSupportedLinkTwo = false;
-    public static boolean isPTypeSupportedLinkThree = false;
-    public static boolean isPTypeSupportedLinkFour = false;
-    public static boolean isPTypeSupportedLinkFive = false;
-    public static boolean isPTypeSupportedLinkSix = false;
-
     public static boolean isRelayOnAfterReconnect1 = false;
     public static boolean isRelayOnAfterReconnect2 = false;
     public static boolean isRelayOnAfterReconnect3 = false;

@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.TrakEngineering.FluidSecureHub.enity.UpdateMacAddressClass;
+import com.TrakEngineering.FluidSecureHub.entity.UpdateMacAddressClass;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.gson.Gson;
 

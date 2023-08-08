@@ -20,9 +20,6 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.text.Html;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -34,7 +31,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,11 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
-import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
-import com.TrakEngineering.FluidSecureHub.enity.CheckPinFobEntity;
-import com.TrakEngineering.FluidSecureHub.enity.VehicleRequireEntity;
-import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
+import com.TrakEngineering.FluidSecureHub.entity.CheckPinFobEntity;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -55,7 +47,6 @@ import com.squareup.okhttp.Response;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;

@@ -36,7 +36,6 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -79,7 +78,6 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPPMain;
@@ -108,12 +106,12 @@ import com.TrakEngineering.FluidSecureHub.MagV2GAtt.ServiceMagV2;
 import com.TrakEngineering.FluidSecureHub.QRCodeGAtt.ServiceQRCode;
 import com.TrakEngineering.FluidSecureHub.TLD_GattServer.DeviceControlActivity_tld;
 import com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager;
-import com.TrakEngineering.FluidSecureHub.enity.AuthEntityClass;
-import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
-import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UpdateMacAddressClass;
-import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.UserInfoEntity;
+import com.TrakEngineering.FluidSecureHub.entity.AuthEntityClass;
+import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
+import com.TrakEngineering.FluidSecureHub.entity.StatusForUpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UpdateMacAddressClass;
+import com.TrakEngineering.FluidSecureHub.entity.UpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityHub;
 import com.TrakEngineering.FluidSecureHub.offline.OffBackgroundService;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
@@ -242,8 +240,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     TextView off_db_info, tvSSIDName, tv_NFS1, tv_NFS2, tv_NFS3, tv_NFS4, tv_NFS5, tv_NFS6, tv_FA_message, support_phone, support_email, tv_BTlinkconnection;//tv_fs1_pulse
     TextView tv_request, tv_response, tv_Display_msg, tv_file_address;
     LinearLayout linear_debug_window, linearHose, linear_fs_1, linear_fs_2, linear_fs_3, linear_fs_4, linear_fs_5, linear_fs_6,
-            Fs1_beginFuel, Fs3_beginFuel, Fs2_beginFuel, Fs4_beginFuel, Fs5_beginFuel, Fs6_beginFuel,
+            Fs1_beginFuel, Fs2_beginFuel, Fs3_beginFuel, Fs4_beginFuel, Fs5_beginFuel, Fs6_beginFuel,
             linearLayout_MainActivity, layout_support_info;
+    TextView tvFs1_beginFuel, tvFs2_beginFuel, tvFs3_beginFuel, tvFs4_beginFuel, tvFs5_beginFuel, tvFs6_beginFuel;
     WifiManager mainWifi;
     StringBuilder sb = new StringBuilder();
     private MyServer server;
@@ -469,12 +468,19 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             }
         }
 
+        tvFs1_beginFuel.setText(R.string.BeforeStartFueling);
         Fs1_beginFuel.setVisibility(View.GONE);
+        tvFs2_beginFuel.setText(R.string.BeforeStartFueling);
         Fs2_beginFuel.setVisibility(View.GONE);
+        tvFs3_beginFuel.setText(R.string.BeforeStartFueling);
         Fs3_beginFuel.setVisibility(View.GONE);
+        tvFs4_beginFuel.setText(R.string.BeforeStartFueling);
         Fs4_beginFuel.setVisibility(View.GONE);
+        tvFs5_beginFuel.setText(R.string.BeforeStartFueling);
         Fs5_beginFuel.setVisibility(View.GONE);
+        tvFs6_beginFuel.setText(R.string.BeforeStartFueling);
         Fs6_beginFuel.setVisibility(View.GONE);
+
         flagGoBtn = true;//Enable go button
         linearHose.setClickable(true);//Enable hose Selection
         ctx = WelcomeActivity.this;
@@ -1512,6 +1518,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         Fs4_beginFuel = (LinearLayout) findViewById(R.id.Fs4_beginFuel);
         Fs5_beginFuel = (LinearLayout) findViewById(R.id.Fs5_beginFuel);
         Fs6_beginFuel = (LinearLayout) findViewById(R.id.Fs6_beginFuel);
+
+        tvFs1_beginFuel = (TextView) findViewById(R.id.tvFs1_beginFuel);
+        tvFs2_beginFuel = (TextView) findViewById(R.id.tvFs2_beginFuel);
+        tvFs3_beginFuel = (TextView) findViewById(R.id.tvFs3_beginFuel);
+        tvFs4_beginFuel = (TextView) findViewById(R.id.tvFs4_beginFuel);
+        tvFs5_beginFuel = (TextView) findViewById(R.id.tvFs5_beginFuel);
+        tvFs6_beginFuel = (TextView) findViewById(R.id.tvFs6_beginFuel);
 
         tv_fs1_stop.setOnClickListener(this);
         tv_fs2_stop.setOnClickListener(this);
@@ -3101,14 +3114,16 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     String ReconfigureLink = serverSSIDList.get(SelectedItemPos).get("ReconfigureLink");
                     String LinkCommunicationType = serverSSIDList.get(SelectedItemPos).get("LinkCommunicationType");
                     String IsTankEmpty = serverSSIDList.get(SelectedItemPos).get("IsTankEmpty");
-                    AppConstants.PulserTimingAdjust = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
                     String IsLinkFlagged = serverSSIDList.get(SelectedItemPos).get("IsLinkFlagged");
                     String LinkFlaggedMessage = serverSSIDList.get(SelectedItemPos).get("LinkFlaggedMessage");
                     String IsUpgrade = serverSSIDList.get(SelectedItemPos).get("IsUpgrade");
                     String UPFilePath = serverSSIDList.get(SelectedItemPos).get("UPFilePath");
                     String FirmwareVersion = serverSSIDList.get(SelectedItemPos).get("FirmwareVersion");
                     String FirmwareFileName = serverSSIDList.get(SelectedItemPos).get("FirmwareFileName");
-                    AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
+                    String PulserTimingAdjust = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
+                    String IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
+                    SaveCalibrationDetailsInSharedPref(SelectedItemPos, PulserTimingAdjust, IsResetSwitchTimeBounce);
+
                     if (ReconfigureLink == null) {
                         ReconfigureLink = "";
                     }
@@ -3241,10 +3256,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                             AppConstants.SELECTED_MACADDRESS = selMacAddress;
                             String IsHoseNameReplaced = serverSSIDList.get(SelectedItemPos).get("IsHoseNameReplaced");
                             String ReplaceableHoseName = serverSSIDList.get(SelectedItemPos).get("ReplaceableHoseName");
-                            String PulserTimingAd = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
                             IsDefective = serverSSIDList.get(SelectedItemPos).get("IsDefective");
-                            AppConstants.PulserTimingAdjust = PulserTimingAd;
-                            AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
 
                             //tld is upgrade
                             String IsTLDFirmwareUpgrade = serverSSIDList.get(SelectedItemPos).get("IsTLDFirmwareUpgrade");
@@ -5908,6 +5920,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            tvFs1_beginFuel.setText(R.string.BeforeStartFueling);
             Fs1_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs1Cnt5Sec = 0;
             CountBeforeReconnectRelay1 = 0;
@@ -5942,9 +5955,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } else {
 
             if ((fs1Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_1Pulse) >= 1) && AppConstants.isRelayON_fs1) {
+                tvFs1_beginFuel.setText(R.string.BeforeStartFueling);
                 Fs1_beginFuel.setVisibility(View.GONE);
                 linear_fs_1.setVisibility(View.VISIBLE);
             } else {
+                if (AppConstants.isInfoCommandSuccess_fs1) {
+                    tvFs1_beginFuel.setText(R.string.BeforeStartFueling);
+                } else {
+                    tvFs1_beginFuel.setText(R.string.PleaseWait);
+                }
                 Fs1_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_1.setVisibility(View.GONE);
                 fs1Cnt5Sec++;
@@ -6035,6 +6054,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            tvFs2_beginFuel.setText(R.string.BeforeStartFueling);
             Fs2_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs2Cnt5Sec = 0;
             CountBeforeReconnectRelay2 = 0;
@@ -6067,9 +6087,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } else {
 
             if ((fs2Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_2Pulse) >= 1) && AppConstants.isRelayON_fs2) {
+                tvFs2_beginFuel.setText(R.string.BeforeStartFueling);
                 Fs2_beginFuel.setVisibility(View.GONE);
                 linear_fs_2.setVisibility(View.VISIBLE);
             } else {
+                if (AppConstants.isInfoCommandSuccess_fs2) {
+                    tvFs2_beginFuel.setText(R.string.BeforeStartFueling);
+                } else {
+                    tvFs2_beginFuel.setText(R.string.PleaseWait);
+                }
                 Fs2_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_2.setVisibility(View.GONE);
                 fs2Cnt5Sec++;
@@ -6159,6 +6185,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            tvFs3_beginFuel.setText(R.string.BeforeStartFueling);
             Fs3_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs3Cnt5Sec = 0;
             CountBeforeReconnectRelay3 = 0;
@@ -6191,9 +6218,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } else {
 
             if ((fs3Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_3Pulse) >= 1) && AppConstants.isRelayON_fs3) {
+                tvFs3_beginFuel.setText(R.string.BeforeStartFueling);
                 Fs3_beginFuel.setVisibility(View.GONE);
                 linear_fs_3.setVisibility(View.VISIBLE);
             } else {
+                if (AppConstants.isInfoCommandSuccess_fs3) {
+                    tvFs3_beginFuel.setText(R.string.BeforeStartFueling);
+                } else {
+                    tvFs3_beginFuel.setText(R.string.PleaseWait);
+                }
                 Fs3_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_3.setVisibility(View.GONE);
                 fs3Cnt5Sec++;
@@ -6283,6 +6316,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            tvFs4_beginFuel.setText(R.string.BeforeStartFueling);
             Fs4_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs4Cnt5Sec = 0;
             CountBeforeReconnectRelay4 = 0;
@@ -6315,9 +6349,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } else {
 
             if ((fs4Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_4Pulse) >= 1) && AppConstants.isRelayON_fs4) {
+                tvFs4_beginFuel.setText(R.string.BeforeStartFueling);
                 Fs4_beginFuel.setVisibility(View.GONE);
                 linear_fs_4.setVisibility(View.VISIBLE);
             } else {
+                if (AppConstants.isInfoCommandSuccess_fs4) {
+                    tvFs4_beginFuel.setText(R.string.BeforeStartFueling);
+                } else {
+                    tvFs4_beginFuel.setText(R.string.PleaseWait);
+                }
                 Fs4_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_4.setVisibility(View.GONE);
                 fs4Cnt5Sec++;
@@ -6408,6 +6448,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            tvFs5_beginFuel.setText(R.string.BeforeStartFueling);
             Fs5_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs5Cnt5Sec = 0;
             CountBeforeReconnectRelay5 = 0;
@@ -6440,9 +6481,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } else {
 
             if ((fs5Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_5Pulse) >= 1) && AppConstants.isRelayON_fs5) {
+                tvFs5_beginFuel.setText(R.string.BeforeStartFueling);
                 Fs5_beginFuel.setVisibility(View.GONE);
                 linear_fs_5.setVisibility(View.VISIBLE);
             } else {
+                if (AppConstants.isInfoCommandSuccess_fs5) {
+                    tvFs5_beginFuel.setText(R.string.BeforeStartFueling);
+                } else {
+                    tvFs5_beginFuel.setText(R.string.PleaseWait);
+                }
                 Fs5_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_5.setVisibility(View.GONE);
                 fs5Cnt5Sec++;
@@ -6532,6 +6579,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
 
+            tvFs6_beginFuel.setText(R.string.BeforeStartFueling);
             Fs6_beginFuel.setVisibility(View.GONE); //Disable begin fueling message
             fs6Cnt5Sec = 0;
             CountBeforeReconnectRelay6 = 0;
@@ -6564,9 +6612,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         } else {
 
             if ((fs6Cnt5Sec >= 5 || Integer.parseInt(Constants.FS_6Pulse) >= 1) && AppConstants.isRelayON_fs6) {
+                tvFs6_beginFuel.setText(R.string.BeforeStartFueling);
                 Fs6_beginFuel.setVisibility(View.GONE);
                 linear_fs_6.setVisibility(View.VISIBLE);
             } else {
+                if (AppConstants.isInfoCommandSuccess_fs6) {
+                    tvFs6_beginFuel.setText(R.string.BeforeStartFueling);
+                } else {
+                    tvFs6_beginFuel.setText(R.string.PleaseWait);
+                }
                 Fs6_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_6.setVisibility(View.GONE);
                 fs6Cnt5Sec++;
@@ -6927,12 +6981,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         AppConstants.SELECTED_MACADDRESS = selMacAddress;
         String IsHoseNameReplaced = serverSSIDList.get(SelectedItemPos).get("IsHoseNameReplaced");
         String ReplaceableHoseName = serverSSIDList.get(SelectedItemPos).get("ReplaceableHoseName");
-        AppConstants.PulserTimingAdjust = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
         String IsLinkFlagged = serverSSIDList.get(SelectedItemPos).get("IsLinkFlagged");
         String LinkFlaggedMessage = serverSSIDList.get(SelectedItemPos).get("LinkFlaggedMessage");
         String LinkCommunicationType = serverSSIDList.get(SelectedItemPos).get("LinkCommunicationType");
         AppConstants.UP_FilePath = serverSSIDList.get(SelectedItemPos).get("UPFilePath");
-        AppConstants.IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
+        String PulserTimingAdjust = serverSSIDList.get(SelectedItemPos).get("PulserTimingAdjust");
+        String IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
+        SaveCalibrationDetailsInSharedPref(SelectedItemPos, PulserTimingAdjust, IsResetSwitchTimeBounce);
 
         if (IsHoseNameReplaced == null) {
             IsHoseNameReplaced = "";
@@ -7216,6 +7271,51 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
+    private void SaveCalibrationDetailsInSharedPref(int selectedLinkPos, String PulserTimingAdjust, String IsResetSwitchTimeBounce) {
+        try {
+            SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
+            switch (selectedLinkPos) {
+                case 0:
+                    SharedPreferences.Editor editor1 = calibrationPref.edit();
+                    editor1.putString("PulserTimingAdjust_FS1", PulserTimingAdjust);
+                    editor1.putString("IsResetSwitchTimeBounce_FS1", IsResetSwitchTimeBounce);
+                    editor1.commit();
+                    break;
+                case 1:
+                    SharedPreferences.Editor editor2 = calibrationPref.edit();
+                    editor2.putString("PulserTimingAdjust_FS2", PulserTimingAdjust);
+                    editor2.putString("IsResetSwitchTimeBounce_FS2", IsResetSwitchTimeBounce);
+                    editor2.commit();
+                    break;
+                case 2:
+                    SharedPreferences.Editor editor3 = calibrationPref.edit();
+                    editor3.putString("PulserTimingAdjust_FS3", PulserTimingAdjust);
+                    editor3.putString("IsResetSwitchTimeBounce_FS3", IsResetSwitchTimeBounce);
+                    editor3.commit();
+                    break;
+                case 3:
+                    SharedPreferences.Editor editor4 = calibrationPref.edit();
+                    editor4.putString("PulserTimingAdjust_FS4", PulserTimingAdjust);
+                    editor4.putString("IsResetSwitchTimeBounce_FS4", IsResetSwitchTimeBounce);
+                    editor4.commit();
+                    break;
+                case 4:
+                    SharedPreferences.Editor editor5 = calibrationPref.edit();
+                    editor5.putString("PulserTimingAdjust_FS5", PulserTimingAdjust);
+                    editor5.putString("IsResetSwitchTimeBounce_FS5", IsResetSwitchTimeBounce);
+                    editor5.commit();
+                    break;
+                case 5:
+                    SharedPreferences.Editor editor6 = calibrationPref.edit();
+                    editor6.putString("PulserTimingAdjust_FS6", PulserTimingAdjust);
+                    editor6.putString("IsResetSwitchTimeBounce_FS6", IsResetSwitchTimeBounce);
+                    editor6.commit();
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     //========================ends=========================================
 
@@ -14426,7 +14526,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             System.out.println(ex);
         }
     }
-    
+
     public boolean HoseAvailabilityCheckTwoAttempts(ArrayList<String> NearByBTDevices, String deviceAddress) {
         boolean isConnected = false;
         try {
@@ -16146,8 +16246,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 // New Link version
                 JSONObject jsonObject = new JSONObject(response);
 
-                JSONObject versionJsonArray = jsonObject.getJSONObject("version");
-                String version = versionJsonArray.getString("version");
+                JSONObject versionJsonObj = jsonObject.getJSONObject("version");
+                String version = versionJsonObj.getString("version");
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK Version (Before Upgrade) >> " + version);
             } else {

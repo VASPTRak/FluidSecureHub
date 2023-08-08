@@ -17,7 +17,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import com.TrakEngineering.FluidSecureHub.enity.SaveLinkFromAPP_entity;
+import com.TrakEngineering.FluidSecureHub.entity.SaveLinkFromAPP_entity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;

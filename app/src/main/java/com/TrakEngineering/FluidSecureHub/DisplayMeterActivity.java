@@ -26,7 +26,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -50,12 +49,12 @@ import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTThree;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTFour;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTFive;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTSix;
-import com.TrakEngineering.FluidSecureHub.enity.RenameHose;
-import com.TrakEngineering.FluidSecureHub.enity.SocketErrorEntityClass;
-import com.TrakEngineering.FluidSecureHub.enity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.enity.SwitchTimeBounce;
-import com.TrakEngineering.FluidSecureHub.enity.TrazComp;
-import com.TrakEngineering.FluidSecureHub.enity.UpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
+import com.TrakEngineering.FluidSecureHub.entity.SocketErrorEntityClass;
+import com.TrakEngineering.FluidSecureHub.entity.StatusForUpgradeVersionEntity;
+import com.TrakEngineering.FluidSecureHub.entity.SwitchTimeBounce;
+import com.TrakEngineering.FluidSecureHub.entity.TrazComp;
+import com.TrakEngineering.FluidSecureHub.entity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.offline.EntityOffTranz;
 import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
@@ -225,6 +224,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     //private boolean skipOnResumeForHotspot = false;
     private boolean skipOnPostResumeForHotspot = false;
     private Dialog toastDialog = null;
+    public String PulserTimingAdjust;
+    public String IsResetSwitchTimeBounce;
 
     @Override
     protected void onPostResume() {
@@ -445,6 +446,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         //getListOfConnectedDevice();
         getIpOverOSVersion();
+        GetCalibrationDetails();
 
         tv_hoseConnected.setText("Connected to " + AppConstants.CURRENT_SELECTED_SSID);
         if (Constants.CurrentSelectedHose.equals("FS1")) {
@@ -646,6 +648,40 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         receiver = new NetworkReceiver();
         this.registerReceiver(receiver, ifilter);
 
+    }
+
+    public void GetCalibrationDetails() {
+        try {
+            SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
+
+            if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS1", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS1", "");
+
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS2", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS2", "");
+
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS3", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS3", "");
+
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS4", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS4", "");
+
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("4")) {
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS5", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS5", "");
+
+            } else if (AppConstants.FS_selected.equalsIgnoreCase("5")) {
+                PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS6", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS6", "");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " GetCalibrationDetails Exception " + e.getMessage());
+        }
     }
 
     private void TimeOutDisplayMeterScreen() {
@@ -2022,7 +2058,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(result);
                 if (calledFor.equalsIgnoreCase("sampling_time")) {
 
-                    AppConstants.IsResetSwitchTimeBounce = "0";
                     UpdateSwitchTimeBounceForLink();
                     checkFirmwareUpdateMain(); //StorePumpOffTimeForLink();
                 }
@@ -3011,6 +3046,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
 
+                AppConstants.isInfoCommandSuccess_fs1 = true;
+
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -3026,6 +3063,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
 
+                AppConstants.isInfoCommandSuccess_fs2 = true;
+
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -3039,6 +3078,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
+
+                AppConstants.isInfoCommandSuccess_fs3 = true;
 
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -3054,6 +3095,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
 
+                AppConstants.isInfoCommandSuccess_fs4 = true;
+
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -3067,6 +3110,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
 
+                AppConstants.isInfoCommandSuccess_fs5 = true;
+
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -3079,6 +3124,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 serviceIntent.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent);
+
+                AppConstants.isInfoCommandSuccess_fs6 = true;
 
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -3344,8 +3391,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void SET_PULSAR_Command() {
         try {
-            if (AppConstants.IsResetSwitchTimeBounce != null) {
-                if (AppConstants.IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1")) {
+            if (IsResetSwitchTimeBounce != null) {
+                if (IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1")) {
                     Thread.sleep(1000);
                     /*if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
@@ -3353,7 +3400,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
                     //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
-                    new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
+                    new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + PulserTimingAdjust + "}}", "sampling_time");
 
                 } else {
                     checkFirmwareUpdateMain();
@@ -3696,7 +3743,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
                                 //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
-                                new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + AppConstants.PulserTimingAdjust + "}}", "sampling_time");
+                                new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + PulserTimingAdjust + "}}", "sampling_time");
                             }
                             //checkFirmwareUpdateMain();
                         }
