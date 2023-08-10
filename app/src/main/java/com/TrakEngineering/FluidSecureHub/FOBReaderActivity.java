@@ -3,8 +3,10 @@ package com.TrakEngineering.FluidSecureHub;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.squareup.picasso.Picasso;
+
+import java.util.Locale;
 
 public class FOBReaderActivity extends AppCompatActivity {
 
@@ -49,7 +53,7 @@ public class FOBReaderActivity extends AppCompatActivity {
         AppConstants.GenerateLogs = true;
         SharedPreferences sharedPref = FOBReaderActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");
-        CommonUtils.StoreLanguageSettings(FOBReaderActivity.this, language, false);
+        StoreLanguageSettings(language, false);
 
         setContentView(R.layout.activity_fobreader);
 
@@ -179,17 +183,56 @@ public class FOBReaderActivity extends AppCompatActivity {
             case R.id.menuSpanish:
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<Spanish language selected.>");
-                CommonUtils.StoreLanguageSettings(FOBReaderActivity.this, "es", true);
+                StoreLanguageSettings("es", true);
                 break;
 
             case R.id.menuEnglish:
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<English language selected.>");
-                CommonUtils.StoreLanguageSettings(FOBReaderActivity.this, "en", true);
+                StoreLanguageSettings("en", true);
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void StoreLanguageSettings(String language, boolean isRecreate) {
+        try {
+            if (language.trim().equalsIgnoreCase("es"))
+                AppConstants.LANG_PARAM = ":es-ES";
+            else
+                AppConstants.LANG_PARAM = ":en-US";
+
+            DisplayMetrics dm = getBaseContext().getResources().getDisplayMetrics();
+            Configuration conf = getBaseContext().getResources().getConfiguration();
+
+            if (language.trim().equalsIgnoreCase("es")) {
+                conf.setLocale(new Locale("es"));
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en", "US"));
+            } else {
+                conf.setLocale(Locale.getDefault());
+            }
+
+            getBaseContext().getResources().updateConfiguration(conf, dm);
+
+            SharedPreferences sharedPref = this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("language", language.trim());
+            editor.apply();
+
+            if (isRecreate) {
+                //recreate();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Restarting the activity.>");
+                Intent i = new Intent(FOBReaderActivity.this, FOBReaderActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                this.startActivity(i);
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+        }
     }
 
     private void InItGUI() {

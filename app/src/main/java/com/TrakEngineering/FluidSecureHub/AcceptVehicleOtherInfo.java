@@ -60,6 +60,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         menu.findItem(R.id.madd_link).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
+        menu.findItem(R.id.mrestartapp).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 

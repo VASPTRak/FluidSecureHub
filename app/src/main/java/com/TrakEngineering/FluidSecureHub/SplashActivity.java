@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -28,6 +29,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -73,6 +75,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class SplashActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -113,7 +116,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
 
         SharedPreferences sharedPref = SplashActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");
-        CommonUtils.StoreLanguageSettings(SplashActivity.this, language, false);
+        StoreLanguageSettings(language);
 
         getSupportActionBar().setTitle("HUB Application");
 
@@ -240,6 +243,32 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     Log.e(TAG, ex.getMessage());
                 }
 
+        }
+    }
+
+    public void StoreLanguageSettings(String language) {
+        try {
+            if (language.trim().equalsIgnoreCase("es"))
+                AppConstants.LANG_PARAM = ":es-ES";
+            else
+                AppConstants.LANG_PARAM = ":en-US";
+
+            DisplayMetrics dm = getBaseContext().getResources().getDisplayMetrics();
+            Configuration conf = getBaseContext().getResources().getConfiguration();
+
+            if (language.trim().equalsIgnoreCase("es")) {
+                conf.setLocale(new Locale("es"));
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en", "US"));
+            } else {
+                conf.setLocale(Locale.getDefault());
+            }
+
+            getBaseContext().getResources().updateConfiguration(conf, dm);
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
         }
     }
 

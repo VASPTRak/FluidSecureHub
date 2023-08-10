@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 
 import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.squareup.picasso.Picasso;
+
+import java.util.Locale;
 
 public class ActivitySparehub extends AppCompatActivity {
 
@@ -43,7 +47,7 @@ public class ActivitySparehub extends AppCompatActivity {
         AppConstants.GenerateLogs = true;
         SharedPreferences sharedPref = ActivitySparehub.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");
-        CommonUtils.StoreLanguageSettings(ActivitySparehub.this, language, false);
+        StoreLanguageSettings(language);
         setContentView(R.layout.activity_sparehub);
 
         SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
@@ -74,6 +78,31 @@ public class ActivitySparehub extends AppCompatActivity {
 
     }
 
+    public void StoreLanguageSettings(String language) {
+        try {
+            if (language.trim().equalsIgnoreCase("es"))
+                AppConstants.LANG_PARAM = ":es-ES";
+            else
+                AppConstants.LANG_PARAM = ":en-US";
+
+            DisplayMetrics dm = getBaseContext().getResources().getDisplayMetrics();
+            Configuration conf = getBaseContext().getResources().getConfiguration();
+
+            if (language.trim().equalsIgnoreCase("es")) {
+                conf.setLocale(new Locale("es"));
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en", "US"));
+            } else {
+                conf.setLocale(Locale.getDefault());
+            }
+
+            getBaseContext().getResources().updateConfiguration(conf, dm);
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

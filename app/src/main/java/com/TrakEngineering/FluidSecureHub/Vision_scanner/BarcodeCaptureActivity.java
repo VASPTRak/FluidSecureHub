@@ -145,10 +145,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
-        menu.findItem(R.id.mshow_reader_status).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(true);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
-
+        menu.findItem(R.id.mrestartapp).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
@@ -165,16 +164,21 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         boolean BarcodeStatus = sharedPref.getBoolean(AppConstants.UseBarcode, false);
         int CameraFacing = sharedPref.getInt(AppConstants.CAMERA_FACING, 1);
 
-        if (!BarcodeStatus){
+        if (!BarcodeStatus) {
             menu.findItem(R.id.mcamera_back).setVisible(false);
             menu.findItem(R.id.mcamera_front).setVisible(false);
-        }else if (CameraFacing == 1){
+        } else if (CameraFacing == 1) {
             menu.findItem(R.id.mcamera_back).setVisible(true);
             menu.findItem(R.id.mcamera_front).setVisible(false);
-        }else{
+        } else {
             menu.findItem(R.id.mcamera_back).setVisible(false);
             menu.findItem(R.id.mcamera_front).setVisible(true);
         }
+
+        MenuItem itemSp = menu.findItem(R.id.menuSpanish);
+        MenuItem itemEng = menu.findItem(R.id.menuEnglish);
+        itemSp.setVisible(false);
+        itemEng.setVisible(false);
 
         return true;
     }

@@ -523,6 +523,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
         menu.findItem(R.id.mreload).setVisible(false);
+        menu.findItem(R.id.mrestartapp).setVisible(false);
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 

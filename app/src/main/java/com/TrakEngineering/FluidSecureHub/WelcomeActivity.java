@@ -24,6 +24,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -57,7 +59,9 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -174,6 +178,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -663,7 +668,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         SharedPreferences sharedPref = WelcomeActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");
-        CommonUtils.StoreLanguageSettings(WelcomeActivity.this, language, false);
+        StoreLanguageSettings(language, false);
 
         SharedPreferences sharedPre2 = WelcomeActivity.this.getSharedPreferences("storeBT_FOBDetails", Context.MODE_PRIVATE);
 
@@ -7888,7 +7893,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<Spanish language selected.>");
                 if (AppConstants.IsHoseBusyCheckLocally()) {
-                    CommonUtils.StoreLanguageSettings(WelcomeActivity.this, "es", true);
+                    StoreLanguageSettings("es", true);
                 } else {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
@@ -7898,7 +7903,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<English language selected.>");
                 if (AppConstants.IsHoseBusyCheckLocally()) {
-                    CommonUtils.StoreLanguageSettings(WelcomeActivity.this, "en", true);
+                    StoreLanguageSettings("en", true);
                 } else {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
                 }
@@ -7912,6 +7917,45 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void StoreLanguageSettings(String language, boolean isRecreate) {
+        try {
+            if (language.trim().equalsIgnoreCase("es"))
+                AppConstants.LANG_PARAM = ":es-ES";
+            else
+                AppConstants.LANG_PARAM = ":en-US";
+
+            DisplayMetrics dm = getBaseContext().getResources().getDisplayMetrics();
+            Configuration conf = getBaseContext().getResources().getConfiguration();
+
+            if (language.trim().equalsIgnoreCase("es")) {
+                conf.setLocale(new Locale("es"));
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en", "US"));
+            } else {
+                conf.setLocale(Locale.getDefault());
+            }
+
+            getBaseContext().getResources().updateConfiguration(conf, dm);
+
+            SharedPreferences sharedPref = this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("language", language.trim());
+            editor.apply();
+
+            if (isRecreate) {
+                //recreate();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Restarting the activity.>");
+                Intent i = new Intent(WelcomeActivity.this, WelcomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                this.startActivity(i);
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+        }
     }
 
     private void HideAddLinkMenu() {
@@ -15430,6 +15474,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             String message = getResources().getString(R.string.FileDownloadInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds);
             pd.setMessage(GetSpinnerMessage(message));
             pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+
+            // #2323
+            Window window = pd.getWindow();
+            WindowManager.LayoutParams wlp = window.getAttributes();
+            wlp.gravity = Gravity.BOTTOM | Gravity.CENTER;
+            window.setAttributes(wlp);
+            //==========================
+
             pd.setCancelable(false);
             pd.show();
         }
@@ -15771,6 +15823,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         pdUpgradeProcess = new ProgressDialog(WelcomeActivity.this);
         pdUpgradeProcess.setMessage(GetSpinnerMessage(message));
         pdUpgradeProcess.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+        // #2323
+        Window window = pdUpgradeProcess.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM | Gravity.CENTER;
+        window.setAttributes(wlp);
+        //==========================
+
         pdUpgradeProcess.setCancelable(false);
         pdUpgradeProcess.show();
 

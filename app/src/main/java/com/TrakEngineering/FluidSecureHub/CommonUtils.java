@@ -2335,7 +2335,7 @@ public class CommonUtils {
         return apMacAddress;
     }
 
-    public static void StoreLanguageSettings(Activity activity, String language, boolean isRecreate) {
+    /*public static void StoreLanguageSettings(Activity activity, String language, boolean isRecreate) {
         try {
             if (language.trim().equalsIgnoreCase("es"))
                 AppConstants.LANG_PARAM = ":es-ES";
@@ -2349,7 +2349,7 @@ public class CommonUtils {
             if (language.trim().equalsIgnoreCase("es")) {
                 conf.setLocale(new Locale("es"));
             } else if (language.trim().equalsIgnoreCase("en")) {
-                conf.setLocale(new Locale("en"));
+                conf.setLocale(new Locale("en", "US"));
             } else {
                 conf.setLocale(Locale.getDefault());
             }
@@ -2367,7 +2367,7 @@ public class CommonUtils {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
         }
-    }
+    }*/
 
     public static boolean CheckAllHTTPLinksAreFree() {
         boolean flag = false;

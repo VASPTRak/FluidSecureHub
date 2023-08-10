@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -49,6 +51,7 @@ import org.json.JSONObject;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +81,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = RegistrationActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");
-        CommonUtils.StoreLanguageSettings(RegistrationActivity.this, language, false);
+        StoreLanguageSettings(language, false);
 
         // ----------------------------------------------------------------------------------------------
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -267,16 +270,55 @@ public class RegistrationActivity extends AppCompatActivity {
 
             case R.id.menuSpanish:
                 AppConstants.WriteinFile(TAG + " <Spanish language selected.>");
-                CommonUtils.StoreLanguageSettings(RegistrationActivity.this, "es", true);
+                StoreLanguageSettings("es", true);
                 break;
 
             case R.id.menuEnglish:
                 AppConstants.WriteinFile(TAG + " <English language selected.>");
-                CommonUtils.StoreLanguageSettings(RegistrationActivity.this, "en", true);
+                StoreLanguageSettings("en", true);
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void StoreLanguageSettings(String language, boolean isRecreate) {
+        try {
+            if (language.trim().equalsIgnoreCase("es"))
+                AppConstants.LANG_PARAM = ":es-ES";
+            else
+                AppConstants.LANG_PARAM = ":en-US";
+
+            DisplayMetrics dm = getBaseContext().getResources().getDisplayMetrics();
+            Configuration conf = getBaseContext().getResources().getConfiguration();
+
+            if (language.trim().equalsIgnoreCase("es")) {
+                conf.setLocale(new Locale("es"));
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en", "US"));
+            } else {
+                conf.setLocale(Locale.getDefault());
+            }
+
+            getBaseContext().getResources().updateConfiguration(conf, dm);
+
+            SharedPreferences sharedPref = this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("language", language.trim());
+            editor.apply();
+
+            if (isRecreate) {
+                //recreate();
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Restarting the activity.>");
+                Intent i = new Intent(RegistrationActivity.this, RegistrationActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                this.startActivity(i);
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+        }
     }
 
     private boolean checkPermission(Activity context, String permission) {

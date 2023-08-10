@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -26,6 +27,7 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -82,6 +84,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -414,18 +417,56 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " <Spanish language selected.>");
                 AppConstants.languageChanged = true;
-                CommonUtils.StoreLanguageSettings(AddNewLinkToCloud.this, "es", true);
+                StoreLanguageSettings("es");
                 break;
 
             case R.id.menuEnglish:
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " <English language selected.>");
                 AppConstants.languageChanged = true;
-                CommonUtils.StoreLanguageSettings(AddNewLinkToCloud.this, "en", true);
+                StoreLanguageSettings("en");
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void StoreLanguageSettings(String language) {
+        try {
+            if (language.trim().equalsIgnoreCase("es"))
+                AppConstants.LANG_PARAM = ":es-ES";
+            else
+                AppConstants.LANG_PARAM = ":en-US";
+
+            DisplayMetrics dm = getBaseContext().getResources().getDisplayMetrics();
+            Configuration conf = getBaseContext().getResources().getConfiguration();
+
+            if (language.trim().equalsIgnoreCase("es")) {
+                conf.setLocale(new Locale("es"));
+            } else if (language.trim().equalsIgnoreCase("en")) {
+                conf.setLocale(new Locale("en", "US"));
+            } else {
+                conf.setLocale(Locale.getDefault());
+            }
+
+            getBaseContext().getResources().updateConfiguration(conf, dm);
+
+            SharedPreferences sharedPref = this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("language", language.trim());
+            editor.apply();
+
+            //recreate();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Restarting the activity.>");
+            Intent i = new Intent(AddNewLinkToCloud.this, AddNewLinkToCloud.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            this.startActivity(i);
+
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+        }
     }
 
     private void SetSubscriptionKeyForAzureMap() {
