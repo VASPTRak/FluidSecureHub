@@ -85,6 +85,7 @@ public class SerialSocketTwo implements Runnable {
         if (!connected)
             throw new IOException("not connected");
         socket.getOutputStream().write(data);
+        socket.getOutputStream().flush();
     }
 
     void readPulse() throws IOException {

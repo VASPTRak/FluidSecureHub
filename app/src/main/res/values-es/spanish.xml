@@ -326,7 +326,7 @@
     <string name="peHour0">Por favor, introduzca horas mayores que 0.</string>
     <string name="peOdo0">Por favor, introduzca el odómetro mayor que 0.</string>
     <string name="lessThanPrevReadingMsg">Ha ingresado una lectura que es menor que la ingresada previamente. Por favor revisa e intenta de nuevo.</string>
-    <string name="UnableToConnectToHoseMessage">Pedimos disculpas por las molestias, no pudimos establecer una conexión con el ENLACE. Por favor, intenta de nuevo.</string>
+    <string name="UnableToConnectToHoseMessage">No podemos establecer la conexión, por favor llama a Soporte</string>
     <string name="HotspotOffMessage">El punto de acceso de la tableta está desactivado. Llame al soporte al cliente.</string>
     <string name="HoseUnavailableMessage">La manguera no está disponible. reajustar la energía al dispensador que está controlando la manguera. Esto se puede hacer disparando el interruptor principal o la parada de emergencia. Una vez que se restablece la alimentación, espere 30 segundos y vuelva a intentarlo.</string>
     <string name="HavingTroubleConnectingToLINK">Tenemos problemas para conectarnos al ENLACE que controla su dispensador. Localice la fuente de alimentación/la parada de emergencia para restablecer la alimentación del dispensador. Una vez que esto se complete, espere 30 segundos y vuelva a intentarlo. Si continúa teniendo problemas, comuníquese con Soporte.</string>
@@ -341,6 +341,7 @@
     <string name="UseFSTag">Usar FSTag</string>
     <string name="UseOnScreenBarcode">Toque para usar el código de barras en pantalla</string>
     <string name="PleaseWait">Espere por favor...</string>
+    <string name="PleaseWaitMessage">Espere por favor</string>
     <string name="PleaseWaitForWifiConnect">Conectando a Wi-Fi. Espere por favor...</string>
     <string name="ReadAccessDeviceAgain">Haga clic para leer Dispositivo de acceso nuevamente</string>
     <string name="peVehicle">Por favor ingrese Vehículo. Si aún tiene problemas, comuníquese con su Gerente.</string>

@@ -69,12 +69,12 @@ public class Constants {
     public static String FS_6Gallons = "";
 
 
-    public static String FS_1Pulse = "";
-    public static String FS_2Pulse = "";
-    public static String FS_3Pulse = "";
-    public static String FS_4Pulse = "";
-    public static String FS_5Pulse = "";
-    public static String FS_6Pulse = "";
+    public static String FS_1Pulse = "00";
+    public static String FS_2Pulse = "00";
+    public static String FS_3Pulse = "00";
+    public static String FS_4Pulse = "00";
+    public static String FS_5Pulse = "00";
+    public static String FS_6Pulse = "00";
 
     public static final String SHARED_PREF_NAME = "UserInfo";
     public static final String PREF_COLUMN_USER = "UserData";

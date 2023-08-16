@@ -402,11 +402,12 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     String iot_version = "";
     ServerHandler serverHandler = new ServerHandler();
     public int HotspotEnableErrorCount = 0;
-    public ProgressDialog pdOnResume;
     public ProgressDialog pdUpgradeProcess;
     public Handler BTConnectionHandler = new Handler(Looper.getMainLooper());
     public int delayMillis = 100;
     public String st = "";
+    public String strWait1 = "", strWait2 = "", strWait3 = "", strWait4 = "", strWait5 = "", strWait6 = "";
+    public int waitCounter1 = 0, waitCounter2 = 0, waitCounter3 = 0, waitCounter4 = 0, waitCounter5 = 0, waitCounter6 = 0;
     public boolean ConfigurationStep1IsInProgress = false;
     public boolean upgradeLoaderIsShown = false;
     public Menu myMenu;
@@ -1938,6 +1939,14 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         Intent intent = new Intent(WelcomeActivity.this, AcceptPinActivity_new.class);
                                         startActivity(intent);
 
+                                    } else if (obj.IsDepartmentRequire.equalsIgnoreCase("true")) {
+
+                                        btnGo.setClickable(false);
+                                        Constants.GateHubPinNo = "";
+                                        Constants.GateHubvehicleNo = "";
+                                        Intent intent = new Intent(WelcomeActivity.this, AcceptDeptActivity.class);
+                                        startActivity(intent);
+
                                     } else if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
 
                                         btnGo.setClickable(false);
@@ -1947,9 +1956,15 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                                         startActivity(intent);
 
                                     } else {
-                                        AppConstants.colorToastBigFont(WelcomeActivity.this, "Fuel screen", Color.BLUE);
+                                        /*AppConstants.colorToastBigFont(WelcomeActivity.this, "Fuel screen", Color.BLUE);
                                         if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Fuel screen");
+                                            AppConstants.WriteinFile(TAG + "Fuel screen");*/
+
+                                        btnGo.setClickable(false);
+                                        Constants.GateHubPinNo = "";
+                                        Constants.GateHubvehicleNo = "";
+                                        Intent intent = new Intent(WelcomeActivity.this, DisplayMeterActivity.class);
+                                        startActivity(intent);
 
                                     }
                                 } else {
@@ -1995,21 +2010,24 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class handleGetAndroidSSID extends AsyncTask<String, Void, String> {
 
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
         public String LinkCommType = "";
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(WelcomeActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(WelcomeActivity.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(WelcomeActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(String... params) {
@@ -2057,8 +2075,10 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         protected void onPostExecute(String siteResponse) {
 
 
-            if (!WelcomeActivity.this.isFinishing() && pd != null) {
-                pd.dismiss();
+            if (!WelcomeActivity.this.isFinishing() && alertDialog != null) {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
             }
 
             try {
@@ -2135,6 +2155,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
         IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
         IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
+        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HubId, "");
 
         //Skip PinActivity and pass pin= "";
         if (Constants.CurrentSelectedHose != null)
@@ -2175,13 +2196,38 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             Intent intent = new Intent(WelcomeActivity.this, AcceptVehicleActivity_new.class);
             startActivity(intent);
 
-        } else {
+        } else if (IsPersonnelPINRequireForHub.equalsIgnoreCase("True")) {
 
             btnGo.setClickable(false);
             Constants.GateHubPinNo = "";
             Constants.GateHubvehicleNo = "";
             Intent intent = new Intent(WelcomeActivity.this, AcceptPinActivity_new.class);
             startActivity(intent);
+
+        } else if (IsDepartmentRequire.equalsIgnoreCase("True")) {
+
+            btnGo.setClickable(false);
+            Constants.GateHubPinNo = "";
+            Constants.GateHubvehicleNo = "";
+            Intent intent = new Intent(WelcomeActivity.this, AcceptDeptActivity.class);
+            startActivity(intent);
+
+        } else if (IsOtherRequire.equalsIgnoreCase("True")) {
+
+            btnGo.setClickable(false);
+            Constants.GateHubPinNo = "";
+            Constants.GateHubvehicleNo = "";
+            Intent intent = new Intent(WelcomeActivity.this, AcceptOtherActivity.class);
+            startActivity(intent);
+
+        } else {
+
+            btnGo.setClickable(false);
+            Constants.GateHubPinNo = "";
+            Constants.GateHubvehicleNo = "";
+            AcceptServiceCall asc = new AcceptServiceCall();
+            asc.activity = WelcomeActivity.this;
+            asc.checkAllFields();
         }
 
         /*if (ReaderFrequency.equalsIgnoreCase("hfr")) {
@@ -2815,7 +2861,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
-    public class GetAndroidSSID extends AsyncTask<Void, Void, Void> {
+    /*public class GetAndroidSSID extends AsyncTask<Void, Void, Void> {
 
         String Email = null;
         String latLong = null;
@@ -2867,7 +2913,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             super.onPostExecute(aVoid);
             pd.dismiss();
         }
-    }
+    }*/
 
     public void onChangeWifiAction(View view) {
         try {
@@ -2952,23 +2998,23 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class GetSSIDUsingLocation extends AsyncTask<Void, Void, String> {
 
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(WelcomeActivity.this, s, true);
+            alertDialog.show();
 
-            pd = new ProgressDialog(WelcomeActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.setCancelable(false);
-            pd.show();
-
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(WelcomeActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(Void... arg0) {
@@ -3010,7 +3056,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } catch (Exception e) {
                 hoseClicked = false;
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "GetSSIDUsingLocation doInBackground --Exception: " + e.getMessage());
@@ -3030,7 +3078,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             hoseClicked = false;
 
             try {
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
 
                 linearHose.setClickable(true);//Enable hose Selection
                 //tvLatLng.setText("Current Location :" + Constants.Latitude + "," + Constants.Longitude); // #2005
@@ -5901,26 +5951,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (AppConstants.IsTransactionFailed1) {
                 AppConstants.IsTransactionFailed1 = false;
-                if (BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.HotspotOffMessage));
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
-                    if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.HotspotOffMessage));
-                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
+                    String logType = "", logPrefix = "";
+                    if (BTConstants.CurrentTransactionIsBT) {
+                        logType = AppConstants.LOG_TXTN_BT;
+                        logPrefix = "BTLink 1: ";
                     } else {
-                        if (AppConstants.TxnFailedCount1 == 1) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
-                        } else {
-                            AppConstants.TxnFailedCount1 = 0;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.HoseUnavailableMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
-                        }
+                        logType = AppConstants.LOG_TXTN_HTTP;
+                        logPrefix = "BS_FS1: ";
+                    }
+
+                    if (AppConstants.TxnFailedCount1 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    } else {
+                        AppConstants.TxnFailedCount1 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                     }
                 }
             }
@@ -5965,9 +6018,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 linear_fs_1.setVisibility(View.VISIBLE);
             } else {
                 if (AppConstants.isInfoCommandSuccess_fs1) {
+                    tvFs1_beginFuel.setGravity(Gravity.CENTER);
+                    waitCounter1 = 0;
+                    strWait1 = "";
                     tvFs1_beginFuel.setText(R.string.BeforeStartFueling);
                 } else {
-                    tvFs1_beginFuel.setText(R.string.PleaseWait);
+                    tvFs1_beginFuel.setGravity(Gravity.START | Gravity.CENTER);
+                    if (waitCounter1 > 3) {
+                        waitCounter1 = 0;
+                        strWait1 = "";
+                        tvFs1_beginFuel.setText(R.string.PleaseWaitMessage);
+                    } else {
+                        waitCounter1++;
+                        strWait1 = strWait1 + ".";
+                        String msg = getResources().getString(R.string.PleaseWaitMessage) + strWait1;
+                        tvFs1_beginFuel.setText(msg);
+                    }
                 }
                 Fs1_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_1.setVisibility(View.GONE);
@@ -6035,26 +6101,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (AppConstants.IsTransactionFailed2) {
                 AppConstants.IsTransactionFailed2 = false;
-                if (BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.HotspotOffMessage));
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
-                    if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.HotspotOffMessage));
-                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
+                    String logType = "", logPrefix = "";
+                    if (BTConstants.CurrentTransactionIsBT) {
+                        logType = AppConstants.LOG_TXTN_BT;
+                        logPrefix = "BTLink 2: ";
                     } else {
-                        if (AppConstants.TxnFailedCount2 == 1) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
-                        } else {
-                            AppConstants.TxnFailedCount2 = 0;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.HoseUnavailableMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
-                        }
+                        logType = AppConstants.LOG_TXTN_HTTP;
+                        logPrefix = "BS_FS2: ";
+                    }
+
+                    if (AppConstants.TxnFailedCount2 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    } else {
+                        AppConstants.TxnFailedCount2 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                     }
                 }
             }
@@ -6097,9 +6166,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 linear_fs_2.setVisibility(View.VISIBLE);
             } else {
                 if (AppConstants.isInfoCommandSuccess_fs2) {
+                    tvFs2_beginFuel.setGravity(Gravity.CENTER);
+                    waitCounter2 = 0;
+                    strWait2 = "";
                     tvFs2_beginFuel.setText(R.string.BeforeStartFueling);
                 } else {
-                    tvFs2_beginFuel.setText(R.string.PleaseWait);
+                    tvFs2_beginFuel.setGravity(Gravity.START | Gravity.CENTER);
+                    if (waitCounter2 > 3) {
+                        waitCounter2 = 0;
+                        strWait2 = "";
+                        tvFs2_beginFuel.setText(R.string.PleaseWaitMessage);
+                    } else {
+                        waitCounter2++;
+                        strWait2 = strWait2 + ".";
+                        String msg = getResources().getString(R.string.PleaseWaitMessage) + strWait2;
+                        tvFs2_beginFuel.setText(msg);
+                    }
                 }
                 Fs2_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_2.setVisibility(View.GONE);
@@ -6166,26 +6248,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (AppConstants.IsTransactionFailed3) {
                 AppConstants.IsTransactionFailed3 = false;
-                if (BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.HotspotOffMessage));
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
-                    if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.HotspotOffMessage));
-                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
+                    String logType = "", logPrefix = "";
+                    if (BTConstants.CurrentTransactionIsBT) {
+                        logType = AppConstants.LOG_TXTN_BT;
+                        logPrefix = "BTLink 3: ";
                     } else {
-                        if (AppConstants.TxnFailedCount3 == 1) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
-                        } else {
-                            AppConstants.TxnFailedCount3 = 0;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.HoseUnavailableMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
-                        }
+                        logType = AppConstants.LOG_TXTN_HTTP;
+                        logPrefix = "BS_FS3: ";
+                    }
+
+                    if (AppConstants.TxnFailedCount3 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    } else {
+                        AppConstants.TxnFailedCount3 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                     }
                 }
             }
@@ -6228,9 +6313,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 linear_fs_3.setVisibility(View.VISIBLE);
             } else {
                 if (AppConstants.isInfoCommandSuccess_fs3) {
+                    tvFs3_beginFuel.setGravity(Gravity.CENTER);
+                    waitCounter3 = 0;
+                    strWait3 = "";
                     tvFs3_beginFuel.setText(R.string.BeforeStartFueling);
                 } else {
-                    tvFs3_beginFuel.setText(R.string.PleaseWait);
+                    tvFs3_beginFuel.setGravity(Gravity.START | Gravity.CENTER);
+                    if (waitCounter3 > 3) {
+                        waitCounter3 = 0;
+                        strWait3 = "";
+                        tvFs3_beginFuel.setText(R.string.PleaseWaitMessage);
+                    } else {
+                        waitCounter3++;
+                        strWait3 = strWait3 + ".";
+                        String msg = getResources().getString(R.string.PleaseWaitMessage) + strWait3;
+                        tvFs3_beginFuel.setText(msg);
+                    }
                 }
                 Fs3_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_3.setVisibility(View.GONE);
@@ -6297,26 +6395,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (AppConstants.IsTransactionFailed4) {
                 AppConstants.IsTransactionFailed4 = false;
-                if (BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.HotspotOffMessage));
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
-                    if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.HotspotOffMessage));
-                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
+                    String logType = "", logPrefix = "";
+                    if (BTConstants.CurrentTransactionIsBT) {
+                        logType = AppConstants.LOG_TXTN_BT;
+                        logPrefix = "BTLink 4: ";
                     } else {
-                        if (AppConstants.TxnFailedCount4 == 1) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
-                        } else {
-                            AppConstants.TxnFailedCount4 = 0;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.HoseUnavailableMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
-                        }
+                        logType = AppConstants.LOG_TXTN_HTTP;
+                        logPrefix = "BS_FS4: ";
+                    }
+
+                    if (AppConstants.TxnFailedCount4 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    } else {
+                        AppConstants.TxnFailedCount4 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                     }
                 }
             }
@@ -6359,9 +6460,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 linear_fs_4.setVisibility(View.VISIBLE);
             } else {
                 if (AppConstants.isInfoCommandSuccess_fs4) {
+                    tvFs4_beginFuel.setGravity(Gravity.CENTER);
+                    waitCounter4 = 0;
+                    strWait4 = "";
                     tvFs4_beginFuel.setText(R.string.BeforeStartFueling);
                 } else {
-                    tvFs4_beginFuel.setText(R.string.PleaseWait);
+                    tvFs4_beginFuel.setGravity(Gravity.START | Gravity.CENTER);
+                    if (waitCounter4 > 3) {
+                        waitCounter4 = 0;
+                        strWait4 = "";
+                        tvFs4_beginFuel.setText(R.string.PleaseWaitMessage);
+                    } else {
+                        waitCounter4++;
+                        strWait4 = strWait4 + ".";
+                        String msg = getResources().getString(R.string.PleaseWaitMessage) + strWait4;
+                        tvFs4_beginFuel.setText(msg);
+                    }
                 }
                 Fs4_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_4.setVisibility(View.GONE);
@@ -6429,26 +6543,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (AppConstants.IsTransactionFailed5) {
                 AppConstants.IsTransactionFailed5 = false;
-                if (BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.HotspotOffMessage));
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
-                    if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.HotspotOffMessage));
-                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
+                    String logType = "", logPrefix = "";
+                    if (BTConstants.CurrentTransactionIsBT) {
+                        logType = AppConstants.LOG_TXTN_BT;
+                        logPrefix = "BTLink 5: ";
                     } else {
-                        if (AppConstants.TxnFailedCount5 == 1) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
-                        } else {
-                            AppConstants.TxnFailedCount5 = 0;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.HoseUnavailableMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
-                        }
+                        logType = AppConstants.LOG_TXTN_HTTP;
+                        logPrefix = "BS_FS5: ";
+                    }
+
+                    if (AppConstants.TxnFailedCount5 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    } else {
+                        AppConstants.TxnFailedCount5 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                     }
                 }
             }
@@ -6491,9 +6608,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 linear_fs_5.setVisibility(View.VISIBLE);
             } else {
                 if (AppConstants.isInfoCommandSuccess_fs5) {
+                    tvFs5_beginFuel.setGravity(Gravity.CENTER);
+                    waitCounter5 = 0;
+                    strWait5 = "";
                     tvFs5_beginFuel.setText(R.string.BeforeStartFueling);
                 } else {
-                    tvFs5_beginFuel.setText(R.string.PleaseWait);
+                    tvFs5_beginFuel.setGravity(Gravity.START | Gravity.CENTER);
+                    if (waitCounter5 > 3) {
+                        waitCounter5 = 0;
+                        strWait5 = "";
+                        tvFs5_beginFuel.setText(R.string.PleaseWaitMessage);
+                    } else {
+                        waitCounter5++;
+                        strWait5 = strWait5 + ".";
+                        String msg = getResources().getString(R.string.PleaseWaitMessage) + strWait5;
+                        tvFs5_beginFuel.setText(msg);
+                    }
                 }
                 Fs5_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_5.setVisibility(View.GONE);
@@ -6560,26 +6690,29 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             if (AppConstants.IsTransactionFailed6) {
                 AppConstants.IsTransactionFailed6 = false;
-                if (BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.HotspotOffMessage));
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
-                    if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.HotspotOffMessage));
-                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
+                    String logType = "", logPrefix = "";
+                    if (BTConstants.CurrentTransactionIsBT) {
+                        logType = AppConstants.LOG_TXTN_BT;
+                        logPrefix = "BTLink 6: ";
                     } else {
-                        if (AppConstants.TxnFailedCount6 == 1) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.UnableToConnectToHoseMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
-                        } else {
-                            AppConstants.TxnFailedCount6 = 0;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.HoseUnavailableMessage));
-                            CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
-                        }
+                        logType = AppConstants.LOG_TXTN_HTTP;
+                        logPrefix = "BS_FS6: ";
+                    }
+
+                    if (AppConstants.TxnFailedCount6 == 1) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.HoseUnavailableMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseUnavailableMessage));
+                    } else {
+                        AppConstants.TxnFailedCount6 = 0;
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(logType + "-" + TAG + logPrefix + getResources().getString(R.string.UnableToConnectToHoseMessage));
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.UnableToConnectToHoseMessage));
                     }
                 }
             }
@@ -6622,9 +6755,22 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 linear_fs_6.setVisibility(View.VISIBLE);
             } else {
                 if (AppConstants.isInfoCommandSuccess_fs6) {
+                    tvFs6_beginFuel.setGravity(Gravity.CENTER);
+                    waitCounter6 = 0;
+                    strWait6 = "";
                     tvFs6_beginFuel.setText(R.string.BeforeStartFueling);
                 } else {
-                    tvFs6_beginFuel.setText(R.string.PleaseWait);
+                    tvFs6_beginFuel.setGravity(Gravity.START | Gravity.CENTER);
+                    if (waitCounter6 > 3) {
+                        waitCounter6 = 0;
+                        strWait6 = "";
+                        tvFs6_beginFuel.setText(R.string.PleaseWaitMessage);
+                    } else {
+                        waitCounter6++;
+                        strWait6 = strWait6 + ".";
+                        String msg = getResources().getString(R.string.PleaseWaitMessage) + strWait6;
+                        tvFs6_beginFuel.setText(msg);
+                    }
                 }
                 Fs6_beginFuel.setVisibility(View.VISIBLE);
                 linear_fs_6.setVisibility(View.GONE);
@@ -6791,21 +6937,24 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class ChangeBusyStatusOnGoButton extends AsyncTask<String, Void, String> {
 
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
         public String LinkCommType = "";
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(WelcomeActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(WelcomeActivity.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(WelcomeActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(String... params) {
@@ -6850,7 +6999,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         @Override
         protected void onPostExecute(String siteResponse) {
 
-            pd.dismiss();
+            if (alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
 
             try {
                 //Set FluidSecure Link Busy:
@@ -9665,23 +9816,23 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     public class GetSSIDUsingLocationOnResume extends AsyncTask<Void, Void, String> {
-
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pdOnResume = pd = new ProgressDialog(WelcomeActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(WelcomeActivity.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(WelcomeActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(Void... arg0) {
@@ -9723,7 +9874,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 //------------------------------
 
             } catch (Exception e) {
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "GetSSIDUsingLocationOnResume onPostExecute --Exception " + e);
@@ -9741,8 +9894,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
 
             try {
-
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
                 //tvLatLng.setText("Current Location :" + Constants.Latitude + "," + Constants.Longitude); // #2005
                 tvLatLng.setText(getResources().getString(R.string.HoseListIsNotAvailable));
 
@@ -11220,22 +11374,24 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class GetOfflineSSIDUsingLocation extends AsyncTask<Void, Void, String> {
 
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(WelcomeActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(WelcomeActivity.this, s, true);
+            alertDialog.show();
 
-
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(WelcomeActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(Void... arg0) {
@@ -11249,12 +11405,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             } catch (Exception e) {
                 hoseClicked = false;
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "GetOfflineSSIDUsingLocation --Exception: " + e.getMessage());
             }
-
 
             return resp;
         }
@@ -11265,7 +11422,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
             hoseClicked = false;
 
-            pd.dismiss();
+            if (alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
 
             linearHose.setClickable(true);//Enable hose Selection
 
@@ -11580,26 +11739,26 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     public class GetOfflineSSIDUsingLocationOnResume extends AsyncTask<Void, Void, String> {
 
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(WelcomeActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(WelcomeActivity.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(WelcomeActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(Void... arg0) {
-
 
             try {
                 serverSSIDList = offcontroller.getAllLinks();
@@ -11607,8 +11766,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     AppConstants.WriteinFile(TAG + "Offline Link data size (in OnResume): " + serverSSIDList.size());
 
             } catch (Exception e) {
-                pd.dismiss();
-
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
             }
 
             return "";
@@ -11618,8 +11778,8 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
         @Override
         protected void onPostExecute(String result) {
 
-            if (pd.isShowing()) {
-                pd.dismiss();
+            if (alertDialog.isShowing()) {
+                alertDialog.dismiss();
             }
 
             try {
@@ -12074,7 +12234,6 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 String code = edt_code.getText().toString().trim();
 
                 if (code != null && !code.isEmpty() && code.equals(AppConstants.AccessCode)) {
-                    //Toast.makeText(AcceptVehicleActivity_new.this, "Done", Toast.LENGTH_SHORT).show();
                     dialogBus.dismiss();
                     finish();
                 } else {
@@ -13920,7 +14079,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
-    public void ShowAnimatedStatus(String s) {
+    public void ShowAnimatedStatus(String s, TextView textView) {
         try {
 
             //Handler handler = new Handler(Looper.getMainLooper());
@@ -13934,13 +14093,13 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                         st = st + ".";
                         delayMillis = delayMillis + 100;
                     }
-                    tvSSIDName.setText(st);
+                    textView.setText(st);
                     BTConnectionHandler.postDelayed(this, delayMillis);
                 }
             }, delayMillis);
         } catch (Exception ex) {
             ex.printStackTrace();
-            tvSSIDName.setText(s);
+            textView.setText(s);
         }
     }
 
@@ -13950,7 +14109,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
             if (!s.equalsIgnoreCase(getResources().getString(R.string.LinkIsConnecting))) {
                 tvSSIDName.setText(s);
             } else {
-                ShowAnimatedStatus(s);
+                ShowAnimatedStatus(s, tvSSIDName);
             }
             //tvSSIDName.setText(s); // uncomment this if the above code is not in use.
             btnGo.setVisibility(View.GONE);
@@ -16441,6 +16600,9 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
 
                 long file_size = file.length();
                 long tempFileSize = file_size;
+
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " <File Size: " + file_size + ">");
 
                 InputStream inputStream = new FileInputStream(file);
 

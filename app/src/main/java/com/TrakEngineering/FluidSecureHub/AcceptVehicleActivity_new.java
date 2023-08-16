@@ -3,6 +3,7 @@ package com.TrakEngineering.FluidSecureHub;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -1118,22 +1119,25 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     public class ServerCallFirst extends AsyncTask<Void, Void, String> {
 
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
         String resp = "";
 
         @Override
         protected void onPreExecute() {
 
             try {
-                String s = getResources().getString(R.string.PleaseWait);
-                SpannableString ss2 = new SpannableString(s);
-                ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-                ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-                pd = new ProgressDialog(AcceptVehicleActivity_new.this);
-                pd.setMessage(ss2);
-                pd.setCancelable(true);
-                pd.show();
+                String s = getResources().getString(R.string.PleaseWaitMessage);
+                alertDialog = AlertDialogUtil.createAlertDialog(AcceptVehicleActivity_new.this, s, true);
+                alertDialog.show();
 
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        AlertDialogUtil.runAnimatedLoadingDots(AcceptVehicleActivity_new.this, s, alertDialog, true);
+                    }
+                };
+                thread.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1524,7 +1528,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 }
 
                 if (!VehicleValidationInProgress) {
-                    pd.dismiss();
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
 
             } catch (Exception e) {
@@ -2488,22 +2494,23 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     public class GetVehicleByFSTagMacAddress extends AsyncTask<Void, Void, String> {
 
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(AcceptVehicleActivity_new.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(AcceptVehicleActivity_new.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(AcceptVehicleActivity_new.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(Void... Void) {
@@ -2551,7 +2558,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 GetBackToWelcomeActivity();
 
             } catch (Exception e) {
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "GetVehicleByFSTagMacAddress doInBackground --Exception " + e);
@@ -2568,7 +2577,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         @Override
         protected void onPostExecute(String result) {
 
-            pd.dismiss();
+            if (alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
             System.out.println("GetVehicleByFSTagMacAddress...." + result);
             if (result != null && !result.isEmpty()) {
 
@@ -2737,22 +2748,23 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     public class TagReaderFun extends AsyncTask<Void, Void, String> {
 
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(AcceptVehicleActivity_new.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(AcceptVehicleActivity_new.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(AcceptVehicleActivity_new.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
         protected String doInBackground(Void... arg0) {
@@ -2781,7 +2793,9 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         @Override
         protected void onPostExecute(String result) {
 
-            pd.dismiss();
+            if (alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
             try {
 
                 //StopScanning

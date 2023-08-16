@@ -3,6 +3,7 @@ package com.TrakEngineering.FluidSecureHub;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -38,7 +39,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
@@ -177,7 +177,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     boolean pulsarConnected = false;
 
     ConnectivityManager connection_manager;
-    public ProgressDialog pdMain;
+    public AlertDialog alertDialogMain;
 
     public static boolean BRisWiFiConnected;
 
@@ -200,7 +200,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public String BTStatusStr = "", BTLinkIndex = "";
     public int connectionAttemptCount = 0;
-    ProgressDialog pdBT;
+    public AlertDialog adBT;
 
     TextView tvWifiList;
 
@@ -982,8 +982,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         }
                     }
                 }
-                if (pdMain != null) {
-                    pdMain.dismiss();
+                if (alertDialogMain != null) {
+                    if (alertDialogMain.isShowing()) {
+                        alertDialogMain.dismiss();
+                    }
                 }
                 break;
 
@@ -995,8 +997,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     UpdateDiffStatusMessages("7");
                 }
 
-                if (pdMain != null) {
-                    pdMain.dismiss();
+                if (alertDialogMain != null) {
+                    if (alertDialogMain.isShowing()) {
+                        alertDialogMain.dismiss();
+                    }
                 }
                 Istimeout_Sec = false;
                 onBackPressed();
@@ -1032,16 +1036,20 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void ShowLoader() {
 
-        String s = getResources().getString(R.string.PleaseWait);
-        SpannableString ss2 = new SpannableString(s);
-        ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-        ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-        pdMain = new ProgressDialog(DisplayMeterActivity.this);
-        pdMain.setMessage(ss2);
-        pdMain.setCancelable(false);
-        pdMain.dismiss();
-        pdMain.show();
+        String s = getResources().getString(R.string.PleaseWaitMessage);
+        alertDialogMain = AlertDialogUtil.createAlertDialog(DisplayMeterActivity.this, s, true);
+        if (alertDialogMain.isShowing()) {
+            alertDialogMain.dismiss();
+        }
+        alertDialogMain.show();
 
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                AlertDialogUtil.runAnimatedLoadingDots(DisplayMeterActivity.this, s, alertDialogMain, true);
+            }
+        };
+        thread.start();
     }
 
     @SuppressLint("ResourceAsColor")
@@ -3419,20 +3427,23 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         public String resp = "";
 
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(DisplayMeterActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(DisplayMeterActivity.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(DisplayMeterActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
 
@@ -3473,7 +3484,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             try {
 
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
 
                 System.out.println("LastTXNid;;;" + LastTXNid);
                 System.out.println("OfflineLastTransactionID_DisplayMeterAct" + LastTXNid);
@@ -3500,21 +3513,23 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         public String LastTXNid = "";
 
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
 
         @Override
         protected void onPreExecute() {
 
-            String s = getResources().getString(R.string.PleaseWait);
-            SpannableString ss2 = new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(DisplayMeterActivity.this);
-            pd.setMessage(ss2);
-            pd.setCancelable(false);
-            pd.show();
+            String s = getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(DisplayMeterActivity.this, s, true);
+            alertDialog.show();
 
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(DisplayMeterActivity.this, s, alertDialog, true);
+                }
+            };
+            thread.start();
         }
 
 
@@ -3555,7 +3570,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
 
             try {
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
 
                 System.out.println(respp);
 
@@ -3953,11 +3970,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (pdBT != null && pdBT.isShowing()) {
-            pdBT.dismiss();
+        if (adBT != null && adBT.isShowing()) {
+            adBT.dismiss();
         }
-        if (pdMain != null && pdMain.isShowing()) {
-            pdMain.dismiss();
+        if (alertDialogMain != null) {
+            if (alertDialogMain.isShowing()) {
+                alertDialogMain.dismiss();
+            }
         }
         if (receiver != null) {
             this.unregisterReceiver(receiver);
@@ -4657,27 +4676,29 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public class CheckAndRetryBTConnection extends AsyncTask<String, Void, String> {
 
-        //ProgressDialog pdBT;
         boolean isReconnectionTried = false;
 
         @Override
         protected void onPreExecute() {
-            if (pdBT != null && pdBT.isShowing()) {
-                pdBT.dismiss();
+            if (adBT != null && adBT.isShowing()) {
+                adBT.dismiss();
             }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    String s = getResources().getString(R.string.PleaseWait);
-                    SpannableString ss2 = new SpannableString(s);
-                    ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-                    ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-                    pdBT = new ProgressDialog(DisplayMeterActivity.this);
-                    pdBT.setMessage(ss2);
-                    pdBT.setCancelable(false);
-                    if (!pdBT.isShowing()) {
-                        pdBT.show();
+                    String s = getResources().getString(R.string.PleaseWaitMessage);
+                    adBT = AlertDialogUtil.createAlertDialog(DisplayMeterActivity.this, s, true);
+                    if (!adBT.isShowing()) {
+                        adBT.show();
                     }
+
+                    Thread thread = new Thread() {
+                        @Override
+                        public void run() {
+                            AlertDialogUtil.runAnimatedLoadingDots(DisplayMeterActivity.this, s, adBT, true);
+                        }
+                    };
+                    thread.start();
                 }
             });
         }
@@ -4855,8 +4876,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         if (connectionAttemptCount > 1) {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link not connected. Terminating the transaction.");
-                            if (pdBT != null && pdBT.isShowing()) {
-                                pdBT.dismiss();
+                            if (adBT != null && adBT.isShowing()) {
+                                adBT.dismiss();
                             }
                             TerminateTransaction("BT"); // Terminating the transaction.
                         } else {

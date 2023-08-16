@@ -1,6 +1,7 @@
 package com.TrakEngineering.FluidSecureHub;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -89,8 +90,8 @@ public class AcceptServiceCall {
 
     public class ServerCall extends AsyncTask<Void, Void, String> {
 
-
-        ProgressDialog pd;
+        //ProgressDialog pd;
+        AlertDialog alertDialog;
         String resp = "";
         String pinNumber = "";
         String vehicleNumber = "";
@@ -104,14 +105,17 @@ public class AcceptServiceCall {
         @Override
         protected void onPreExecute() {
 
-            String s = activity.getResources().getString(R.string.PleaseWait);
-            SpannableString ss2=  new SpannableString(s);
-            ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
-            ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
-            pd = new ProgressDialog(activity);
-            pd.setMessage(ss2);
-            pd.setCancelable(true);
-            pd.show();
+            String s = activity.getResources().getString(R.string.PleaseWaitMessage);
+            alertDialog = AlertDialogUtil.createAlertDialog(activity, s, true);
+            alertDialog.show();
+
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    AlertDialogUtil.runAnimatedLoadingDots(activity, s, alertDialog, true);
+                }
+            };
+            thread.start();
 
         }
 
@@ -870,7 +874,9 @@ public class AcceptServiceCall {
 
                 }
 
-                pd.dismiss();
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
 
             }catch (Exception e){
                 AppConstants.serverCallInProgress =  false;
