@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 public class TestTransactionPinActivity extends AppCompatActivity {
 
     private NetworkReceiver receiver = new NetworkReceiver();
-    String ScreenNameForPersonnel = "PERSONNEL", KeyboardType = "2"; //ScreenNameForVehicle = "VEHICLE"
+    String KeyboardType = "2"; //ScreenNameForPersonnel = "PERSONNEL", ScreenNameForVehicle = "VEHICLE"
 
     private static final String TAG = "TestTransaction_Pin ";
     RelativeLayout footer_keyboard;
@@ -87,11 +87,11 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
         SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
         KeyboardType = myPrefkb.getString("KeyboardTypePerson", "2");
-        ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Personnel");
+        //ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Personnel");
         //ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
 
-        if (ScreenNameForPersonnel.trim().isEmpty())
-            ScreenNameForPersonnel = "Personnel";
+        //if (ScreenNameForPersonnel.trim().isEmpty())
+        //    ScreenNameForPersonnel = "Personnel";
 
         tv_return = (TextView) findViewById(R.id.tv_return);
         tv_swipekeyboard = (TextView) findViewById(R.id.tv_swipekeybord);
@@ -101,8 +101,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
         btnSave = (Button) findViewById(R.id.btnSave);
         btnCancel = (Button) findViewById(R.id.btnCancel);
 
-        //tv_title.setText(getResources().getString(R.string.TestTxnPINScreenHeading).replace("PERSONNEL", ScreenNameForPersonnel.toUpperCase()));
-        tv_warning.setText(getResources().getString(R.string.TestTxnPINScreenWarning).replace("personnel", ScreenNameForPersonnel.toUpperCase()));
+        tv_warning.setText(getResources().getString(R.string.TestTxnPINScreenWarning));
         etPersonnelPin.setText("");
 
         getSupportActionBar().setTitle(R.string.fs_name);
@@ -147,8 +146,8 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                         new CallSaveButtonFunctionality().execute();
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
-                        CommonUtils.showCustomMessageDilaog(TestTransactionPinActivity.this, "Error Message", getResources().getString(R.string.pePersonnel).replace("Personnel", ScreenNameForPersonnel));
+                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.TestTxnPINRequired));
+                        CommonUtils.showCustomMessageDilaog(TestTransactionPinActivity.this, "Error Message", getResources().getString(R.string.TestTxnPINRequired));
                     }
                 } else {
                     if (AppConstants.GenerateLogs)

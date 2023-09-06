@@ -515,7 +515,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         menu.findItem(R.id.mreboot_reader).setVisible(true);
         //menu.findItem(R.id.mconfigure_tld).setVisible(false);
         menu.findItem(R.id.madd_link).setVisible(false);
-        menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
+        //menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);

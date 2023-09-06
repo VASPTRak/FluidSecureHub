@@ -49,11 +49,11 @@
         android:title="@string/OnlineMenu"
         app:showAsAction="always"/>
 
-    <item
+    <!--<item
         android:id="@+id/mupgrade_normal_link"
         android:orderInCategory="100"
         android:title="upgrade firmware"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
     <item
         android:id="@+id/mreconnect_ble_readers"
         android:orderInCategory="100"

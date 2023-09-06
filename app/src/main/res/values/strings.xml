@@ -485,5 +485,6 @@
 
     <!-- PIN Screen (Test Transaction) -->
     <string name="TestTxnPINScreenHeading">Support Rep PIN</string>
-    <string name="TestTxnPINScreenWarning">***This screen is for Support personnel use only***</string>
+    <string name="TestTxnPINScreenWarning">***This screen is for Support Personnel use only***</string>
+    <string name="TestTxnPINRequired">Please enter PIN.</string>
 </resources>
