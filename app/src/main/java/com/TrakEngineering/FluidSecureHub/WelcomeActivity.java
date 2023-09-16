@@ -11484,7 +11484,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Offline SSIDData is Empty. Error: " + getResources().getString(R.string.HoseListIsNotAvailable));
-                    AppConstants.AlertDialogBoxCanecl(WelcomeActivity.this, R.string.HoseListIsNotAvailable);
+                    CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HoseListIsNotAvailable));
                 }
 
                 AppConstants.DetailsServerSSIDList = serverSSIDList;
@@ -11667,7 +11667,7 @@ public class WelcomeActivity extends AppCompatActivity implements GoogleApiClien
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "SSIDData is Empty. Error: " + getResources().getString(R.string.conn_error));
-                        AppConstants.AlertDialogBoxCanecl(WelcomeActivity.this, R.string.conn_error);
+                        CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.conn_error));
                     }
 
                     AppConstants.temp_serverSSIDList = serverSSIDList;

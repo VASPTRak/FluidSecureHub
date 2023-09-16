@@ -19,13 +19,13 @@ public class ConnectionDetector {
 	//----------------------------------------------------------------------------------------------------
 	public boolean isConnectingToInternet(){
 
-		if (OfflineConstants.isTotalOfflineEnabled(_context)){
-			return false;
-		} else if (isConnecting() && !OfflineConstants.isOfflineAccess(_context)){
-			return true;
-		}else if (isConnecting() && IsTypeStable() && Constants.IsSignalSrtengthOk){ //&& !IsFlightModeOn()
-			return true;
-		}
+        /*if (OfflineConstants.isTotalOfflineEnabled(_context)) {
+            return false;
+        } else if (isConnecting() && !OfflineConstants.isOfflineAccess(_context)) {
+            return true;
+        } else if (isConnecting() && IsTypeStable() && Constants.IsSignalSrtengthOk) { //&& !IsFlightModeOn()
+            return true;
+        }*/ // Changes in app to work in offline mode
 		//Constants.CurrentNetworkType = "Offline";
 		return false;
 	}
@@ -114,16 +114,14 @@ public class ConnectionDetector {
     /**
      * Checking for all possible internet providers
      * **/
-    public boolean isConnecting(){
-        boolean isConnected=false;
+    public boolean isConnecting() {
+        boolean isConnected = false;
 
-        ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null)
-        {
-
+        /*ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
             NetworkInfo activeNetwork = connectivity.getActiveNetworkInfo();
-            isConnected = activeNetwork != null &&	activeNetwork.isConnectedOrConnecting();
-        }
+            isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }*/ // Changes in app to work in offline mode
         return isConnected;
     }
 

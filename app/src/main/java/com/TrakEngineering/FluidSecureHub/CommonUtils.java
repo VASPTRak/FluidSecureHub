@@ -2200,9 +2200,11 @@ public class CommonUtils {
     public static String getHUBNumberByName(String hubName) {
         String HUBNumber = "";
         try {
-            String number = hubName.substring(hubName.length() - 8);    // "HUB12345678" to "12345678"
-            String strPattern = "^0+(?!$)";                             // Pattern to remove all leading zeros.
-            HUBNumber = number.replaceAll(strPattern, "");   // "HUB00000123" to "123"
+            if (!hubName.trim().equals("")) {
+                String number = hubName.substring(hubName.length() - 8);    // "HUB12345678" to "12345678"
+                String strPattern = "^0+(?!$)";                             // Pattern to remove all leading zeros.
+                HUBNumber = number.replaceAll(strPattern, "");   // "HUB00000123" to "123"
+            }
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)

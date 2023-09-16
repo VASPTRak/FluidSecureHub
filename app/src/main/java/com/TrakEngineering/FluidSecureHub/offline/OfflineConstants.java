@@ -453,12 +453,11 @@ public class OfflineConstants {
         SharedPreferences sharedPref = ctx.getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
         String isOffline = sharedPref.getString("isOffline", "");
 
-
-        if (isOffline.trim().equalsIgnoreCase("True"))
+        /*if (isOffline.trim().equalsIgnoreCase("True"))
             return true;
         else
-            return false;
-
+            return false;*/ // Changes in app to work in offline mode
+        return true;
     }
 
     public static boolean isTotalOfflineEnabled(Context ctx) {
