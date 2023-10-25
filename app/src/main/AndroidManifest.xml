@@ -151,6 +151,60 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service
+            android:name=".BTBLE.BS_BLE_BTOne"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTBLE.BTBLE_LinkOne.BLEServiceCodeOne"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".BTBLE.BS_BLE_BTTwo"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTBLE.BTBLE_LinkTwo.BLEServiceCodeTwo"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".BTBLE.BS_BLE_BTThree"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTBLE.BTBLE_LinkThree.BLEServiceCodeThree"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".BTBLE.BS_BLE_BTFour"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTBLE.BTBLE_LinkFour.BLEServiceCodeFour"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".BTBLE.BS_BLE_BTFive"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTBLE.BTBLE_LinkFive.BLEServiceCodeFive"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".BTBLE.BS_BLE_BTSix"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BTBLE.BTBLE_LinkSix.BLEServiceCodeSix"
+            android:enabled="true"
+            android:exported="true" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -252,6 +306,9 @@
             android:enabled="true" />
         <service
             android:name=".BackgroundServiceKeepDataTransferAlive"
+            android:enabled="true" />
+        <service
+            android:name=".BackgroundServiceKeepAliveBT"
             android:enabled="true" />
         <service
             android:name=".wifihotspot.HotSpotIntentService"

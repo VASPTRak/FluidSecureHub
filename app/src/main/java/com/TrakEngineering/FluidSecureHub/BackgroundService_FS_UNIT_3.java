@@ -34,8 +34,8 @@ import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.example.fs_ipneigh30.FS_ArpNDK;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.common.api.GoogleApiClient;
+//import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
@@ -140,8 +140,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
     boolean pulsarConnected = false;
     double minFuelLimit = 0, numPulseRatio = 0;
     String consoleString = "", outputQuantity = "0";
-    double CurrentLat = 0, CurrentLng = 0;
-    GoogleApiClient mGoogleApiClient;
+    //double CurrentLat = 0, CurrentLng = 0;
+    //GoogleApiClient mGoogleApiClient;
     long stopAutoFuelSeconds = 0;
     boolean isTransactionComp = false;
     boolean ongoingStatusSend = true;
@@ -483,7 +483,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         });
     }
 
-    public void GetLatLng() {
+    /*public void GetLatLng() {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
 
@@ -494,7 +494,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             System.out.println("CCCrrr" + CurrentLng);
 
         }
-    }
+    }*/
 
     public void stopFirstTimer(boolean flag) {
         if (flag) {

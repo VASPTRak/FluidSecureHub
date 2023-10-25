@@ -1322,6 +1322,19 @@ public class CommonUtils {
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
         userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
 
+        return userInfoEntity;
+    }
+
+    public static UserInfoEntity getCustomerDetails_KeepAliveBT(BackgroundServiceKeepAliveBT activity) {
+
+        UserInfoEntity userInfoEntity = new UserInfoEntity();
+
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
+        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
+        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
 
         return userInfoEntity;
     }

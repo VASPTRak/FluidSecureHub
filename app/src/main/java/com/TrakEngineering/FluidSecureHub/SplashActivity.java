@@ -47,12 +47,12 @@ import androidx.core.content.ContextCompat;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.GPSTracker;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+//import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
@@ -78,7 +78,7 @@ import java.io.OutputStream;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class SplashActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class SplashActivity extends AppCompatActivity { // implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 
     private static final String TAG = "SplashAct ";
     private static final int REQUEST_LOCATION = 2;
@@ -93,7 +93,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
     private static final int CODE_MANAGE_ALL_FILES_PERMISSION = 6;
     private static final int CODE_BLUETOOTH_CONNECT = 7;
 
-    GoogleApiClient mGoogleApiClient;
+    //GoogleApiClient mGoogleApiClient;
 
     private static final int ADMIN_INTENT = 1;
     private DevicePolicyManager mDevicePolicyManager;
@@ -121,13 +121,13 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         getSupportActionBar().setTitle("HUB Application");
 
         CommonUtils.LogMessage(TAG, "SplashActivity", null);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        /*mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        mGoogleApiClient.connect();
+        mGoogleApiClient.connect();*/
 
         wifiApManager = new com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager(this);
         boolean permission;
@@ -216,33 +216,28 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                 startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
             }
 
+            //LocationManager locationManager = (LocationManager) SplashActivity.this.getSystemService(Context.LOCATION_SERVICE);
+            //boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            /*LocationManager locationManager = (LocationManager) SplashActivity.this.getSystemService(Context.LOCATION_SERVICE);
-            boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-
-            if (!statusOfGPS) {
-
+            /*if (!statusOfGPS) {
                 turnGPSOn();
+            } else {
+            }*/
+            try {
+                checkPermissionTask checkPermissionTask = new checkPermissionTask();
+                checkPermissionTask.execute();
+                checkPermissionTask.get();
 
-            } else {}*/
+                if (checkPermissionTask.isValue) {
 
-                try {
-                    checkPermissionTask checkPermissionTask = new checkPermissionTask();
-                    checkPermissionTask.execute();
-                    checkPermissionTask.get();
+                    Log.i(TAG, "SplashActivity executeTask OnCreate");
+                    AppConstants.WriteinFile(TAG + "SplashActivity executeTask OnCreate");
 
-                    if (checkPermissionTask.isValue) {
-
-                        Log.i(TAG, "SplashActivity executeTask OnCreate");
-                        AppConstants.WriteinFile(TAG + "SplashActivity executeTask OnCreate");
-
-                        executeTask();
-                    }
-                } catch (Exception ex) {
-                    Log.e(TAG, ex.getMessage());
+                    executeTask();
                 }
-
+            } catch (Exception ex) {
+                Log.e(TAG, ex.getMessage());
+            }
         }
     }
 
@@ -272,7 +267,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-    public void turnGPSOn() {
+    /*public void turnGPSOn() {
 
         try {
             AppConstants.WriteinFile(TAG + "SplashActivity In turnGPSOn");
@@ -333,7 +328,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     protected void onResume() {
@@ -442,47 +437,48 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-    @Override
+    /*@Override
     public void onConnected(Bundle bundle) {
 
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            System.out.println("rrr" + String.valueOf(mLastLocation.getLatitude()));
-            System.out.println("rrr" + String.valueOf(mLastLocation.getLongitude()));
+        try {
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                System.out.println("rrr" + String.valueOf(mLastLocation.getLatitude()));
+                System.out.println("rrr" + String.valueOf(mLastLocation.getLongitude()));
 
 
-            LocationManager locationManager = (LocationManager) SplashActivity.this.getSystemService(Context.LOCATION_SERVICE);
-            boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                LocationManager locationManager = (LocationManager) SplashActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
 
-            if (!statusOfGPS) {
-                latitude = 0;
-                longitude = 0;
-            } else {
-                latitude = mLastLocation.getLatitude();
-                Constants.Latitude = mLastLocation.getLatitude();
-                longitude = mLastLocation.getLongitude();
-                Constants.Longitude = mLastLocation.getLongitude();
-            }
+                if (!statusOfGPS) {
+                    latitude = 0;
+                    longitude = 0;
+                } else {
+                    latitude = mLastLocation.getLatitude();
+                    Constants.Latitude = mLastLocation.getLatitude();
+                    longitude = mLastLocation.getLongitude();
+                    Constants.Longitude = mLastLocation.getLongitude();
+                }
 
-           /*
+           *//*
             if (latitude == 0 && longitude == 0) {
                 AppConstants.AlertDialogFinish(WelcomeActivity.this, "Unable to get current location.\nPlease try again later!");
             }
-            */
-
+            *//*
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onConnectionSuspended(int i) {
+    }*/
 
-    }
-
-    @Override
+    /*@Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
+    }*/
 
     public class checkPermissionTask extends AsyncTask<Void, Void, Void> {
         boolean isValue = false;

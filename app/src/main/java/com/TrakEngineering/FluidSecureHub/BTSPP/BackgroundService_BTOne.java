@@ -259,7 +259,7 @@ public class BackgroundService_BTOne extends Service {
                     if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 1: Connected to " + ssid + " via WiFi.");
-                        proceedToInfoCommand(false);
+                        proceedToInfoCommand();
                         //loading.cancel();
                         cancel();
                     }
@@ -276,7 +276,7 @@ public class BackgroundService_BTOne extends Service {
                     if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 1: Connected to " + ssid + " via WiFi.");
-                        proceedToInfoCommand(false);
+                        proceedToInfoCommand();
                         //loading.cancel();
                         cancel();
                     } else {
@@ -286,7 +286,6 @@ public class BackgroundService_BTOne extends Service {
                     }
                 }
             }.start();
-            //proceedToInfoCommand(false);
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 1: Exception in BeginProcessUsingUDP: " + e.getMessage());
@@ -312,18 +311,14 @@ public class BackgroundService_BTOne extends Service {
         }
     }
 
-    public void proceedToInfoCommand(boolean proceedAfterUpgrade) {
+    public void proceedToInfoCommand() {
         try {
-            if (proceedAfterUpgrade) {
-                checkBTLinkStatus("info");
-            } else {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        infoCommand();
-                    }
-                }, 1000);
-            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    infoCommand();
+                }
+            }, 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -433,11 +428,11 @@ public class BackgroundService_BTOne extends Service {
                             Log.i(TAG, "BTLink 1: InfoCommand Response success 1:>>" + Response);
 
                             if (!TransactionId.isEmpty()) {
-                                if (Response.contains("records") && Response.contains("mac_address")) {
+                                if (Response.contains("mac_address")) {
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response. Response: true");
                                     BTConstants.isNewVersionLinkOne = true;
-                                    parseInfoCommandResponseForLast20txtn(Response); // parse last 20 Txtn
+                                    parseInfoCommandResponse(Response); // parse info command response
                                     Response = "";
                                 } else {
                                     if (AppConstants.GenerateLogs)
@@ -459,6 +454,7 @@ public class BackgroundService_BTOne extends Service {
                                 Log.i(TAG, "BTLink 1: TransactionId is empty.");
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 1: TransactionId is empty.");
+                                CloseTransaction(false);
                             }
                             cancel();
                         } else {
@@ -476,11 +472,11 @@ public class BackgroundService_BTOne extends Service {
                         Log.i(TAG, "BTLink 1: InfoCommand Response success 2:>>" + Response);
 
                         if (!TransactionId.isEmpty()) {
-                            if (Response.contains("records") && Response.contains("mac_address")) {
+                            if (Response.contains("mac_address")) {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + " BTLink 1: Checking Info command response. Response: true");
                                 BTConstants.isNewVersionLinkOne = true;
-                                parseInfoCommandResponseForLast20txtn(Response); // parse last 20 Txtn
+                                parseInfoCommandResponse(Response); // parse info command response
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
@@ -1350,6 +1346,13 @@ public class BackgroundService_BTOne extends Service {
                         upgradeResponse = Response;
                     }
 
+                    if (Request.contains(BTConstants.info_cmd)) {
+                        if (Response.contains("records")) {
+                            JSONObject jsonObject = new JSONObject(Response);
+                            jsonObject.remove("records"); // As per #2357
+                            Response = jsonObject.toString();
+                        }
+                    }
                     //Used only for debug
                     Log.i(TAG, "BTLink 1: Link Request>>" + Request);
                     Log.i(TAG, "BTLink 1: Link Response>>" + Response);
@@ -1357,9 +1360,9 @@ public class BackgroundService_BTOne extends Service {
                         AppConstants.WriteinFile(TAG + " BTLink 1: Response from Link >>" + Response);
 
                     //Set Relay status.
-                    if (Response.contains("OFF")) {
+                    if (Request.contains(BTConstants.relay_off_cmd) && Response.contains("OFF")) {
                         RelayStatus = false;
-                    } else if (Response.contains("ON")) {
+                    } else if (Request.contains(BTConstants.relay_on_cmd) && Response.contains("ON")) {
                         RelayStatus = true;
                         AppConstants.isRelayON_fs1 = true;
                         if (!redpulseloop_on) {
@@ -1638,12 +1641,7 @@ public class BackgroundService_BTOne extends Service {
 
             if (!Response.contains(checkPulses)) {
                 stopCount++;
-                /*if (!Response.contains("ON") && !Response.contains("OFF")) {
-                    Log.i(TAG, " BTLink 1: No response from link>>" + stopCount);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 1: No response from link. Response >> " + Response.trim());
-                }*/
-                //int pumpOnpoint = Integer.parseInt(PumpOnTime);
+
                 long autoStopSeconds = 0;
                 if (pre_pulse == 0) {
                     autoStopSeconds = Long.parseLong(PumpOnTime);
@@ -1685,13 +1683,9 @@ public class BackgroundService_BTOne extends Service {
         }
     }
 
-    private void parseInfoCommandResponseForLast20txtn(String response) {
-
+    private void parseInfoCommandResponse(String response) {
         try {
-
-            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-
-            JSONObject jsonObject = new JSONObject(response);
+            /*ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
 
             JSONArray jsonArray = jsonObject.getJSONArray("records");
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -1719,8 +1713,6 @@ public class BackgroundService_BTOne extends Service {
                 Hmap.put("VehicleId", vehicle); //VehicleId
                 Hmap.put("dflag", dflag);
 
-                ReturnQty(pulse);
-
                 arrayList.add(Hmap);
             }
 
@@ -1729,15 +1721,13 @@ public class BackgroundService_BTOne extends Service {
             ety.cmtxtnid_20_record = arrayList;
 
             String json20txn = gs.toJson(ety);
-            /*if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 1: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);*/
-            //Log.i(TAG, "BTLink 1: parseInfoCommandResponseForLast20txtn json20txn>>" + json20txn);
 
             SharedPreferences sharedPref = BackgroundService_BTOne.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("LINK1", json20txn);
-            editor.apply();
+            editor.apply();*/
 
+            JSONObject jsonObject = new JSONObject(response);
             JSONObject versionJsonObj = jsonObject.getJSONObject("version");
             String version = versionJsonObj.getString("version");
             if (AppConstants.GenerateLogs)
@@ -1748,7 +1738,7 @@ public class BackgroundService_BTOne extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 1: Exception in parseInfoCommandResponseForLast20txtn. response>> " + response + "; Exception>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink 1: Exception in parseInfoCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 

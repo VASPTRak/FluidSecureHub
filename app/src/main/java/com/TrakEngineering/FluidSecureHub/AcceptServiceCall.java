@@ -401,6 +401,7 @@ public class AcceptServiceCall {
                                     try {
                                         String IpAddress = "";
                                         String LinkCommunicationType = WelcomeActivity.serverSSIDList.get(0).get("LinkCommunicationType");
+                                        String BTLinkCommType = WelcomeActivity.serverSSIDList.get(0).get("BTLinkCommType");
 
                                         if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
                                             try {
@@ -465,7 +466,7 @@ public class AcceptServiceCall {
                                                 e.printStackTrace();
                                             }
 
-                                        } else if (LinkCommunicationType.equalsIgnoreCase("BT")) {
+                                        } else if (LinkCommunicationType.equalsIgnoreCase("BT") && (BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP"))) {
                                             new Handler().postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {

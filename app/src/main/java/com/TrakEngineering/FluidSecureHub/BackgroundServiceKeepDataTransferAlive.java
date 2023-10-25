@@ -82,7 +82,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             super.onStart(intent, startId);
             //Log.e(TAG, "~~~~~start~~~~~");
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "~~~~~start~~~~~");
-            if (WelcomeActivity.OnWelcomeActivity && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+            if (WelcomeActivity.OnWelcomeActivity && AppConstants.IsAllHosesAreFree()) {
 
                 ListConnectedHotspotIP_KDTA();
                 StartUpgradeProcess();
@@ -95,7 +95,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         } catch (NullPointerException e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  onStartCommand Execption " + e);
+                AppConstants.WriteinFile(TAG + " onStartCommand Exception: " + e.getMessage());
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
@@ -116,7 +116,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 //Log.i(TAG, "Hotspot connected devices: " + String.valueOf(AppConstants.DetailsListOfConnectedDevices.size()));
                 for (int i = 0; i < SSIDList.size(); i++) {
 
-                    boolean IsHoseBusy = AppConstants.IsHoseBusyCheckLocally();
+                    boolean IsAllHosesAreFree = AppConstants.IsAllHosesAreFree();
                     String ReconfigureLink = SSIDList.get(i).get("ReconfigureLink");
                     String selSSID = SSIDList.get(i).get("WifiSSId");
                     String IsBusy = SSIDList.get(i).get("IsBusy");
@@ -155,7 +155,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                         //Check for connected link,If connceted execute info command
                         //also include upgrate link firmware code
-                        if (IsHoseBusy && selMacAddress.equalsIgnoreCase(Mac_Addr)) {
+                        if (IsAllHosesAreFree && selMacAddress.equalsIgnoreCase(Mac_Addr)) {
 
                             IsConnectedToHotspot = true;
                             if (i == 0) {
@@ -293,7 +293,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     }
 
                     //CheckFor #728  Inability to Connect to Links
-                    if (IsHoseBusy) {
+                    if (IsAllHosesAreFree) {
                         CheckInabilityToConnectLinks(i, selSSID, IsConnectedToHotspot, IsinfoCmdSuccess);
                     }
 
@@ -304,7 +304,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 Log.i(TAG, "SSID List Empty");
                 if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " SSID List Empty");
             }
-            if (AppConstants.IsHoseBusyCheckLocally()) {
+            if (AppConstants.IsAllHosesAreFree()) {
                 int s = DefectiveLinks.size();
                 System.out.println("S" + s);
 
@@ -337,22 +337,22 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  StartUpgradeProcess Exception: " + e);
+                AppConstants.WriteinFile(TAG + " StartUpgradeProcess Exception: " + e.getMessage());
         }
 
 
         //Check If hotspot Toggle required
-        boolean IsHoseBusy = AppConstants.IsHoseBusyCheckLocally();
+        boolean IsAllHosesAreFree = AppConstants.IsAllHosesAreFree();
         String CurrDate = CommonUtils.getTodaysDateTemp();
         int diff = getDate(CurrDate);
 
-        if (IsHoseBusy && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_DA) {
+        if (IsAllHosesAreFree && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_DA) {
             //Toggle required by Display meater activity
             //Log.i(TAG,"Toggle ~~ Display MeterActivity");
             if (AppConstants.DisableAllRebootOptions.equalsIgnoreCase("N") && !AppConstants.IsBTLinkSelectedCurrently) {
                 ToggleHotspot();
             }
-        } else if (IsHoseBusy && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_KDTA && diff > 60) {
+        } else if (IsAllHosesAreFree && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_KDTA && diff > 60) {
             //Toggle required by KeepDataAlive background service activity
             //Log.i(TAG,"Toggle ~~ KeepDataAlive BS");
             if (AppConstants.DisableAllRebootOptions.equalsIgnoreCase("N") && !AppConstants.IsBTLinkSelectedCurrently) {
@@ -1284,7 +1284,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         SharedPreferences sharedPrefODO = myctx.getSharedPreferences("DefectiveLinkDateTime", Context.MODE_PRIVATE);
         String last_date = sharedPrefODO.getString(linkposition, "");
 
-          return last_date;
+        return last_date;
     }
 
     public void SendDefectiveLinkInfoEmailAsyncCall(String linkName) {

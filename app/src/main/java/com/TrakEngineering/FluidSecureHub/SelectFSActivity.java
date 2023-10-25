@@ -32,8 +32,8 @@ import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.common.api.GoogleApiClient;
+//import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit;
     }
 }*/
 
-public class SelectFSActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class SelectFSActivity extends AppCompatActivity { // implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 
     private String TAG = " WelcomeActivity ";
     private float density;
@@ -78,7 +78,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
     public static int SelectedItemPos;
 
 
-    GoogleApiClient mGoogleApiClient;
+    //GoogleApiClient mGoogleApiClient;
 
     ConnectivityManager connection_manager;
 
@@ -108,13 +108,13 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
         tvVersionNum.setText("Version " + CommonUtils.getVersionCode(SelectFSActivity.this));
 
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        /*mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        mGoogleApiClient.connect();
+        mGoogleApiClient.connect();*/
 
         //AppConstants.disconnectWiFi(SelectFSActivity.this);
 
@@ -196,7 +196,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
         }
     }
 
-    @Override
+    /*@Override
     public void onConnected(Bundle bundle) {
 
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -209,7 +209,7 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
             boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
 
-            /*
+            *//*
             if (!statusOfGPS) {
                 latitude = 0;
                 longitude = 0;
@@ -217,26 +217,26 @@ public class SelectFSActivity extends AppCompatActivity implements GoogleApiClie
                 latitude = mLastLocation.getLatitude();
                 longitude = mLastLocation.getLongitude();
             }
-            */
+            *//*
 
-           /*
+           *//*
             if (latitude == 0 && longitude == 0) {
                 AppConstants.AlertDialogFinish(WelcomeActivity.this, "Unable to get current location.\nPlease try again later!");
             }
-            */
+            *//*
 
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onConnectionSuspended(int i) {
 
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
-    }
+    }*/
 
     @Override
     protected void onResume() {

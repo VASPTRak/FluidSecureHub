@@ -71,7 +71,13 @@ public class QueueBasics {
 
              // Create a message and add it to the queue.
              CloudQueueMessage message = new CloudQueueMessage(jsonString);
-             queue.addMessage(message);
+             try {
+                 queue.addMessage(message);
+             } catch (Exception ex) {
+                 ex.printStackTrace();
+                 if (AppConstants.GenerateLogs)
+                     AppConstants.WriteinFile(TAG + "addMessageOnQueue-inner Exception: " + ex.getMessage());
+             }
          }
          catch (Exception e)
          {

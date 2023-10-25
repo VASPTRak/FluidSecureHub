@@ -628,6 +628,7 @@ public class OffBackgroundService extends Service {
                             String LinkCommunicationType = jsonObj.getString("HubLinkCommunication");//LinkCommunicationType
                             String APMacAddress = jsonObj.getString("APMacAddress");
                             String BluetoothMacAddress = jsonObj.getString("BluetoothMacAddress");
+                            String BTLinkCommType = jsonObj.getString("BTLinkCommType");
 
                             JSONArray FuelingTimesObj = jsonObj.getJSONArray("FuelingTimesObj");
 
@@ -648,7 +649,9 @@ public class OffBackgroundService extends Service {
                                 }
                             }
 
-                            InsetLD = controller.insertLinkDetails(SiteId, WifiSSId, PumpOnTime, PumpOffTime, AuthorizedFuelingDays, Pulserratio, MacAddress, IsTLDCall,LinkCommunicationType,APMacAddress,BluetoothMacAddress);
+                            InsetLD = controller.insertLinkDetails(SiteId, WifiSSId, PumpOnTime, PumpOffTime,
+                                    AuthorizedFuelingDays, Pulserratio, MacAddress, IsTLDCall, LinkCommunicationType,
+                                    APMacAddress, BluetoothMacAddress, BTLinkCommType);
 
                             if (InsetLD == -1)
                                 if (AppConstants.GenerateLogs)

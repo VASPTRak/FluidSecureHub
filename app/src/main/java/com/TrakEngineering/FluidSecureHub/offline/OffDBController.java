@@ -30,7 +30,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public static String TBL_DEPARTMENT = "tbl_off_department";
 
     public OffDBController(Context applicationcontext) {
-        super(applicationcontext, "FSHubOffline.db", null, 8);
+        super(applicationcontext, "FSHubOffline.db", null, 9);
         Log.d(LOGCAT, "Created");
     }
 
@@ -38,7 +38,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
 
         Log.i(TAG, "InOnCreate.");
-        String query2 = "CREATE TABLE " + TBL_LINK + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, WifiSSId TEXT, PumpOnTime TEXT, PumpOffTime TEXT, AuthorizedFuelingDays TEXT, Pulserratio TEXT, MacAddress TEXT, IsTLDCall TEXT,LinkCommunicationType TEXT,APMacAddress TEXT,BTMacAddress TEXT)";
+        String query2 = "CREATE TABLE " + TBL_LINK + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, WifiSSId TEXT, PumpOnTime TEXT, PumpOffTime TEXT, AuthorizedFuelingDays TEXT, Pulserratio TEXT, MacAddress TEXT, IsTLDCall TEXT, LinkCommunicationType TEXT, APMacAddress TEXT, BTMacAddress TEXT, BTLinkCommType TEXT)";
         database.execSQL(query2);
 
         String query21 = "CREATE TABLE " + TBL_FUEL_TIMING + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, PersonId INTEGER, FromTime TEXT, ToTime TEXT)";
@@ -121,6 +121,11 @@ public class OffDBController extends SQLiteOpenHelper {
                 database.execSQL("ALTER TABLE " + TBL_TRANSACTION + " ADD COLUMN DepartmentNumber TEXT");
             } catch (Exception ex) {
                 Log.w(TAG, " Altering " + TBL_TRANSACTION + " for (DepartmentNumber) column: " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_LINK + " ADD COLUMN BTLinkCommType TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_LINK + " for (BTLinkCommType) column: " + ex.getMessage());
             }
 
             ////
@@ -278,7 +283,10 @@ public class OffDBController extends SQLiteOpenHelper {
         return insertedID;
     }
 
-    public long insertLinkDetails(String SiteId, String WifiSSId, String PumpOnTime, String PumpOffTime, String AuthorizedFuelingDays, String Pulserratio, String MacAddress, String IsTLDCall,String LinkCommunicationType,String APMacAddress,String BTMacAddress) {
+    public long insertLinkDetails(String SiteId, String WifiSSId, String PumpOnTime, String PumpOffTime,
+                                  String AuthorizedFuelingDays, String Pulserratio, String MacAddress,
+                                  String IsTLDCall, String LinkCommunicationType, String APMacAddress,
+                                  String BTMacAddress, String BTLinkCommType) {
 
         long insertedID = 0;
         try {
@@ -295,6 +303,7 @@ public class OffDBController extends SQLiteOpenHelper {
             values.put("LinkCommunicationType", LinkCommunicationType);
             values.put("APMacAddress", APMacAddress);
             values.put("BTMacAddress", BTMacAddress);
+            values.put("BTLinkCommType", BTLinkCommType);
 
             insertedID = database.insert(TBL_LINK, null, values);
             database.close();
@@ -573,6 +582,7 @@ public class OffDBController extends SQLiteOpenHelper {
                     map.put("LinkCommunicationType", cursor.getString(9));
                     map.put("APMacAddress", cursor.getString(10));
                     map.put("BTMacAddress", cursor.getString(11));
+                    map.put("BTLinkCommType", cursor.getString(12));
 
                     System.out.println("***" + cursor.getString(2));
 
@@ -601,13 +611,16 @@ public class OffDBController extends SQLiteOpenHelper {
                 hmObj.put("Id", cursor.getString(0));
                 hmObj.put("SiteId", cursor.getString(1));
                 hmObj.put("WifiSSId", cursor.getString(2));
-
                 hmObj.put("PumpOnTime", cursor.getString(3));
                 hmObj.put("PumpOffTime", cursor.getString(4));
                 hmObj.put("AuthorizedFuelingDays", cursor.getString(5));
                 hmObj.put("Pulserratio", cursor.getString(6));
                 hmObj.put("MacAddress", cursor.getString(7));
                 hmObj.put("IsTLDCall", cursor.getString(8));
+                hmObj.put("LinkCommunicationType", cursor.getString(9));
+                hmObj.put("APMacAddress", cursor.getString(10));
+                hmObj.put("BTMacAddress", cursor.getString(11));
+                hmObj.put("BTLinkCommType", cursor.getString(12));
 
             }
         } catch (Exception e) {
@@ -630,13 +643,16 @@ public class OffDBController extends SQLiteOpenHelper {
                 hmObj.put("Id", cursor.getString(0));
                 hmObj.put("SiteId", cursor.getString(1));
                 hmObj.put("WifiSSId", cursor.getString(2));
-
                 hmObj.put("PumpOnTime", cursor.getString(3));
                 hmObj.put("PumpOffTime", cursor.getString(4));
                 hmObj.put("AuthorizedFuelingDays", cursor.getString(5));
                 hmObj.put("Pulserratio", cursor.getString(6));
                 hmObj.put("MacAddress", cursor.getString(7));
                 hmObj.put("IsTLDCall", cursor.getString(8));
+                hmObj.put("LinkCommunicationType", cursor.getString(9));
+                hmObj.put("APMacAddress", cursor.getString(10));
+                hmObj.put("BTMacAddress", cursor.getString(11));
+                hmObj.put("BTLinkCommType", cursor.getString(12));
 
                 System.out.println("wwwwww" + cursor.getString(1));
 

@@ -41,6 +41,12 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.TrakEngineering.FluidSecureHub.BTBLE.BS_BLE_BTOne;
+import com.TrakEngineering.FluidSecureHub.BTBLE.BS_BLE_BTTwo;
+import com.TrakEngineering.FluidSecureHub.BTBLE.BS_BLE_BTThree;
+import com.TrakEngineering.FluidSecureHub.BTBLE.BS_BLE_BTFour;
+import com.TrakEngineering.FluidSecureHub.BTBLE.BS_BLE_BTFive;
+import com.TrakEngineering.FluidSecureHub.BTBLE.BS_BLE_BTSix;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTSPPMain;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BackgroundService_BTOne;
@@ -61,8 +67,8 @@ import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.common.api.GoogleApiClient;
+//import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -98,7 +104,7 @@ import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.wifiApManager;
 import static java.lang.String.format;
 
 
-public class DisplayMeterActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class DisplayMeterActivity extends AppCompatActivity implements View.OnClickListener { //, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 
 
     //WifiManager wifiManager;
@@ -146,6 +152,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     public String HTTP_URL = "";
     public String SERVERIP = "";
     public String LinkCommunicationType = "";
+    public String BTLinkCommType = "";
     public String LinkName = "";
     public String URL_GET_TXNID = "";
     public String URL_SET_TXNID = "";
@@ -192,7 +199,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "";
     String TimeOutinMinute;
     List<Timer> DisplayMScreeTimerlist = new ArrayList<Timer>();
-    GoogleApiClient mGoogleApiClient;
+    //GoogleApiClient mGoogleApiClient;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     public OkHttpClient client = new OkHttpClient();
 
@@ -284,6 +291,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         String IpAddress = "";
         try {
             LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
+            BTLinkCommType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("BTLinkCommType");
             LinkName = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
 
             if (!LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -378,6 +386,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         LinkName = "";
         try {
             LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
+            BTLinkCommType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("BTLinkCommType");
             LinkName = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -474,22 +483,17 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         LocationManager locationManager = (LocationManager) DisplayMeterActivity.this.getSystemService(Context.LOCATION_SERVICE);
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-
         if (!statusOfGPS) {
-
             turnGPSOn();
-
         }*/
 
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        /*mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        mGoogleApiClient.connect();
-
+        mGoogleApiClient.connect();*/
 
        /* if (ActivityHandler.screenStack != null)
             ActivityHandler.screenStack.clear();*/
@@ -752,7 +756,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
 
-    @Override
+    /*@Override
     public void onConnected(Bundle bundle) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
@@ -764,17 +768,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             System.out.println("CCCrrr" + CurrentLng);
 
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onConnectionSuspended(int i) {
+    }*/
 
-    }
-
-    @Override
+    /*@Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
+    }*/
 
     public void doTimerTask() {
 
@@ -1067,6 +1069,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         String IpAddress = SERVERIP;
         LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
+        BTLinkCommType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("BTLinkCommType");
         LinkName = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("WifiSSId");
 
         if (IpAddress.trim().isEmpty()) {
@@ -4481,11 +4484,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             Log.i(TAG, "BT Link ");
             switch (BTConstants.CurrentSelectedLinkBT) {
                 case 1://Link 1
-
                     // BtnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected One>>");
                     // BtnStartStateChange(false);
-                    Intent serviceIntent1 = new Intent(DisplayMeterActivity.this, BackgroundService_BTOne.class);
+                    Intent serviceIntent1;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent1 = new Intent(DisplayMeterActivity.this, BS_BLE_BTOne.class);
+                    } else {
+                        serviceIntent1 = new Intent(DisplayMeterActivity.this, BackgroundService_BTOne.class);
+                    }
                     serviceIntent1.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent1.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent1);
@@ -4497,7 +4504,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     // BtnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Two>>");
                     // BtnStartStateChange(false);
-                    Intent serviceIntent2 = new Intent(DisplayMeterActivity.this, BackgroundService_BTTwo.class);
+                    Intent serviceIntent2;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent2 = new Intent(DisplayMeterActivity.this, BS_BLE_BTTwo.class);
+                    } else {
+                        serviceIntent2 = new Intent(DisplayMeterActivity.this, BackgroundService_BTTwo.class);
+                    }
                     serviceIntent2.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent2.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent2);
@@ -4508,7 +4520,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     // BtnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Three>>");
                     //  BtnStartStateChange(false);
-                    Intent serviceIntent3 = new Intent(DisplayMeterActivity.this, BackgroundService_BTThree.class);
+                    Intent serviceIntent3;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent3 = new Intent(DisplayMeterActivity.this, BS_BLE_BTThree.class);
+                    } else {
+                        serviceIntent3 = new Intent(DisplayMeterActivity.this, BackgroundService_BTThree.class);
+                    }
                     serviceIntent3.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent3.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent3);
@@ -4519,7 +4536,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     // BtnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Four>>");
                     /// BtnStartStateChange(false);
-                    Intent serviceIntent4 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFour.class);
+                    Intent serviceIntent4;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent4 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFour.class);
+                    } else {
+                        serviceIntent4 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFour.class);
+                    }
                     serviceIntent4.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent4.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent4);
@@ -4530,7 +4552,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     // BtnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Five>>");
                     /// BtnStartStateChange(false);
-                    Intent serviceIntent5 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFive.class);
+                    Intent serviceIntent5;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent5 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFive.class);
+                    } else {
+                        serviceIntent5 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFive.class);
+                    }
                     serviceIntent5.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent5.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent5);
@@ -4541,7 +4568,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     // BtnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Six>>");
                     /// BtnStartStateChange(false);
-                    Intent serviceIntent6 = new Intent(DisplayMeterActivity.this, BackgroundService_BTSix.class);
+                    Intent serviceIntent6;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent6 = new Intent(DisplayMeterActivity.this, BS_BLE_BTSix.class);
+                    } else {
+                        serviceIntent6 = new Intent(DisplayMeterActivity.this, BackgroundService_BTSix.class);
+                    }
                     serviceIntent6.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent6.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent6);
@@ -4568,7 +4600,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 case 0://Link 1
 
                     BtnStartStateChange(false);
-                    Intent serviceIntent1 = new Intent(DisplayMeterActivity.this, BackgroundService_BTOne.class);
+                    Intent serviceIntent1;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent1 = new Intent(DisplayMeterActivity.this, BS_BLE_BTOne.class);
+                    } else {
+                        serviceIntent1 = new Intent(DisplayMeterActivity.this, BackgroundService_BTOne.class);
+                    }
                     serviceIntent1.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent1.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent1);
@@ -4578,7 +4615,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 case 1://Link 2
 
                     BtnStartStateChange(false);
-                    Intent serviceIntent2 = new Intent(DisplayMeterActivity.this, BackgroundService_BTTwo.class);
+                    Intent serviceIntent2;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent2 = new Intent(DisplayMeterActivity.this, BS_BLE_BTTwo.class);
+                    } else {
+                        serviceIntent2 = new Intent(DisplayMeterActivity.this, BackgroundService_BTTwo.class);
+                    }
                     serviceIntent2.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent2.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent2);
@@ -4588,7 +4630,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 case 2://Link 3
 
                     BtnStartStateChange(false);
-                    Intent serviceIntent3 = new Intent(DisplayMeterActivity.this, BackgroundService_BTThree.class);
+                    Intent serviceIntent3;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent3 = new Intent(DisplayMeterActivity.this, BS_BLE_BTThree.class);
+                    } else {
+                        serviceIntent3 = new Intent(DisplayMeterActivity.this, BackgroundService_BTThree.class);
+                    }
                     serviceIntent3.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent3.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent3);
@@ -4598,7 +4645,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 case 3://Link 4
 
                     BtnStartStateChange(false);
-                    Intent serviceIntent4 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFour.class);
+                    Intent serviceIntent4;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent4 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFour.class);
+                    } else {
+                        serviceIntent4 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFour.class);
+                    }
                     serviceIntent4.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent4.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent4);
@@ -4608,7 +4660,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 case 4://Link 5
 
                     BtnStartStateChange(false);
-                    Intent serviceIntent5 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFive.class);
+                    Intent serviceIntent5;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent5 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFive.class);
+                    } else {
+                        serviceIntent5 = new Intent(DisplayMeterActivity.this, BackgroundService_BTFive.class);
+                    }
                     serviceIntent5.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent5.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent5);
@@ -4618,7 +4675,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 case 5://Link 6
 
                     BtnStartStateChange(false);
-                    Intent serviceIntent6 = new Intent(DisplayMeterActivity.this, BackgroundService_BTSix.class);
+                    Intent serviceIntent6;
+                    if (BTLinkCommType.equalsIgnoreCase("BLE")) {
+                        serviceIntent6 = new Intent(DisplayMeterActivity.this, BS_BLE_BTSix.class);
+                    } else {
+                        serviceIntent6 = new Intent(DisplayMeterActivity.this, BackgroundService_BTSix.class);
+                    }
                     serviceIntent6.putExtra("SERVER_IP", SERVERIP);
                     serviceIntent6.putExtra("sqlite_id", sqlite_id);
                     startService(serviceIntent6);
@@ -4706,73 +4768,75 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         protected String doInBackground(String... param) {
 
             try {
-                switch (WelcomeActivity.SelectedItemPos) {
-                    case 0: // Link 1
-                        if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
-                            isReconnectionTried = true;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Link not connected. Retrying to connect.");
-                            //Retrying to connect to link
-                            BTSPPMain btspp = new BTSPPMain();
-                            btspp.activity = DisplayMeterActivity.this;
-                            btspp.connect1();
-                        }
-                        break;
-                    case 1: // Link 2
-                        if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
-                            isReconnectionTried = true;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Link not connected. Retrying to connect.");
-                            //Retrying to connect to link
-                            BTSPPMain btspp = new BTSPPMain();
-                            btspp.activity = DisplayMeterActivity.this;
-                            btspp.connect2();
-                        }
-                        break;
-                    case 2: // Link 3
-                        if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
-                            isReconnectionTried = true;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Link not connected. Retrying to connect.");
-                            //Retrying to connect to link
-                            BTSPPMain btspp = new BTSPPMain();
-                            btspp.activity = DisplayMeterActivity.this;
-                            btspp.connect3();
-                        }
-                        break;
-                    case 3: // Link 4
-                        if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
-                            isReconnectionTried = true;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Link not connected. Retrying to connect.");
-                            //Retrying to connect to link
-                            BTSPPMain btspp = new BTSPPMain();
-                            btspp.activity = DisplayMeterActivity.this;
-                            btspp.connect4();
-                        }
-                        break;
-                    case 4: // Link 5
-                        if (!BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
-                            isReconnectionTried = true;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Link not connected. Retrying to connect.");
-                            //Retrying to connect to link
-                            BTSPPMain btspp = new BTSPPMain();
-                            btspp.activity = DisplayMeterActivity.this;
-                            btspp.connect5();
-                        }
-                        break;
-                    case 5: // Link 6
-                        if (!BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
-                            isReconnectionTried = true;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Link not connected. Retrying to connect.");
-                            //Retrying to connect to link
-                            BTSPPMain btspp = new BTSPPMain();
-                            btspp.activity = DisplayMeterActivity.this;
-                            btspp.connect6();
-                        }
-                        break;
+                if (BTLinkCommType.equalsIgnoreCase("SPP")) {
+                    switch (WelcomeActivity.SelectedItemPos) {
+                        case 0: // Link 1
+                            if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                                isReconnectionTried = true;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 1: Link not connected. Retrying to connect.");
+                                //Retrying to connect to link
+                                BTSPPMain btspp = new BTSPPMain();
+                                btspp.activity = DisplayMeterActivity.this;
+                                btspp.connect1();
+                            }
+                            break;
+                        case 1: // Link 2
+                            if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                                isReconnectionTried = true;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 2: Link not connected. Retrying to connect.");
+                                //Retrying to connect to link
+                                BTSPPMain btspp = new BTSPPMain();
+                                btspp.activity = DisplayMeterActivity.this;
+                                btspp.connect2();
+                            }
+                            break;
+                        case 2: // Link 3
+                            if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                                isReconnectionTried = true;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 3: Link not connected. Retrying to connect.");
+                                //Retrying to connect to link
+                                BTSPPMain btspp = new BTSPPMain();
+                                btspp.activity = DisplayMeterActivity.this;
+                                btspp.connect3();
+                            }
+                            break;
+                        case 3: // Link 4
+                            if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                                isReconnectionTried = true;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 4: Link not connected. Retrying to connect.");
+                                //Retrying to connect to link
+                                BTSPPMain btspp = new BTSPPMain();
+                                btspp.activity = DisplayMeterActivity.this;
+                                btspp.connect4();
+                            }
+                            break;
+                        case 4: // Link 5
+                            if (!BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                                isReconnectionTried = true;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 5: Link not connected. Retrying to connect.");
+                                //Retrying to connect to link
+                                BTSPPMain btspp = new BTSPPMain();
+                                btspp.activity = DisplayMeterActivity.this;
+                                btspp.connect5();
+                            }
+                            break;
+                        case 5: // Link 6
+                            if (!BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
+                                isReconnectionTried = true;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink 6: Link not connected. Retrying to connect.");
+                                //Retrying to connect to link
+                                BTSPPMain btspp = new BTSPPMain();
+                                btspp.activity = DisplayMeterActivity.this;
+                                btspp.connect6();
+                            }
+                            break;
+                    }
                 }
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
@@ -4784,18 +4848,26 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         protected void onPostExecute(String FSStatus) {
-
             try {
-                if (isReconnectionTried) {
-                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            checkBTLinkStatus(WelcomeActivity.SelectedItemPos);
-                        }
-                    }, 100);
+                boolean flagForProceed = false;
+                if (BTLinkCommType.equalsIgnoreCase("SPP")) {
+                    if (isReconnectionTried) {
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                checkBTLinkStatus(WelcomeActivity.SelectedItemPos);
+                            }
+                        }, 100);
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "<Link is connected.>");
+                        flagForProceed = true;
+                    }
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "<Link is connected.>");
+                    flagForProceed = true;
+                }
+
+                if (flagForProceed) {
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {

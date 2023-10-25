@@ -66,7 +66,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             //NetworkSwitched
             String MobileDataStatus = "";
             if (AppConstants.IS_MOBILE_ON) {
-                //AppConstants.NETWORK_STRENGTH = true; // Changes in app to work in offline mode
+                AppConstants.NETWORK_STRENGTH = true;
                 MobileDataStatus = "ON";
             } else {
                 MobileDataStatus = "OFF";

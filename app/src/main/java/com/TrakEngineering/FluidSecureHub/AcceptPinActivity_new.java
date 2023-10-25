@@ -1011,6 +1011,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                         //offline---------------
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Offline Personnel FOB: " + fob);
                         if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                             checkPINvalidation(hmap);
                             String PinNumber = hmap.get("PinNumber");
@@ -1049,6 +1051,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "Offline Personnel FOB: " + fob);
                             if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                                 checkPINvalidation(hmap);
                                 String PinNumber = hmap.get("PinNumber");
@@ -1414,7 +1418,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
                         Log.i(TAG, "PIN FOB:" + AppConstants.APDU_FOB_KEY + "  PIN No: " + String.valueOf(etPersonnelPin.getText()));
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "PIN FOB:" + AppConstants.APDU_FOB_KEY + "; PIN No: " + String.valueOf(etPersonnelPin.getText()));
+                            AppConstants.WriteinFile(TAG + "Personnel FOB No:" + AppConstants.APDU_FOB_KEY + "; PIN Number:" + String.valueOf(etPersonnelPin.getText()) + "; Barcode_val:" + Barcode_pin_val + "; MagCard_personnel:" + MagCard_personnel);
                     }
 
 

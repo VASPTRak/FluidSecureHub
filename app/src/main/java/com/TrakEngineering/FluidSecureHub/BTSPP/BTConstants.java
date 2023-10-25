@@ -90,6 +90,8 @@ public class BTConstants {
     public static boolean isReconnectCalled5 = false;
     public static boolean isReconnectCalled6 = false;
 
+    public static int RetryBTConnectionLinkPosition = -1;
+
     //Rename BT link one
     public static boolean BT1NeedRename;
     public static String BT1REPLACEBLE_WIFI_NAME;
