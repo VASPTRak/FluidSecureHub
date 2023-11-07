@@ -388,10 +388,10 @@ public class OffBackgroundService extends Service {
                         String IsNonValidateVehicle = HubDataObj.getString("IsNonValidateVehicle");
                         String IsNonValidatePerson = HubDataObj.getString("IsNonValidatePerson");
                         String IsNonValidateODOM = HubDataObj.getString("IsNonValidateODOM");
-                        String IsOtherRequire = HubDataObj.getString("IsOtherRequire");
+                        String IsOtherRequire = HubDataObj.getString("IsOtherRequireForHUB"); // IsOtherRequire
                         String OtherLabel = HubDataObj.getString("OtherLabel");
                         String HUBType = HubDataObj.getString("HUBType");
-                        IsDepartmentRequire = HubDataObj.getString("IsDepartmentRequire");
+                        IsDepartmentRequire = HubDataObj.getString("IsDepartmentRequireForHUB"); // IsDepartmentRequire
                         String ValidateDepartmentAgainstPIN = HubDataObj.getString("ValidateDepartmentAgainstPIN");
                         String DepartmentDataFilePath = HubDataObj.getString("DepartmentDataFilePath");
 

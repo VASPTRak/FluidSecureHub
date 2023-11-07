@@ -1611,7 +1611,7 @@ public class BackgroundService_BTOne extends Service {
 
         try {
             try {
-                if (RelayStatus) {
+                if (RelayStatus && !BTConstants.CurrentCommand_LinkOne.contains(BTConstants.relay_off_cmd)) {
                     if (RespCount < 4) {
                         RespCount++;
                     } else {

@@ -50,15 +50,15 @@ public class BLEServiceCodeOne extends Service {
     public ConnectionDetector cd = new ConnectionDetector(BLEServiceCodeOne.this);
 
     public final static String ACTION_GATT_CONNECTED =
-            "com.TrakEngineering.FluidSecureHubTest.QRLe.ACTION_GATT_CONNECTED";
+            "com.TrakEngineering.FluidSecureHub.QRLe.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
-            "com.TrakEngineering.FluidSecureHubTest.QRLe.ACTION_GATT_DISCONNECTED";
+            "com.TrakEngineering.FluidSecureHub.QRLe.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.TrakEngineering.FluidSecureHubTest.QRLe.ACTION_GATT_SERVICES_DISCOVERED";
+            "com.TrakEngineering.FluidSecureHub.QRLe.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
-            "com.TrakEngineering.FluidSecureHubTest.QRLe.ACTION_DATA_AVAILABLE";
+            "com.TrakEngineering.FluidSecureHub.QRLe.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
-            "com.TrakEngineering.FluidSecureHubTest.QRLe.EXTRA_DATA";
+            "com.TrakEngineering.FluidSecureHub.QRLe.EXTRA_DATA";
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -216,17 +216,27 @@ public class BLEServiceCodeOne extends Service {
                     Response = sb1.toString().trim();
                 }
                 String res = Response.replace("$$", "");
+
+                if (!res.trim().isEmpty()) {
+                    if (sb1.toString().trim().contains("$$")) {
+                        sb1.setLength(0);
+                    }
+                    sb1.append(res.trim());
+                }
+
+                String finalResp = sb1.toString().trim();
                 try {
-                    if (res.contains("}")) {
-                        res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                    if (finalResp.contains("{")) {
+                        finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                    }
+                    if (finalResp.contains("}")) {
+                        finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (!res.trim().isEmpty()) {
-                    sb1.append(res.trim());
-                }
-                intent.putExtra(EXTRA_DATA, sb1.toString());
+
+                intent.putExtra(EXTRA_DATA, finalResp);
                 sendBroadcast(intent);
                 sb1.setLength(0);
             } else {

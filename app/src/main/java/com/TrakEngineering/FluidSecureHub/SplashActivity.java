@@ -645,9 +645,9 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
 
                     AppConstants.AccessCode = AccessCode;
                     String IsLoginRequire = jsonObject.getString("IsLoginRequire");
-                    String IsDepartmentRequire = jsonObject.getString("IsDepartmentRequire");
+                    String IsDepartmentRequire = jsonObject.getString("IsDepartmentRequireForHUB"); // IsDepartmentRequire
                     String IsPersonnelPINRequire = jsonObject.getString("IsPersonnelPINRequire");
-                    String IsOtherRequire = jsonObject.getString("IsOtherRequire");
+                    String IsOtherRequire = jsonObject.getString("IsOtherRequireForHUB"); // IsOtherRequire
                     String OtherLabel = jsonObject.getString("OtherLabel");
                     String TimeOut = jsonObject.getString("TimeOut");
                     String HubId = jsonObject.getString("PersonId");

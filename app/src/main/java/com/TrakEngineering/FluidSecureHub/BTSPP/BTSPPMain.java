@@ -160,18 +160,28 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.isNewVersionLinkOne = true;
         }
         if (Response.contains("$$")) {
-            String res = Response.replace("$$", "");
+
+            sb1.append(Response.trim());
+
+            String finalResp = sb1.toString().trim();
             try {
-                if (res.contains("}")) {
-                    res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                if (finalResp.contains("{")) {
+                    finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                }
+                if (finalResp.contains("}")) {
+                    finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!res.trim().isEmpty()) {
-                sb1.append(res.trim());
+
+            String[] resp = finalResp.trim().split("\\$\\$"); // To split by $$
+            for (String res: resp) {
+                res = res.replace("$$", "");
+                if (!res.trim().isEmpty()) {
+                    sendBroadcastIntentFromLinkOne(res);
+                }
             }
-            sendBroadcastIntentFromLinkOne(sb1.toString());
             sb1.setLength(0);
         } else {
             if (BTConstants.isNewVersionLinkOne || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkOne.contains(BTConstants.p_type_command)) {
@@ -293,18 +303,28 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.isNewVersionLinkTwo = true;
         }
         if (Response.contains("$$")) {
-            String res = Response.replace("$$", "");
+
+            sb2.append(Response.trim());
+
+            String finalResp = sb2.toString().trim();
             try {
-                if (res.contains("}")) {
-                    res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                if (finalResp.contains("{")) {
+                    finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                }
+                if (finalResp.contains("}")) {
+                    finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!res.trim().isEmpty()) {
-                sb2.append(res.trim());
+
+            String[] resp = finalResp.trim().split("\\$\\$"); // To split by $$
+            for (String res: resp) {
+                res = res.replace("$$", "");
+                if (!res.trim().isEmpty()) {
+                    sendBroadcastIntentFromLinkTwo(res);
+                }
             }
-            sendBroadcastIntentFromLinkTwo(sb2.toString());
             sb2.setLength(0);
         } else {
             if (BTConstants.isNewVersionLinkTwo || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkTwo.contains(BTConstants.p_type_command)) {
@@ -425,18 +445,28 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.isNewVersionLinkThree = true;
         }
         if (Response.contains("$$")) {
-            String res = Response.replace("$$", "");
+
+            sb3.append(Response.trim());
+
+            String finalResp = sb3.toString().trim();
             try {
-                if (res.contains("}")) {
-                    res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                if (finalResp.contains("{")) {
+                    finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                }
+                if (finalResp.contains("}")) {
+                    finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!res.trim().isEmpty()) {
-                sb3.append(res.trim());
+
+            String[] resp = finalResp.trim().split("\\$\\$"); // To split by $$
+            for (String res: resp) {
+                res = res.replace("$$", "");
+                if (!res.trim().isEmpty()) {
+                    sendBroadcastIntentFromLinkThree(res);
+                }
             }
-            sendBroadcastIntentFromLinkThree(sb3.toString());
             sb3.setLength(0);
         } else {
             if (BTConstants.isNewVersionLinkThree || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkThree.contains(BTConstants.p_type_command)) {
@@ -558,18 +588,28 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.isNewVersionLinkFour = true;
         }
         if (Response.contains("$$")) {
-            String res = Response.replace("$$", "");
+
+            sb4.append(Response.trim());
+
+            String finalResp = sb4.toString().trim();
             try {
-                if (res.contains("}")) {
-                    res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                if (finalResp.contains("{")) {
+                    finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                }
+                if (finalResp.contains("}")) {
+                    finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!res.trim().isEmpty()) {
-                sb4.append(res.trim());
+
+            String[] resp = finalResp.trim().split("\\$\\$"); // To split by $$
+            for (String res: resp) {
+                res = res.replace("$$", "");
+                if (!res.trim().isEmpty()) {
+                    sendBroadcastIntentFromLinkFour(res);
+                }
             }
-            sendBroadcastIntentFromLinkFour(sb4.toString());
             sb4.setLength(0);
         } else {
             if (BTConstants.isNewVersionLinkFour || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkFour.contains(BTConstants.p_type_command)) {
@@ -690,18 +730,28 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.isNewVersionLinkFive = true;
         }
         if (Response.contains("$$")) {
-            String res = Response.replace("$$", "");
+
+            sb5.append(Response.trim());
+
+            String finalResp = sb5.toString().trim();
             try {
-                if (res.contains("}")) {
-                    res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                if (finalResp.contains("{")) {
+                    finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                }
+                if (finalResp.contains("}")) {
+                    finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!res.trim().isEmpty()) {
-                sb5.append(res.trim());
+
+            String[] resp = finalResp.trim().split("\\$\\$"); // To split by $$
+            for (String res: resp) {
+                res = res.replace("$$", "");
+                if (!res.trim().isEmpty()) {
+                    sendBroadcastIntentFromLinkFive(res);
+                }
             }
-            sendBroadcastIntentFromLinkFive(sb5.toString());
             sb5.setLength(0);
         } else {
             if (BTConstants.isNewVersionLinkFive || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkFive.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkFive.contains(BTConstants.p_type_command)) {
@@ -823,18 +873,28 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             BTConstants.isNewVersionLinkSix = true;
         }
         if (Response.contains("$$")) {
-            String res = Response.replace("$$", "");
+
+            sb6.append(Response.trim());
+
+            String finalResp = sb6.toString().trim();
             try {
-                if (res.contains("}")) {
-                    res = res.substring(0, (res.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
+                if (finalResp.contains("{")) {
+                    finalResp = finalResp.substring(finalResp.indexOf("{")); // To remove extra characters before the first curly bracket (if any)
+                }
+                if (finalResp.contains("}")) {
+                    finalResp = finalResp.substring(0, (finalResp.lastIndexOf("}") + 1)); // To remove extra characters after the last curly bracket (if any)
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!res.trim().isEmpty()) {
-                sb6.append(res.trim());
+
+            String[] resp = finalResp.trim().split("\\$\\$"); // To split by $$
+            for (String res: resp) {
+                res = res.replace("$$", "");
+                if (!res.trim().isEmpty()) {
+                    sendBroadcastIntentFromLinkSix(res);
+                }
             }
-            sendBroadcastIntentFromLinkSix(sb6.toString());
             sb6.setLength(0);
         } else {
             if (BTConstants.isNewVersionLinkSix || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkSix.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkSix.contains(BTConstants.p_type_command)) {

@@ -1601,7 +1601,7 @@ public class BackgroundService_BTThree extends Service {
 
         try {
             try {
-                if (RelayStatus) {
+                if (RelayStatus && !BTConstants.CurrentCommand_LinkThree.contains(BTConstants.relay_off_cmd)) {
                     if (RespCount < 4) {
                         RespCount++;
                     } else {

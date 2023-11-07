@@ -1601,7 +1601,7 @@ public class BackgroundService_BTFive extends Service {
 
         try {
             try {
-                if (RelayStatus) {
+                if (RelayStatus && !BTConstants.CurrentCommand_LinkFive.contains(BTConstants.relay_off_cmd)) {
                     if (RespCount < 4) {
                         RespCount++;
                     } else {

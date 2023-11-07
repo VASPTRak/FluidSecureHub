@@ -509,10 +509,15 @@ public class BackgroundService extends Service {
 
 
         SharedPreferences sharedPref = BackgroundService.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
-        for (int i = 1; i < 7 ; i++) {
-            String linkJsonData = sharedPref.getString("LINK"+i, "");
-            if (!linkJsonData.equals("")){
+        for (int i = 1; i < 7; i++) {
+            String linkJsonData = sharedPref.getString("LINK" + i, "");
+            if (!linkJsonData.equals("")) {
                 SaveMultipleTransactionsRetroFit(linkJsonData);
+            }
+
+            String bleLinkJsonData = sharedPref.getString("BLE_LINK" + i, "");
+            if (!bleLinkJsonData.equals("")) {
+                SaveMultipleTransactionsRetroFit(bleLinkJsonData);
             }
         }
 

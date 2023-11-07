@@ -330,7 +330,7 @@ public class BS_BLE_BTOne extends Service {
                 }
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Callback BT Resp~~  " + Response.toString() + ">");
+                    AppConstants.WriteinFile(TAG + " <Callback BT Resp~~  " + Response + ">");
 
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -373,7 +373,7 @@ public class BS_BLE_BTOne extends Service {
                         if (BT_BLE_Constants.BTBLEStatusStrOne.equalsIgnoreCase("Disconnect")) {
                             SaveLastQtyInSharedPref(Constants.FS_1Pulse);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Retrying to Connect");
+                                AppConstants.WriteinFile(TAG + " Retrying to Connect");
                             BTConstants.isRelayOnAfterReconnect1 = false;
                             //Retrying to connect to link
                             LinkReconnectionAttempt();
@@ -1049,7 +1049,6 @@ public class BS_BLE_BTOne extends Service {
                                     new Handler().postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            BTConstants.isPTypeCommandExecuted1 = true;
                                             if (BT_BLE_Constants.BTBLEStatusStrOne.equalsIgnoreCase("Disconnect")) {
                                                 LinkReconnectionAttempt();
                                             }
@@ -1078,7 +1077,6 @@ public class BS_BLE_BTOne extends Service {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        BTConstants.isPTypeCommandExecuted1 = true;
                                         if (BT_BLE_Constants.BTBLEStatusStrOne.equalsIgnoreCase("Disconnect")) {
                                             LinkReconnectionAttempt();
                                         }
@@ -1152,8 +1150,85 @@ public class BS_BLE_BTOne extends Service {
         //    BypassPumpResetCommand();
         //} else {
         //    // Continue to transactionId Command
-        transactionIdCommand(TransactionId);
+        //    transactionIdCommand(TransactionId);
         //}
+        if (IsThisBTTrnx && BT_BLE_Constants.isNewVersionLinkOne) {
+            last1Command();
+        } else {
+            // Continue to transactionId Command
+            transactionIdCommand(TransactionId);
+        }
+    }
+
+    private void last1Command() {
+
+        try {
+            //Execute last1 Command
+            Response = "";
+
+            if (IsThisBTTrnx) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " Sending last1 command to Link: " + LinkName);
+                mBluetoothLeService.writeCustomCharacteristic(BTConstants.last1_cmd);
+            }
+            Thread.sleep(500);
+            new CountDownTimer(4000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    long attempt = (4 - (millisUntilFinished / 1000));
+                    if (attempt > 0) {
+                        try {
+                            if (BT_BLE_Constants.CurrentCommand_LinkOne.contains(BTConstants.last1_cmd) && Response.contains("records")) {
+                                //last1 command success.
+                                Log.i(TAG, " last1 Command Response success 1:>>" + Response);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Checking last1 command response. Response: true");
+                                parseLast1CommandResponse(Response);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        transactionIdCommand(TransactionId);
+                                    }
+                                }, 1000);
+                                cancel();
+                            } else {
+                                Log.i(TAG, " Waiting for last1 Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Checking last1 command response. Response: false");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + " last1 command Exception. Exception: " + e.getMessage());
+                        }
+                    }
+                }
+
+                public void onFinish() {
+                    if (BT_BLE_Constants.CurrentCommand_LinkOne.contains(BTConstants.last1_cmd) && Response.contains("records")) {
+                        //last1 command success.
+                        Log.i(TAG, " last1 Command Response success 2:>>" + Response);
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " Checking last1 command response. Response: true");
+                        parseLast1CommandResponse(Response);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                transactionIdCommand(TransactionId);
+                            }
+                        }, 1000);
+                    } else {
+                        transactionIdCommand(TransactionId);
+                    }
+                }
+            }.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " last1Command Exception:>>" + e.getMessage());
+            transactionIdCommand(TransactionId);
+        }
     }
 
     private void transactionIdCommand(String transactionId) {
@@ -1532,6 +1607,84 @@ public class BS_BLE_BTOne extends Service {
         editor.putString("hoseid_bt1", hoseid);
         editor.putString("fsversion_bt1", fsversion);
         editor.commit();
+    }
+
+    private void parseLast1CommandResponse(String response) {
+        try {
+            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("records");
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject j = jsonArray.getJSONObject(i);
+                String txtn = j.getString("txtn");
+                String date = j.getString("date");
+                String vehicle = j.getString("vehicle");
+                String pulse = j.getString("pulse");
+                String dflag = j.getString("dflag");
+
+                try {
+                    if (!date.contains("-") && date.length() == 12) { // change date format from "yyMMddHHmmss" to "yyyy-MM-dd HH:mm:ss"
+                        date = BTConstants.parseDateForOldVersion(date);
+                    }
+                } catch (Exception e) {
+                    Log.i(TAG, " Exception while parsing date format.>> " + e.getMessage());
+                }
+
+                HashMap<String, String> Hmap = new HashMap<>();
+                Hmap.put("TransactionID", txtn);//TransactionID
+                Hmap.put("Pulses", pulse);//Pulses
+                Hmap.put("FuelQuantity", ReturnQty(pulse));//FuelQuantity
+                Hmap.put("TransactionDateTime", date); //TransactionDateTime
+                Hmap.put("VehicleId", vehicle); //VehicleId
+                Hmap.put("dflag", dflag);
+
+                arrayList.add(Hmap);
+            }
+
+            Gson gs = new Gson();
+            EntityCmd20Txn ety = new EntityCmd20Txn();
+            ety.cmtxtnid_20_record = arrayList;
+
+            String json20txn = gs.toJson(ety);
+
+            SharedPreferences sharedPref = BS_BLE_BTOne.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("BLE_LINK1", json20txn);
+            editor.apply();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception in parseLast1CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+        }
+    }
+
+    private String ReturnQty(String outputQuantity) {
+        String return_qty = "";
+        try {
+            double fillqty = 0;
+            Integer Pulses = Integer.parseInt(outputQuantity);
+            if (Pulses > 0) {
+                fillqty = Double.parseDouble(outputQuantity);
+                fillqty = fillqty / numPulseRatio;//convert to gallons
+
+                fillqty = AppConstants.roundNumber(fillqty, 2);
+
+                DecimalFormat precision = new DecimalFormat("0.00");
+                return_qty = (precision.format(fillqty));
+            } else {
+                return_qty = "0";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return return_qty;
+    }
+
+    public class EntityCmd20Txn {
+        ArrayList cmtxtnid_20_record;
+        String jsonfromLink;
     }
 
     private void ParsePulserTypeCommandResponse(String response) {

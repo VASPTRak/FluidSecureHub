@@ -3293,6 +3293,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     String IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
                     SaveCalibrationDetailsInSharedPref(SelectedItemPos, PulserTimingAdjust, IsResetSwitchTimeBounce);
 
+                    if (BTLinkCommType == null) {
+                        BTLinkCommType = "SPP";
+                    }
+
                     if (ReconfigureLink == null) {
                         ReconfigureLink = "";
                     }
@@ -4422,10 +4426,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             ss2.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss2.length(), 0);
 
             loading = new ProgressDialog(WelcomeActivity.this);
-            loading.setCancelable(true);
             loading.setMessage(ss2);
             loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            loading.setCancelable(true);
+            loading.setCancelable(false);
             loading.show();
         }
 
