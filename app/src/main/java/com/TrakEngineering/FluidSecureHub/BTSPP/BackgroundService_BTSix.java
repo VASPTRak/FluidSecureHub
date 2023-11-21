@@ -145,7 +145,11 @@ public class BackgroundService_BTSix extends Service {
 
                 SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
                 PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS6", "");
-                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS6", "");
+                IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS6", "0");
+
+                if (VehicleNumber.length() > 20) {
+                    VehicleNumber = VehicleNumber.substring(VehicleNumber.length() - 20);
+                }
 
                 //UDP Connection..!!
                 if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() > 0) {

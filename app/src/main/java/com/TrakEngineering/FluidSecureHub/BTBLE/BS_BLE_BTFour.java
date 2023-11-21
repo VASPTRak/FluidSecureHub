@@ -147,6 +147,10 @@ public class BS_BLE_BTFour extends Service {
                 PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS4", "");
                 IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS4", "0");
 
+                if (VehicleNumber.length() > 20) {
+                    VehicleNumber = VehicleNumber.substring(VehicleNumber.length() - 20);
+                }
+
                 //UDP Connection..!!
                 if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() > 0) {
                     LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");

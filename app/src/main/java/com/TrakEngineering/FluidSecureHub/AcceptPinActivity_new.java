@@ -523,7 +523,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         barcodeReaderCall = true;
         InScrverCall = false;
         resetReaderStatus();//BLE reader status reset
-        RegisterBroadcastForReader();//BroadcastReciver for MagCard,HF and LF Readers
 
         Count = 1;
         LF_ReaderConnectionCountPin = 0;
@@ -538,6 +537,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             Istimeout_Sec = true;
         }
 
+        DisplayScreenInit();
+
+        RegisterBroadcastForReader();//BroadcastReciver for MagCard,HF and LF Readers
+
         TimeoutPinScreen();
 
         tv_fobkey.setText("");
@@ -546,9 +549,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         btnSave.setClickable(true);
         //Set/Reset EnterPin text
         etPersonnelPin.setText("");
-
-        DisplayScreenInit();
-
 
         t = new Timer();
         TimerList.add(t);
@@ -575,8 +575,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 } else {
 
-                    checkFor10Seconds();
-
+                    if (IsGateHub.equalsIgnoreCase("False")) {
+                        checkFor10Seconds();
+                    }
                 }
 
             }
@@ -2786,7 +2787,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
                 stopService(new Intent(AcceptPinActivity_new.this, ServiceLFCard.class));
 
-            if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
+            if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
                 stopService(new Intent(AcceptPinActivity_new.this, ServiceHFCard.class));
 
             if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
@@ -2815,7 +2816,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
                     startService(new Intent(AcceptPinActivity_new.this, ServiceLFCard.class));
 
-                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
+                if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N"))
                     startService(new Intent(AcceptPinActivity_new.this, ServiceHFCard.class));
 
                 if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2"))
