@@ -39,8 +39,6 @@ public class BLEServiceCodeSix extends Service {
     private BluetoothGatt mBluetoothGatt;
     StringBuilder sb6 = new StringBuilder();
     private int gt_notify_status = 0;
-    public static long tempFileSize;
-    public static double upgradeProgress;
     BluetoothGatt gatt_notify;
     public String UUID_service = "725e0bc8-6f00-4d2d-a4af-96138ce599b6";
     private int mConnectionState = STATE_DISCONNECTED;
@@ -112,7 +110,7 @@ public class BLEServiceCodeSix extends Service {
 
                     if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service)) {
                         UUID_service = BT_BLE_Constants.UUID_service;
-                        BT_BLE_Constants.isNewVersionLinkSix = false;
+                        //BT_BLE_Constants.isNewVersionLinkSix = false;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " <Found BT LINK (OLD)>");
                     }
@@ -120,7 +118,7 @@ public class BLEServiceCodeSix extends Service {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " <Found BT LINK (New)>");
                         UUID_service = BT_BLE_Constants.UUID_service_BT;
-                        BT_BLE_Constants.isNewVersionLinkSix = true;
+                        //BT_BLE_Constants.isNewVersionLinkSix = true;
                     }
                     List<BluetoothGattCharacteristic> gattCharacteristics =
                             service.getCharacteristics();
@@ -491,15 +489,11 @@ public class BLEServiceCodeSix extends Service {
 
         }
         mBluetoothGatt.readRemoteRssi();
-
-
     }
 
     public boolean writeFileCharacteristic() {
-        double ProgressInterval=0.0;
-        boolean result=false;
-        int BUFFER_SIZE = 497;//256; // 490 // mtu
-
+        boolean result = false;
+        int BUFFER_SIZE = 256; //497; //256; // 490 // mtu
 
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -510,65 +504,71 @@ public class BLEServiceCodeSix extends Service {
 
         if (mCustomService == null) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " getService Not found: " + BT_BLE_Constants.UUID_service_file);
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " getService Not found: " + BT_BLE_Constants.UUID_service_file);
             return false;
         }
 
         try {
-            // String inputFile = Environment.getExternalStorageDirectory().toString() + "/" + AppConstants.FOLDER_BIN + "/LINK_BLUE.bin";
-            //String inputFile = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN)   + "/LINK_BLUE.bin";
-            String inputFile = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+            String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
 
-            long fileSize = new File(inputFile).length();
-            tempFileSize = fileSize;
+            File file = new File(LocalPath);
 
-            if (tempFileSize > 0) {
-                ProgressInterval = (double) (100 / (double) (tempFileSize / BUFFER_SIZE));
-                upgradeProgress = ProgressInterval;
-            }
+            long file_size = file.length();
+            long tempFileSize = file_size;
 
-            InputStream inputStream = new FileInputStream(inputFile);
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " <File Size: " + file_size + ">");
 
-            //int BUFFER_SIZE = 16384; // 16KB buffer size
-            //int BUFFER_SIZE = 8192; // 8KB buffer size
-
+            InputStream inputStream = new FileInputStream(file);
             byte[] bufferBytes = new byte[BUFFER_SIZE];
 
-            Thread.sleep(5000);
+            //Thread.sleep(5000);
 
-            while (inputStream.read(bufferBytes) != -1) {
-                upgradeProgress = upgradeProgress + ProgressInterval;
-                //valueChunk = bufferBytes;
+            if (inputStream != null) {
+                long bytesWritten = 0;
+                int amountOfBytesRead;
 
-                BluetoothGattCharacteristic mWriteCharacteristic = null;
-                mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char_file));
-                mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-                mWriteCharacteristic.setValue(bufferBytes);
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " Upload (" + AppConstants.UP_Upgrade_File_name + ") started...");
 
-                if (mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                    // Log.w(TAG, "Write File Characteristics successfully!");
-                    Log.w(TAG, String.valueOf(tempFileSize));
-                    //Log.w(TAG, String.valueOf(valueChunk));
-                    //BTCommandActivity.tvStatus.setText(String.format(getResources().getString(R.string.Softwareupdate), tempfileSize));
-                    //BTCommandActivity.tvStatus.setText(String.format("%.2f",upgradeProgress) +"%");
+                while ((amountOfBytesRead = inputStream.read(bufferBytes)) != -1) {
 
-                } else {
-                    break;
+                    bytesWritten += amountOfBytesRead;
+                    int progressValue = (int) (100 * ((double) bytesWritten) / ((double) file_size));
+                    BT_BLE_Constants.BTBLEUpgradeProgressValue = String.valueOf(progressValue);
+
+                    BluetoothGattCharacteristic mWriteCharacteristic = null;
+                    mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char_file));
+                    mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+                    mWriteCharacteristic.setValue(bufferBytes);
+
+                    if (mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
+                        Log.w(TAG, String.valueOf(tempFileSize));
+                    } else {
+                        break;
+                    }
+
+                    tempFileSize = tempFileSize - BUFFER_SIZE;
+                    if (tempFileSize < BUFFER_SIZE) {
+                        int i = (int) (long) tempFileSize;
+                        if (i > 0) {
+                            bufferBytes = new byte[i];
+                        }
+                        result = true;
+                    }
+
+                    try {
+                        Thread.sleep(10);
+                    } catch (Exception e) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " Thread exception: " + e.getMessage() + " (Progress: " + progressValue + ")");
+                    }
                 }
-
-                tempFileSize = tempFileSize - BUFFER_SIZE;
-                if (tempFileSize < BUFFER_SIZE) {
-                    Integer i = (int) (long) tempFileSize;
-                    bufferBytes = new byte[i];
-                    result = true;
-                }
-
-                Thread.sleep(20);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            upgradeProgress = 100;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " writeFileCharacteristic Exception: " + e.getMessage());
         }
         return result;
     }

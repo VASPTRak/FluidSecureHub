@@ -167,6 +167,7 @@ public class BS_BLE_BTFive extends Service {
                     isOnlineTxn = true;
                 }
 
+                BT_BLE_Constants.isLinkFiveNotifyEnabled = false;
                 Intent gattServiceIntent = new Intent(this, BLEServiceCodeFive.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
@@ -283,10 +284,12 @@ public class BS_BLE_BTFive extends Service {
             res = res.trim();
 
             if (res.toUpperCase().contains(BTLinkResponseFormatOld.toUpperCase())) {
+                BT_BLE_Constants.isLinkFiveNotifyEnabled = true;
                 BT_BLE_Constants.isNewVersionLinkFive = false;
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " <Found BT LINK (OLD)> ");
             } else if (res.toUpperCase().contains(BTLinkResponseFormatNew.toUpperCase())) {
+                BT_BLE_Constants.isLinkFiveNotifyEnabled = true;
                 BT_BLE_Constants.isNewVersionLinkFive = true;
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " <Found BT LINK (New)> ");
@@ -334,7 +337,7 @@ public class BS_BLE_BTFive extends Service {
                 }
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Callback BT Resp~~  " + Response + ">");
+                    AppConstants.WriteinFile(TAG + " <Callback BT Resp~~  " + Response.trim() + ">");
 
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -702,7 +705,8 @@ public class BS_BLE_BTFive extends Service {
         try {
             new CountDownTimer(10000, 2000) {
                 public void onTick(long millisUntilFinished) {
-                    if (BT_BLE_Constants.BTBLEStatusStrFive.equalsIgnoreCase("Connected")) {
+                    if (BT_BLE_Constants.BTBLEStatusStrFive.equalsIgnoreCase("Connected") && (BT_BLE_Constants.isLinkFiveNotifyEnabled)) {
+                        BT_BLE_Constants.isLinkFiveNotifyEnabled = false;
                         isConnected = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Link is connected.");
@@ -945,6 +949,10 @@ public class BS_BLE_BTFive extends Service {
                                         AppConstants.WriteinFile(TAG + " Checking Info command response. Response: true");
                                     parseInfoCommandResponse(Response);
                                     Response = "";
+                                } else {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " Checking Info command response. Response:>>" + Response.trim());
+                                    parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                                 }
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
@@ -984,6 +992,10 @@ public class BS_BLE_BTFive extends Service {
                                     AppConstants.WriteinFile(TAG + " Checking Info command response. Response: true");
                                 parseInfoCommandResponse(Response);
                                 Response = "";
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Checking Info command response. Response:>>" + Response.trim());
+                                parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                             }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -1099,10 +1111,10 @@ public class BS_BLE_BTFive extends Service {
                         }
                     }.start();
                 } else {
-                    GetPulserTypeCommand();
+                    ContinueToNextCommand(); //GetPulserTypeCommand(); // Commented get p_type as per #2437 - Nov 17th
                 }
             } else {
-                GetPulserTypeCommand();
+                ContinueToNextCommand(); //GetPulserTypeCommand();
             }
 
         } catch (Exception e) {
@@ -1552,7 +1564,7 @@ public class BS_BLE_BTFive extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ContinueToNextCommand();
+                                    GetPulserTypeCommand();
                                 }
                             }, 500);
                             cancel();
@@ -1571,7 +1583,7 @@ public class BS_BLE_BTFive extends Service {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                ContinueToNextCommand();
+                                GetPulserTypeCommand();
                             }
                         }, 500);
                     } else {
@@ -1611,6 +1623,113 @@ public class BS_BLE_BTFive extends Service {
         editor.putString("hoseid_bt5", hoseid);
         editor.putString("fsversion_bt5", fsversion);
         editor.commit();
+    }
+
+    public void parseInfoCommandResponseForLast10txtn(String response) {
+        try {
+            String version = "";
+
+            if (response.contains("BTMAC")) {
+                String[] split_res = response.split("\n");
+
+                if (split_res.length > 10) {
+                    for (int i = 0; i < split_res.length; i++) {
+                        String res = split_res[i];
+
+                        if (i == 1 && res.contains("-")) { // Only get first transaction
+                            try {
+                                String[] split = res.split("-");
+
+                                if (split.length == 2) {
+                                    String txn_id = split[0].trim();
+                                    String pulse = split[1];
+
+                                    pulse = removeLastChar(pulse.trim());
+
+                                    if (!txn_id.isEmpty() && !txn_id.equalsIgnoreCase("0")) {
+                                        SaveLastBTTransactionInLocalDB(txn_id, pulse);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " Last10 txtn parsing exception:>>" + e.getMessage());
+                            }
+                        } else {
+
+                            if (res.contains("version:")) {
+                                version = res.substring(res.indexOf(":") + 1).trim();
+                            }
+                            if (!version.isEmpty()) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " LINK Version >> " + version);
+                                storeUpgradeFSVersion(BS_BLE_BTFive.this, AppConstants.UP_HoseId_fs5, version);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception in parseInfoCommandResponseForLast10txtn. response>> " + response + "; Exception>>" + e.getMessage());
+        }
+    }
+
+    private String removeLastChar(String s) {
+
+        if (s.isEmpty())
+            return "";
+
+        return s.substring(0, s.length() - 1);
+    }
+
+    private void SaveLastBTTransactionInLocalDB(String txnId, String counts) {
+
+        try {
+            double lastCnt = Double.parseDouble(counts);
+            double Lastqty = lastCnt / numPulseRatio; //convert to gallons
+            Lastqty = AppConstants.roundNumber(Lastqty, 2);
+
+            ////////////////////////////////////-Update transaction ---
+            TrazComp authEntityClass = new TrazComp();
+            authEntityClass.TransactionId = txnId;
+            authEntityClass.FuelQuantity = Lastqty;
+            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BS_BLE_BTFive.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE + " " + "--Last Transaction--";
+            authEntityClass.TransactionFrom = "A";
+            authEntityClass.Pulses = Integer.parseInt(counts);
+            authEntityClass.IsFuelingStop = IsFuelingStop;
+            authEntityClass.IsLastTransaction = "1";
+
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(authEntityClass);
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " <Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty + ">");
+
+            String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BS_BLE_BTFive.this).PersonEmail;
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BS_BLE_BTFive.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
+
+            HashMap<String, String> imap = new HashMap<>();
+            imap.put("jsonData", jsonData);
+            imap.put("authString", authString);
+
+            boolean isInsert = true;
+            ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
+            if (alltranz != null && alltranz.size() > 0) {
+                for (int i = 0; i < alltranz.size(); i++) {
+                    if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
+                        isInsert = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isInsert && Lastqty > 0) {
+                controller.insertTransactions(imap);
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " SaveLastBTTransactionToServer Exception: " + e.getMessage());
+        }
     }
 
     private void parseLast1CommandResponse(String response) {

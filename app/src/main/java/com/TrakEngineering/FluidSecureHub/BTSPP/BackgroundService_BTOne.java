@@ -599,10 +599,10 @@ public class BackgroundService_BTOne extends Service {
                         }
                     }.start();
                 } else {
-                    GetPulserTypeCommand();
+                    ContinueToNextCommand(); //GetPulserTypeCommand(); // Commented get p_type as per #2437 - Nov 17th
                 }
             } else {
-                GetPulserTypeCommand();
+                ContinueToNextCommand(); //GetPulserTypeCommand();
             }
 
         } catch (Exception e) {
@@ -627,7 +627,7 @@ public class BackgroundService_BTOne extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ContinueToNextCommand();
+                                    GetPulserTypeCommand();
                                 }
                             }, 500);
                             cancel();
@@ -646,7 +646,7 @@ public class BackgroundService_BTOne extends Service {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                ContinueToNextCommand();
+                                GetPulserTypeCommand();
                             }
                         }, 500);
                     } else {

@@ -29,6 +29,13 @@ public class BT_BLE_Constants {
     public static boolean isNewVersionLinkFive = false;
     public static boolean isNewVersionLinkSix = false;
 
+    public static boolean isLinkOneNotifyEnabled = false;
+    public static boolean isLinkTwoNotifyEnabled = false;
+    public static boolean isLinkThreeNotifyEnabled = false;
+    public static boolean isLinkFourNotifyEnabled = false;
+    public static boolean isLinkFiveNotifyEnabled = false;
+    public static boolean isLinkSixNotifyEnabled = false;
+
     public static String CurrentCommand_LinkOne = "";
     public static String CurrentCommand_LinkTwo = "";
     public static String CurrentCommand_LinkThree = "";
@@ -42,4 +49,6 @@ public class BT_BLE_Constants {
     public static boolean isStopButtonPressed4 = false;
     public static boolean isStopButtonPressed5 = false;
     public static boolean isStopButtonPressed6 = false;
+
+    public static String BTBLEUpgradeProgressValue = "0";
 }
