@@ -16398,6 +16398,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             switch (linkPosition) {
                 case 0: // Link 1
                     if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
+                            BTConstants.BTConnFailedCount++;
+                        }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 1: Link not connected. Retrying to connect.");
                         //Retrying to connect to link
@@ -16408,6 +16411,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 1: // Link 2
                     if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
+                            BTConstants.BTConnFailedCount++;
+                        }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 2: Link not connected. Retrying to connect.");
                         //Retrying to connect to link
@@ -16418,6 +16424,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 2: // Link 3
                     if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
+                            BTConstants.BTConnFailedCount++;
+                        }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 3: Link not connected. Retrying to connect.");
                         //Retrying to connect to link
@@ -16428,6 +16437,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 3: // Link 4
                     if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
+                            BTConstants.BTConnFailedCount++;
+                        }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 4: Link not connected. Retrying to connect.");
                         //Retrying to connect to link
@@ -16438,6 +16450,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 4: // Link 5
                     if (!BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
+                            BTConstants.BTConnFailedCount++;
+                        }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 5: Link not connected. Retrying to connect.");
                         //Retrying to connect to link
@@ -16448,6 +16463,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 5: // Link 6
                     if (!BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
+                            BTConstants.BTConnFailedCount++;
+                        }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 6: Link not connected. Retrying to connect.");
                         //Retrying to connect to link

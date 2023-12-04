@@ -93,6 +93,8 @@ public class BTConstants {
 
     public static int RetryBTConnectionLinkPosition = -1;
 
+    public static int BTConnFailedCount = 0;
+
     //Rename BT link one
     public static boolean BT1NeedRename;
     public static String BT1REPLACEBLE_WIFI_NAME;

@@ -374,7 +374,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
         }*/
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -389,7 +389,6 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
                         if (gps.canGetLocation()) {
                             latitude = gps.getLatitude();
                             longitude = gps.getLongitude();
-                            //   Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
                         }
 
                         try {
@@ -435,7 +434,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
                 }
                 break;
         }
-    }
+    }*/
 
     /*@Override
     public void onConnected(Bundle bundle) {

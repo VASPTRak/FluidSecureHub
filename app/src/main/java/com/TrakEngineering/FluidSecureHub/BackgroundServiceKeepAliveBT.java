@@ -5,6 +5,7 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -214,6 +215,32 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                     }
 
                                 } else {
+                                    if (BTConstants.BTConnFailedCount == 3) {
+                                        BTConstants.BTConnFailedCount = 0;
+                                        try {
+                                            //Disable BT------------
+                                            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                            mBluetoothAdapter.disable();
+                                            Log.i(TAG, "BT OFF");
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "<BT OFF>");
+
+                                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    //Enable BT------------
+                                                    mBluetoothAdapter.enable();
+                                                    Log.i(TAG, "BT ON");
+                                                    if (AppConstants.GenerateLogs)
+                                                        AppConstants.WriteinFile(TAG + "<BT ON>");
+                                                }
+                                            }, 2000);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            if (AppConstants.GenerateLogs)
+                                                AppConstants.WriteinFile(TAG + "Exception while toggling Bluetooth.");
+                                        }
+                                    }
                                     if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         BTConstants.RetryBTConnectionLinkPosition = position;
                                         Thread.sleep(1000);
