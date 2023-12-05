@@ -80,7 +80,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkOneStatus = false;
         status1("Disconnect");
         e.printStackTrace();
-        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorOne Status: " + e.getMessage());
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "BTSPPLink 1: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -94,7 +95,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         status1("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 1: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 1: <SerialIoError: " + e.getMessage() + ">");
     }
 
     public void connect1() {
@@ -223,7 +224,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkTwoStatus = false;
         status2("Disconnect");
         e.printStackTrace();
-        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorTwo Status: " + e.getMessage());
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "BTSPPLink 2: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -237,7 +239,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         status2("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 2: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 2: <SerialIoError: " + e.getMessage() + ">");
     }
 
     public void connect2() {
@@ -365,7 +367,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkThreeStatus = false;
         status3("Disconnect");
         e.printStackTrace();
-        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorThree Status: " + e.getMessage());
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "BTSPPLink 3: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -379,7 +382,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         status3("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 3: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 3: <SerialIoError: " + e.getMessage() + ">");
     }
 
     public void connect3() {
@@ -508,7 +511,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkFourStatus = false;
         status4("Disconnect");
         e.printStackTrace();
-        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorFour Status: " + e.getMessage());
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "BTSPPLink 4: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -522,7 +526,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         status4("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 4: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 4: <SerialIoError: " + e.getMessage() + ">");
     }
 
     public void connect4() {
@@ -650,7 +654,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkFiveStatus = false;
         status5("Disconnect");
         e.printStackTrace();
-        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorFive Status: " + e.getMessage());
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "BTSPPLink 5: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -664,7 +669,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         status5("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 5: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 5: <SerialIoError: " + e.getMessage() + ">");
     }
 
     public void connect5() {
@@ -793,7 +798,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         BTConstants.BTLinkSixStatus = false;
         status6("Disconnect");
         e.printStackTrace();
-        //AppConstants.WriteinFile(TAG + " onSerialConnectErrorSix Status: " + e.getMessage());
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "BTSPPLink 6: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -807,7 +813,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         status6("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 6: SerialIoError: " + e.getMessage());
+            AppConstants.WriteinFile(TAG + "BTSPPLink 6: <SerialIoError: " + e.getMessage() + ">");
     }
 
     public void connect6() {

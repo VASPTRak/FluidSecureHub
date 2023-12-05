@@ -137,8 +137,12 @@ public class SerialSocketFive implements Runnable {
             if (listener != null)
                 listener.onSerialConnectFive();
         } catch (Exception e) {
-            if (listener != null)
+            if (listener != null) {
                 listener.onSerialConnectErrorFive(e);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile("<" + TAG + " Connect Exception: " + e.getMessage() + ">");
+            }
             try {
                 socket.close();
             } catch (Exception ignored) {
@@ -159,8 +163,12 @@ public class SerialSocketFive implements Runnable {
             }
         } catch (Exception e) {
             connected = false;
-            if (listener != null)
+            if (listener != null) {
                 listener.onSerialIoErrorFive(e);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");
+            }
             try {
                 socket.close();
             } catch (Exception ignored) {

@@ -66,6 +66,8 @@ public class BLEServiceCodeFour extends Service {
             String intentAction;
             gt_notify_status = status;
             gatt_notify = gatt;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " <onConnectionStateChange: status => " + status + "; newState => " + newState + ">");
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 gatt.requestMtu(512);
                 intentAction = ACTION_GATT_CONNECTED;
@@ -98,57 +100,65 @@ public class BLEServiceCodeFour extends Service {
             } catch (Exception e) {
             }
 
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                List<BluetoothGattService> services = gatt.getServices();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Finding BT service " + BT_BLE_Constants.UUID_service + " OR " + BT_BLE_Constants.UUID_service_BT + ">");
-                for (BluetoothGattService service : services) {
-                    String suuid = String.valueOf(service.getUuid());
-                    //AppConstants.WriteinFile(BTLinkLeServiceCode.this, "Service -> " + suuid );
-                    if (!suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service) && !suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_BT) && suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_file))
-                        continue;
+            try {
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " <Finding BT service " + BT_BLE_Constants.UUID_service + " OR " + BT_BLE_Constants.UUID_service_BT + ">");
+                    List<BluetoothGattService> services = gatt.getServices();
+                    if (services != null) {
+                        for (BluetoothGattService service : services) {
+                            String suuid = String.valueOf(service.getUuid());
+                            //AppConstants.WriteinFile(BTLinkLeServiceCode.this, "Service -> " + suuid );
+                            if (!suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service) && !suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_BT) && suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_file))
+                                continue;
 
-                    if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service)) {
-                        UUID_service = BT_BLE_Constants.UUID_service;
-                        //BT_BLE_Constants.isNewVersionLinkFour = false;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " <Found BT LINK (OLD)>");
-                    }
-                    if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_BT)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " <Found BT LINK (New)>");
-                        UUID_service = BT_BLE_Constants.UUID_service_BT;
-                        //BT_BLE_Constants.isNewVersionLinkFour = true;
-                    }
-                    List<BluetoothGattCharacteristic> gattCharacteristics =
-                            service.getCharacteristics();
-
-                    // Loops through available Characteristics.
-                    for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                        String cuuid = String.valueOf(gattCharacteristic.getUuid());
-                        if (!cuuid.equals(BT_BLE_Constants.UUID_char) && !cuuid.equals(BT_BLE_Constants.UUID_char_file))
-                            continue;
-
-                        final int charaProp = gattCharacteristic.getProperties();
-
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                            setCharacteristicNotification(gattCharacteristic, true);
-
-                            BluetoothGattCharacteristic init_gatt = gatt.getService(UUID.fromString(UUID_service)).getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char));
-                            for (BluetoothGattDescriptor descriptor : init_gatt.getDescriptors()) {
-                                Log.e(TAG, "BluetoothGattDescriptor 1: " + descriptor.getUuid().toString());
-                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                                gatt.writeDescriptor(descriptor);
-                                gatt.readRemoteRssi();
+                            if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service)) {
+                                UUID_service = BT_BLE_Constants.UUID_service;
+                                //BT_BLE_Constants.isNewVersionLinkFour = false;
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " <Found BT LINK (OLD)>");
                             }
+                            if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_BT)) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " <Found BT LINK (New)>");
+                                UUID_service = BT_BLE_Constants.UUID_service_BT;
+                                //BT_BLE_Constants.isNewVersionLinkFour = true;
+                            }
+                            List<BluetoothGattCharacteristic> gattCharacteristics =
+                                    service.getCharacteristics();
 
-                        } else {
-                            Log.w(TAG, "Characteristic does not support notify");
+                            if (gattCharacteristics != null) {
+                                // Loops through available Characteristics.
+                                for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+                                    String cuuid = String.valueOf(gattCharacteristic.getUuid());
+                                    if (!cuuid.equals(BT_BLE_Constants.UUID_char) && !cuuid.equals(BT_BLE_Constants.UUID_char_file))
+                                        continue;
+
+                                    final int charaProp = gattCharacteristic.getProperties();
+
+                                    if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                                        setCharacteristicNotification(gattCharacteristic, true);
+
+                                        BluetoothGattCharacteristic init_gatt = gatt.getService(UUID.fromString(UUID_service)).getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char));
+                                        for (BluetoothGattDescriptor descriptor : init_gatt.getDescriptors()) {
+                                            Log.e(TAG, "BluetoothGattDescriptor 1: " + descriptor.getUuid().toString());
+                                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                            gatt.writeDescriptor(descriptor);
+                                            gatt.readRemoteRssi();
+                                        }
+
+                                    } else {
+                                        Log.w(TAG, "Characteristic does not support notify");
+                                    }
+                                }
+                            }
                         }
                     }
+                } else {
+                    Log.w(TAG, "onServicesDiscovered received: " + status);
                 }
-            } else {
-                Log.w(TAG, "onServicesDiscovered received: " + status);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

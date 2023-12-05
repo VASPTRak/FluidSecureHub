@@ -131,11 +131,15 @@ public class SerialSocketThree implements Runnable {
         try {
             socket = device.createRfcommSocketToServiceRecord(BLUETOOTH_SPP);
             socket.connect();
-            if(listener != null)
+            if (listener != null)
                 listener.onSerialConnectThree();
         } catch (Exception e) {
-            if(listener != null)
+            if (listener != null) {
                 listener.onSerialConnectErrorThree(e);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile("<" + TAG + " Connect Exception: " + e.getMessage() + ">");
+            }
             try {
                 socket.close();
             } catch (Exception ignored) {
@@ -151,13 +155,17 @@ public class SerialSocketThree implements Runnable {
             while (true) {
                 len = socket.getInputStream().read(buffer);
                 byte[] data = Arrays.copyOf(buffer, len);
-                if(listener != null)
+                if (listener != null)
                     listener.onSerialReadThree(data);
             }
         } catch (Exception e) {
             connected = false;
-            if (listener != null)
+            if (listener != null) {
                 listener.onSerialIoErrorThree(e);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");
+            }
             try {
                 socket.close();
             } catch (Exception ignored) {

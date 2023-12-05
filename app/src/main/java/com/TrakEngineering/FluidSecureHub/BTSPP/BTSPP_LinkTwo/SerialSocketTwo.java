@@ -139,8 +139,12 @@ public class SerialSocketTwo implements Runnable {
             if (listener != null)
                 listener.onSerialConnectTwo();
         } catch (Exception e) {
-            if (listener != null)
+            if (listener != null) {
                 listener.onSerialConnectErrorTwo(e);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile("<" + TAG + " Connect Exception: " + e.getMessage() + ">");
+            }
             try {
                 socket.close();
             } catch (Exception ignored) {
@@ -161,8 +165,12 @@ public class SerialSocketTwo implements Runnable {
             }
         } catch (Exception e) {
             connected = false;
-            if (listener != null)
+            if (listener != null) {
                 listener.onSerialIoErrorTwo(e);
+            } else {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");
+            }
             try {
                 socket.close();
             } catch (Exception ignored) {

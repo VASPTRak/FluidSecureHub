@@ -336,7 +336,7 @@ public class BackgroundService_BTFour extends Service {
                         isConnected = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 4: Link is connected.");
-                        if (nextAction.equalsIgnoreCase("info")) { // proceed to info command after upgrade is done
+                        if (nextAction.equalsIgnoreCase("info")) {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -365,7 +365,7 @@ public class BackgroundService_BTFour extends Service {
                         isConnected = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 4: Link is connected.");
-                        if (nextAction.equalsIgnoreCase("info")) { // proceed to info command after upgrade is done
+                        if (nextAction.equalsIgnoreCase("info")) {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
