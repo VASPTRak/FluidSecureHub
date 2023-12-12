@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class BackgroundServiceKeepAliveBT extends BackgroundService {
     private static final String TAG = AppConstants.LOG_MAINTAIN + "-" + "BS_KeepAliveBT ";
@@ -47,6 +49,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     public static ArrayList<HashMap<String, String>> DefectiveBTLinks = new ArrayList<>();
 
     Date date1, date2;
+    public boolean isRebootDeviceCalled = false;
 
     // ============ Bluetooth receiver for Keep Alive =========//
     public BroadcastBlueLinkData broadcastBlueLinkData = null;
@@ -70,6 +73,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
 
             if (WelcomeActivity.OnWelcomeActivity && AppConstants.IsAllHosesAreFree()) {
 
+                DefectiveBTLinks.clear();
                 StartProcess();
 
             } else {
@@ -88,7 +92,6 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     @SuppressLint("LongLogTag")
     public void StartProcess() {
         try {
-            DefectiveBTLinks.clear();
 
             if (SSIDList != null && SSIDList.size() > 0) {
                 if (counter < SSIDList.size()) {
@@ -124,36 +127,42 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                 case 0://Link One
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkOneStatus && BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected") && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
+                                        BTConstants.BTConnFailedCountLink1 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT0");
                                     }
                                     break;
                                 case 1://Link Two
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkTwoStatus && BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected") && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
+                                        BTConstants.BTConnFailedCountLink2 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT1");
                                     }
                                     break;
                                 case 2://Link Three
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkThreeStatus && BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected") && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
+                                        BTConstants.BTConnFailedCountLink3 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT2");
                                     }
                                     break;
                                 case 3://Link Four
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkFourStatus && BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected") && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
+                                        BTConstants.BTConnFailedCountLink4 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT3");
                                     }
                                     break;
                                 case 4://Link Five
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkFiveStatus && BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected") && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
+                                        BTConstants.BTConnFailedCountLink5 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT4");
                                     }
                                     break;
                                 case 5://Link Six
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkSixStatus && BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected") && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
+                                        BTConstants.BTConnFailedCountLink6 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT5");
                                     }
                                     break;
@@ -215,8 +224,16 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                     }
 
                                 } else {
-                                    if (BTConstants.BTConnFailedCount == 3) {
-                                        BTConstants.BTConnFailedCount = 0;
+                                    boolean continueToRetry = true;
+                                    if (BTConstants.BTConnFailedCountLink1 == 3 || BTConstants.BTConnFailedCountLink2 == 3 || BTConstants.BTConnFailedCountLink3 == 3 || BTConstants.BTConnFailedCountLink4 == 3 || BTConstants.BTConnFailedCountLink5 == 3 || BTConstants.BTConnFailedCountLink6 == 3) {
+                                        // Reset count for all positions
+                                        BTConstants.BTConnFailedCountLink1 = 0;
+                                        BTConstants.BTConnFailedCountLink2 = 0;
+                                        BTConstants.BTConnFailedCountLink3 = 0;
+                                        BTConstants.BTConnFailedCountLink4 = 0;
+                                        BTConstants.BTConnFailedCountLink5 = 0;
+                                        BTConstants.BTConnFailedCountLink6 = 0;
+                                        continueToRetry = false;
                                         try {
                                             //Disable BT------------
                                             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -233,17 +250,26 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                                     Log.i(TAG, "BT ON");
                                                     if (AppConstants.GenerateLogs)
                                                         AppConstants.WriteinFile(TAG + "<BT ON>");
+                                                    try {
+                                                        Thread.sleep(1000);
+                                                    } catch (Exception e) { e.printStackTrace(); }
+
+                                                    if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                                        BTConstants.RetryBTConnectionLinkPosition = position;
+                                                    }
                                                 }
                                             }, 2000);
                                         } catch (Exception e) {
-                                            e.printStackTrace();
+                                            continueToRetry = true;
                                             if (AppConstants.GenerateLogs)
                                                 AppConstants.WriteinFile(TAG + "Exception while toggling Bluetooth.");
                                         }
                                     }
-                                    if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
-                                        BTConstants.RetryBTConnectionLinkPosition = position;
-                                        Thread.sleep(1000);
+                                    if (continueToRetry) {
+                                        if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                            BTConstants.RetryBTConnectionLinkPosition = position;
+                                            Thread.sleep(1000);
+                                        }
                                     }
                                     CheckInabilityToConnectLinks(position, selSSID, IsBTLinkConnected, false);
                                 }
@@ -264,6 +290,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             }
 
             if (AppConstants.IsAllHosesAreFree()) {
+                boolean rebootFlag = false;
                 if (DefectiveBTLinks != null && DefectiveBTLinks.size() > 0) {
 
                     for (int p = 0; p < DefectiveBTLinks.size(); p++) {
@@ -272,7 +299,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                         int diffMin = Integer.parseInt(DefectiveBTLinks.get(p).get("diff_min"));
                         String Message = DefectiveBTLinks.get(p).get("Message");
 
-                        if (diffMin > 60) {
+                        if (diffMin > 60) { // 1 hr
+                            rebootFlag = true;
                             boolean sendMail = checkSharedPrefDefectiveLink(BackgroundServiceKeepAliveBT.this, linkName);
                             if (sendMail) {
                                 setSharedPrefDefectiveLink(BackgroundServiceKeepAliveBT.this, linkName);
@@ -282,7 +310,20 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                 SendDefectiveLinkInfoEmailAsyncCall(linkName);
                             }
                         }
+                    }
+                }
 
+                if (rebootFlag) {
+                    // Tablet Reboot functionality
+                    if (AppConstants.IsAllHosesAreFree()) {
+                        boolean sendReboot = checkSharedPrefForReboot(BackgroundServiceKeepAliveBT.this);
+                        if (sendReboot && !isRebootDeviceCalled) {
+                            isRebootDeviceCalled = true;
+                            setSharedPrefForReboot(BackgroundServiceKeepAliveBT.this);
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "<Calling SureMDM Reboot>");
+                            new CallSureMDMRebootDevice(BackgroundServiceKeepAliveBT.this).execute();
+                        }
                     }
                 }
 
@@ -354,6 +395,31 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             return false;
         } else {
             return true;
+        }
+    }
+
+    private void setSharedPrefForReboot(Context myctx) {
+        SharedPreferences sharedPref = myctx.getSharedPreferences("DefectiveBTLinkDateTime", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("LastRebootDateTime", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm:ss"));
+        editor.apply();
+    }
+
+    private boolean checkSharedPrefForReboot(Context myctx) {
+        SharedPreferences sharedPrefODO = myctx.getSharedPreferences("DefectiveBTLinkDateTime", Context.MODE_PRIVATE);
+        String last_date = sharedPrefODO.getString("LastRebootDateTime", "");
+        String curr_date = AppConstants.currentDateFormat("yyyy-MM-dd HH:mm:ss");
+        int diff_min = 0;
+        if (last_date.isEmpty()) {
+            return true;
+        } else {
+            diff_min = getDiffInMinutes(curr_date, last_date);
+        }
+
+        if (diff_min >= 60) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -657,4 +723,53 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         });
     }
 
+    public class CallSureMDMRebootDevice extends AsyncTask<Void, Void, String> {
+
+        private Context classContext;
+
+        private CallSureMDMRebootDevice(Context ctx) {
+            classContext = ctx;
+        }
+
+        protected String doInBackground(Void... arg0) {
+            String resp = "";
+
+            try {
+                SharedPreferences sharedPref = classContext.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                String PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
+
+                String param1 = AppConstants.getIMEI(classContext) + ":" + PersonEmail + ":" + "SureMDMRebootDevice" + AppConstants.LANG_PARAM;
+
+                String authString = "Basic " + AppConstants.convertStingToBase64(param1);
+
+                OkHttpClient client = new OkHttpClient();
+                client.setConnectTimeout(4, TimeUnit.SECONDS);
+                client.setReadTimeout(4, TimeUnit.SECONDS);
+                client.setWriteTimeout(4, TimeUnit.SECONDS);
+
+                Request request = new Request.Builder()
+                        .url(AppConstants.webURL)
+                        .addHeader("Authorization", authString)
+                        .addHeader("ReqType", "Normal")
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+
+            } catch (Exception e) {
+                System.out.println("Ex" + e.getMessage());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<CallSureMDMRebootDevice -InBackground-Exception: " + e.getMessage() + ">");
+                isRebootDeviceCalled = false;
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            isRebootDeviceCalled = false;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<CallSureMDMRebootDevice Response: " + result + ">");
+        }
+    }
 }

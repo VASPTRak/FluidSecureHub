@@ -675,7 +675,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + "<in onDestroy>");
         closeBTSppMain();
         qrcodebleServiceOff();
 
@@ -1334,7 +1335,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
             loading = null;
         }
-
     }
 
     //Delete log files older than 1 month
@@ -16398,8 +16398,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             switch (linkPosition) {
                 case 0: // Link 1
                     if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
-                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
-                            BTConstants.BTConnFailedCount++;
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCountLink1 < 4) {
+                            BTConstants.BTConnFailedCountLink1++;
                         }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 1: Link not connected. Retrying to connect.");
@@ -16411,8 +16411,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 1: // Link 2
                     if (!BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) {
-                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
-                            BTConstants.BTConnFailedCount++;
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCountLink2 < 4) {
+                            BTConstants.BTConnFailedCountLink2++;
                         }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 2: Link not connected. Retrying to connect.");
@@ -16424,8 +16424,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 2: // Link 3
                     if (!BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) {
-                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
-                            BTConstants.BTConnFailedCount++;
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCountLink3 < 4) {
+                            BTConstants.BTConnFailedCountLink3++;
                         }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 3: Link not connected. Retrying to connect.");
@@ -16437,8 +16437,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 3: // Link 4
                     if (!BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) {
-                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
-                            BTConstants.BTConnFailedCount++;
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCountLink4 < 4) {
+                            BTConstants.BTConnFailedCountLink4++;
                         }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 4: Link not connected. Retrying to connect.");
@@ -16450,8 +16450,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 4: // Link 5
                     if (!BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
-                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
-                            BTConstants.BTConnFailedCount++;
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCountLink5 < 4) {
+                            BTConstants.BTConnFailedCountLink5++;
                         }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 5: Link not connected. Retrying to connect.");
@@ -16463,8 +16463,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     break;
                 case 5: // Link 6
                     if (!BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
-                        if (!calledFromUpgrade && BTConstants.BTConnFailedCount < 4) {
-                            BTConstants.BTConnFailedCount++;
+                        if (!calledFromUpgrade && BTConstants.BTConnFailedCountLink6 < 4) {
+                            BTConstants.BTConnFailedCountLink6++;
                         }
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logPrefix + TAG + "BTLink 6: Link not connected. Retrying to connect.");

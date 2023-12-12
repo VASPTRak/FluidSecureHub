@@ -93,7 +93,12 @@ public class BTConstants {
 
     public static int RetryBTConnectionLinkPosition = -1;
 
-    public static int BTConnFailedCount = 0;
+    public static int BTConnFailedCountLink1 = 0;
+    public static int BTConnFailedCountLink2 = 0;
+    public static int BTConnFailedCountLink3 = 0;
+    public static int BTConnFailedCountLink4 = 0;
+    public static int BTConnFailedCountLink5 = 0;
+    public static int BTConnFailedCountLink6 = 0;
 
     //Rename BT link one
     public static boolean BT1NeedRename;
