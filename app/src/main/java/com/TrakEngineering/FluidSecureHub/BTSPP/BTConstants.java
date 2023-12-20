@@ -60,6 +60,7 @@ public class BTConstants {
     public static String scope_ON_cmd = "LK_COMM=scope=ON";
     public static String scope_READ_cmd = "LK_COMM=scope=READ";
     public static String last1_cmd = "LK_COMM=last1";
+    public static String reboot_cmd = "LK_COMM=restartnow";
     public static String ScopeStatus = "";
     public static String[] p_types = {"1", "2", "3", "4"};
 

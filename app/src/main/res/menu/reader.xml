@@ -116,4 +116,11 @@
         android:visible="false"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/forceOfflineList"
+        android:orderInCategory="103"
+        android:title="@string/ForceOfflineListMenu"
+        android:visible="false"
+        app:showAsAction="never" />
+
 </menu>

@@ -56,6 +56,7 @@
     <string name="CameraMenu">Cámara</string>
     <string name="ReloadMenu">Recargar</string>
     <string name="TestTransactionMenu">Transacción de prueba</string>
+    <string name="ForceOfflineListMenu">Forzar lista sin conexión</string>
     <string name="PleaseWaitForHotspotConnect">Conectando al hotspot. Espere por favor...</string>
     <string name="EmptyTankWarning">Este nivel del tanque es bajo. Por favor contacte a su Gerente.</string>
 

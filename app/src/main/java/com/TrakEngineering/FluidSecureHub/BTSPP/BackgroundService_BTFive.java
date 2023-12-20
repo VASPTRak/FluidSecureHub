@@ -1376,7 +1376,7 @@ public class BackgroundService_BTFive extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 5:onReceive Exception:" + e.toString());
+                    AppConstants.WriteinFile(TAG + " BTLink 5:onReceive Exception:" + e.getMessage());
             }
         }
     }

@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
+import com.TrakEngineering.FluidSecureHub.BuildConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +19,9 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
-import static com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkOne.SerialServiceOne.INTENT_ACTION_DISCONNECT;
-
 public class SerialSocketOne implements Runnable {
 
+    static final String INTENT_ACTION_DISCONNECT = BuildConfig.APPLICATION_ID + ".Disconnect";
     private static final UUID BLUETOOTH_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private final BroadcastReceiver disconnectBroadcastReceiver;
     private static final String TAG = SerialSocketOne.class.getSimpleName();

@@ -1706,8 +1706,8 @@ public class CommonUtils {
         return false;
     }
 
-    public static boolean checkServiceRunning(Context con_text, String package_name) {
-        ActivityManager manager = (ActivityManager) con_text.getSystemService(ACTIVITY_SERVICE);
+    public static boolean checkServiceRunning(Context context, String package_name) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (package_name.equals(service.service.getClassName())) {
                 return true;

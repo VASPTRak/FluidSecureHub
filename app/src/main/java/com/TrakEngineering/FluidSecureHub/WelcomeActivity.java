@@ -676,7 +676,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     protected void onDestroy() {
         super.onDestroy();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "<in onDestroy>");
+            AppConstants.WriteinFile(TAG + "<Closed.>");
         closeBTSppMain();
         qrcodebleServiceOff();
 
@@ -1202,6 +1202,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
     public void cancelOfflineDownload() {
         try {
+            AppConstants.isOfflineDownloadStarted = false;
+            AppConstants.forceDownloadOfflineData = false;
             cancelThinDownloadManager();
             stopService(new Intent(WelcomeActivity.this, OffBackgroundService.class));
         } catch (Exception e) {
@@ -1806,7 +1808,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             SetHoseIdByLinkPosition(0, hoseID);
-            if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
+            if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                 SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
             }
 
@@ -1834,6 +1836,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         AppConstants.serverCallInProgressForPin = false;
         AppConstants.serverCallInProgressForVehicle = false;
         BTConstants.forOscilloscope = false;
+        AppConstants.forceDownloadOfflineData = false;
         try {
             if (cd.isConnectingToInternet() && serverSSIDList != null && serverSSIDList.size() == 1) {
                 AppConstants.FS_selected = "0";
@@ -3295,6 +3298,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     SelectedItemPos = position;
                     SelectedItemPosFor10Txn = position;
                     BTConstants.forOscilloscope = false;
+                    AppConstants.forceDownloadOfflineData = false;
 
                     String selSSID = serverSSIDList.get(SelectedItemPos).get("WifiSSId");
                     String selMacAddress = serverSSIDList.get(SelectedItemPos).get("MacAddress");
@@ -8121,8 +8125,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         menu.findItem(R.id.mreload).setVisible(false);
         menu.findItem(R.id.btLinkScope).setVisible(true);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
-        //menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
-        menu.findItem(R.id.testTransaction).setVisible(true);
         //menu.findItem(R.id.m_p_type).setVisible(true);
 
         if (cd.isConnectingToInternet()) {
@@ -8131,12 +8133,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             menu.findItem(R.id.mofline).setVisible(false);
             menu.findItem(R.id.madd_link).setVisible(true); // Show Add LINK menu only in online mode.
             HideAddLinkMenu();
+            menu.findItem(R.id.testTransaction).setVisible(true); // Show Test Transaction menu only in online mode.
+            menu.findItem(R.id.forceOfflineList).setVisible(true); // Show Force Offline List menu only in online mode.
 
         } else {
 
             menu.findItem(R.id.monline).setVisible(false);
             menu.findItem(R.id.mofline).setVisible(true);
             menu.findItem(R.id.madd_link).setVisible(false);
+            menu.findItem(R.id.testTransaction).setVisible(false);
+            menu.findItem(R.id.forceOfflineList).setVisible(false);
         }
 
         SharedPreferences sharedPref = WelcomeActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
@@ -8262,8 +8268,30 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 LinkSelectionForTestTransaction();
                 break;
 
+            case R.id.forceOfflineList:
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Force Offline List option selected.>");
+                if (AppConstants.IsAllHosesAreFree()) {
+                    ForceDownloadOfflineData();
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.OneOfTheHoseIsBusy));
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.OneOfTheHoseIsBusy), Toast.LENGTH_SHORT).show();
+                }
+                break;
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void ForceDownloadOfflineData() {
+        if (!AppConstants.isOfflineDownloadStarted) {
+            AppConstants.forceDownloadOfflineData = true;
+            startService(new Intent(WelcomeActivity.this, OffBackgroundService.class));
+        } else {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Offline data download has already started>");
+        }
     }
 
     public void StoreLanguageSettings(String language, boolean isRecreate) {
@@ -15836,6 +15864,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         try {
             if (AppConstants.UP_Upgrade && !AppConstants.isTestTransaction) {
                 btnGo.setClickable(false);
+                if (linkType.equalsIgnoreCase("BT")) {
+                    AppConstants.isBTLinkUpgradeInProgress = true;
+                }
                 new FirmwareFileCheckAndDownload().execute(linkType, String.valueOf(linkPosition), btLinkCommType);
             } else {
                 ContinueToTheTransaction();
@@ -15847,6 +15878,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void ContinueToTheTransaction() {
+        AppConstants.isBTLinkUpgradeInProgress = false;
         if (isBroadcastReceiverRegistered) {
             isBroadcastReceiverRegistered = false;
             UnregisterReceiver();

@@ -381,8 +381,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         menu.findItem(R.id.enable_debug_window).setVisible(false);
         menu.findItem(R.id.madd_link).setVisible(false);
         menu.findItem(R.id.mshow_reader_status).setVisible(false);
-        //menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.testTransaction).setVisible(false);
+        menu.findItem(R.id.forceOfflineList).setVisible(false);
 
         SharedPreferences sharedPref = AddNewLinkToCloud.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");

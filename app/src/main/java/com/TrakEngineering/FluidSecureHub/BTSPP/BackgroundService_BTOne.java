@@ -1377,7 +1377,7 @@ public class BackgroundService_BTOne extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 1:onReceive Exception:" + e.toString());
+                    AppConstants.WriteinFile(TAG + " BTLink 1:onReceive Exception:" + e.getMessage());
             }
         }
     }
