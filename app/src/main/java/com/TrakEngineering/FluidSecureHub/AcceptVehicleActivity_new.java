@@ -120,7 +120,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     private EditText etInput;
     String LF_FobKey = "";
-    int Count = 1, LF_ReaderConnectionCount = 0, sec_count = 0;
+    int Count = 1, LF_ReaderConnectionCount = 0, sec_count = 0, sec_countForGateHub = 0;
     boolean IsNewFobVar = true;
     private Handler mHandler;
     public static ArrayList<HashMap<String, String>> ListOfBleDevices = new ArrayList<>();
@@ -426,6 +426,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
             public void run() {
 
                 sec_count++;
+                sec_countForGateHub++;
                 invalidateOptionsMenu();
                 UpdateReaderStatusToUI();
 
@@ -3724,20 +3725,16 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         runOnUiThread(new Runnable() {
             public void run() {
                 if (sec_count == 10) {
-
+                    sec_count = 0;
                     if (!Constants.HF_ReaderStatus.equals("HF Connected") && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
-                        //Toast.makeText(getApplicationContext(), "Reconnecting HF reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
                     } else if (!Constants.LF_ReaderStatus.equals("LF Connected") && !mDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
-                        //Toast.makeText(getApplicationContext(), "Reconnecting LF reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
                     } else if (!Constants.Mag_ReaderStatus.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2")) {
                         new ReconnectBleReaders().execute();
-                        //Toast.makeText(getApplicationContext(), "Reconnecting Mag reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
                     } else if (!Constants.QR_ReaderStatus.equals("QR Connected") && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
                     } else {
-                        //Toast.makeText(getApplicationContext(), "Reader connected " + sec_count, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -3748,6 +3745,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     public void resetReaderStatus() {
 
         sec_count = 0;
+        sec_countForGateHub = 0;
         Constants.QR_ReaderStatus = "QR Waiting..";
         Constants.HF_ReaderStatus = "HF Waiting..";
         Constants.LF_ReaderStatus = "LF Waiting..";
@@ -3825,10 +3823,11 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     private void retryConnect() {
 
-        if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True") && !VehicleValidationInProgress) {
+        if (sec_countForGateHub > 20 && IsGateHub.equalsIgnoreCase("True") && !VehicleValidationInProgress) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
             sec_count = 0;
+            sec_countForGateHub = 0;
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
             recreate();
             //new ReconnectBleReaders().execute();

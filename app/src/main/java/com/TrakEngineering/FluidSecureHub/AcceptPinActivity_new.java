@@ -109,7 +109,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private String QRCodeReaderForBarcode, QRCodeBluetoothMacAddressForBarcode;
     private EditText etInput;
     String Barcode_pin_val = "", LF_FobKey = "", ScreenNameForPersonnel = "PERSONNEL", ScreenNameForVehicle = "VEHICLE", KeyboardType = "2", MagCard_personnel = "";
-    int Count = 1, LF_ReaderConnectionCountPin = 0, sec_count = 0;
+    int Count = 1, LF_ReaderConnectionCountPin = 0, sec_count = 0, sec_countForGateHub = 0;
     private boolean barcodeReaderCall = true;
 
     private static final String TAG = "Pin_Activity ";
@@ -557,6 +557,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             public void run() {
 
                 sec_count++;
+                sec_countForGateHub++;
                 invalidateOptionsMenu();
                 UpdateReaderStatusToUI();
 
@@ -2939,20 +2940,16 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 if (sec_count == 10) {
-
+                    sec_count = 0;
                     if (!Constants.HF_ReaderStatus.equals("HF Connected") && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
-                        //Toast.makeText(getApplicationContext(), "Reconnecting HF reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
                     } else if (!Constants.LF_ReaderStatus.equals("LF Connected") && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
-                        //Toast.makeText(getApplicationContext(), "Reconnecting LF reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
                     } else if (!Constants.Mag_ReaderStatus.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2")) {
                         new ReconnectBleReaders().execute();
-                        //Toast.makeText(getApplicationContext(), "Reconnecting Mag reader please wait.."+sec_count, Toast.LENGTH_SHORT).show();
                     } else if (!Constants.QR_ReaderStatus.equals("QR Connected") && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
                     } else {
-                        // Toast.makeText(getApplicationContext(), "Reader connected " + sec_count, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -2963,6 +2960,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     public void resetReaderStatus() {
 
         sec_count = 0;
+        sec_countForGateHub = 0;
         Constants.QR_ReaderStatus = "QR Waiting..";
         Constants.HF_ReaderStatus = "HF Waiting..";
         Constants.LF_ReaderStatus = "LF Waiting..";
@@ -3162,10 +3160,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     private void retryConnect() {
 
-        if (sec_count > 20 && IsGateHub.equalsIgnoreCase("True") && !PersonValidationInProgress) {
+        if (sec_countForGateHub > 20 && IsGateHub.equalsIgnoreCase("True") && !PersonValidationInProgress) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
             sec_count = 0;
+            sec_countForGateHub = 0;
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
             recreate();
             //new ReconnectBleReaders().execute();

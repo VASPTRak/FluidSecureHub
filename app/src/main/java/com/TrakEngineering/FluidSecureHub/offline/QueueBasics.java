@@ -76,14 +76,14 @@ public class QueueBasics {
              } catch (Exception ex) {
                  ex.printStackTrace();
                  if (AppConstants.GenerateLogs)
-                     AppConstants.WriteinFile(TAG + "addMessageOnQueue-inner Exception: " + ex.getMessage());
+                     AppConstants.WriteinFile(TAG + "addMessageOnQueue-inner Exception: " + ex.toString());
              }
          }
          catch (Exception e)
          {
              e.printStackTrace();
              if (AppConstants.GenerateLogs)
-                 AppConstants.WriteinFile(TAG + "addMessageOnQueue Exception: " + e.getMessage());
+                 AppConstants.WriteinFile(TAG + "addMessageOnQueue Exception: " + e.toString());
          }
      }
 

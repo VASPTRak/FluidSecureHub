@@ -78,6 +78,8 @@ public class OffTranzSyncService extends Service {
                     AppConstants.WriteinFile(TAG + " <Offline transaction count: " + jarrsy.length() + ">");
 
                 if (jarrsy.length() > 0) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " <Offline transaction json: " + jarrsy + ">");
                     new AzureCall().execute(off_json_10_trans, "OFF");
                 }
             } catch (Exception e) {

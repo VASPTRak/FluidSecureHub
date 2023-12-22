@@ -1784,6 +1784,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             String FirmwareFileName = serverSSIDList.get(0).get("FirmwareFileName");
             String BTLinkCommType = serverSSIDList.get(0).get("BTLinkCommType");
             AppConstants.CURRENT_SELECTED_SSID = selSSID;
+            AppConstants.CURRENT_SELECTED_SITEID = selSiteId;
+            AppConstants.FS1_CONNECTED_SSID = selSSID;
+            Constants.CurrentSelectedHose = "FS1";
 
             if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                 SetBTLinksMacAddress(0, BTselMacAddress);
@@ -1807,6 +1810,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 FirmwareFileName = "";
             }
 
+            SetSiteIdByLinkPosition(0, selSiteId);
             SetHoseIdByLinkPosition(0, hoseID);
             if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                 SetUpgradeFirmwareDetails(0, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
@@ -2078,9 +2082,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
                                     }
                                 } else {
-                                    AppConstants.colorToastBigFont(WelcomeActivity.this, "Unauthorised day or timings", Color.BLUE);
+                                    AppConstants.colorToastBigFont(WelcomeActivity.this, "Unauthorized day or timings", Color.BLUE);
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Unauthorised day or timings");
+                                        AppConstants.WriteinFile(TAG + "Unauthorized day or timings");
                                 }
 
                             } else {
@@ -3396,6 +3400,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                         } else if (CommonFunctions.CheckIfPresentInPairedDeviceList(BTselMacAddress)) {
                             AppConstants.SELECTED_MACADDRESS = BTselMacAddress;
                             OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", selSiteId, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"), "", "", "", "");
+                            SetSiteIdByLinkPosition(position, selSiteId);
                             SetHoseIdByLinkPosition(position, hoseID);
 
                             if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
@@ -3479,6 +3484,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             CommonUtils.SaveTldDetailsInPref(WelcomeActivity.this, IsTLDCall, IsTLDFirmwareUpgrade, TLDFirmwareFilePath, TLDFIrmwareVersion, PROBEMacAddress, selMacAddress);
 
                             /////////////////////////////////////////////////////
+                            SetSiteIdByLinkPosition(position, selSiteId);
                             SetHoseIdByLinkPosition(position, hoseID);
                             if (!IsUpgrade.isEmpty() && !AppConstants.isTestTransaction) {
                                 SetUpgradeFirmwareDetails(position, IsUpgrade, FirmwareVersion, FirmwareFileName, selSiteId, hoseID);
@@ -15036,6 +15042,28 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Exception in SetHoseIdByLinkPosition. " + ex.getMessage() + ";position: " + position);
+            System.out.println(ex);
+        }
+    }
+
+    public void SetSiteIdByLinkPosition(int position, String siteId) {
+        try {
+            if (String.valueOf(position).equalsIgnoreCase("0")) {
+                AppConstants.UP_SiteId_fs1 = siteId;
+            } else if (String.valueOf(position).equalsIgnoreCase("1")) {
+                AppConstants.UP_SiteId_fs2 = siteId;
+            } else if (String.valueOf(position).equalsIgnoreCase("2")) {
+                AppConstants.UP_SiteId_fs3 = siteId;
+            } else if (String.valueOf(position).equalsIgnoreCase("3")) {
+                AppConstants.UP_SiteId_fs4 = siteId;
+            } else if (String.valueOf(position).equalsIgnoreCase("4")) {
+                AppConstants.UP_SiteId_fs5 = siteId;
+            } else if (String.valueOf(position).equalsIgnoreCase("5")) {
+                AppConstants.UP_SiteId_fs6 = siteId;
+            }
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Exception in SetSiteIdByLinkPosition. " + ex.getMessage() + ";position: " + position);
             System.out.println(ex);
         }
     }

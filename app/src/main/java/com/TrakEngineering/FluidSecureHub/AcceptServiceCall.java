@@ -32,7 +32,6 @@ import com.squareup.okhttp.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -294,7 +293,7 @@ public class AcceptServiceCall {
                 response = client.newCall(request).execute();
                 resp = response.body().string();
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 AppConstants.serverCallInProgress =  false;
                 e.printStackTrace();
                 if(OfflineConstants.isOfflineAccess(activity)){AppConstants.NETWORK_STRENGTH = false;}
