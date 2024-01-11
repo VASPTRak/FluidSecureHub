@@ -909,7 +909,15 @@ public class BackgroundService_BTFive extends Service {
                     } else {
 
                         //UpgradeTransaction Status RelayON command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+                        if (isAfterReconnect && (fillqty > 0)) {
+                            if (isOnlineTxn) {
+                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
+                            } else {
+                                offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                            }
+                        } else {
+                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+                        }
                         Log.i(TAG, "BTLink 5: Failed to get relayOn Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink 5: Checking relayOn command response. Response: false");
@@ -1203,7 +1211,11 @@ public class BackgroundService_BTFive extends Service {
     private void TerminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
-            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+            if (isOnlineTxn) {
+                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
+            } else {
+                offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+            }
             Log.i(TAG, " BTLink 5: Link not connected. Please try again!");
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink 5: Link not connected.");
@@ -1376,7 +1388,7 @@ public class BackgroundService_BTFive extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 5:onReceive Exception:" + e.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink 5: <onReceive Exception: " + e.getMessage() + ">");
             }
         }
     }

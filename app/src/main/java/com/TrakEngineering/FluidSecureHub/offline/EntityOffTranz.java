@@ -20,4 +20,5 @@ public class EntityOffTranz {
     public String Other;
     public String VehicleExtraOther;
     public String DepartmentNumber;
+    public String TransactionStatus;
 }

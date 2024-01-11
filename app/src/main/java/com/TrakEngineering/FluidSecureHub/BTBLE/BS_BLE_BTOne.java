@@ -903,7 +903,11 @@ public class BS_BLE_BTOne extends Service {
     private void TerminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
-            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BS_BLE_BTOne.this);
+            if (isOnlineTxn) {
+                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTOne.this);
+            } else {
+                offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+            }
             Log.i(TAG, " Link not connected. Please try again!");
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " Link not connected.");
@@ -1390,7 +1394,15 @@ public class BS_BLE_BTOne extends Service {
                     } else {
 
                         //UpgradeTransaction Status RelayON command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BS_BLE_BTOne.this);
+                        if (isAfterReconnect && (fillqty > 0)) {
+                            if (isOnlineTxn) {
+                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTOne.this);
+                            } else {
+                                offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                            }
+                        } else {
+                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BS_BLE_BTOne.this);
+                        }
                         Log.i(TAG, " Failed to get relayOn Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Checking relayOn command response. Response: false");

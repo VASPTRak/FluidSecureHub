@@ -2906,8 +2906,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
 
-         String className = componentName.getClassName();
-        if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkOne.SerialServiceOne")) {
+        String className = componentName.getClassName();
+        if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkOne.SerialServiceOne")) {
 
             BTSPPMain btspp = new BTSPPMain();
             btspp.activity = WelcomeActivity.this;
@@ -2916,7 +2916,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             initialStart = false;
             btspp.connect1();
 
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkTwo.SerialServiceTwo")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkTwo.SerialServiceTwo")) {
 
             BTSPPMain btspp = new BTSPPMain();
             btspp.activity = WelcomeActivity.this;
@@ -2925,7 +2925,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             initialStart = false;
             btspp.connect2();
 
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkThree.SerialServiceThree")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkThree.SerialServiceThree")) {
 
             BTSPPMain btspp = new BTSPPMain();
             btspp.activity = WelcomeActivity.this;
@@ -2934,7 +2934,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             initialStart = false;
             btspp.connect3();
 
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialServiceFour")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkFour.SerialServiceFour")) {
 
             BTSPPMain btspp = new BTSPPMain();
             btspp.activity = WelcomeActivity.this;
@@ -2943,7 +2943,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             initialStart = false;
             btspp.connect4();
 
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFive.SerialServiceFive")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkFive.SerialServiceFive")) {
 
             BTSPPMain btspp = new BTSPPMain();
             btspp.activity = WelcomeActivity.this;
@@ -2952,7 +2952,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             initialStart = false;
             btspp.connect5();
 
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkSix.SerialServiceSix")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkSix.SerialServiceSix")) {
 
             BTSPPMain btspp = new BTSPPMain();
             btspp.activity = WelcomeActivity.this;
@@ -2972,17 +2972,17 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     public void onServiceDisconnected(ComponentName componentName) {
 
         String className = componentName.getClassName();
-        if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkOne.SerialServiceOne")) {
+        if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkOne.SerialServiceOne")) {
             service1 = null;
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkTwo.SerialServiceTwo")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkTwo.SerialServiceTwo")) {
             service2 = null;
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkThree.SerialServiceThree")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkThree.SerialServiceThree")) {
             service3 = null;
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFour.SerialServiceFour")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkFour.SerialServiceFour")) {
             service4 = null;
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkFive.SerialServiceFive")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkFive.SerialServiceFive")) {
             service5 = null;
-        } else if (className.equalsIgnoreCase("com.TrakEngineering.FluidSecureHub.BTSPP.BTSPP_LinkSix.SerialServiceSix")) {
+        } else if (className.equalsIgnoreCase(BuildConfig.APPLICATION_ID + ".BTSPP.BTSPP_LinkSix.SerialServiceSix")) {
             service6 = null;
         } else {
             Log.d(TAG, "Disconnected from Reader service");

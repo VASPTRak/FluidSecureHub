@@ -30,7 +30,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public static String TBL_DEPARTMENT = "tbl_off_department";
 
     public OffDBController(Context applicationcontext) {
-        super(applicationcontext, "FSHubOffline.db", null, 9);
+        super(applicationcontext, "FSHubOffline.db", null, 10);
         Log.d(LOGCAT, "Created");
     }
 
@@ -44,13 +44,13 @@ public class OffDBController extends SQLiteOpenHelper {
         String query21 = "CREATE TABLE " + TBL_FUEL_TIMING + " ( Id INTEGER PRIMARY KEY, SiteId INTEGER, PersonId INTEGER, FromTime TEXT, ToTime TEXT)";
         database.execSQL(query21);
 
-        String query3 = "CREATE TABLE " + TBL_VEHICLE + " ( Id INTEGER PRIMARY KEY, VehicleId INTEGER, VehicleNumber TEXT,CurrentOdometer TEXT,CurrentHours TEXT,RequireOdometerEntry TEXT,RequireHours TEXT,FuelLimitPerTxn TEXT,FuelLimitPerDay TEXT,FOBNumber TEXT,AllowedLinks TEXT,Active TEXT, CheckOdometerReasonable TEXT,OdometerReasonabilityConditions TEXT,OdoLimit TEXT,HoursLimit TEXT,BarcodeNumber TEXT,IsExtraOther TEXT,ExtraOtherLabel TEXT,MagneticCardReaderNumber TEXT, CheckFuelLimitPerMonth TEXT, FuelLimitPerMonth TEXT, FuelQuantityOfVehiclePerMonth TEXT)";
+        String query3 = "CREATE TABLE " + TBL_VEHICLE + " ( Id INTEGER PRIMARY KEY, VehicleId INTEGER, VehicleNumber TEXT, CurrentOdometer TEXT, CurrentHours TEXT, RequireOdometerEntry TEXT, RequireHours TEXT, FuelLimitPerTxn TEXT, FuelLimitPerDay TEXT, FOBNumber TEXT, AllowedLinks TEXT, Active TEXT, CheckOdometerReasonable TEXT, OdometerReasonabilityConditions TEXT, OdoLimit TEXT, HoursLimit TEXT, BarcodeNumber TEXT, IsExtraOther TEXT, ExtraOtherLabel TEXT, MagneticCardReaderNumber TEXT, CheckFuelLimitPerMonth TEXT, FuelLimitPerMonth TEXT, FuelQuantityOfVehiclePerMonth TEXT)";
         database.execSQL(query3);
 
         String query4 = "CREATE TABLE " + TBL_PERSONNEL + " ( Id INTEGER PRIMARY KEY, PersonId INTEGER, PinNumber TEXT, FuelLimitPerTxn TEXT, FuelLimitPerDay TEXT, FOBNumber TEXT, Authorizedlinks TEXT, AssignedVehicles TEXT, MagneticCardReaderNumber TEXT, Barcode TEXT, AssignedDepartments TEXT)";
         database.execSQL(query4);
 
-        String query5 = "CREATE TABLE " + TBL_TRANSACTION + " ( Id INTEGER PRIMARY KEY, HubId TEXT, SiteId TEXT, VehicleId INTEGER, CurrentOdometer TEXT, CurrentHours TEXT, PersonId TEXT, PersonPin TEXT, FuelQuantity TEXT, Pulses TEXT, TransactionDateTime TEXT, OfflineFakeTransactionId TEXT, VehicleNumber TEXT, Other TEXT, VehicleExtraOther TEXT, DepartmentNumber TEXT)";
+        String query5 = "CREATE TABLE " + TBL_TRANSACTION + " ( Id INTEGER PRIMARY KEY, HubId TEXT, SiteId TEXT, VehicleId INTEGER, CurrentOdometer TEXT, CurrentHours TEXT, PersonId TEXT, PersonPin TEXT, FuelQuantity TEXT, Pulses TEXT, TransactionDateTime TEXT, OfflineFakeTransactionId TEXT, VehicleNumber TEXT, Other TEXT, VehicleExtraOther TEXT, DepartmentNumber TEXT, TransactionStatus TEXT)";
         database.execSQL(query5);
 
         String query6 = "CREATE TABLE " + TBL_OFF_TLD + " ( Id INTEGER PRIMARY KEY, PROBEMacAddress TEXT, Level TEXT, selSiteId INTEGER, TLDFirmwareVersion TEXT, IMEI_UDID TEXT, LSB TEXT, MSB TEXT, TLDTemperature TEXT, ReadingDateTime TEXT, Response_code TEXT, FromDirectTLD TEXT)";
@@ -64,7 +64,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, int version_old, int current_version) {
 
         Log.i(TAG,"InOnUpgrade.");
-        AppConstants.WriteinFile(TAG + "onUpgrade called.");
+        AppConstants.WriteinFile(TAG + "<onUpgrade called.>");
         // If you need to add a column
         if (current_version > version_old) {
             try {
@@ -121,6 +121,11 @@ public class OffDBController extends SQLiteOpenHelper {
                 database.execSQL("ALTER TABLE " + TBL_TRANSACTION + " ADD COLUMN DepartmentNumber TEXT");
             } catch (Exception ex) {
                 Log.w(TAG, " Altering " + TBL_TRANSACTION + " for (DepartmentNumber) column: " + ex.getMessage());
+            }
+            try {
+                database.execSQL("ALTER TABLE " + TBL_TRANSACTION + " ADD COLUMN TransactionStatus TEXT");
+            } catch (Exception ex) {
+                Log.w(TAG, " Altering " + TBL_TRANSACTION + " for (TransactionStatus) column: " + ex.getMessage());
             }
             try {
                 database.execSQL("ALTER TABLE " + TBL_LINK + " ADD COLUMN BTLinkCommType TEXT");
@@ -458,6 +463,7 @@ public class OffDBController extends SQLiteOpenHelper {
             values.put("Other", eot.Other);
             values.put("VehicleExtraOther", eot.VehicleExtraOther);
             values.put("DepartmentNumber", eot.DepartmentNumber);
+            values.put("TransactionStatus", "2");
 
             insertedID = database.insert(TBL_TRANSACTION, null, values);
             database.close();
@@ -494,6 +500,13 @@ public class OffDBController extends SQLiteOpenHelper {
         return database.update(TBL_TRANSACTION, values, "Id" + " = ?", new String[]{sqlite_id});
     }
 
+    public int updateOfflineTransactionStatus(String sqlite_id, String TransactionStatus) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("TransactionStatus", TransactionStatus);
+
+        return database.update(TBL_TRANSACTION, values, "Id" + " = ?", new String[]{sqlite_id});
+    }
 
     public void deleteTableData(String tablename) {
         Log.d(LOGCAT, "delete");
@@ -692,6 +705,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 hmObj.Other = isNULL(cursor.getString(13));
                 hmObj.VehicleExtraOther = isNULL(cursor.getString(14));
                 hmObj.DepartmentNumber = isNULL(cursor.getString(15));
+                hmObj.TransactionStatus = isNULL(cursor.getString(16));
 
             }
         } catch (Exception e) {
@@ -734,6 +748,7 @@ public class OffDBController extends SQLiteOpenHelper {
                     hmObj.Other = isNULL(cursor.getString(13));
                     hmObj.VehicleExtraOther = isNULL(cursor.getString(14));
                     hmObj.DepartmentNumber = isNULL(cursor.getString(15));
+                    hmObj.TransactionStatus = isNULL(cursor.getString(16));
 
                     // if(!hmObj.FuelQuantity.trim().isEmpty())
                     allData.add(hmObj);
@@ -791,6 +806,7 @@ public class OffDBController extends SQLiteOpenHelper {
                     hmObj.Other = isNULL(cursor.getString(13));
                     hmObj.VehicleExtraOther = isNULL(cursor.getString(14));
                     hmObj.DepartmentNumber = isNULL(cursor.getString(15));
+                    hmObj.TransactionStatus = isNULL(cursor.getString(16));
 
                     String pulses = isNULL(cursor.getString(9));
 

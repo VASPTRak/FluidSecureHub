@@ -26,6 +26,7 @@ public static boolean CheckIfPresentInPairedDeviceList(String SelMac){
             String deviceHardwareAddress = device.getAddress(); // MAC address
             if (deviceHardwareAddress.equalsIgnoreCase(SelMac)){
                 //BTConstants.deviceAddress1 = deviceHardwareAddress;
+                Log.d(TAG, "BTKeepAlive: calling createBond");
                 device.createBond();
                 return true;
             }

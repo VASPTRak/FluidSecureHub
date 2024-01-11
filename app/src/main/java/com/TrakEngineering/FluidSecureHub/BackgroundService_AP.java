@@ -819,6 +819,13 @@ public class BackgroundService_AP extends Service {
                 }
                 if (GetPulsarAttemptFailCount == 3) {
                     stopTimer = false;
+                    if (fillqty > 0) {
+                        if (CurrTxnMode.equalsIgnoreCase("online")) {
+                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_AP.this);
+                        } else {
+                            offcontroller.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                        }
+                    }
                     CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);

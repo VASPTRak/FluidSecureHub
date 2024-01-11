@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
+import com.TrakEngineering.FluidSecureHub.BuildConfig;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 
 import static android.content.Context.WIFI_SERVICE;
@@ -51,13 +52,13 @@ public class WifiApManager {
                 if (enabled) {
                     //on
                     //turnOnHotspot();
-                    Intent intent = new Intent("com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_ON");
+                    Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".wifihotspot.TURN_ON");
                     sendImplicitBroadcast(context,intent);
 
                 } else {
                     //off
                     //turnOffHotspot();
-                    Intent intent = new Intent("com.TrakEngineering.FluidSecureHub.wifihotspot.TURN_OFF");
+                    Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".wifihotspot.TURN_OFF");
                     sendImplicitBroadcast(context,intent);
                 }
 

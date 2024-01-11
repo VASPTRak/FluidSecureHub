@@ -153,8 +153,8 @@ public class AppConstants {
     public static String BrandName = "FluidSecure";
     public static String LANG_PARAM = "";
 
-    public static final String PACKAGE_BACKGROUND_SERVICE = "com.TrakEngineering.FluidSecureHub.BackgroundService";
-    public static final String PACKAGE_BS_OffTransSync = "com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService";
+    public static final String PACKAGE_BACKGROUND_SERVICE = BuildConfig.APPLICATION_ID + ".BackgroundService";
+    public static final String PACKAGE_BS_OffTransSync = BuildConfig.APPLICATION_ID + ".offline.OffTranzSyncService";
 
     public static ArrayList<HashMap<String, String>> temp_serverSSIDList;
 
