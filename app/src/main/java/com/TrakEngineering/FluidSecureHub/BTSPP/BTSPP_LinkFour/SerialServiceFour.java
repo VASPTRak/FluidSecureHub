@@ -123,7 +123,7 @@ public class SerialServiceFour extends Service implements SerialListenerFour {
                     listener.onSerialReadFour(item.data);
                     break;
                 case IoError:
-                    listener.onSerialIoErrorFour(item.e);
+                    listener.onSerialIoErrorFour(item.e, 3);
                     break;
             }
         }
@@ -139,7 +139,7 @@ public class SerialServiceFour extends Service implements SerialListenerFour {
                     listener.onSerialReadFour(item.data);
                     break;
                 case IoError:
-                    listener.onSerialIoErrorFour(item.e);
+                    listener.onSerialIoErrorFour(item.e, 4);
                     break;
             }
         }
@@ -220,13 +220,13 @@ public class SerialServiceFour extends Service implements SerialListenerFour {
         }
     }
 
-    public void onSerialIoErrorFour(Exception e) {
+    public void onSerialIoErrorFour(Exception e, Integer fromCode) {
         if (connected) {
             synchronized (this) {
                 if (listener != null) {
                     mainLooper.post(() -> {
                         if (listener != null) {
-                            listener.onSerialIoErrorFour(e);
+                            listener.onSerialIoErrorFour(e, fromCode);
                         } else {
                             queue1.add(new QueueItem(QueueType.IoError, null, e));
                             cancelNotification();

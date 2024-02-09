@@ -4,5 +4,5 @@ public interface SerialListenerThree {
     void onSerialConnectThree();
     void onSerialConnectErrorThree(Exception e);
     void onSerialReadThree(byte[] data);
-    void onSerialIoErrorThree(Exception e);
+    void onSerialIoErrorThree(Exception e, Integer fromCode);
 }

@@ -44,7 +44,7 @@ public class SerialSocketThree implements Runnable {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(listener != null)
-                    listener.onSerialIoErrorThree(new IOException("background disconnect"));
+                    listener.onSerialIoErrorThree(new IOException("background disconnect"), 5);
                 disconnect(); // disconnect now, else would be queued until UI re-attached
             }
         };
@@ -90,9 +90,9 @@ public class SerialSocketThree implements Runnable {
         if (!connected)
             throw new IOException("not connected");
         try {
-            Log.i(TAG, "BTLink 3:InreadPulse:");
+            Log.i(TAG, "BTLink_3:InreadPulse:");
             if (socket.isConnected())
-            Log.i(TAG, "BTLink 3:InreadPulse:socket connected");
+            Log.i(TAG, "BTLink_3:InreadPulse:socket connected");
 
             try {
                 InputStream socketInputStream = socket.getInputStream();
@@ -105,19 +105,19 @@ public class SerialSocketThree implements Runnable {
                         byte[] data = Arrays.copyOf(buffer, len);
                         if(listener != null)
                             listener.onSerialReadThree(data);
-                        Log.i(TAG, "BTLink 3:InreadPulse data: "+data.toString());
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 3:InreadPulse data: "+data.toString());
+                        Log.i(TAG, "BTLink_3:InreadPulse data: "+data.toString());
+                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_3:InreadPulse data: "+data.toString());
                     }
 
                 }else{
-                    Log.i(TAG, "BTLink 3:InreadPulse socketInputStream not avilable ");
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 3:InreadPulse socketInputStream not avilable ");
+                    Log.i(TAG, "BTLink_3:InreadPulse socketInputStream not avilable ");
+                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_3:InreadPulse socketInputStream not avilable ");
                 }
 
             }catch (Exception e){
                 e.printStackTrace();
-                Log.i(TAG, "BTLink 3:InreadPulse:Exception:"+e.toString());
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 3:InreadPulse:Exception:"+e.toString());
+                Log.i(TAG, "BTLink_3:InreadPulse:Exception:"+e.toString());
+                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_3:InreadPulse:Exception:"+e.toString());
             }
 
         }catch (Exception e){
@@ -161,7 +161,7 @@ public class SerialSocketThree implements Runnable {
         } catch (Exception e) {
             connected = false;
             if (listener != null) {
-                listener.onSerialIoErrorThree(e);
+                listener.onSerialIoErrorThree(e, 6);
             } else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");

@@ -1722,7 +1722,7 @@ public class BackgroundService_AP extends Service {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BackgroundTasksPostTransaction Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "PostTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 

@@ -90,12 +90,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     @Override
-    public void onSerialIoErrorOne(Exception e) {
+    public void onSerialIoErrorOne(Exception e, Integer fromCode) {
         BTConstants.BTLinkOneStatus = false;
         status1("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 1: <SerialIoError: " + e.getMessage() + ">");
+            AppConstants.WriteinFile(TAG + "BTSPPLink 1: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect1() {
@@ -131,7 +131,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service1.write(data);
         } catch (Exception e) {
-            onSerialIoErrorOne(e);
+            onSerialIoErrorOne(e, 1);
         }
     }
 
@@ -146,7 +146,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         try {
             service1.write(data);
         } catch (Exception e) {
-            onSerialIoErrorOne(e);
+            onSerialIoErrorOne(e, 2);
         }
     }
 
@@ -234,12 +234,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     @Override
-    public void onSerialIoErrorTwo(Exception e) {
+    public void onSerialIoErrorTwo(Exception e, Integer fromCode) {
         BTConstants.BTLinkTwoStatus = false;
         status2("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 2: <SerialIoError: " + e.getMessage() + ">");
+            AppConstants.WriteinFile(TAG + "BTSPPLink 2: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect2() {
@@ -275,7 +275,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service2.write(data);
         } catch (Exception e) {
-            onSerialIoErrorTwo(e);
+            onSerialIoErrorTwo(e, 1);
         }
     }
 
@@ -290,7 +290,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         try {
             service2.write(data);
         } catch (Exception e) {
-            onSerialIoErrorTwo(e);
+            onSerialIoErrorTwo(e, 2);
         }
     }
 
@@ -377,12 +377,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     @Override
-    public void onSerialIoErrorThree(Exception e) {
+    public void onSerialIoErrorThree(Exception e, Integer fromCode) {
         BTConstants.BTLinkThreeStatus = false;
         status3("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 3: <SerialIoError: " + e.getMessage() + ">");
+            AppConstants.WriteinFile(TAG + "BTSPPLink 3: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect3() {
@@ -418,7 +418,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service3.write(data);
         } catch (Exception e) {
-            onSerialIoErrorThree(e);
+            onSerialIoErrorThree(e, 1);
         }
     }
 
@@ -433,7 +433,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         try {
             service3.write(data);
         } catch (Exception e) {
-            onSerialIoErrorThree(e);
+            onSerialIoErrorThree(e, 2);
         }
     }
 
@@ -521,12 +521,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     @Override
-    public void onSerialIoErrorFour(Exception e) {
+    public void onSerialIoErrorFour(Exception e, Integer fromCode) {
         BTConstants.BTLinkFourStatus = false;
         status4("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 4: <SerialIoError: " + e.getMessage() + ">");
+            AppConstants.WriteinFile(TAG + "BTSPPLink 4: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect4() {
@@ -562,7 +562,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service4.write(data);
         } catch (Exception e) {
-            onSerialIoErrorFour(e);
+            onSerialIoErrorFour(e, 1);
         }
     }
 
@@ -577,7 +577,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         try {
             service4.write(data);
         } catch (Exception e) {
-            onSerialIoErrorFour(e);
+            onSerialIoErrorFour(e, 2);
         }
     }
 
@@ -664,12 +664,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     @Override
-    public void onSerialIoErrorFive(Exception e) {
+    public void onSerialIoErrorFive(Exception e, Integer fromCode) {
         BTConstants.BTLinkFiveStatus = false;
         status5("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 5: <SerialIoError: " + e.getMessage() + ">");
+            AppConstants.WriteinFile(TAG + "BTSPPLink 5: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect5() {
@@ -704,7 +704,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service5.write(data);
         } catch (Exception e) {
-            onSerialIoErrorFive(e);
+            onSerialIoErrorFive(e, 1);
         }
     }
 
@@ -720,7 +720,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         try {
             service5.write(data);
         } catch (Exception e) {
-            onSerialIoErrorFive(e);
+            onSerialIoErrorFive(e, 2);
         }
     }
 
@@ -808,12 +808,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     @Override
-    public void onSerialIoErrorSix(Exception e) {
+    public void onSerialIoErrorSix(Exception e, Integer fromCode) {
         BTConstants.BTLinkSixStatus = false;
         status6("Disconnect");
         e.printStackTrace();
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink 6: <SerialIoError: " + e.getMessage() + ">");
+            AppConstants.WriteinFile(TAG + "BTSPPLink 6: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect6() {
@@ -849,7 +849,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             byte[] data = (str + newline).getBytes();
             service6.write(data);
         } catch (Exception e) {
-            onSerialIoErrorSix(e);
+            onSerialIoErrorSix(e, 1);
         }
     }
 
@@ -864,7 +864,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         try {
             service6.write(data);
         } catch (Exception e) {
-            onSerialIoErrorSix(e);
+            onSerialIoErrorSix(e, 2);
         }
     }
 

@@ -44,7 +44,7 @@ public class SerialSocketFive implements Runnable {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (listener != null)
-                    listener.onSerialIoErrorFive(new IOException("background disconnect"));
+                    listener.onSerialIoErrorFive(new IOException("background disconnect"), 5);
                 disconnect(); // disconnect now, else would be queued until UI re-attached
             }
         };
@@ -90,9 +90,9 @@ public class SerialSocketFive implements Runnable {
         if (!connected)
             throw new IOException("not connected");
         try {
-            Log.i(TAG, "BTLink 5:InreadPulse:");
+            Log.i(TAG, "BTLink_5:InreadPulse:");
             if (socket.isConnected())
-                Log.i(TAG, "BTLink 5:InreadPulse:socket connected");
+                Log.i(TAG, "BTLink_5:InreadPulse:socket connected");
 
             try {
                 InputStream socketInputStream = socket.getInputStream();
@@ -105,22 +105,22 @@ public class SerialSocketFive implements Runnable {
                         byte[] data = Arrays.copyOf(buffer, len);
                         if (listener != null)
                             listener.onSerialReadFive(data);
-                        Log.i(TAG, "BTLink 5:InreadPulse data: " + data.toString());
+                        Log.i(TAG, "BTLink_5:InreadPulse data: " + data.toString());
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "BTLink 5:InreadPulse data: " + data.toString());
+                            AppConstants.WriteinFile(TAG + "BTLink_5:InreadPulse data: " + data.toString());
                     }
 
                 } else {
-                    Log.i(TAG, "BTLink 5:InreadPulse socketInputStream not avilable ");
+                    Log.i(TAG, "BTLink_5:InreadPulse socketInputStream not avilable ");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 5:InreadPulse socketInputStream not avilable ");
+                        AppConstants.WriteinFile(TAG + "BTLink_5:InreadPulse socketInputStream not avilable ");
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i(TAG, "BTLink 5:InreadPulse:Exception:" + e.toString());
+                Log.i(TAG, "BTLink_5:InreadPulse:Exception:" + e.toString());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink 5:InreadPulse:Exception:" + e.toString());
+                    AppConstants.WriteinFile(TAG + "BTLink_5:InreadPulse:Exception:" + e.toString());
             }
 
         } catch (Exception e) {
@@ -164,7 +164,7 @@ public class SerialSocketFive implements Runnable {
         } catch (Exception e) {
             connected = false;
             if (listener != null) {
-                listener.onSerialIoErrorFive(e);
+                listener.onSerialIoErrorFive(e, 6);
             } else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");

@@ -722,8 +722,8 @@ public class BT_Link_Oscilloscope_Activity extends AppCompatActivity { // implem
                     }
 
                     /*if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink 1: Response from Link >>" + Response.trim());*/
-                    //Log.i(TAG, "BTLink 1: Scope Response>>" + Response.trim());
+                        AppConstants.WriteinFile(TAG + "BTLink_1: Response from Link >>" + Response.trim());*/
+                    //Log.i(TAG, "BTLink_1: Scope Response>>" + Response.trim());
 
                     if (Response.contains("pulser_type")) {
                         BTConstants.ScopeStatus = "";

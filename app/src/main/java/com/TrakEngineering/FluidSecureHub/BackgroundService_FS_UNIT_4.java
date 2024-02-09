@@ -1697,7 +1697,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BackgroundTasksPostTransaction Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + "PostTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 

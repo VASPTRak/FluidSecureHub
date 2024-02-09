@@ -120,7 +120,7 @@ public class SerialServiceSix extends Service implements SerialListenerSix {
                     listener.onSerialReadSix(item.data);
                     break;
                 case IoError:
-                    listener.onSerialIoErrorSix(item.e);
+                    listener.onSerialIoErrorSix(item.e, 3);
                     break;
             }
         }
@@ -136,7 +136,7 @@ public class SerialServiceSix extends Service implements SerialListenerSix {
                     listener.onSerialReadSix(item.data);
                     break;
                 case IoError:
-                    listener.onSerialIoErrorSix(item.e);
+                    listener.onSerialIoErrorSix(item.e, 4);
                     break;
             }
         }
@@ -217,13 +217,13 @@ public class SerialServiceSix extends Service implements SerialListenerSix {
         }
     }
 
-    public void onSerialIoErrorSix(Exception e) {
+    public void onSerialIoErrorSix(Exception e, Integer fromCode) {
         if (connected) {
             synchronized (this) {
                 if (listener != null) {
                     mainLooper.post(() -> {
                         if (listener != null) {
-                            listener.onSerialIoErrorSix(e);
+                            listener.onSerialIoErrorSix(e, fromCode);
                         } else {
                             queue1.add(new QueueItem(QueueType.IoError, null, e));
                             cancelNotification();

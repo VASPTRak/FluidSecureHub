@@ -119,7 +119,7 @@ public class BackgroundService_BTSix extends Service {
                 stopCount = 0;
                 Log.i(TAG, "-Started-");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: -Started-");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: -Started-");
 
                 Constants.FS_6STATUS = "BUSY";
 
@@ -161,7 +161,7 @@ public class BackgroundService_BTSix extends Service {
                 if (!cd.isConnectingToInternet()) {
                     isOnlineTxn = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6:-Offline mode--");
+                        AppConstants.WriteinFile(TAG + " BTLink_6:-Offline mode--");
                     offlineLogicBT6();
                 } else {
                     isOnlineTxn = true;
@@ -171,11 +171,11 @@ public class BackgroundService_BTSix extends Service {
                 broadcastBlueLinkSixData = new BroadcastBlueLinkSixData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: <Registering Broadcast Receiver.>");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: <Registering Broadcast Receiver.>");
                 registerReceiver(broadcastBlueLinkSixData, intentFilter);
                 isBroadcastReceiverRegistered = true;
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: <Registered successfully. (" + broadcastBlueLinkSixData + ")>");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: <Registered successfully. (" + broadcastBlueLinkSixData + ")>");
 
                 AppConstants.isRelayON_fs6 = false;
                 LinkName = CommonUtils.getlinkName(5);
@@ -191,9 +191,9 @@ public class BackgroundService_BTSix extends Service {
                 } else {
                     //Something went Wrong in hose selection.
                     IsThisBTTrnx = false;
-                    Log.i(TAG, " BTLink 6: Something went Wrong in hose selection.");
+                    Log.i(TAG, " BTLink_6: Something went Wrong in hose selection.");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: Something went wrong in hose selection.");
+                        AppConstants.WriteinFile(TAG + " BTLink_6: Something went wrong in hose selection.");
                     CloseTransaction(false);
                     this.stopSelf();
                 }
@@ -209,7 +209,7 @@ public class BackgroundService_BTSix extends Service {
         try {
             if (CommonUtils.CheckAllHTTPLinksAreFree()) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Link not connected. Switching to UDP connection...");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Link not connected. Switching to UDP connection...");
 
                 // Disable Hotspot
                 if (AppConstants.GenerateLogs)
@@ -250,7 +250,7 @@ public class BackgroundService_BTSix extends Service {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: Connecting to WiFi...");
+                        AppConstants.WriteinFile(TAG + " BTLink_6: Connecting to WiFi...");
                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     String ssid = "";
                     if (wifiManager.isWifiEnabled()) {
@@ -262,7 +262,7 @@ public class BackgroundService_BTSix extends Service {
 
                     if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Connected to " + ssid + " via WiFi.");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Connected to " + ssid + " via WiFi.");
                         proceedToInfoCommand();
                         //loading.cancel();
                         cancel();
@@ -279,20 +279,20 @@ public class BackgroundService_BTSix extends Service {
                     ssid = ssid.replace("\"", "");
                     if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Connected to " + ssid + " via WiFi.");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Connected to " + ssid + " via WiFi.");
                         proceedToInfoCommand();
                         //loading.cancel();
                         cancel();
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Unable to connect to " + LinkName + " via WiFi.");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Unable to connect to " + LinkName + " via WiFi.");
                         TerminateBTTransaction();
                     }
                 }
             }.start();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Exception in BeginProcessUsingUDP: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: Exception in BeginProcessUsingUDP: " + e.getMessage());
             TerminateBTTransaction();
             e.printStackTrace();
         }
@@ -302,16 +302,16 @@ public class BackgroundService_BTSix extends Service {
         try {
             IsThisBTTrnx = false;
             CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTSix.this);
-            Log.i(TAG, " BTLink 6: Link not connected. Please try again!");
+            Log.i(TAG, " BTLink_6: Link not connected. Please try again!");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Link not connected.");
+                AppConstants.WriteinFile(TAG + " BTLink_6: Link not connected.");
             AppConstants.TxnFailedCount6++;
             AppConstants.IsTransactionFailed6 = true;
             CloseTransaction(true);
             this.stopSelf();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Exception in TerminateBTTransaction: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: Exception in TerminateBTTransaction: " + e.getMessage());
         }
     }
 
@@ -335,7 +335,7 @@ public class BackgroundService_BTSix extends Service {
                     if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Link is connected.");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Link is connected.");
                         if (nextAction.equalsIgnoreCase("info")) {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -355,7 +355,7 @@ public class BackgroundService_BTSix extends Service {
                         cancel();
                     } else {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking Connection Status...");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking Connection Status...");
                     }
                 }
 
@@ -364,7 +364,7 @@ public class BackgroundService_BTSix extends Service {
                     if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Link is connected.");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Link is connected.");
                         if (nextAction.equalsIgnoreCase("info")) {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -394,7 +394,7 @@ public class BackgroundService_BTSix extends Service {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: checkBTLinkStatus Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: checkBTLinkStatus Exception:>>" + e.getMessage());
             if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
                 TerminateBTTransaction();
             } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
@@ -414,12 +414,12 @@ public class BackgroundService_BTSix extends Service {
             Response = "";
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending Info command to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending Info command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send6(BTConstants.info_cmd);
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending Info command (UDP) to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending Info command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPSix(BTConstants.info_cmd, ipForUDP, this)).start();
             }
             //Thread.sleep(1000);
@@ -430,18 +430,18 @@ public class BackgroundService_BTSix extends Service {
                     if (attempt > 0) {
                         if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
                             //Info command success.
-                            Log.i(TAG, "BTLink 6: InfoCommand Response success 1:>>" + Response);
+                            Log.i(TAG, "BTLink_6: InfoCommand Response success 1:>>" + Response);
 
                             if (!TransactionId.isEmpty()) {
                                 if (Response.contains("mac_address")) {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response. Response: true");
+                                        AppConstants.WriteinFile(TAG + " BTLink_6: Checking Info command response. Response: true");
                                     BTConstants.isNewVersionLinkSix = true;
                                     parseInfoCommandResponse(Response); // parse info command response
                                     Response = "";
                                 } else {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response. Response:>>" + Response.trim());
+                                        AppConstants.WriteinFile(TAG + " BTLink_6: Checking Info command response. Response:>>" + Response.trim());
                                     parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                                 }
                                 new Handler().postDelayed(new Runnable() {
@@ -456,16 +456,16 @@ public class BackgroundService_BTSix extends Service {
                                     }
                                 }, 1000);
                             } else {
-                                Log.i(TAG, "BTLink 6: TransactionId is empty.");
+                                Log.i(TAG, "BTLink_6: TransactionId is empty.");
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: TransactionId is empty.");
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: TransactionId is empty.");
                                 CloseTransaction(false);
                             }
                             cancel();
                         } else {
-                            Log.i(TAG, "BTLink 6: Waiting for infoCommand Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
+                            Log.i(TAG, "BTLink_6: Waiting for infoCommand Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response. Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Checking Info command response. Response: false");
                         }
                     }
                 }
@@ -474,18 +474,18 @@ public class BackgroundService_BTSix extends Service {
 
                     if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
                         //Info command success.
-                        Log.i(TAG, "BTLink 6: InfoCommand Response success 2:>>" + Response);
+                        Log.i(TAG, "BTLink_6: InfoCommand Response success 2:>>" + Response);
 
                         if (!TransactionId.isEmpty()) {
                             if (Response.contains("mac_address")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response. Response: true");
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: Checking Info command response. Response: true");
                                 BTConstants.isNewVersionLinkSix = true;
                                 parseInfoCommandResponse(Response); // parse info command response
                                 Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response. Response:>>" + Response.trim());
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: Checking Info command response. Response:>>" + Response.trim());
                                 parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                             }
                             new Handler().postDelayed(new Runnable() {
@@ -500,9 +500,9 @@ public class BackgroundService_BTSix extends Service {
                                 }
                             }, 1000);
                         } else {
-                            Log.i(TAG, "BTLink 6: TransactionId is empty.");
+                            Log.i(TAG, "BTLink_6: TransactionId is empty.");
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: TransactionId is empty.");
+                                AppConstants.WriteinFile(TAG + " BTLink_6: TransactionId is empty.");
                             CloseTransaction(false);
                         }
                     } else {
@@ -510,9 +510,9 @@ public class BackgroundService_BTSix extends Service {
                         if (infoCommandAttempt > 0) {
                             //UpgradeTransaction Status info command fail.
                             CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTSix.this);
-                            Log.i(TAG, "BTLink 6: Failed to get infoCommand Response:>>" + Response);
+                            Log.i(TAG, "BTLink_6: Failed to get infoCommand Response:>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Checking Info command response. Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Checking Info command response. Response: false");
                             AppConstants.TxnFailedCount6++;
                             AppConstants.IsTransactionFailed6 = true;
                             CloseTransaction(true);
@@ -527,7 +527,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: infoCommand Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: infoCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -541,7 +541,7 @@ public class BackgroundService_BTSix extends Service {
 
                     if (IsThisBTTrnx) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Sending p_type command to Link: " + LinkName);
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Sending p_type command to Link: " + LinkName);
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.send6(BTConstants.p_type_command + PulserTimingAdjust);
                     }
@@ -554,7 +554,7 @@ public class BackgroundService_BTSix extends Service {
                             if (attempt > 0) {
                                 if (Request.contains(BTConstants.p_type_command) && Response.contains("pulser_type")) {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink 6: Checking p_type command response:>> " + Response);
+                                        AppConstants.WriteinFile(TAG + " BTLink_6: Checking p_type command response:>> " + Response);
                                     new Handler().postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -571,7 +571,7 @@ public class BackgroundService_BTSix extends Service {
                                     cancel();
                                 } else {
                                     if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink 6: Checking p_type command response. Response: false");
+                                        AppConstants.WriteinFile(TAG + " BTLink_6: Checking p_type command response. Response: false");
                                 }
                             }
                         }
@@ -580,7 +580,7 @@ public class BackgroundService_BTSix extends Service {
 
                             if (Request.contains(BTConstants.p_type_command) && Response.contains("pulser_type")) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: Checking p_type command response:>> " + Response);
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: Checking p_type command response:>> " + Response);
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -609,7 +609,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: P_Type_Command Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: P_Type_Command Exception:>>" + e.getMessage());
             ContinueToNextCommand();
         }
     }
@@ -624,7 +624,7 @@ public class BackgroundService_BTSix extends Service {
                     if (attempt > 0) {
                         if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Connected to Link: " + LinkName);
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Connected to Link: " + LinkName);
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -634,7 +634,7 @@ public class BackgroundService_BTSix extends Service {
                             cancel();
                         } else {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Waiting for Reconnect to Link: " + LinkName);
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Waiting for Reconnect to Link: " + LinkName);
                         }
                     }
                 }
@@ -643,7 +643,7 @@ public class BackgroundService_BTSix extends Service {
 
                     if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) {
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Connected to Link: " + LinkName);
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Connected to Link: " + LinkName);
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -658,7 +658,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: WaitForReconnectToLink Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: WaitForReconnectToLink Exception:>>" + e.getMessage());
         }
     }
 
@@ -695,7 +695,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: P_Type_Command (to get the pulser type from LINK) Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: P_Type_Command (to get the pulser type from LINK) Exception:>>" + e.getMessage());
             ContinueToNextCommand();
         }
     }
@@ -710,7 +710,7 @@ public class BackgroundService_BTSix extends Service {
 
                 if (!pulserType.isEmpty() && Arrays.asList(BTConstants.p_types).contains(pulserType)) {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: Pulser Type from Link >> " + pulserType);
+                        AppConstants.WriteinFile(TAG + " BTLink_6: Pulser Type from Link >> " + pulserType);
                     // Create object and save data to upload
                     String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTSix.this).PersonEmail;
 
@@ -732,7 +732,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Exception in ParsePulserTypeCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: Exception in ParsePulserTypeCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -779,12 +779,12 @@ public class BackgroundService_BTSix extends Service {
 
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending transactionId command to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending transactionId command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send6(transaction_id_cmd);
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending transactionId command (UDP) to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending transactionId command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPSix(transaction_id_cmd, ipForUDP, this)).start();
             }
             Thread.sleep(1000);
@@ -797,9 +797,9 @@ public class BackgroundService_BTSix extends Service {
 
                             if (Request.contains(transactionId) && Response.contains(transactionId)) {
                                 //transactionId command success.
-                                Log.i(TAG, "BTLink 6: transactionId Command Response success 1:>>" + Response);
+                                Log.i(TAG, "BTLink_6: transactionId Command Response success 1:>>" + Response);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: Checking transactionId command response. Response:>>" + Response.trim());
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: Checking transactionId command response. Response:>>" + Response.trim());
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -808,14 +808,14 @@ public class BackgroundService_BTSix extends Service {
                                 }, 1000);
                                 cancel();
                             } else {
-                                Log.i(TAG, "BTLink 6: Waiting for transactionId Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
+                                Log.i(TAG, "BTLink_6: Waiting for transactionId Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: Checking transactionId command response. Response: false");
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: Checking transactionId command response. Response: false");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: transactionId command Exception. Exception: " + e.getMessage());
+                                AppConstants.WriteinFile(TAG + " BTLink_6: transactionId command Exception. Exception: " + e.getMessage());
                         }
                     }
                 }
@@ -824,9 +824,9 @@ public class BackgroundService_BTSix extends Service {
 
                     if (Request.contains(transactionId) && Response.contains(transactionId)) {
                         //transactionId command success.
-                        Log.i(TAG, "BTLink 6: transactionId Command Response success 2:>>" + Response);
+                        Log.i(TAG, "BTLink_6: transactionId Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking transactionId command response. Response:>>" + Response.trim());
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking transactionId command response. Response:>>" + Response.trim());
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -837,9 +837,9 @@ public class BackgroundService_BTSix extends Service {
 
                         //UpgradeTransaction Status Transactionid command fail.
                         CommonUtils.UpgradeTransactionStatusToSqlite(transactionId, "6", BackgroundService_BTSix.this);
-                        Log.i(TAG, "BTLink 6: Failed to get transactionId Command Response:>>" + Response);
+                        Log.i(TAG, "BTLink_6: Failed to get transactionId Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking transactionId command response. Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking transactionId command response. Response: false");
                         CloseTransaction(true);
                     }
                 }
@@ -848,7 +848,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: transactionIdCommand Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: transactionIdCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -863,12 +863,12 @@ public class BackgroundService_BTSix extends Service {
 
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending relayOn command to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending relayOn command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send6(BTConstants.relay_on_cmd);
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending relayOn command (UDP) to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending relayOn command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPSix(BTConstants.relay_on_cmd, ipForUDP, this)).start();
             }
 
@@ -886,14 +886,14 @@ public class BackgroundService_BTSix extends Service {
                         if (RelayStatus) {
                             BTConstants.isRelayOnAfterReconnect6 = isAfterReconnect;
                             //relayOn command success.
-                            Log.i(TAG, "BTLink 6: relayOn Command Response success 1:>>" + Response);
+                            Log.i(TAG, "BTLink_6: relayOn Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOn command response. Response: ON");
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOn command response. Response: ON");
                             cancel();
                         } else {
-                            Log.i(TAG, "BTLink 6: Waiting for relayOn Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
+                            Log.i(TAG, "BTLink_6: Waiting for relayOn Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOn command response. Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOn command response. Response: false");
                         }
                     }
                 }
@@ -903,9 +903,9 @@ public class BackgroundService_BTSix extends Service {
                     if (RelayStatus) {
                         BTConstants.isRelayOnAfterReconnect6 = isAfterReconnect;
                         //relayOn command success.
-                        Log.i(TAG, "BTLink 6: relayOn Command Response success 2:>>" + Response);
+                        Log.i(TAG, "BTLink_6: relayOn Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOn command response. Response: ON");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOn command response. Response: ON");
                     } else {
 
                         //UpgradeTransaction Status RelayON command fail.
@@ -918,9 +918,9 @@ public class BackgroundService_BTSix extends Service {
                         } else {
                             CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTSix.this);
                         }
-                        Log.i(TAG, "BTLink 6: Failed to get relayOn Command Response:>>" + Response);
+                        Log.i(TAG, "BTLink_6: Failed to get relayOn Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOn command response. Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOn command response. Response: false");
                         relayOffCommand(); //RelayOff
                         TransactionCompleteFunction();
                     }
@@ -931,7 +931,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: relayOnCommand Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: relayOnCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -957,12 +957,12 @@ public class BackgroundService_BTSix extends Service {
             Response = "";
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending relayOff command to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending relayOff command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send6(BTConstants.relay_off_cmd);
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending relayOff command (UDP) to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending relayOff command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPSix(BTConstants.relay_off_cmd, ipForUDP, this)).start();
             }
 
@@ -973,14 +973,14 @@ public class BackgroundService_BTSix extends Service {
                     if (attempt > 0) {
                         if (!RelayStatus) {
                             //relayOff command success.
-                            Log.i(TAG, "BTLink 6: relayOff Command Response success 1:>>" + Response);
+                            Log.i(TAG, "BTLink_6: relayOff Command Response success 1:>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOff command response. Response:>>" + Response.trim());
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOff command response. Response:>>" + Response.trim());
                             cancel();
                         } else {
-                            Log.i(TAG, "BTLink 6: Waiting for relayOff Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
+                            Log.i(TAG, "BTLink_6: Waiting for relayOff Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOff command response. Response: false");
+                                AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOff command response. Response: false");
                         }
                     }
                 }
@@ -988,13 +988,13 @@ public class BackgroundService_BTSix extends Service {
                 public void onFinish() {
 
                     if (!RelayStatus) {
-                        Log.i(TAG, "BTLink 6: relayOff Command Response success 2:>>" + Response);
+                        Log.i(TAG, "BTLink_6: relayOff Command Response success 2:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOff command response. Response:>>" + Response.trim());
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOff command response. Response:>>" + Response.trim());
                     } else {
-                        Log.i(TAG, "BTLink 6: Failed to get relayOff Command Response:>>" + Response);
+                        Log.i(TAG, "BTLink_6: Failed to get relayOff Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Checking relayOff command response. Response: false");
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Checking relayOff command response. Response: false");
                         PostTransactionBackgroundTasks();
                         //CloseTransaction();
                     }
@@ -1003,7 +1003,7 @@ public class BackgroundService_BTSix extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 6: relayOffCommand Exception:>>" + e.getMessage());
+            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_6: relayOffCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -1016,15 +1016,15 @@ public class BackgroundService_BTSix extends Service {
                     unregisterReceiver(broadcastBlueLinkSixData);
                     isBroadcastReceiverRegistered = false;
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: <Receiver unregistered successfully. (" + broadcastBlueLinkSixData + ")>");
+                        AppConstants.WriteinFile(TAG + " BTLink_6: <Receiver unregistered successfully. (" + broadcastBlueLinkSixData + ")>");
                 } else {
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: <Receiver is not registered. (" + broadcastBlueLinkSixData + ")>");
+                        AppConstants.WriteinFile(TAG + " BTLink_6: <Receiver is not registered. (" + broadcastBlueLinkSixData + ")>");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: <Exception occurred while unregistering receiver: " + e.getMessage() + " (" + broadcastBlueLinkSixData + ")>");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: <Exception occurred while unregistering receiver: " + e.getMessage() + " (" + broadcastBlueLinkSixData + ")>");
             }
             stopTxtprocess = true;
             BTConstants.isRelayOnAfterReconnect6 = false;
@@ -1037,7 +1037,7 @@ public class BackgroundService_BTSix extends Service {
             DisableWifiConnection();
             CancelTimer();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Transaction stopped.");
+                AppConstants.WriteinFile(TAG + " BTLink_6: Transaction stopped.");
             if (startBackgroundServices) {
                 PostTransactionBackgroundTasks();
             }
@@ -1045,7 +1045,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: CloseTransaction Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: CloseTransaction Exception:>>" + e.getMessage());
         }
     }
 
@@ -1069,12 +1069,12 @@ public class BackgroundService_BTSix extends Service {
 
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending rename command to Link: " + LinkName + " (New Name: " + BTConstants.BT6REPLACEBLE_WIFI_NAME + ")");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending rename command to Link: " + LinkName + " (New Name: " + BTConstants.BT6REPLACEBLE_WIFI_NAME + ")");
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send6(BTConstants.namecommand + BTConstants.BT6REPLACEBLE_WIFI_NAME);
             } else {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending rename command (UDP) to Link: " + LinkName + " (New Name: " + BTConstants.BT6REPLACEBLE_WIFI_NAME + ")");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending rename command (UDP) to Link: " + LinkName + " (New Name: " + BTConstants.BT6REPLACEBLE_WIFI_NAME + ")");
                 new Thread(new ClientSendAndListenUDPSix(BTConstants.namecommand + BTConstants.BT6REPLACEBLE_WIFI_NAME, ipForUDP, this)).start();
             }
 
@@ -1097,7 +1097,7 @@ public class BackgroundService_BTSix extends Service {
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: renameCommand Exception:>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: renameCommand Exception:>>" + e.getMessage());
         }
     }
 
@@ -1150,7 +1150,7 @@ public class BackgroundService_BTSix extends Service {
                 //Repaeting code..
                 //CancelTimer(); cancel all once done.
 
-                Log.i(TAG, "BTLink 6: Timer count..");
+                Log.i(TAG, "BTLink_6: Timer count..");
 
                 String checkPulses;
                 if (BTConstants.isNewVersionLinkSix) {
@@ -1198,9 +1198,9 @@ public class BackgroundService_BTSix extends Service {
                     } else {
                         pulseCount++;
                         pulseCount();
-                        Log.i(TAG, "BTLink 6: Check pulse");
+                        Log.i(TAG, "BTLink_6: Check pulse");
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink 6: Check pulse >> Response: " + Response.trim());
+                            AppConstants.WriteinFile(TAG + " BTLink_6: Check pulse >> Response: " + Response.trim());
                     }
                 }
             }
@@ -1216,9 +1216,9 @@ public class BackgroundService_BTSix extends Service {
             } else {
                 offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
             }
-            Log.i(TAG, " BTLink 6: Link not connected. Please try again!");
+            Log.i(TAG, " BTLink_6: Link not connected. Please try again!");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Link not connected.");
+                AppConstants.WriteinFile(TAG + " BTLink_6: Link not connected.");
             BTConstants.isReconnectCalled6 = false;
             AppConstants.TxnFailedCount6++;
             AppConstants.IsTransactionFailed6 = true;
@@ -1260,7 +1260,7 @@ public class BackgroundService_BTSix extends Service {
             }, 2000);
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: DisableWifiConnection Exception>> " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: DisableWifiConnection Exception>> " + e.getMessage());
         }
     }
 
@@ -1304,14 +1304,14 @@ public class BackgroundService_BTSix extends Service {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline >> BTLink 6: LINK:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
+                    AppConstants.WriteinFile(TAG + " Offline >> BTLink_6: LINK:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
             }
 
             reachMaxLimit();
 
         } catch (Exception e) {
             e.printStackTrace();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink 6: pulse count Exception>>" + e.getMessage());
+            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_6: pulse count Exception>>" + e.getMessage());
         }
     }
 
@@ -1335,7 +1335,7 @@ public class BackgroundService_BTSix extends Service {
 
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: addStoredQtyToCurrentQty Exception:" + ex.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: addStoredQtyToCurrentQty Exception:" + ex.getMessage());
         }
         return newQty;
     }
@@ -1369,10 +1369,10 @@ public class BackgroundService_BTSix extends Service {
                         }
                     }
                     //Used only for debug
-                    Log.i(TAG, "BTLink 6: Link Request>>" + Request);
-                    Log.i(TAG, "BTLink 6: Link Response>>" + Response);
+                    Log.i(TAG, "BTLink_6: Link Request>>" + Request);
+                    Log.i(TAG, "BTLink_6: Link Response>>" + Response);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: Response from Link >>" + Response);
+                        AppConstants.WriteinFile(TAG + " BTLink_6: Response from Link >>" + Response);
 
                     //Set Relay status.
                     if (Request.contains(BTConstants.relay_off_cmd) && Response.contains("OFF")) {
@@ -1388,7 +1388,7 @@ public class BackgroundService_BTSix extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: <onReceive Exception: " + e.getMessage() + ">");
+                    AppConstants.WriteinFile(TAG + " BTLink_6: <onReceive Exception: " + e.getMessage() + ">");
             }
         }
     }
@@ -1426,7 +1426,7 @@ public class BackgroundService_BTSix extends Service {
         String jsonData = gson.toJson(authEntityClass);
 
         if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTLink 6: ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(outputQuantity) + "; Qty:" + fillqty);
+            AppConstants.WriteinFile(TAG + " BTLink_6: ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(outputQuantity) + "; Qty:" + fillqty);
 
         String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTSix.this).PersonEmail;
         String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTSix.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
@@ -1470,7 +1470,7 @@ public class BackgroundService_BTSix extends Service {
             String jsonData = gson.toJson(authEntityClass);
 
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: <Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty + ">");
+                AppConstants.WriteinFile(TAG + " BTLink_6: <Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty + ">");
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTSix.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTSix.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
@@ -1498,7 +1498,7 @@ public class BackgroundService_BTSix extends Service {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: SaveLastBTTransactionToServer Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: SaveLastBTTransactionToServer Exception: " + e.getMessage());
         }
     }
 
@@ -1556,7 +1556,7 @@ public class BackgroundService_BTSix extends Service {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: BackgroundTasksPostTransaction Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: PostTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 
@@ -1564,9 +1564,9 @@ public class BackgroundService_BTSix extends Service {
 
         //if quantity reach max limit
         if (minFuelLimit > 0 && fillqty >= minFuelLimit) {
-            Log.i(TAG, "BTLink 6: Auto Stop Hit>> You reached MAX fuel limit.");
+            Log.i(TAG, "BTLink_6: Auto Stop Hit>> You reached MAX fuel limit.");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Auto Stop Hit>> You reached MAX fuel limit.");
+                AppConstants.WriteinFile(TAG + " BTLink_6: Auto Stop Hit>> You reached MAX fuel limit.");
             relayOffCommand(); //RelayOff
             TransactionCompleteFunction();
         }
@@ -1584,9 +1584,9 @@ public class BackgroundService_BTSix extends Service {
 
                     //Timed out (Start was pressed, and pump on timer hit): Pump Time On limit reached* = 4
                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTSix.this);
-                    Log.i(TAG, " BTLink 6: PumpOnTime Hit>>" + stopCount);
+                    Log.i(TAG, " BTLink_6: PumpOnTime Hit>>" + stopCount);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: PumpOnTime Hit.");
+                        AppConstants.WriteinFile(TAG + " BTLink_6: PumpOnTime Hit.");
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
                 }
@@ -1600,9 +1600,9 @@ public class BackgroundService_BTSix extends Service {
                 }
 
                 if (stopCount >= stopAutoFuelSeconds) {
-                    Log.i(TAG, " BTLink 6: PumpOffTime Hit>>" + stopCount);
+                    Log.i(TAG, " BTLink_6: PumpOffTime Hit>>" + stopCount);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: PumpOffTime Hit.");
+                        AppConstants.WriteinFile(TAG + " BTLink_6: PumpOffTime Hit.");
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
                 }
@@ -1627,7 +1627,7 @@ public class BackgroundService_BTSix extends Service {
                     if (RespCount == 4) {
                         RespCount = 0;
                         //Execute fdcheck counter
-                        Log.i(TAG, "BTLink 6: Execute FD Check..>>");
+                        Log.i(TAG, "BTLink_6: Execute FD Check..>>");
 
                         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             getMainExecutor().execute(new Runnable() {
@@ -1660,7 +1660,7 @@ public class BackgroundService_BTSix extends Service {
                         CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTSix.this);
                     }
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink 6: Auto Stop Hit. Response >> " + Response.trim());
+                        AppConstants.WriteinFile(TAG + " BTLink_6: Auto Stop Hit. Response >> " + Response.trim());
                     stopCount = 0;
                     relayOffCommand(); //RelayOff
                     TransactionCompleteFunction();
@@ -1679,13 +1679,13 @@ public class BackgroundService_BTSix extends Service {
                 Request = "";
                 Response = "";
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: Sending FD_check command to Link: " + LinkName);
+                    AppConstants.WriteinFile(TAG + " BTLink_6: Sending FD_check command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send6(BTConstants.fdcheckcommand);
             }
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: FD_check command Exception:>>" + ex.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: FD_check command Exception:>>" + ex.getMessage());
         }
     }
 
@@ -1708,7 +1708,7 @@ public class BackgroundService_BTSix extends Service {
                         date = BTConstants.parseDateForOldVersion(date);
                     }
                 } catch (Exception e) {
-                    Log.i(TAG, " BTLink 6: Exception while parsing date format.>> " + e.getMessage());
+                    Log.i(TAG, " BTLink_6: Exception while parsing date format.>> " + e.getMessage());
                 }
 
                 HashMap<String, String> Hmap = new HashMap<>();
@@ -1737,14 +1737,14 @@ public class BackgroundService_BTSix extends Service {
             JSONObject versionJsonObj = jsonObject.getJSONObject("version");
             String version = versionJsonObj.getString("version");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: LINK Version >> " + version);
+                AppConstants.WriteinFile(TAG + " BTLink_6: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTSix.this, AppConstants.UP_HoseId_fs6, version);
             versionNumberOfLinkSix = CommonUtils.GetVersionNumberFromLink(version);
 
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Exception in parseInfoCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: Exception in parseInfoCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -1813,7 +1813,7 @@ public class BackgroundService_BTSix extends Service {
                                 }
                             } catch (Exception e) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: Last10 txtn parsing exception:>>" + e.getMessage());
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: Last10 txtn parsing exception:>>" + e.getMessage());
                             }
                         } else {
 
@@ -1822,7 +1822,7 @@ public class BackgroundService_BTSix extends Service {
                             }
                             if (!version.isEmpty()) {
                                 if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink 6: LINK Version >> " + version);
+                                    AppConstants.WriteinFile(TAG + " BTLink_6: LINK Version >> " + version);
                                 storeUpgradeFSVersion(BackgroundService_BTSix.this, AppConstants.UP_HoseId_fs6, version);
                             }
                         }
@@ -1831,7 +1831,7 @@ public class BackgroundService_BTSix extends Service {
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: Exception in parseInfoCommandResponseForLast10txtn. response>> " + response + "; Exception>>" + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: Exception in parseInfoCommandResponseForLast10txtn. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -1867,7 +1867,7 @@ public class BackgroundService_BTSix extends Service {
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_BTSix.this);
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: <Fuel Limit: " + minFuelLimit + ">");
+                AppConstants.WriteinFile(TAG + " BTLink_6: <Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
@@ -1931,7 +1931,7 @@ public class BackgroundService_BTSix extends Service {
 
                 Gson gson = new Gson();
                 String jsonData = gson.toJson(objUpgrade);
-                //AppConstants.WriteinFile(TAG + " BTLink 6: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
+                //AppConstants.WriteinFile(TAG + " BTLink_6: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
@@ -1940,7 +1940,7 @@ public class BackgroundService_BTSix extends Service {
 
             } catch (Exception ex) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: UpgradeCurrentVersionWithUpgradableVersion Exception: " + ex.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink_6: UpgradeCurrentVersionWithUpgradableVersion Exception: " + ex.getMessage());
             }
             return response;
         }
@@ -1959,7 +1959,7 @@ public class BackgroundService_BTSix extends Service {
                 }
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink 6: UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
+                    AppConstants.WriteinFile(TAG + " BTLink_6: UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
             }
         }
     }
@@ -1981,7 +1981,7 @@ public class BackgroundService_BTSix extends Service {
 
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink 6: UpdateSwitchTimeBounceForLink Exception: " + ex.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_6: UpdateSwitchTimeBounceForLink Exception: " + ex.getMessage());
         }
     }
 

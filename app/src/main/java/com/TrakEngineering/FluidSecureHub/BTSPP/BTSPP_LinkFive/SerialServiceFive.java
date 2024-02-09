@@ -119,7 +119,7 @@ public class SerialServiceFive extends Service implements SerialListenerFive {
                     listener.onSerialReadFive(item.data);
                     break;
                 case IoError:
-                    listener.onSerialIoErrorFive(item.e);
+                    listener.onSerialIoErrorFive(item.e, 3);
                     break;
             }
         }
@@ -135,7 +135,7 @@ public class SerialServiceFive extends Service implements SerialListenerFive {
                     listener.onSerialReadFive(item.data);
                     break;
                 case IoError:
-                    listener.onSerialIoErrorFive(item.e);
+                    listener.onSerialIoErrorFive(item.e, 4);
                     break;
             }
         }
@@ -216,13 +216,13 @@ public class SerialServiceFive extends Service implements SerialListenerFive {
         }
     }
 
-    public void onSerialIoErrorFive(Exception e) {
+    public void onSerialIoErrorFive(Exception e, Integer fromCode) {
         if (connected) {
             synchronized (this) {
                 if (listener != null) {
                     mainLooper.post(() -> {
                         if (listener != null) {
-                            listener.onSerialIoErrorFive(e);
+                            listener.onSerialIoErrorFive(e, fromCode);
                         } else {
                             queue1.add(new QueueItem(QueueType.IoError, null, e));
                             cancelNotification();

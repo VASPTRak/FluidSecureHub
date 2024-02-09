@@ -344,6 +344,7 @@
     <string name="PleaseWait">Please Wait...</string>
     <string name="PleaseWaitMessage">Please Wait</string>
     <string name="PleaseWaitForWifiConnect">Connecting to wifi. Please wait...</string>
+    <string name="PleaseWaitAfterHotspotToggle">Re-Establishing Hotspot Connection, Please Wait</string>
     <string name="ReadAccessDeviceAgain">Click to read Access Device again</string>
     <string name="peVehicle">Please enter Vehicle. If you still have issues, please contact your Manager.</string>
     <string name="peVehicleOrAccessDevice">Please enter Vehicle or present an Access Device. If you still have issues, please contact your Manager.</string>

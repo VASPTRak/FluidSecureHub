@@ -2014,7 +2014,7 @@ public class BS_BLE_BTTwo extends Service {
 
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BackgroundTasksPostTransaction Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " PostTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 

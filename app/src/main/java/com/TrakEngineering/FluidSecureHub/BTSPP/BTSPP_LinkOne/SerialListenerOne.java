@@ -4,5 +4,5 @@ public interface SerialListenerOne {
     void onSerialConnectOne();
     void onSerialConnectErrorOne(Exception e);
     void onSerialReadOne(byte[] data);
-    void onSerialIoErrorOne(Exception e);
+    void onSerialIoErrorOne(Exception e, Integer fromCode);
 }

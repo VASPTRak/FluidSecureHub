@@ -4,5 +4,5 @@ public interface SerialListenerSix {
     void onSerialConnectSix();
     void onSerialConnectErrorSix(Exception e);
     void onSerialReadSix(byte[] data);
-    void onSerialIoErrorSix(Exception e);
+    void onSerialIoErrorSix(Exception e, Integer fromCode);
 }
