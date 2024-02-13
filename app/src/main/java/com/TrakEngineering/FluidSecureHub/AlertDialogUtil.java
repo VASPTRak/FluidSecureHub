@@ -29,18 +29,25 @@ public class AlertDialogUtil {
     public static void runAnimatedLoadingDots(Activity activity, String messagePrefix, final AlertDialog alertDialog, boolean showSpannableString) {
 
         int dotsCount = 0;
+        int spaceCount = 5;
         while (alertDialog != null && alertDialog.isShowing()) {
             dotsCount++;
             dotsCount = dotsCount % 5; // looks good w/4 dots
 
             try {
                 Thread.sleep(800);
-            }
-            catch (Exception ex) {}
+            } catch (Exception ex) {}
 
             final StringBuffer updateValue = new StringBuffer(messagePrefix);
             for (int i = 0; i < dotsCount; i++) {
                 updateValue.append('.');
+            }
+            String PleaseWaitMsgAfterHotspotToggle = activity.getResources().getString(R.string.PleaseWaitAfterHotspotToggle);
+            if (messagePrefix.equalsIgnoreCase(PleaseWaitMsgAfterHotspotToggle)) {
+                for (int i = 0; i < (spaceCount - dotsCount); i++) {
+                    updateValue.append(' ');
+                }
+                updateValue.append(AppConstants.HSConnectionTimeout);
             }
 
             activity.runOnUiThread(new Runnable() {

@@ -252,6 +252,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "<Skipped Keep Alive for the Link: " + selSSID + ">");
+                            ContinueForNextLink(false);
                         }
                     } else {
                         ContinueForNextLink(false);
@@ -613,7 +614,11 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     private void UnregisterReceiver() {
         /*if (AppConstants.GenerateLogs)
             AppConstants.WriteinFile(TAG + "<Unregistering the receiver>");*/
-        unregisterReceiver(broadcastBlueLinkData);
+        try {
+            unregisterReceiver(broadcastBlueLinkData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public class BroadcastBlueLinkData extends BroadcastReceiver {

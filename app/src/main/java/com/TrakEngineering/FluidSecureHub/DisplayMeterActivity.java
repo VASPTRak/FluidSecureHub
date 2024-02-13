@@ -234,6 +234,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     private Dialog toastDialog = null;
     public String PulserTimingAdjust;
     public String IsResetSwitchTimeBounce;
+    public int connTimeout = 10;
 
     @Override
     protected void onPostResume() {
@@ -277,7 +278,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void onResumeFunctionality() {
-
+        AppConstants.HSConnectionTimeout = "";
         invalidateOptionsMenu();
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
             AppConstants.CURRENT_STATE_MOBILEDATA = true;
@@ -1185,6 +1186,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Thread.sleep(2000);
             } catch (InterruptedException e) { e.printStackTrace(); }
 
+            skipOnResumeForHotspot = true;
+            skipOnPostResumeForHotspot = true;
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
@@ -1192,10 +1195,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             SaveHotspotToggleDateTimeInSharedPref();
             ShowLoader(getResources().getString(R.string.PleaseWaitAfterHotspotToggle));
 
-            new CountDownTimer(10000, 1000) {
+            new CountDownTimer(11000, 1000) {
                 public void onTick(long millisUntilFinished) {
+                    AppConstants.HSConnectionTimeout = " " + connTimeout;
+                    connTimeout = connTimeout - 1;
                     if (AppConstants.DetailsListOfConnectedDevices.size() > 0) {
-                        //ShowLoader(getResources().getString(R.string.PleaseWaitMessage));
                         onResumeFunctionality();
                         cancel();
                     } else {
@@ -1204,7 +1208,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 public void onFinish() {
-                    //ShowLoader(getResources().getString(R.string.PleaseWaitMessage));
                     onResumeFunctionality();
                 }
             }.start();

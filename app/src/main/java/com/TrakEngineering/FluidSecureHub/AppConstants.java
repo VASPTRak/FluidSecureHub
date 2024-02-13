@@ -127,6 +127,8 @@ public class AppConstants {
 
     public static final String LinkConnectionIssuePref = "LinkConnectionIssuePref";
 
+    public static String HSConnectionTimeout = "";
+
     public static final String IsGateHub = "IsGateHub";
     public static final String IsStayOpenGate = "IsStayOpenGate";
 
