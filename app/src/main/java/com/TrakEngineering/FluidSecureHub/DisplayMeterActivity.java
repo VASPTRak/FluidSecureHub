@@ -229,17 +229,17 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     Timer ScreenOutTime;
     public boolean onResumeAlreadyCalled = false;
     private boolean skipOnResumeForHotspot = false;
-    private boolean skipOnPostResumeForHotspot = false;
+    //private boolean skipOnPostResumeForHotspot = false;
     public int hotspotToggleAttempt = 0;
     private Dialog toastDialog = null;
     public String PulserTimingAdjust;
     public String IsResetSwitchTimeBounce;
     public int connTimeout = 10;
 
-    @Override
+    /*@Override
     protected void onPostResume() {
         super.onPostResume();
-
+        **NOTE: If we enable HS here and proceed, and if the link is OFF/not connected, the app will toggle HS again. frequently HS toggle is not recommended
         if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !BTConstants.CurrentTransactionIsBT && !AppConstants.isAllLinksAreBTLinks) {
             if (skipOnPostResumeForHotspot) { // To handle app crash due to double onResume call after disabling the hotspot.
                 skipOnPostResumeForHotspot = false;
@@ -263,15 +263,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
             }, 10000);
         }
-
-    }
+    }*/
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (skipOnResumeForHotspot) { // To handle app crash due to double onResume call after disabling the hotspot.
-            skipOnResumeForHotspot = false;
+        if (skipOnResumeForHotspot) {
             return;
         }
         onResumeFunctionality();
@@ -399,29 +397,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             LinkName = "";
         }
 
-        /*if ((LinkCommunicationType.equalsIgnoreCase("BT") || BTConstants.CurrentTransactionIsBT) && CommonUtils.CheckAllHTTPLinksAreFree()) {
-            if (CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
-                skipOnResumeForHotspot = true;
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
-                try {
-                    wifiApManager.setWifiApEnabled(null, false);
-                    BTConstants.isHotspotDisabled = true;
-                } catch (Exception e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Exception while disabling hotspot. Attempt 1. " + e.getMessage());
-                    try {
-                        wifiApManager.setWifiApEnabled(null, false);
-                        BTConstants.isHotspotDisabled = true;
-                    } catch (Exception ex) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Exception while disabling hotspot. Attempt 2. " + ex.getMessage());
-                    }
-                }
-
-            }
-        }*/
-
         //offline-----------start
         if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this)) {
             EntityOffTranz authEntityClass = OfflineConstants.getCurrentTransaction(DisplayMeterActivity.this);
@@ -434,14 +409,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
         //offline-----------end
 
-
         /*SharedPreferences sharedPrefODO = DisplayMeterActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
         IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
         IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
         IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
         TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
-
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
@@ -744,11 +717,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             ;
         };
         ScreenOutTime.schedule(ttt, screenTimeOut, 500);
-
     }
 
     public void ResetTimeoutDisplayMeterScreen() {
-
         CancelTimerScreenOut();
 
         try {
@@ -760,102 +731,17 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         TimeOutDisplayMeterScreen();
     }
 
-
-    /*@Override
-    public void onConnected(Bundle bundle) {
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-
-            CurrentLat = mLastLocation.getLatitude();
-            CurrentLng = mLastLocation.getLongitude();
-
-            System.out.println("CCCrrr" + CurrentLat);
-            System.out.println("CCCrrr" + CurrentLng);
-
-        }
-    }*/
-
-    /*@Override
-    public void onConnectionSuspended(int i) {
-    }*/
-
-    /*@Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-    }*/
-
-    public void doTimerTask() {
-
-        mTimerTask = new TimerTask() {
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-
-
-                        System.out.println(Calendar.getInstance().getTime());
-
-
-                        if (BRisWiFiConnected && AppConstants.getConnectedWifiName(DisplayMeterActivity.this).equalsIgnoreCase("\"" + AppConstants.LAST_CONNECTED_SSID + "\"")) {
-
-                            tvStatus.setText("");
-                            stopTask();
-
-
-                        } else {
-                            if (attempt >= 3) {
-                                tvStatus.setText("");
-                                stopTask();
-
-                                if (!isTCancelled)
-                                    AlertSettings(DisplayMeterActivity.this, "Unable to connect " + AppConstants.LAST_CONNECTED_SSID + "!\n\nPlease connect to " + AppConstants.LAST_CONNECTED_SSID + " manually using the 'WIFI settings' screen.\nThen hit back and click on the 'START' button to continue.");
-                            } else {
-
-                                /*
-                                if (linearFuelAnother.getVisibility() != View.VISIBLE) {
-
-                                    AppConstants.dontConnectWiFi(DisplayMeterActivity.this);
-
-                                    connectToWiFiNew();
-
-                                    attempt++;
-
-                                    tvStatus.setText("Please wait...\nConnecting to '" + AppConstants.LAST_CONNECTED_SSID + "'" + "\nAttempt " + attempt + "/3");
-                                } else {
-                                    tvStatus.setText("");
-                                    stopTask();
-                                }
-                                */
-                            }
-
-                        }
-
-
-                    }
-                });
-            }
-        };
-
-
-        t.schedule(mTimerTask, 0, 15000);  //10seconds
-
-    }
-
     public void stopTask() {
-
         attempt = 100;
 
         if (mTimerTask != null) {
-
-
             Log.d("TIMER", "timer canceled");
             mTimerTask.cancel();
         }
-
     }
-
 
     private void InItGUI() {
         try {
-
             //---TextView-------------
             textDateTime = (TextView) findViewById(R.id.textDateTime);
             tv_hoseConnected = (TextView) findViewById(R.id.tv_hoseConnected);
@@ -868,7 +754,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             linearTimer = (LinearLayout) findViewById(R.id.linearTimer);
 
-
             //-----------Buttons----
             btnStart = (Button) findViewById(R.id.btnStart);
             btnCancel = (Button) findViewById(R.id.btnCancel);
@@ -877,13 +762,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             btnFuelAnotherYes = (Button) findViewById(R.id.btnFuelAnotherYes);
             btnFuelAnotherNo = (Button) findViewById(R.id.btnFuelAnotherNo);
 
-
             btnStart.setOnClickListener(this);
             btnCancel.setOnClickListener(this);
             // btnFuelHistory.setOnClickListener(this);
             btnFuelAnotherYes.setOnClickListener(this);
             btnFuelAnotherNo.setOnClickListener(this);
-
 
         } catch (Exception ex) {
             CommonUtils.LogMessage(TAG, " InItGUI ", ex);
@@ -892,62 +775,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onBackPressed() {
-
         // ActivityHandler.removeActivity(7);
         Istimeout_Sec = false;
         finish();
 
-    }
-
-
-    @TargetApi(21)
-    public void setGlobalMobileDatConnection() {
-
-        NetworkRequest.Builder requestbuilder = new NetworkRequest.Builder();
-        requestbuilder
-                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-
-        connection_manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-
-        connection_manager.requestNetwork(requestbuilder.build(), new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(Network network) {
-
-
-                System.out.println(" network......." + network);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    connection_manager.bindProcessToNetwork(network);
-
-                }
-            }
-        });
-    }
-
-    @TargetApi(21)
-    private void setGlobalWifiConnection() {
-
-        NetworkRequest.Builder requestbuilder = new NetworkRequest.Builder();
-        requestbuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-
-        connection_manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-
-        connection_manager.requestNetwork(requestbuilder.build(), new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(Network network) {
-
-
-                System.out.println(" network......." + network);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    connection_manager.bindProcessToNetwork(network);
-                }
-            }
-        });
     }
 
     public void startWelcomeActityDiscWifi() {
@@ -1015,24 +846,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             case R.id.btnFuelAnotherYes:
 
-
                 startWelcomeActityDiscWifi();
-
 
                 break;
 
             case R.id.btnFuelAnotherNo:
-
-
-                /*
-                if (AppConstants.IS_WIFI_ON) {
-                    wifiManagerMM = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-                    if (!wifiManagerMM.isWifiEnabled()) {
-                        wifiManagerMM.setWifiEnabled(true);
-                        wifiManagerMM.disconnect();
-                    }
-                }*/
-
 
                 finish();
 
@@ -1177,7 +995,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     public void HotSpotToggleFunctionality() {
         try {
             skipOnResumeForHotspot = true;
-            skipOnPostResumeForHotspot = true;
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
             wifiApManager.setWifiApEnabled(null, false);  //Hotspot disabled
@@ -1186,18 +1003,20 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Thread.sleep(2000);
             } catch (InterruptedException e) { e.printStackTrace(); }
 
+            SaveHotspotToggleDateTimeInSharedPref();
             skipOnResumeForHotspot = true;
-            skipOnPostResumeForHotspot = true;
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
 
-            SaveHotspotToggleDateTimeInSharedPref();
             ShowLoader(getResources().getString(R.string.PleaseWaitAfterHotspotToggle));
 
-            new CountDownTimer(11000, 1000) {
+            new CountDownTimer(21000, 2000) {
                 public void onTick(long millisUntilFinished) {
-                    AppConstants.HSConnectionTimeout = " " + connTimeout;
+                    Log.d(TAG, "onResume: Step onTick connTimeout: " + connTimeout);
+                    if (connTimeout > 0) {
+                        AppConstants.HSConnectionTimeout = " " + connTimeout;
+                    }
                     connTimeout = connTimeout - 1;
                     if (AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                         onResumeFunctionality();
@@ -1214,6 +1033,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Exception in HotSpotToggleFunctionality: " + e.getMessage() + "; (Selected LINK => " + AppConstants.CURRENT_SELECTED_SSID + ")");
+            onResumeFunctionality();
         }
     }
 
@@ -1232,7 +1052,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             return true;
         } else {
             int diffMin = getDiffInMinutes(CurrDateTime, LastHSToggleDateTime);
-            return diffMin > 15;
+            return diffMin >= 15;
         }
     }
 
@@ -2709,63 +2529,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         // commit changes
         editor.commit();
-
-
     }
-
-
-    private class WiFiConnectTask extends AsyncTask<String, Void, String> {
-        // Do the long-running work in here
-        protected String doInBackground(String... asd) {
-
-
-            connectToWiFiOld();
-
-
-            return "";
-        }
-
-
-        @Override
-        protected void onPostExecute(String s) {
-
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-
-                    /*
-                    if (!BRisWiFiConnected || !AppConstants.getConnectedWifiName(DisplayMeterActivity.this).equalsIgnoreCase("\"" + AppConstants.LAST_CONNECTED_SSID + "\"")) {
-
-                        if (linearFuelAnother.getVisibility() != View.VISIBLE) {
-
-                            //attempt = 4;
-                            //doTimerTask();
-                        }
-                    }
-                    */
-
-                    if (BRisWiFiConnected && AppConstants.getConnectedWifiName(DisplayMeterActivity.this).equalsIgnoreCase("\"" + AppConstants.LAST_CONNECTED_SSID + "\"")) {
-
-                        tvStatus.setText("");
-
-                    } else {
-
-                        tvStatus.setText("");
-
-                        if (!isTCancelled)
-                            AlertSettings(DisplayMeterActivity.this, "Unable to connect " + AppConstants.LAST_CONNECTED_SSID + "!\n\nPlease connect to " + AppConstants.LAST_CONNECTED_SSID + " manually using the 'WIFI settings' screen.\nThen hit back and click on the 'START' button to continue.");
-
-                    }
-
-
-                }
-            }, 6000);
-
-        }
-    }
-
 
     public void startTimer() {
         tThanks = new Timer();
@@ -4464,25 +4228,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         startActivity(i);
     }
 
-    private void AttemptHotspotEnable() {
-        if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this)) {
-
-            btnStart.setText(getResources().getString(R.string.PleaseWait));
-            btnStart.setEnabled(false);
-            wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
-            //AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Connecting to hotspot, please wait", Color.BLUE);
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    btnStart.setText(getResources().getString(R.string.StartBtn));
-                    btnStart.setEnabled(true);
-                }
-            }, 10000);
-
-        }
-    }
-
     private void proceedToPostResume() {
 
         if (LinkCommunicationType.equalsIgnoreCase("BT")) {
@@ -4920,7 +4665,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     private void PostTransactionBackgroundTasks() {
         try {
             if (cd.isConnectingToInternet()) {
-
                 boolean BSRunning = CommonUtils.checkServiceRunning(DisplayMeterActivity.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
                 if (!BSRunning) {
                     startService(new Intent(this, BackgroundService.class));
@@ -4930,16 +4674,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (OfflineConstants.isOfflineAccess(DisplayMeterActivity.this))
                 SyncOfflineData();
 
-            /*if (BTConstants.isHotspotDisabled) {
-                //Enable Hotspot
-                if (!CommonUtils.isHotspotEnabled(DisplayMeterActivity.this) && !AppConstants.isAllLinksAreBTLinks) {
-                    skipOnResumeForHotspot = true;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
-                    wifiApManager.setWifiApEnabled(null, true);
-                }
-                BTConstants.isHotspotDisabled = false;
-            }*/
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "PostTransactionBackgroundTasks Exception: " + e.getMessage());
