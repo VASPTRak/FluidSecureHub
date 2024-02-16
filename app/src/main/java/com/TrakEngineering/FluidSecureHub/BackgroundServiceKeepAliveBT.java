@@ -248,6 +248,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                ContinueForNextLink(false);
                             }
                         } else {
                             if (AppConstants.GenerateLogs)
@@ -330,7 +331,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    BTKeepAliveCompleteFunction(); // To unregister the receiver after reboot
+                    //BTKeepAliveCompleteFunction(); // To unregister the receiver after reboot
                     BTConstants.RetryBTConnectionLinkPosition = linkPosition;
                     new CountDownTimer(10000, 1000) {
                         public void onTick(long millisUntilFinished) {
@@ -376,7 +377,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     private void InfoCommand(int linkPosition, String selectedSSID) {
         try {
             Log.d(TAG, "BTKeepAlive: calling RegisterBTReceiver from InfoCommand");
-            RegisterBTReceiver(linkPosition);
+            //RegisterBTReceiver(linkPosition);
             try {
                 //Execute info command
                 request = "";
@@ -393,7 +394,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                 AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Success");
                             SaveDefectiveBTLinkInfoCmdDateTimeSharedPref(linkPosition);
                             CheckInabilityToConnectLinks(linkPosition, selectedSSID, IsBTLinkConnected, true);
-                            BTKeepAliveCompleteFunction();
+                            //BTKeepAliveCompleteFunction();
                             cancel();
                         }
                     }
@@ -409,13 +410,13 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                 AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Failed");
                             CheckInabilityToConnectLinks(linkPosition, selectedSSID, IsBTLinkConnected, false);
                         }
-                        BTKeepAliveCompleteFunction();
+                        //BTKeepAliveCompleteFunction();
                     }
                 }.start();
 
             } catch (Exception e) {
                 CheckInabilityToConnectLinks(linkPosition, selectedSSID, IsBTLinkConnected, false);
-                BTKeepAliveCompleteFunction();
+                //BTKeepAliveCompleteFunction();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -582,7 +583,9 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     }
 
     private void RegisterBTReceiver(int linkPosition) {
-        BTKeepAliveCompleteFunction();
+        if (broadcastBlueLinkData != null) {
+            BTKeepAliveCompleteFunction();
+        }
         btLinkPosition = linkPosition;
         broadcastBlueLinkData = new BroadcastBlueLinkData();
         switch (linkPosition) {
@@ -609,6 +612,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             AppConstants.WriteinFile(TAG + "<Registering the receiver for Link: " + selectedSSID + ">");*/
         registerReceiver(broadcastBlueLinkData, intentFilter);
         isBroadcastReceiverRegistered = true;
+        if (AppConstants.GenerateLogs)
+            AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " <Broadcast Receiver Registered. (" + broadcastBlueLinkData + ")>");
     }
 
     private void UnregisterReceiver() {
@@ -616,6 +621,11 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             AppConstants.WriteinFile(TAG + "<Unregistering the receiver>");*/
         try {
             unregisterReceiver(broadcastBlueLinkData);
+            if (broadcastBlueLinkData != null) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + "<Broadcast Receiver Unregistered. (" + broadcastBlueLinkData + ")>");
+                broadcastBlueLinkData = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -792,12 +802,11 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             map.put("Message", Message);
 
             DefectiveBTLinks.add(map);
-
-            ContinueForNextLink(true);
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(position) + " CheckInabilityToConnectLinks Exception:>>" + e.getMessage());
         }
+        ContinueForNextLink(true);
     }
 
     private void ContinueForNextLink(boolean isBTLink) {
