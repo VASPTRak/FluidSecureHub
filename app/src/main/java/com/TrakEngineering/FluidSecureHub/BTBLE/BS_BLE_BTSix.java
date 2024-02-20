@@ -903,10 +903,14 @@ public class BS_BLE_BTSix extends Service {
     private void TerminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
-            if (isOnlineTxn) {
-                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTSix.this);
+            if (fillqty > 0) {
+                if (isOnlineTxn) {
+                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTSix.this);
+                } else {
+                    offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                }
             } else {
-                offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BS_BLE_BTSix.this);
             }
             Log.i(TAG, " Link not connected. Please try again!");
             if (AppConstants.GenerateLogs)

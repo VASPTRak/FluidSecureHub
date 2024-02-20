@@ -287,6 +287,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //Hide keyboard
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        if (alertDialogMain != null) {
+            if (alertDialogMain.isShowing()) {
+                alertDialogMain.dismiss();
+            }
+        }
         //getIpOverOSVersion();
 
         //UDP Connection..!!
@@ -968,7 +973,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     if (hotspotToggleAttempt == 0) {
                         if (CheckLastHSToggleDateTime()) { // (CurrDateTime - LastHSToggleDateTime) > 15 min
                             hotspotToggleAttempt++;
-                            HotSpotToggleFunctionality();
+                            HotSpotToggleFunctionality(); // It also has WiFi toggling
                         } else {
                             terminateTxn = true;
                         }
@@ -994,10 +999,29 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     public void HotSpotToggleFunctionality() {
         try {
+            ShowLoader(getResources().getString(R.string.PleaseWaitMessage));
             skipOnResumeForHotspot = true;
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
+                AppConstants.WriteinFile(TAG + "<Turning OFF the Hotspot.>");
             wifiApManager.setWifiApEnabled(null, false);  //Hotspot disabled
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) { e.printStackTrace(); }
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Turning ON the Wifi.>");
+            skipOnResumeForHotspot = true;
+            ChangeWifiState(true);
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) { e.printStackTrace(); }
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Turning OFF the Wifi.>");
+            skipOnResumeForHotspot = true;
+            ChangeWifiState(false);
 
             try {
                 Thread.sleep(2000);
@@ -1006,7 +1030,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             SaveHotspotToggleDateTimeInSharedPref();
             skipOnResumeForHotspot = true;
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
+                AppConstants.WriteinFile(TAG + "<Turning ON the Hotspot.>");
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
 
             ShowLoader(getResources().getString(R.string.PleaseWaitAfterHotspotToggle));
@@ -1074,6 +1098,17 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             e.printStackTrace();
         }
         return DiffTime;
+    }
+
+    private void ChangeWifiState(boolean enable) {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        if (enable) {
+            //Enable wifi
+            wifiManager.setWifiEnabled(true);
+        } else {
+            //Disable wifi
+            wifiManager.setWifiEnabled(false);
+        }
     }
 
     public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {

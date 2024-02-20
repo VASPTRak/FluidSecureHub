@@ -1212,10 +1212,14 @@ public class BackgroundService_BTOne extends Service {
     private void TerminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
-            if (isOnlineTxn) {
-                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTOne.this);
+            if (fillqty > 0) {
+                if (isOnlineTxn) {
+                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTOne.this);
+                } else {
+                    offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                }
             } else {
-                offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTOne.this);
             }
             Log.i(TAG, " BTLink_1: Link not connected. Please try again!");
             if (AppConstants.GenerateLogs)
