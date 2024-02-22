@@ -1309,7 +1309,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         Intent name = new Intent(WelcomeActivity.this, BackgroundServiceKeepAliveBT.class);
         PendingIntent pintent = PendingIntent.getService(getApplicationContext(), 0, name, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), (1000 * 60 * 5), pintent); // Repeat every 5 minutes
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), (1000 * 60 * 60), pintent); // Repeat every 1 hr //5 minutes
 
         timerBTKeepAlive = new Timer("TimerBTKeepAlive");
         TimerTask repeatedTask = new TimerTask() {

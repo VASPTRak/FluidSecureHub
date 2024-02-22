@@ -106,6 +106,14 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         return Service.START_NOT_STICKY;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (broadcastBlueLinkData != null) {
+            UnregisterReceiver();
+        }
+    }
+
     @SuppressLint("LongLogTag")
     public void StartProcess() {
         try {
@@ -318,7 +326,10 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     private void LinkRebootFunctionality(int linkPosition, String selectedSSID) {
         try {
             Log.d(TAG, "BTKeepAlive: calling RegisterBTReceiver from LinkRebootFunctionality");
-            RegisterBTReceiver(linkPosition);
+            if (!RegisterBTReceiver(linkPosition)) {
+                ContinueForNextLink(true);
+                return;
+            }
             //Execute reboot command
             request = "";
             response = "";
@@ -582,38 +593,46 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         }
     }
 
-    private void RegisterBTReceiver(int linkPosition) {
-        if (broadcastBlueLinkData != null) {
-            BTKeepAliveCompleteFunction();
+    private boolean RegisterBTReceiver(int linkPosition) {
+        try {
+            if (broadcastBlueLinkData != null) {
+                BTKeepAliveCompleteFunction();
+            }
+            btLinkPosition = linkPosition;
+            broadcastBlueLinkData = new BroadcastBlueLinkData();
+            switch (linkPosition) {
+                case 0://Link 1
+                    intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
+                    break;
+                case 1://Link 2
+                    intentFilter = new IntentFilter("BroadcastBlueLinkTwoData");
+                    break;
+                case 2://Link 3
+                    intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
+                    break;
+                case 3://Link 4
+                    intentFilter = new IntentFilter("BroadcastBlueLinkFourData");
+                    break;
+                case 4://Link 5
+                    intentFilter = new IntentFilter("BroadcastBlueLinkFiveData");
+                    break;
+                case 5://Link 6
+                    intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
+                    break;
+            }
+            /*if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<Registering the receiver for Link: " + selectedSSID + ">");*/
+            registerReceiver(broadcastBlueLinkData, intentFilter);
+            isBroadcastReceiverRegistered = true;
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " <Broadcast Receiver Registered. (" + broadcastBlueLinkData + ")>");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "RegisterBTReceiver Exception: " + e.getMessage() + "; Link Position: " + (linkPosition + 1));
+            return false;
         }
-        btLinkPosition = linkPosition;
-        broadcastBlueLinkData = new BroadcastBlueLinkData();
-        switch (linkPosition) {
-            case 0://Link 1
-                intentFilter = new IntentFilter("BroadcastBlueLinkOneData");
-                break;
-            case 1://Link 2
-                intentFilter = new IntentFilter("BroadcastBlueLinkTwoData");
-                break;
-            case 2://Link 3
-                intentFilter = new IntentFilter("BroadcastBlueLinkThreeData");
-                break;
-            case 3://Link 4
-                intentFilter = new IntentFilter("BroadcastBlueLinkFourData");
-                break;
-            case 4://Link 5
-                intentFilter = new IntentFilter("BroadcastBlueLinkFiveData");
-                break;
-            case 5://Link 6
-                intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
-                break;
-        }
-        /*if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "<Registering the receiver for Link: " + selectedSSID + ">");*/
-        registerReceiver(broadcastBlueLinkData, intentFilter);
-        isBroadcastReceiverRegistered = true;
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " <Broadcast Receiver Registered. (" + broadcastBlueLinkData + ")>");
     }
 
     private void UnregisterReceiver() {
