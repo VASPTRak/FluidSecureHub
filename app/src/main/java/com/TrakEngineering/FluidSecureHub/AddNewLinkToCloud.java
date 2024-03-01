@@ -53,7 +53,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager;
+import com.TrakEngineering.FluidSecureHub.wifihotspot.WifiApManager;
 import com.TrakEngineering.FluidSecureHub.entity.AddTankFromAPP_entity;
 import com.TrakEngineering.FluidSecureHub.entity.UpdateMacAddressClass;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;

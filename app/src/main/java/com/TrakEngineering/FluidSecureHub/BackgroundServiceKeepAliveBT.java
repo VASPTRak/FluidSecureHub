@@ -60,6 +60,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
     public int connectionAttemptCount = 0;
     //public boolean IsInfoCommandSuccess = false;
     public boolean IsBTLinkConnected = false;
+    public boolean IsBTToggled = false;
     //public int waitCounter = 0;
     //======================================================//
     public int counter = 0;
@@ -124,7 +125,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     //for (int i = 0; i < SSIDList.size(); i++) {
                     int position = counter;
                     //boolean IsAllHosesAreFree = AppConstants.IsAllHosesAreFree();
-                    String linkBusyStatus = GetBTLinkBusyStatus(position);
+                    boolean isLinkFree = GetBTLinkBusyStatus(position);
                     String selSSID = SSIDList.get(position).get("WifiSSId");
                     String selBTMacAddress = SSIDList.get(position).get("BTMacAddress");
                     String LinkCommunicationType = "BT";
@@ -148,7 +149,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                         IsBTLinkConnected = false;
                         //IsInfoCommandSuccess = false;
 
-                        if (WelcomeActivity.OnWelcomeActivity && linkBusyStatus.equalsIgnoreCase("FREE") && !AppConstants.isBTLinkUpgradeInProgress) {
+                        if (WelcomeActivity.OnWelcomeActivity && isLinkFree && !AppConstants.isBTLinkUpgradeInProgress) {
                             switch (position) {
                                 case 0://Link One
                                     if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkOneStatus && BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
@@ -221,7 +222,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                             Log.i(TAG, "BTKeepAlive: BT OFF");
                                             if (AppConstants.GenerateLogs)
                                                 AppConstants.WriteinFile(TAG + "<BT OFF>");
-
+                                            IsBTToggled = true;
                                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -246,6 +247,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                         }
                                     }
                                     if (continueToRetry) {
+                                        IsBTToggled = false;
                                         Log.d(TAG, "BTKeepAlive: Checking CheckIfPresentInPairedDeviceList inside continueToRetry");
                                         if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                             BTConstants.RetryBTConnectionLinkPosition = position;
@@ -702,27 +704,27 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         }
     }
 
-    public String GetBTLinkBusyStatus(int linkPosition) {
-        String status = "";
+    public boolean GetBTLinkBusyStatus(int linkPosition) {
+        boolean isLinkFree = false;
         try {
             switch (linkPosition) {
                 case 0:
-                    status = Constants.FS_1STATUS;
+                    isLinkFree = Constants.FS_1STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted1;
                     break;
                 case 1://Link Two
-                    status = Constants.FS_2STATUS;
+                    isLinkFree = Constants.FS_2STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted2;
                     break;
                 case 2://Link Three
-                    status = Constants.FS_3STATUS;
+                    isLinkFree = Constants.FS_3STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted3;
                     break;
                 case 3://Link Four
-                    status = Constants.FS_4STATUS;
+                    isLinkFree = Constants.FS_4STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted4;
                     break;
                 case 4://Link Five
-                    status = Constants.FS_5STATUS;
+                    isLinkFree = Constants.FS_5STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted5;
                     break;
                 case 5://Link Six
-                    status = Constants.FS_6STATUS;
+                    isLinkFree = Constants.FS_6STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted6;
                     break;
                 default://Something went wrong in link selection please try again.
                     break;
@@ -731,7 +733,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "GetBTLinkBusyStatus Exception: " + e.getMessage());
         }
-        return status;
+        return isLinkFree;
     }
 
     private void SendBTCommands(int linkPosition, String btCommand) {
@@ -825,7 +827,9 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(position) + " CheckInabilityToConnectLinks Exception:>>" + e.getMessage());
         }
-        ContinueForNextLink(true);
+        if (!IsBTToggled) {
+            ContinueForNextLink(true);
+        }
     }
 
     private void ContinueForNextLink(boolean isBTLink) {
@@ -904,7 +908,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 } else {
                     String result = responseBody.string();
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "SendDefectiveLinkInfoEmailAsyncCall ~Result\n" + result);
+                        AppConstants.WriteinFile(TAG + "SendDefectiveLinkInfoEmailAsyncCall (LinkName: " + linkName + ") ~Result\n" + result);
 
                     try {
                         JSONObject jsonObjectSite = null;
@@ -913,7 +917,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                         String ResponseMessageSite = jsonObjectSite.getString(AppConstants.RES_MESSAGE);
 
                         if (ResponseMessageSite.equalsIgnoreCase("success")) {
-                            System.out.println("SendDefectiveLinkInfoEmail send successfully ");
+                            System.out.println("SendDefectiveLinkInfoEmail sent successfully ");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

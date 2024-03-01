@@ -1410,7 +1410,7 @@ public class BackgroundService_AP extends Service {
             TrazComp authEntityClass = new TrazComp();
             authEntityClass.TransactionId = TransactionId;
             authEntityClass.FuelQuantity = fillqty;
-            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_AP.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE + " " + "--Main Transaction--";
+            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_AP.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " " + "--Main Transaction--";
             authEntityClass.TransactionFrom = "A";
             authEntityClass.Pulses = Integer.parseInt(counts);
             authEntityClass.IsFuelingStop = IsFuelingStop;

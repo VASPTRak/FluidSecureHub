@@ -43,6 +43,14 @@ public class BTConstants {
     public static boolean SwitchedBTToUDP4 = false;
     public static boolean SwitchedBTToUDP5 = false;
     public static boolean SwitchedBTToUDP6 = false;
+
+    public static boolean isBTSPPTxnContinuedWithBLE1 = false;
+    public static boolean isBTSPPTxnContinuedWithBLE2 = false;
+    public static boolean isBTSPPTxnContinuedWithBLE3 = false;
+    public static boolean isBTSPPTxnContinuedWithBLE4 = false;
+    public static boolean isBTSPPTxnContinuedWithBLE5 = false;
+    public static boolean isBTSPPTxnContinuedWithBLE6 = false;
+
     //public static boolean isHotspotDisabled = false;
 
     public static String info_cmd = "LK_COMM=info";
@@ -60,16 +68,24 @@ public class BTConstants {
     public static String scope_ON_cmd = "LK_COMM=scope=ON";
     public static String scope_READ_cmd = "LK_COMM=scope=READ";
     public static String last1_cmd = "LK_COMM=last1";
+    public static String last20_cmd = "LK_COMM=last20";
     public static String reboot_cmd = "LK_COMM=restartnow";
     public static String ScopeStatus = "";
     public static String[] p_types = {"1", "2", "3", "4"};
 
-    public static boolean isPTypeCommandExecuted1 = false;
-    public static boolean isPTypeCommandExecuted2 = false;
-    public static boolean isPTypeCommandExecuted3 = false;
-    public static boolean isPTypeCommandExecuted4 = false;
-    public static boolean isPTypeCommandExecuted5 = false;
-    public static boolean isPTypeCommandExecuted6 = false;
+    public static boolean retryConnForInfoCommand1 = false;
+    public static boolean retryConnForInfoCommand2 = false;
+    public static boolean retryConnForInfoCommand3 = false;
+    public static boolean retryConnForInfoCommand4 = false;
+    public static boolean retryConnForInfoCommand5 = false;
+    public static boolean retryConnForInfoCommand6 = false;
+
+    //public static boolean isPTypeCommandExecuted1 = false;
+    //public static boolean isPTypeCommandExecuted2 = false;
+    //public static boolean isPTypeCommandExecuted3 = false;
+    //public static boolean isPTypeCommandExecuted4 = false;
+    //public static boolean isPTypeCommandExecuted5 = false;
+    //public static boolean isPTypeCommandExecuted6 = false;
 
     public static boolean isNewVersionLinkOne = false;
     public static boolean isNewVersionLinkTwo = false;

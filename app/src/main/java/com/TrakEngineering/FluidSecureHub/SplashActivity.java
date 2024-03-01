@@ -102,7 +102,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
     public static String imei_mob_folder_name = "FSHUBUUID", HubType = "";
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
-    com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager wifiApManager;
+    com.TrakEngineering.FluidSecureHub.wifihotspot.WifiApManager wifiApManager;
     ConnectivityManager connection_manager;
 
     public boolean checkSystemPermission = false;
@@ -129,7 +129,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
 
         mGoogleApiClient.connect();*/
 
-        wifiApManager = new com.TrakEngineering.FluidSecureHub.WifiHotspot.WifiApManager(this);
+        wifiApManager = new com.TrakEngineering.FluidSecureHub.wifihotspot.WifiApManager(this);
         boolean permission;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             permission = Settings.System.canWrite(SplashActivity.this);
@@ -176,29 +176,13 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
         //}
 
         if (!cd.isConnecting() && OfflineConstants.isOfflineAccess(SplashActivity.this)) {
-
             try {
                 checkPermissionTask checkPermissionTask = new checkPermissionTask();
                 checkPermissionTask.execute();
                 checkPermissionTask.get();
 
                 if (checkPermissionTask.isValue) {
-
-                    SharedPreferences sharedPrefODO = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-                    HubType = sharedPrefODO.getString("HubType", "");
-                    if (HubType.equalsIgnoreCase("F")){
-                        //Directly to fob app
-                        startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
-                        finish();
-                    }else if (HubType.equalsIgnoreCase("S")){
-
-                        startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
-                        finish();
-                    }else{
-                        startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
-                        finish();
-                    }
-
+                    ContinueWithOfflineMode();
                 }
             } catch (Exception ex) {
                 Log.e(TAG, ex.getMessage());
@@ -532,34 +516,12 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
 
                 if (cd.isConnecting()) {
                     try {
-
-                        // new CallAppTxt().execute();
-                        //setUrlFromSharedPref(SplashActivity.this);
                         otherServerCall();
-
                     } catch (Exception e) {
                         System.out.println(e);
                     }
-
-
                 } else if (!cd.isConnectingToInternet() && OfflineConstants.isOfflineAccess(SplashActivity.this)) {
-
-                    SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-                    HubType = sharedPrefODO.getString("HubType", "");
-
-                    if (HubType.equalsIgnoreCase("F")){
-                        //Directly to fob app
-                        startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
-                        finish();
-                    }else if (HubType.equalsIgnoreCase("S")){
-
-                        startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
-                        finish();
-                    }else{
-                        startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
-                        finish();
-                    }
-
+                    ContinueWithOfflineMode();
                 } else {
                     CommonUtils.showNoInternetDialog(SplashActivity.this);
                 }
@@ -860,7 +822,6 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
         public String resp = "";
 
         protected String doInBackground(String... param) {
-
             try {
                 MediaType TEXT = MediaType.parse("application/x-www-form-urlencoded");
 
@@ -879,50 +840,44 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 e.printStackTrace();
                 AppConstants.WriteinFile(TAG + "Exception in CheckApproved: " + e.getMessage());
-
             }
             return resp;
         }
 
         @Override
         protected void onPostExecute(String response) {
-
             if (response != null && response.startsWith("{")) {
                 actionOnResult(response);
             } else {
-
                 if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
-                    if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
-                        AppConstants.NETWORK_STRENGTH = false;
-                    }
+                    AppConstants.NETWORK_STRENGTH = false;
                     AppConstants.WriteinFile(TAG + "Server response null ~Switching to offline mode!!");
-                    SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-                    HubType = sharedPrefODO.getString("HubType", "");
-
-                    if (HubType.equalsIgnoreCase("F")){
-                        //Directly to fob app
-                        startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
-                        finish();
-                    }else if (HubType.equalsIgnoreCase("S")){
-
-                        startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
-                        finish();
-                    }else{
-                        startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
-                        finish();
-                    }
-
+                    ContinueWithOfflineMode();
                 } else {
                     AppConstants.WriteinFile(TAG + getResources().getString(R.string.server_connection_problem) + "; response: " + response);
                     RetryAlertDialogButtonClicked(getString(R.string.server_connection_problem));
                 }
-
             }
+        }
+    }
 
+    private void ContinueWithOfflineMode() {
+        SharedPreferences sharedPrefODO = SplashActivity.this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        HubType = sharedPrefODO.getString("HubType", "");
+
+        if (HubType.equalsIgnoreCase("F")) {
+            //Directly to fob app
+            startActivity(new Intent(SplashActivity.this, FOBReaderActivity.class));
+            finish();
+        } else if (HubType.equalsIgnoreCase("S")) {
+            startActivity(new Intent(SplashActivity.this, ActivitySparehub.class));
+            finish();
+        } else {
+            startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
+            finish();
         }
     }
 
@@ -1138,21 +1093,17 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
 
 
     public static void setUrlFromSharedPref(Context ctx) {
-
         SharedPreferences sharedPref = ctx.getSharedPreferences("storeAppTxtURL", Context.MODE_PRIVATE);
         String appLink = sharedPref.getString("appLink", "https://www.fluidsecure.net/");
         if (appLink.trim().contains("http")) {
-
             AppConstants.webIP = "https://www.fluidsecure.net/";//appLink.trim();
             AppConstants.webURL = AppConstants.webIP + "HandlerTrak.ashx";
             AppConstants.LoginURL = AppConstants.webIP + "LoginHandler.ashx";
-
         }
     }
 
     public void otherServerCall() {
         try {
-
             String imeiNumber = AppConstants.getIMEI(SplashActivity.this);
 
             System.out.println("imeiNumber" + imeiNumber);
@@ -1162,7 +1113,6 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
                 new CheckApproved().execute(imeiNumber);
 
             } else {
-
                 if (Build.VERSION.SDK_INT >= 29) {
                     // go to registration page
                     startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
@@ -1174,14 +1124,9 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
 
                     new CheckApproved().execute(_imei);
                 }
-
             }
-
-
         } catch (Exception e) {
-
             System.out.println(e);
-
         }
     }
 

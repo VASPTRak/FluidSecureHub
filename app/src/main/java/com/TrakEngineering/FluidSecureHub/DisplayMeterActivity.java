@@ -1037,12 +1037,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             new CountDownTimer(21000, 2000) {
                 public void onTick(long millisUntilFinished) {
-                    Log.d(TAG, "onResume: Step onTick connTimeout: " + connTimeout);
                     if (connTimeout > 0) {
                         AppConstants.HSConnectionTimeout = " " + connTimeout;
                     }
                     connTimeout = connTimeout - 1;
-                    if (AppConstants.DetailsListOfConnectedDevices.size() > 0) {
+                    if (connTimeout < 4 && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                         onResumeFunctionality();
                         cancel();
                     } else {
@@ -2738,27 +2737,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     public class GetConnectedDevicesIP extends AsyncTask<String, Void, String> {
-        ProgressDialog dialog;
-
-
-        @Override
-        protected void onPreExecute() {
-            dialog = new ProgressDialog(DisplayMeterActivity.this);
-            dialog.setMessage("Fetching connected device info..");
-            dialog.setCancelable(false);
-            dialog.show();
-
-        }
-
         protected String doInBackground(String... arg0) {
-
 
             ListOfConnectedDevices.clear();
 
             String resp = "";
 
             Thread thread = new Thread(new Runnable() {
-
                 @Override
                 public void run() {
                     BufferedReader br = null;
@@ -2794,13 +2779,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                                 }
                                 AppConstants.DetailsListOfConnectedDevices = ListOfConnectedDevices;
                                 System.out.println("DeviceConnected" + ListOfConnectedDevices);
-
                             }
-
                         }
                         //if (AppConstants.GenerateLogs)
                         //    AppConstants.WriteinFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MACADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
-
                     } catch (Exception e) {
                         e.printStackTrace();
                         if (AppConstants.GenerateLogs)
@@ -2817,25 +2799,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
             });
             thread.start();
-
-
             return resp;
-
-
         }
-
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            super.onPostExecute(result);
-            String strJson = result;
-
-
-            dialog.dismiss();
-
-        }
-
     }
 
     public synchronized void getListOfConnectedDevice() {
@@ -4310,7 +4275,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
 
         protected String doInBackground(String... param) {
-
             try {
                 if (BTLinkCommType.equalsIgnoreCase("SPP")) {
                     switch (WelcomeActivity.SelectedItemPos) {
@@ -4416,6 +4380,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             //pd.dismiss();
+                            SetSPPtoBLEFlagByPosition(WelcomeActivity.SelectedItemPos, false);
                             BtnStartStateChange(true);
                         }
                     }, 1000);
@@ -4458,7 +4423,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     private void checkBTLinkStatus(int linkPosition) {
         try {
-
             new CountDownTimer(10000, 2000) {
                 public void onTick(long millisUntilFinished) {
                     if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
@@ -4467,6 +4431,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                SetSPPtoBLEFlagByPosition(linkPosition, false);
                                 BtnStartStateChange(true); // Continue
                             }
                         }, 1000);
@@ -4478,24 +4443,32 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 public void onFinish() {
-
                     if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link is connected.");
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                SetSPPtoBLEFlagByPosition(linkPosition, false);
                                 BtnStartStateChange(true); // Continue
                             }
                         }, 1000);
                     } else {
                         if (connectionAttemptCount > 1) {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link not connected. Terminating the transaction.");
-                            if (adBT != null && adBT.isShowing()) {
+                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + BTLinkIndex + " Link not connected. Unable to connect using SPP, proceeding with BLE."); //Terminating the transaction.
+                            /*if (adBT != null && adBT.isShowing()) {
                                 adBT.dismiss();
-                            }
-                            TerminateTransaction("BT"); // Terminating the transaction.
+                            }*/
+                            //TerminateTransaction("BT"); // Terminating the transaction. // Commented as per #2530 - to proceed with BLE
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    BTLinkCommType = "BLE";
+                                    SetSPPtoBLEFlagByPosition(linkPosition, true);
+                                    BtnStartStateChange(true); // Continue with BLE
+                                }
+                            }, 1000);
                         } else {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -4512,6 +4485,36 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "checkBTLinkStatus Exception:>>" + e.getMessage());
+        }
+    }
+
+    private void SetSPPtoBLEFlagByPosition(int linkPosition, boolean flag) {
+        try {
+            switch (linkPosition) {
+                case 0:
+                    BTConstants.isBTSPPTxnContinuedWithBLE1 = flag;
+                    break;
+                case 1://Link Two
+                    BTConstants.isBTSPPTxnContinuedWithBLE2 = flag;
+                    break;
+                case 2://Link Three
+                    BTConstants.isBTSPPTxnContinuedWithBLE3 = flag;
+                    break;
+                case 3://Link Four
+                    BTConstants.isBTSPPTxnContinuedWithBLE4 = flag;
+                    break;
+                case 4://Link Five
+                    BTConstants.isBTSPPTxnContinuedWithBLE5 = flag;
+                    break;
+                case 5://Link Six
+                    BTConstants.isBTSPPTxnContinuedWithBLE6 = flag;
+                    break;
+                default://Something went wrong in link selection please try again.
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "SetSPPtoBLEFlagByPosition Exception:>>" + e.getMessage());
         }
     }
 

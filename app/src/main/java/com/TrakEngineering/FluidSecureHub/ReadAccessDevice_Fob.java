@@ -383,7 +383,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
 
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "Unable to read fob: " + Str_check);
-                CommonUtils.AutoCloseCustomMessageDilaog(ReadAccessDevice_Fob.this, "Message", "Unable to read fob.  Please Try again..");
+                CommonUtils.AutoCloseCustomMessageDialog(ReadAccessDevice_Fob.this, "Message", "Unable to read fob.  Please Try again..");
                 AppConstants.WriteinFile(TAG + "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
@@ -438,7 +438,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
             if (!CommonUtils.ValidateFobkey(Str_check) || Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 MagCard_FobKey = "";
-                CommonUtils.AutoCloseCustomMessageDilaog(ReadAccessDevice_Fob.this, "Message", "Unable to read MagCard.  Please Try again..");
+                CommonUtils.AutoCloseCustomMessageDialog(ReadAccessDevice_Fob.this, "Message", "Unable to read MagCard.  Please Try again..");
                 AppConstants.WriteinFile(TAG + "Unable to read fob.  Please Try again..");
 
             } else if (Str_check.length() > 5) {

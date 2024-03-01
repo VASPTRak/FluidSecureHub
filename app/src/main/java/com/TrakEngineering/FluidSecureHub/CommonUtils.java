@@ -365,7 +365,7 @@ public class CommonUtils {
     //----------------------------------------------------------------------------
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void AutoCloseCustomMessageDilaog(final Activity context, String title, String message) {
+    public static void AutoCloseCustomMessageDialog(final Activity context, String title, String message) {
 
         /*//Declare timer
         CountDownTimer cTimer = null;
@@ -431,8 +431,10 @@ public class CommonUtils {
                             timer.cancel();
                         }
 
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        if (!WelcomeActivity.OnWelcomeActivity) {
+                            InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        }
                     }
                 }
         );
@@ -447,8 +449,10 @@ public class CommonUtils {
                     alertDialog.dismiss();
                 }
                 timer.cancel();
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                if (!WelcomeActivity.OnWelcomeActivity) {
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
             }
         }, 4000);
 
@@ -1679,15 +1683,13 @@ public class CommonUtils {
     }
 
     public static void AddRemovecurrentTransactionList(boolean AddDel, String TxnId) {
-
-
         if (AddDel) {
-            if (!AppConstants.ListOfRunningTransactiins.contains(TxnId)) {
-                AppConstants.ListOfRunningTransactiins.add(TxnId);
+            if (!AppConstants.ListOfRunningTransactions.contains(TxnId)) {
+                AppConstants.ListOfRunningTransactions.add(TxnId);
             }
         } else {
-            if (AppConstants.ListOfRunningTransactiins != null && AppConstants.ListOfRunningTransactiins.contains(TxnId)) {
-                AppConstants.ListOfRunningTransactiins.remove(TxnId);
+            if (AppConstants.ListOfRunningTransactions != null && AppConstants.ListOfRunningTransactions.contains(TxnId)) {
+                AppConstants.ListOfRunningTransactions.remove(TxnId);
 
             }
         }

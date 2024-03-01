@@ -1511,7 +1511,7 @@ public class BackgroundService_AP_PIPE extends Service {
             TrazComp authEntityClass = new TrazComp();
             authEntityClass.TransactionId = TransactionId;
             authEntityClass.FuelQuantity = fillqty;
-            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_AP_PIPE.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE + " " + "--Main Transaction--";
+            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_AP_PIPE.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " " + "--Main Transaction--";
             authEntityClass.TransactionFrom = "A";
             authEntityClass.Pulses = Integer.parseInt(counts);
             authEntityClass.IsFuelingStop = IsFuelingStop;
@@ -2186,7 +2186,6 @@ public class BackgroundService_AP_PIPE extends Service {
     }
 
     public void storeUpgradeFSVersion(BackgroundService_AP_PIPE activity, String hoseid, String fsversion) {
-
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("hoseid", hoseid);

@@ -1,4 +1,4 @@
-package com.TrakEngineering.FluidSecureHub.WifiHotspot;
+package com.TrakEngineering.FluidSecureHub.wifihotspot;
 
 
 /**
@@ -80,7 +80,7 @@ public class WifiApManager {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
     private void turnOnHotspot() {
         WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 
@@ -99,8 +99,6 @@ public class WifiApManager {
 
                 TabsDefaultHubspotName = SSID;
                 TabsDefaultHubspotPassword = Key;
-
-
             }
 
             @Override
@@ -115,9 +113,7 @@ public class WifiApManager {
                 Log.d(TAG, "onFailed: ");
             }
         }, new Handler());
-
-
-    }
+    }*/
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void turnOffHotspot() {

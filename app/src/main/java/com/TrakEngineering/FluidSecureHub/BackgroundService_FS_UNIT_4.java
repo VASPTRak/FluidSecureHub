@@ -1372,7 +1372,7 @@ public class BackgroundService_FS_UNIT_4 extends Service {
             TrazComp authEntityClass = new TrazComp();
             authEntityClass.TransactionId = TransactionId;
             authEntityClass.FuelQuantity = fillqty;
-            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_FS_UNIT_4.this) + " " + AppConstants.getDeviceName() + " Android " + android.os.Build.VERSION.RELEASE + " " + "--Main Transaction--";
+            authEntityClass.AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_FS_UNIT_4.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE + " " + "--Main Transaction--";
             authEntityClass.TransactionFrom = "A";
             authEntityClass.Pulses = Integer.parseInt(counts);
             authEntityClass.IsFuelingStop = IsFuelingStop;

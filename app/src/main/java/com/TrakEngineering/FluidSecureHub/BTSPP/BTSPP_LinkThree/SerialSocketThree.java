@@ -106,18 +106,18 @@ public class SerialSocketThree implements Runnable {
                         if(listener != null)
                             listener.onSerialReadThree(data);
                         Log.i(TAG, "BTLink_3:InreadPulse data: "+data.toString());
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_3:InreadPulse data: "+data.toString());
+                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " BTLink_3:InreadPulse data: "+data.toString());
                     }
 
                 }else{
                     Log.i(TAG, "BTLink_3:InreadPulse socketInputStream not avilable ");
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_3:InreadPulse socketInputStream not avilable ");
+                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " BTLink_3:InreadPulse socketInputStream not avilable ");
                 }
 
             }catch (Exception e){
                 e.printStackTrace();
                 Log.i(TAG, "BTLink_3:InreadPulse:Exception:"+e.toString());
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "BTLink_3:InreadPulse:Exception:"+e.toString());
+                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " BTLink_3:InreadPulse:Exception:"+e.toString());
             }
 
         }catch (Exception e){

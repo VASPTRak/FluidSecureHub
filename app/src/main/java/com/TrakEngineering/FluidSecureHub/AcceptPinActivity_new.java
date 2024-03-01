@@ -414,7 +414,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
+                        //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                     }
 
                 }
@@ -713,7 +713,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " Unable to read fob: " + Str_data);
-                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to read fob.  Please Try again..");
+                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
 
@@ -810,7 +810,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "Unable to read fob: " + Str_data);
-                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to read fob.  Please Try again..");
+                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
 
@@ -910,7 +910,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             if (!CommonUtils.ValidateFobkey(Str_check) || Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 MagCard_personnel = "";
-                //CommonUtils.AutoCloseCustomMessageDilaog(DeviceControlActivity_Pin.this, "Message", "Unable to read MagCard.  Please Try again..");
+                //CommonUtils.AutoCloseCustomMessageDialog(DeviceControlActivity_Pin.this, "Message", "Unable to read MagCard.  Please Try again..");
 
             } else if (Str_check.length() > 5) {
 
@@ -1023,7 +1023,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
+                            //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                         }
                     }
 
@@ -1063,7 +1063,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             } else {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                                //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
+                                //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                             }
                         }
                         tv_fob_number.setText("Access Device No: " + test);
@@ -1537,7 +1537,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         if (ValidationFailFor.equalsIgnoreCase("PinWithFob")) {
 
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceText);
+                            CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceText);
 
                         } else if (ValidationFailFor.equalsIgnoreCase("Pin")) {
 
@@ -1566,7 +1566,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
 
                             AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.BLUE);
-                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceText);
+                            //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceText);
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "ValidateFor Vehicle: " + ResponceText);
 
@@ -1578,7 +1578,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
 
                             //AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.BLUE);
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceText);
+                            CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceText);
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "ValidateFor Else: " + ResponceText);
 
@@ -1613,7 +1613,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                    //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
+                    //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                 }
 
             }
@@ -1792,7 +1792,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                     //error message
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "Wrong access device is presented. Please present different access device.");
-                                    AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Wrong access device is presented. Please present different access device.");
+                                    AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Wrong access device is presented. Please present different access device.");
                                 } else {
                                     if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
                                         Constants.AccPersonnelPIN_FS1 = MagCard_personnel;
@@ -1816,7 +1816,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                     //error message
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + "Same access device is scanned again. Please check.");
-                                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Same access device is scanned again. Please check.");
+                                    CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Same access device is scanned again. Please check.");
                                 } else {
 
                                     tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Number", "").replace("Personnel", ScreenNameForPersonnel) + " ****");//fob replace by asterisk for password
@@ -1861,7 +1861,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             AppConstants.APDU_FOB_KEY = "";
                             Barcode_pin_val = "";
                             ResetTimeoutPinScreen();
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                            CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
 
                         } else if (IsBothFobAndPinRequired.equalsIgnoreCase("yes")) {
 
@@ -1872,10 +1872,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             inputMethodManager.showSoftInput(etPersonnelPin, 0);
 
                             if (IsPersonHasFob.equalsIgnoreCase("true")) {
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
                             } else {
                                 ResetTimeoutPinScreen();
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
 
                             }
 
@@ -1893,7 +1893,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             tv_ok.setText("Invalid Access Device or Unassigned FOB");/
 */
                             ResetTimeoutPinScreen();
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                            CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
 
                         } else if (IsNewMagneticCardReaderNumber.equalsIgnoreCase("yes")) {
 
@@ -1912,10 +1912,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 btnCancel.setTextSize(18);
                                 btnCancel.setLayoutParams(par);
                                 btnSave.setVisibility(View.VISIBLE);
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
                             } else {
                                 ResetTimeoutPinScreen();
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
                             }
 
                         } else if (IsNewFob.equalsIgnoreCase("Yes") && IsPersonHasFob.equalsIgnoreCase("true")) {
@@ -1934,7 +1934,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             btnCancel.setTextSize(18);
                             btnCancel.setLayoutParams(par);
                             btnSave.setVisibility(View.VISIBLE);
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                            CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
 
                         } else {
 
@@ -1946,10 +1946,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                             if (IsPersonHasFob.equalsIgnoreCase("true")) {
 
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ResponceMessage);
+                                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceMessage);
                             } else {
                                 ResetTimeoutPinScreen();
-                                CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", Barcode_pin_val + " - " + ResponceMessage);
+                                CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", Barcode_pin_val + " - " + ResponceMessage);
                             }
                         }
 
@@ -1995,7 +1995,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                        //CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
+                        //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                     }
                 }
 
@@ -2301,21 +2301,21 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Vehicle is not assigned for this PIN");
-                            CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForVehicle + " not assigned for this PIN");
+                            CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ScreenNameForVehicle + " not assigned for this PIN");
                         }
 
 
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Vehicle.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " is not allowed for selected " + ScreenNameForVehicle);
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " is not allowed for selected " + ScreenNameForVehicle);
                     }
 
 
                 } else {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Link");
-                    CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Link");
+                    CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Link");
                 }
 
             } else {
@@ -2344,11 +2344,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         String msg = "This is " + ScreenNameForVehicle + " Access Device. Please use your " + ScreenNameForPersonnel + " Access Device";
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. Access Device (" + fob + ") is vehicle access device.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", msg);
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not found in offline db");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid Access Device");
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Invalid Access Device");
                     }
 
                 } else if (etPersonnelPin.getText().toString().trim() != null && !etPersonnelPin.getText().toString().trim().isEmpty()) {
@@ -2360,11 +2360,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         String msg = "This is " + ScreenNameForVehicle + ". Please use your " + ScreenNameForPersonnel + ".";
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. This (" + V_Number + ") is vehicle number.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", msg);
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", msg);
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + "Personnel is not found in offline db.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptPinActivity_new.this, "Message", "Invalid " + ScreenNameForPersonnel);
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Invalid " + ScreenNameForPersonnel);
                     }
                 }
             }
@@ -3067,7 +3067,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         }
     }
 
-    public void AutoCloseCustomMessageDilaog(final Activity context, String title, String message) {
+    public void AutoCloseCustomMessageDialog(final Activity context, String title, String message) {
 
         /*//Declare timer
         CountDownTimer cTimer = null;

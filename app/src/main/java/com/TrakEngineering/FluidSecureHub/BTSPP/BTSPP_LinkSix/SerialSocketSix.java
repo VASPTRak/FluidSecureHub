@@ -107,20 +107,20 @@ public class SerialSocketSix implements Runnable {
                             listener.onSerialReadSix(data);
                         Log.i(TAG, "BTLink_6:InreadPulse data: " + data.toString());
                         if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "BTLink_6:InreadPulse data: " + data.toString());
+                            AppConstants.WriteinFile(TAG + " BTLink_6:InreadPulse data: " + data.toString());
                     }
 
                 } else {
                     Log.i(TAG, "BTLink_6:InreadPulse socketInputStream not avilable ");
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink_6:InreadPulse socketInputStream not avilable ");
+                        AppConstants.WriteinFile(TAG + " BTLink_6:InreadPulse socketInputStream not avilable ");
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i(TAG, "BTLink_6:InreadPulse:Exception:" + e.toString());
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink_6:InreadPulse:Exception:" + e.toString());
+                    AppConstants.WriteinFile(TAG + " BTLink_6:InreadPulse:Exception:" + e.toString());
             }
 
         } catch (Exception e) {

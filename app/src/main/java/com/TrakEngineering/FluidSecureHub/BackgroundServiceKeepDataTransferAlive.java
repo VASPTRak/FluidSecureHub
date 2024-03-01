@@ -6,12 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.entity.StatusForUpgradeVersionEntity;
-import com.TrakEngineering.FluidSecureHub.entity.UpgradeVersionEntity;
 import com.TrakEngineering.FluidSecureHub.entity.UserInfoEntity;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
@@ -30,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,6 +64,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
     public static ArrayList<HashMap<String, String>> SSIDList = new ArrayList<>();
     public static ArrayList<HashMap<String, String>> DetailslistOfConnectedIP_KDTA = new ArrayList<>();
     public static ArrayList<HashMap<String, String>> DefectiveLinks = new ArrayList<>();
+    ArrayList<HashMap<String, String>> ListOfHSConnectedDevices = new ArrayList<>();
     public ArrayList<String> listOfConnectedMacAddress_KDTA = new ArrayList<String>();
 
     private static int SERVER_PORT = 80;
@@ -84,6 +85,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "~~~~~start~~~~~");
             if (WelcomeActivity.OnWelcomeActivity && AppConstants.IsAllHosesAreFree()) {
 
+                getIpOverOSVersion();
                 ListConnectedHotspotIP_KDTA();
                 StartUpgradeProcess();
 
@@ -104,11 +106,20 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         return Service.START_NOT_STICKY;
     }
 
+    public void getIpOverOSVersion() {
+        if (Build.VERSION.SDK_INT >= 31) {
+            CommonUtils.GetDetailsFromARP();
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            new GetConnectedDevicesIPOS10().execute(); // Not working with Android 11 and sdk 31 combination
+            //CommonUtils.GetDetailsFromARP();
+        } else {
+            new GetConnectedDevicesIP().execute();
+        }
+    }
+
     @SuppressLint("LongLogTag")
     public void StartUpgradeProcess() {
-
         try {
-
             DefectiveLinks.clear();
             //Log.e(TAG, "~~~~~Second for strt~~~~~");
             if (SSIDList != null && SSIDList.size() > 0) {
@@ -159,28 +170,24 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                             IsConnectedToHotspot = true;
                             if (i == 0) {
-                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"hotspotConnDT0");
+                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this, "hotspotConnDT0");
                                 //hotspotConnDT0 = CommonUtils.getTodaysDateTemp();//Link at 0th position
                             } else if (i == 1) {
-                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"hotspotConnDT1");
+                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this, "hotspotConnDT1");
                                 //hotspotConnDT1 = CommonUtils.getTodaysDateTemp();//Link at 1th position
                             } else if (i == 2) {
-                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"hotspotConnDT2");
+                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this, "hotspotConnDT2");
                                 //hotspotConnDT2 = CommonUtils.getTodaysDateTemp();//Link at 2th position
                             } else if (i == 3) {
-                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"hotspotConnDT3");
+                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this, "hotspotConnDT3");
                                 //hotspotConnDT3 = CommonUtils.getTodaysDateTemp();//Link at 3th position
-                            }else if (i == 4) {
-                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"hotspotConnDT4");
-
-                            }else if (i == 5) {
-                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"hotspotConnDT5");
-
+                            } else if (i == 4) {
+                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this, "hotspotConnDT4");
+                            } else if (i == 5) {
+                                SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this, "hotspotConnDT5");
                             }
 
-
                             try {
-
                                 SERVER_IP = AppConstants.DetailsListOfConnectedDevices.get(k).get("ipAddress");
                                 if (!SERVER_IP.equalsIgnoreCase("")) {
 
@@ -213,16 +220,12 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                                             //InfoCmdConnDT3 = CommonUtils.getTodaysDateTemp();//Link at 3th position
                                         } else if (i == 4) {
                                             SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"InfoCmdConnDT4");
-
                                         } else if (i == 5) {
                                             SaveDefectiveLinkDateTimeSharedPref(BackgroundServiceKeepDataTransferAlive.this,"InfoCmdConnDT5");
-
                                         }
-
                                     } else {
                                         IsinfoCmdSuccess = false;
                                     }
-
                                 }
 
                                 //TODO below code for Upgrade firmware
@@ -296,9 +299,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     if (IsAllHosesAreFree) {
                         CheckInabilityToConnectLinks(i, selSSID, IsConnectedToHotspot, IsinfoCmdSuccess);
                     }
-
                 }
-
                 // Log.e(TAG, "~~~~~Second for end~~~~~");
             } else {
                 Log.i(TAG, "SSID List Empty");
@@ -365,14 +366,11 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
     }
 
     public void ListConnectedHotspotIP_KDTA() {
-
-
         listOfConnectedMacAddress_KDTA.clear();
         DetailslistOfConnectedIP_KDTA.clear();
         // Log.e(TAG, "~~~~~First for strt~~~~~");
 
         try {
-
             for (int k = 0; k < AppConstants.DetailsListOfConnectedDevices.size(); k++) {
 
                 String macAddress = AppConstants.DetailsListOfConnectedDevices.get(k).get("macAddress");
@@ -389,15 +387,10 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     //Add IP of all connected decices to list
                     listOfConnectedMacAddress_KDTA.add(macAddress);
                 }
-
             }
-
-            // Log.e(TAG, "~~~~~First for end~~~~~");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public boolean isNotNULL(String value) {
@@ -461,7 +454,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         }
     }
 
-    @SuppressLint("LongLogTag")
+    /*@SuppressLint("LongLogTag")
     public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {
 
         Log.i(TAG, "Upgrade for Hose: " + FS_selected + "\nFirmware Version: " + iot_version + "Hose ID: " + hoseid);
@@ -512,22 +505,18 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                     //Second call will get Status for firwareupdate
                     new GetUpgrateFirmwareStatus().execute(FS_selected, jsonData, authString);
-
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i(TAG, " UpgradeCurrentVersionWithUgradableVersion 1 " + e);
                 //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  UpgradeCurrentVersionWithUgradableVersion 1 " + e);
             }
-
         } else {
             Log.i(TAG, "Upgrade fail Hose id empty");
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "  Upgrade fail Hose id empty");
         }
-
-    }
+    }*/
 
     public class CommandsPOST extends AsyncTask<String, Void, String> {
 
@@ -706,7 +695,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
     }
 
-    @SuppressLint("LongLogTag")
+    /*@SuppressLint("LongLogTag")
     public void DownloadFirmwareFile() {
 
         //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
@@ -727,9 +716,9 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         if (AppConstants.UP_FilePath != null)
             new DownloadFileFromURL().execute(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN)), AppConstants.UP_Upgrade_File_name);
 
-    }
+    }*/
 
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    /*class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... f_url) {
@@ -771,20 +760,16 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());
             }
-
             return null;
         }
-
 
         protected void onProgressUpdate(String... progress) {
             // setting progress percentage
             //pDialog.setProgress(Integer.parseInt(progress[0]));
         }
+    }*/
 
-
-    }
-
-    public class GetUpgrateFirmwareStatus extends AsyncTask<String, Void, String> {
+    /*public class GetUpgrateFirmwareStatus extends AsyncTask<String, Void, String> {
 
         String FS_selected;
         String jsonData;
@@ -865,18 +850,14 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     Log.i(TAG, " GetUpgrateFirmwareStatus Something Went wrong");
                     //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  GetUpgrateFirmwareStatus Something Went wrong");
                 }
-
-
             } catch (Exception e) {
-
                 Log.i(TAG, " GetUpgrateFirmwareStatus onPostExecute " + e);
                 //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  GetUpgrateFirmwareStatus onPostExecute " + e);
             }
-
         }
-    }
+    }*/
 
-    public class UpgradeCurrentVersionWithUgradableVersion_test extends AsyncTask<String, Void, String> {
+    /*public class UpgradeCurrentVersionWithUgradableVersion_test extends AsyncTask<String, Void, String> {
 
         String jsonData;
         String authString;
@@ -917,9 +898,9 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
 
         }
-    }
+    }*/
 
-    public class TCPClientTask extends AsyncTask<String, Void, String> {
+    /*public class TCPClientTask extends AsyncTask<String, Void, String> {
 
         String response = "";
 
@@ -974,9 +955,9 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         }
 
-    }
+    }*/
 
-    public class UDPClientTask extends AsyncTask<String, Void, String> {
+    /*public class UDPClientTask extends AsyncTask<String, Void, String> {
 
         String response = "";
 
@@ -1000,7 +981,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 DatagramPacket p = new DatagramPacket(message, msg_length, local, server_port);
                 s.send(p);//properly able to send data. i receive data to server
 
-               /* for (int i = 0; i <= 20; i++) {
+               *//* for (int i = 0; i <= 20; i++) {
                     final int value = i;
                     message = new byte[30000];
                     p = new DatagramPacket(message,message.length );
@@ -1013,13 +994,13 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                         e.printStackTrace();
                     }
 
-                }*/
+                }*//*
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
 
 
-           /* try {
+           *//* try {
                 String host = SERVER_IP;//"192.168.43.210";//url.getHost();
                 int port = SERVER_PORT;
 
@@ -1040,7 +1021,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 System.out.println("Sent");
             } catch (Exception e) {
                 System.err.println(e);
-            }*/
+            }*//*
 
             return response;
         }
@@ -1053,7 +1034,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         }
 
-    }
+    }*/
 
     public boolean IsFsConnected(String toMatchString) {
 
@@ -1333,7 +1314,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                     String result = responseBody.string();
                     System.out.println("Result" + result);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " SendDefectiveLinkInfoEmailAsyncCall ~Result\n" + result);
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " SendDefectiveLinkInfoEmailAsyncCall (LinkName: " + linkName + ") ~Result\n" + result);
 
                     try {
 
@@ -1344,17 +1326,133 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                         if (ResponseMessageSite.equalsIgnoreCase("success")) {
                             //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " SendEmailReaderNotConnectedAsyncCall ~success");
-                            System.out.println("SendDefectiveLinkInfoEmail send successfully ");
+                            System.out.println("SendDefectiveLinkInfoEmail sent successfully ");
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-
             }
-
         });
+    }
+
+
+    public class GetConnectedDevicesIPOS10 extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... arg0) {
+
+            ListOfHSConnectedDevices.clear();
+            String resp = "";
+
+            try {
+                Runtime runtime = Runtime.getRuntime();
+                Process proc = runtime.exec("ip neigh show");
+                proc.waitFor();
+                BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                String line;
+
+                while ((line = br.readLine()) != null) {
+
+                    String[] splitted = line.split(" ");
+
+                    if (splitted != null && splitted.length >= 4) {
+
+                        String ipAddress = splitted[0];
+                        String macAddress = splitted[4];
+
+                        if (ipAddress.contains(".") && macAddress.contains(":")) {
+                            System.out.println("***IPAddress" + ipAddress);
+                            System.out.println("***macAddress" + macAddress);
+
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put("ipAddress", ipAddress);
+                            map.put("macAddress", macAddress);
+
+                            ListOfHSConnectedDevices.add(map);
+                        } else {
+                            System.out.println("###IPAddress" + ipAddress);
+                            System.out.println("###macAddress" + macAddress);
+                        }
+                    }
+                }
+                System.out.println("Check");
+                AppConstants.DetailsListOfConnectedDevices = ListOfHSConnectedDevices;
+                System.out.println("DeviceConnected" + ListOfHSConnectedDevices);
+
+            } catch (Exception e) {
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " GetConnectedDevicesIPOS10 Exception " + e.getMessage());
+                e.printStackTrace();
+            }
+            return resp;
+        }
+    }
+
+    public class GetConnectedDevicesIP extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... arg0) {
+
+            ListOfHSConnectedDevices.clear();
+
+            String resp = "";
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    BufferedReader br = null;
+                    boolean isFirstLine = true;
+
+                    try {
+                        br = new BufferedReader(new FileReader("/proc/net/arp"));
+                        String line;
+
+                        while ((line = br.readLine()) != null) {
+                            if (isFirstLine) {
+                                isFirstLine = false;
+                                continue;
+                            }
+
+                            String[] splitted = line.split(" +");
+
+                            if (splitted != null && splitted.length >= 4) {
+
+                                String ipAddress = splitted[0];
+                                String macAddress = splitted[3];
+                                System.out.println("IPAddress" + ipAddress);
+
+
+                                if (ipAddress != null || macAddress != null) {
+
+                                    HashMap<String, String> map = new HashMap<>();
+                                    map.put("ipAddress", ipAddress);
+                                    map.put("macAddress", macAddress);
+
+                                    ListOfHSConnectedDevices.add(map);
+
+                                }
+                                AppConstants.DetailsListOfConnectedDevices = ListOfHSConnectedDevices;
+                                System.out.println("DeviceConnected" + ListOfHSConnectedDevices);
+                            }
+                        }
+                        //if (AppConstants.GenerateLogs)
+                        //    AppConstants.WriteinFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MACADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "  GetConnectedDevicesIP 1 --Exception " + e);
+                    } finally {
+                        try {
+                            br.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "  GetConnectedDevicesIP 2 --Exception " + e);
+                        }
+                    }
+                }
+            });
+            thread.start();
+            return resp;
+        }
     }
 
 }

@@ -201,7 +201,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                     if (!isascii) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Please enter Valid String.");
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleOtherInfo.this, "Message", "Please enter Valid String.");
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptVehicleOtherInfo.this, "Message", "Please enter Valid String.");
                     } else {
                         if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
 

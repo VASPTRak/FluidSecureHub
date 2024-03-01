@@ -571,7 +571,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
                         } else {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
-                            //CommonUtils.AutoCloseCustomMessageDilaog(AcceptOdoActivity.this, "Message", "Unable to connect server");
+                            //CommonUtils.AutoCloseCustomMessageDialog(AcceptOdoActivity.this, "Message", "Unable to connect server");
                             Istimeout_Sec = true;
                             ResetTimeoutOdoScreen();
                         }

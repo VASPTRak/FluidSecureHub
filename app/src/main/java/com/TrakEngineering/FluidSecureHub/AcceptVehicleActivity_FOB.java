@@ -404,7 +404,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
 
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " Unable to read fob: " + Str_check);
-                CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", "Unable to read fob.  Please Try again..");
+                CommonUtils.AutoCloseCustomMessageDialog(AcceptVehicleActivity_FOB.this, "Message", "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
 
@@ -475,7 +475,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                 MagCard_FobKey = "";
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " Unable to read MagCard: " + Str_data);
-                CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", "Unable to read MagCard.  Please Try again..");
+                CommonUtils.AutoCloseCustomMessageDialog(AcceptVehicleActivity_FOB.this, "Message", "Unable to read MagCard.  Please Try again..");
 
             } else if (Str_check.length() > 5) {
 
@@ -704,7 +704,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " " + ResponceText);
-                        CommonUtils.AutoCloseCustomMessageDilaog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
+                        CommonUtils.AutoCloseCustomMessageDialog(AcceptVehicleActivity_FOB.this, "Message", ResponceText);
                     } else {
                         String IsVehicleNumberHavingAccessDevice = "n";
                         if(jsonObject.has("IsVehicleNumberHavingAccessDevice")) {

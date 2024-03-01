@@ -230,7 +230,13 @@ public class AppConstants {
     public static String MaxlimitMessage = "";
     public static boolean IsSingleLink = false;
     public static boolean GoButtonAlreadyClicked = false;
-    public static boolean IsTransactionCompleted = false;
+
+    public static boolean IsTransactionCompleted1 = true;
+    public static boolean IsTransactionCompleted2 = true;
+    public static boolean IsTransactionCompleted3 = true;
+    public static boolean IsTransactionCompleted4 = true;
+    public static boolean IsTransactionCompleted5 = true;
+    public static boolean IsTransactionCompleted6 = true;
 
     public static boolean IsTransactionFailed1 = false;
     public static boolean IsTransactionFailed2 = false;
@@ -380,7 +386,8 @@ public class AppConstants {
     public static boolean isHTTPTxnRunningFS5 = false;
     public static boolean isHTTPTxnRunningFS6 = false;
 
-    public static ArrayList<String> ListOfRunningTransactiins = new ArrayList<>();
+    public static ArrayList<String> ListOfRunningTransactions = new ArrayList<>();
+    public static ArrayList<String> ListOfUploadingTransactions = new ArrayList<String>();
 
     public static boolean languageChanged = false;
     public static boolean isOfflineDownloadStarted = false;
@@ -1088,7 +1095,12 @@ public class AppConstants {
 
     public static boolean IsAllHosesAreFree() {
 
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted1 &&
+                Constants.FS_2STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted2 &&
+                Constants.FS_3STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted3 &&
+                Constants.FS_4STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted4 &&
+                Constants.FS_5STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted5 &&
+                Constants.FS_6STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted6) {
             return true;
         } else {
             return false;
