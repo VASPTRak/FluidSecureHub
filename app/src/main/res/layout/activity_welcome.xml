@@ -660,7 +660,8 @@
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
                                         android:text="Hose One"
-                                        android:textColor="@color/black" />
+                                        android:textColor="@color/black"
+                                        android:lines="2" />
 
                                     <TextView
                                         android:id="@+id/tv_NFS1"
@@ -792,7 +793,8 @@
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
                                         android:text="Hose Two"
-                                        android:textColor="@color/black" />
+                                        android:textColor="@color/black"
+                                        android:lines="2" />
 
                                     <TextView
                                         android:id="@+id/tv_NFS2"
@@ -933,7 +935,8 @@
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
                                         android:text="Hose Three"
-                                        android:textColor="@color/black" />
+                                        android:textColor="@color/black"
+                                        android:lines="2" />
 
                                     <TextView
                                         android:id="@+id/tv_NFS3"
@@ -1064,7 +1067,8 @@
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
                                         android:text="Hose Four"
-                                        android:textColor="@color/black" />
+                                        android:textColor="@color/black"
+                                        android:lines="2" />
 
                                     <TextView
                                         android:id="@+id/tv_NFS4"
@@ -1203,7 +1207,8 @@
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
                                         android:text="Hose Five"
-                                        android:textColor="@color/black" />
+                                        android:textColor="@color/black"
+                                        android:lines="2" />
 
                                     <TextView
                                         android:id="@+id/tv_NFS5"
@@ -1334,7 +1339,8 @@
                                         style="@style/TextViewStyleDashboard"
                                         android:layout_width="wrap_content"
                                         android:text="Hose Six"
-                                        android:textColor="@color/black" />
+                                        android:textColor="@color/black"
+                                        android:lines="2" />
 
                                     <TextView
                                         android:id="@+id/tv_NFS6"
