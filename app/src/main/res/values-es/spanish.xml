@@ -302,6 +302,7 @@
     <string name="UnableToGetHoseList">No se puede obtener la lista de mangueras desde el servidor</string>
     <string name="HoseListIsNotAvailable">Lista de mangueras no disponible</string>
     <string name="OneOfTheHoseIsBusy">Una de las mangueras está ocupada, inténtelo de nuevo más tarde.</string>
+    <string name="SingleHoseBusyStatus">Alimentando...</string>
 
     <string name="Quantity">Cantidad:</string>
     <string name="Pulse">pulso:</string>
