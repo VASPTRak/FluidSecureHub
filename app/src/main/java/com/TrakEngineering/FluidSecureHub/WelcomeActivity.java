@@ -463,6 +463,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     protected void onResume() {
         super.onResume();
 
+        hideKeyboard();
         IsHotspotEnabled();
         AppConstants.IsBTLinkSelectedCurrently = false;
 
@@ -541,7 +542,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         //Hide keyboard
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        hideKeyboard();
 
         linear_fs_1.setVisibility(View.INVISIBLE);
         linear_fs_2.setVisibility(View.INVISIBLE);
@@ -601,6 +603,15 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         DebugWindow();
         AppConstants.showWelcomeDialogForAddNewLink = true;
+    }
+
+    public void hideKeyboard() {
+        try {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        } catch (Exception ex) {
+            AppConstants.WriteinFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
+            Log.e(TAG, "hideKeyboard: Exception: " + ex.getMessage());
+        }
     }
 
     private void copyFileFromAssets() {
@@ -1882,8 +1893,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             new CountDownTimer(20000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     if (isPreviousTxnCompleted) {
-                        if (alertDialog.isShowing()) {
-                            alertDialog.dismiss();
+                        if (alertDialog != null) {
+                            if (alertDialog.isShowing()) {
+                                alertDialog.dismiss();
+                            }
                         }
                         continueToGoButtonAction(view);
                         cancel();
@@ -1891,8 +1904,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 }
 
                 public void onFinish() {
-                    if (alertDialog.isShowing()) {
-                        alertDialog.dismiss();
+                    if (alertDialog != null) {
+                        if (alertDialog.isShowing()) {
+                            alertDialog.dismiss();
+                        }
                     }
                     continueToGoButtonAction(view);
                 }
@@ -2259,7 +2274,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         @Override
         protected void onPostExecute(String siteResponse) {
-            if (!WelcomeActivity.this.isFinishing() && alertDialog != null) {
+            if (alertDialog != null) {
                 if (alertDialog.isShowing()) {
                     alertDialog.dismiss();
                 }
@@ -3259,8 +3274,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             } catch (Exception e) {
                 hoseClicked = false;
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
@@ -3281,8 +3298,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             hoseClicked = false;
 
             try {
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
 
                 linearHose.setClickable(true);//Enable hose Selection
@@ -6135,7 +6154,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     public void DisplayDashboardEveSecond() {
-
+        hideKeyboard();
         //Display MAX fuel limit message on screen
         if (AppConstants.DisplayToastmaxlimit && !AppConstants.MaxlimitMessage.isEmpty()) {
             //AppConstants.colorToastBigFont(this, AppConstants.MaxlimitMessage, Color.BLUE);
@@ -7308,9 +7327,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         @Override
         protected void onPostExecute(String siteResponse) {
-
-            if (alertDialog.isShowing()) {
-                alertDialog.dismiss();
+            if (alertDialog != null) {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
             }
 
             try {
@@ -10180,8 +10200,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (pdUpgradeProcess != null) {
                 if (pdUpgradeProcess.isShowing()) {
-                    if (alertDialog.isShowing()) {
-                        alertDialog.dismiss();
+                    if (alertDialog != null) {
+                        if (alertDialog.isShowing()) {
+                            alertDialog.dismiss();
+                        }
                     }
                 }
             }
@@ -10212,7 +10234,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 client.setReadTimeout(20, TimeUnit.SECONDS);
                 client.setWriteTimeout(20, TimeUnit.SECONDS);
 
-                RequestBody body = RequestBody.create(ServerHandler.TEXT, parm2);
+                MediaType TEXT = MediaType.parse("application/x-www-form-urlencoded");
+
+                RequestBody body = RequestBody.create(TEXT, parm2);
                 Request request = new Request.Builder()
                         .url(AppConstants.webURL)
                         .post(body)
@@ -10238,8 +10262,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(String result) {
             try {
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
                 //tvLatLng.setText("Current Location :" + Constants.Latitude + "," + Constants.Longitude); // #2005
                 tvLatLng.setText(getResources().getString(R.string.HoseListIsNotAvailable));
@@ -10252,7 +10278,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
                 String errMsg = "";
                 if (result != null && !result.isEmpty()) {
-
+                    if (cd.isConnectingToInternet()) {
+                        AppConstants.NETWORK_STRENGTH = true;
+                    }
                     JSONObject jsonObjectSite = new JSONObject(result);
                     String ResponseMessageSite = jsonObjectSite.getString(AppConstants.RES_MESSAGE);
                     String userData = jsonObjectSite.getString(AppConstants.RES_DATA_USER);
@@ -10746,8 +10774,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
 
             } catch (Exception e) {
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
                 CommonUtils.LogMessage(TAG, " GetSSIDUsingLocationOnResume :" + result, e);
                 if (AppConstants.GenerateLogs)
@@ -11267,7 +11297,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 String errMsg = "";
 
                 if (result != null && !result.isEmpty()) {
-
+                    if (cd.isConnectingToInternet()) {
+                        AppConstants.NETWORK_STRENGTH = true;
+                    }
                     JSONObject jsonObjectSite = new JSONObject(result);
                     String ResponseMessageSite = jsonObjectSite.getString(AppConstants.RES_MESSAGE);
                     String userData = jsonObjectSite.getString(AppConstants.RES_DATA_USER);
@@ -11659,7 +11691,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         if (WelcomeActivity.OnWelcomeActivity && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
-            if (cd.isConnecting()) {
+            if (cd.isConnecting() && AppConstants.NETWORK_STRENGTH) {
 
                 try {
                     //sync offline transactions
@@ -11685,7 +11717,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             //sync online transaction
-            if (cd.isConnecting()) {
+            if (cd.isConnecting() && AppConstants.NETWORK_STRENGTH) {
                 DBController controller = new DBController(WelcomeActivity.this);
                 ArrayList<HashMap<String, String>> uData = controller.getAllTransaction();
 
@@ -11721,7 +11753,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         //ProgressDialog pd;
         AlertDialog alertDialog;
 
-        @Override
+        /*@Override
         protected void onPreExecute() {
 
 
@@ -11736,7 +11768,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 }
             };
             thread.start();
-        }
+        }*/
 
         protected String doInBackground(Void... arg0) {
             String resp = "";
@@ -11749,8 +11781,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             } catch (Exception e) {
                 hoseClicked = false;
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
                 System.out.println("Ex" + e.getMessage());
                 if (AppConstants.GenerateLogs)
@@ -11762,9 +11796,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(String result) {
             hoseClicked = false;
-
-            if (alertDialog.isShowing()) {
-                alertDialog.dismiss();
+            if (alertDialog != null) {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
             }
 
             linearHose.setClickable(true);//Enable hose Selection
@@ -11803,7 +11838,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             AppConstants.isAllLinksAreBTLinks = true;
             String errMsg = "";
             if (result != null && !result.isEmpty()) {
-
+                if (cd.isConnectingToInternet()) {
+                    AppConstants.NETWORK_STRENGTH = true;
+                }
                 JSONObject jsonObjectSite = new JSONObject(result);
                 String ResponseMessageSite = jsonObjectSite.getString(AppConstants.RES_MESSAGE);
                 String userData = jsonObjectSite.getString(AppConstants.RES_DATA_USER);
@@ -12112,8 +12149,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     AppConstants.WriteinFile(TAG + "Offline Link data size (in OnResume): " + serverSSIDList.size());
 
             } catch (Exception e) {
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
             }
 
@@ -12124,8 +12163,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(String result) {
 
-            if (alertDialog.isShowing()) {
-                alertDialog.dismiss();
+            if (alertDialog != null) {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
             }
 
             try {

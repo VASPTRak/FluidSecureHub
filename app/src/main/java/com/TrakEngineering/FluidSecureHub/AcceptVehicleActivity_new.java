@@ -2432,11 +2432,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     }
 
     public void hideKeybord() {
-
-
         imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
     }
 
     public void showKeybord() {

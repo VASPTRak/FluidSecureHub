@@ -1521,7 +1521,7 @@ public class BackgroundService_AP extends Service {
             TankMonitorReading(); //Get Tank Monitor Reading and save it to server
         }
 
-        if (cd.isConnectingToInternet()) {
+        if (CurrTxnMode.equalsIgnoreCase("online")) {
 
             ////////////////////--UpgradeCurrentVersion to server--///////////////////////////////////////////////////////
 
@@ -1709,7 +1709,7 @@ public class BackgroundService_AP extends Service {
 
     private void PostTransactionBackgroundTasks() {
         try {
-            if (cd.isConnectingToInternet()) {
+            if (CurrTxnMode.equalsIgnoreCase("online")) {
 
                 boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_AP.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
                 if (!BSRunning) {
@@ -1802,7 +1802,7 @@ public class BackgroundService_AP extends Service {
                 obj_entity.FromDirectTLD = "n";
 
 
-                if (cd.isConnectingToInternet()) {
+                if (CurrTxnMode.equalsIgnoreCase("online")) {
                     BackgroundService_AP.SaveTankMonitorReadingy TestAsynTask = new BackgroundService_AP.SaveTankMonitorReadingy(obj_entity);
                     TestAsynTask.execute();
                     TestAsynTask.get();
@@ -2434,7 +2434,7 @@ public class BackgroundService_AP extends Service {
 
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
-            if (cd.isConnecting()) {
+            if (CurrTxnMode.equalsIgnoreCase("online")) {
 
                 try {
                     //sync offline transactions

@@ -163,13 +163,13 @@ public class BS_BLE_BTOne extends Service {
                 }
 
                 // Offline functionality
-                if (!cd.isConnectingToInternet()) {
+                if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                    isOnlineTxn = true;
+                } else {
                     isOnlineTxn = false;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " --Offline mode--");
                     offlineLogicBT1();
-                } else {
-                    isOnlineTxn = true;
                 }
 
                 BT_BLE_Constants.isLinkOneNotifyEnabled = false;
@@ -532,7 +532,7 @@ public class BS_BLE_BTOne extends Service {
             Constants.FS_1Gallons = (precision.format(fillqty));
             Constants.FS_1Pulse = outputQuantity;
 
-            if (isOnlineTxn || BTConstants.SwitchedBTToUDP1) { //cd.isConnectingToInternet()
+            if (isOnlineTxn || BTConstants.SwitchedBTToUDP1) {
                 UpdateTransactionToSqlite(outputQuantity);
             } else {
                 if (fillqty > 0) {
@@ -618,7 +618,7 @@ public class BS_BLE_BTOne extends Service {
             isTxnLimitReached = true;
             Log.i(TAG, "Auto Stop Hit>> You reached MAX fuel limit.");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Auto Stop Hit>> You reached MAX fuel limit.");
+                AppConstants.WriteinFile(TAG + " Auto Stop Hit>> " + LimitReachedMessage);
             AppConstants.DisplayToastmaxlimit = true;
             AppConstants.MaxlimitMessage = LimitReachedMessage;
             relayOffCommand(); //RelayOff
@@ -1399,7 +1399,7 @@ public class BS_BLE_BTOne extends Service {
 
     private void TransactionCompleteFunction() {
 
-        if (cd.isConnectingToInternet()) {
+        if (isOnlineTxn) {
             if (BTConstants.BT1REPLACEBLE_WIFI_NAME == null) {
                 BTConstants.BT1REPLACEBLE_WIFI_NAME = "";
             }
@@ -2044,7 +2044,7 @@ public class BS_BLE_BTOne extends Service {
 
     private void PostTransactionBackgroundTasks(boolean isTransactionCompleted) {
         try {
-            if (cd.isConnectingToInternet()) {
+            if (isOnlineTxn) {
                 if (!isTransactionCompleted) {
                     // Save upgrade details to cloud
                     SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
@@ -2142,7 +2142,7 @@ public class BS_BLE_BTOne extends Service {
     private void SyncOfflineData() {
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
-            if (cd.isConnecting()) {
+            if (isOnlineTxn) {
                 try {
                     //sync offline transactions
                     String off_json = offlineController.getAllOfflineTransactionJSON(BS_BLE_BTOne.this);
@@ -2195,7 +2195,7 @@ public class BS_BLE_BTOne extends Service {
                         }
                         isHotspotDisabled = false;
                     }
-                    if (cd.isConnectingToInternet()) {
+                    if (isOnlineTxn) {
                         boolean BSRunning = CommonUtils.checkServiceRunning(BS_BLE_BTOne.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
                         if (!BSRunning) {
                             startService(new Intent(BS_BLE_BTOne.this, BackgroundService.class));

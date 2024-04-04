@@ -2080,7 +2080,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     }
 
     public void hideKeybord() {
-
         InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }

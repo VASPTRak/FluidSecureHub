@@ -163,13 +163,13 @@ public class BackgroundService_BTTwo extends Service {
                 }
 
                 // Offline functionality
-                if (!cd.isConnectingToInternet()) {
+                if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                    isOnlineTxn = true;
+                } else {
                     isOnlineTxn = false;
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(TAG + " BTLink_2:-Offline mode--");
                     offlineLogicBT2();
-                } else {
-                    isOnlineTxn = true;
                 }
 
                 //Register Broadcast receiver
@@ -878,7 +878,7 @@ public class BackgroundService_BTTwo extends Service {
 
     private void TransactionCompleteFunction() {
 
-        if (cd.isConnectingToInternet()) {
+        if (isOnlineTxn) {
             if (BTConstants.BT2REPLACEBLE_WIFI_NAME == null) {
                 BTConstants.BT2REPLACEBLE_WIFI_NAME = "";
             }
@@ -1443,7 +1443,7 @@ public class BackgroundService_BTTwo extends Service {
                         }
                         isHotspotDisabled = false;
                     }
-                    if (cd.isConnectingToInternet()) {
+                    if (isOnlineTxn) {
                         boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_BTTwo.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
                         if (!BSRunning) {
                             startService(new Intent(BackgroundService_BTTwo.this, BackgroundService.class));
@@ -1489,7 +1489,7 @@ public class BackgroundService_BTTwo extends Service {
             Constants.FS_2Gallons = (precision.format(fillqty));
             Constants.FS_2Pulse = outputQuantity;
 
-            if (isOnlineTxn || BTConstants.SwitchedBTToUDP2) { //cd.isConnectingToInternet()
+            if (isOnlineTxn || BTConstants.SwitchedBTToUDP2) {
                 UpdateTransactionToSqlite(outputQuantity);
             } else {
                 if (fillqty > 0) {
@@ -1688,7 +1688,7 @@ public class BackgroundService_BTTwo extends Service {
 
     private void PostTransactionBackgroundTasks(boolean isTransactionCompleted) {
         try {
-            if (cd.isConnectingToInternet()) {
+            if (isOnlineTxn) {
                 if (!isTransactionCompleted) {
                     // Save upgrade details to cloud
                     SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
@@ -1734,7 +1734,7 @@ public class BackgroundService_BTTwo extends Service {
             isTxnLimitReached = true;
             Log.i(TAG, "BTLink_2: Auto Stop Hit>> You reached MAX fuel limit.");
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_2: Auto Stop Hit>> You reached MAX fuel limit.");
+                AppConstants.WriteinFile(TAG + " BTLink_2: Auto Stop Hit>> " + LimitReachedMessage);
             AppConstants.DisplayToastmaxlimit = true;
             AppConstants.MaxlimitMessage = LimitReachedMessage;
             relayOffCommand(); //RelayOff
@@ -1975,7 +1975,7 @@ public class BackgroundService_BTTwo extends Service {
     private void SyncOfflineData() {
         if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
 
-            if (cd.isConnecting()) {
+            if (isOnlineTxn) {
                 try {
                     //sync offline transactions
                     String off_json = offlineController.getAllOfflineTransactionJSON(BackgroundService_BTTwo.this);
