@@ -239,7 +239,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptOtherActivity.this);
             }
         });
 
@@ -283,11 +283,11 @@ public class AcceptOtherActivity extends AppCompatActivity {
         return isKeyboardShown;
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    }
+    }*/
 
     public void showKeybord() {
 

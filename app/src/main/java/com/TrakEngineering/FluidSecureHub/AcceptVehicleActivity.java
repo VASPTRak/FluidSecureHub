@@ -254,7 +254,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptVehicleActivity.this);
             }
         });
 
@@ -363,7 +363,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
     public void cancelAction(View v) {
 
-        hideKeybord();
+        CommonUtils.hideKeyboard(AcceptVehicleActivity.this);
         onBackPressed();
     }
 
@@ -835,7 +835,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                hideKeybord();
+                                CommonUtils.hideKeyboard(AcceptVehicleActivity.this);
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity.this);
 
@@ -925,12 +925,12 @@ public class AcceptVehicleActivity extends AppCompatActivity {
     }
 
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 
-    }
+    }*/
 
     public void showKeybord() {
 

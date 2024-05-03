@@ -194,7 +194,7 @@ public class AcceptPinActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptPinActivity.this);
                 onBackPressed();
 
             }
@@ -241,7 +241,7 @@ public class AcceptPinActivity extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptPinActivity.this);
             }
         });
 
@@ -615,7 +615,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                hideKeybord();
+                                CommonUtils.hideKeyboard(AcceptPinActivity.this);
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity.this);
                                 // ActivityHandler.GetBacktoWelcomeActivity();
@@ -666,11 +666,11 @@ public class AcceptPinActivity extends AppCompatActivity {
 
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-    }
+    }*/
 
     public void showKeybord() {
 

@@ -575,8 +575,12 @@ public class BackgroundService extends Service {
 
                 //System.out.println("resp..." + response.body().toString());
                 Log.i(TAG, "UploadTaskRetroFit ResponceMessage:" + ResponceMessage + " ResponceText:" + ResponceText);
+                String respText = "";
+                if (ResponceMessage.equalsIgnoreCase("fail")) {
+                    respText = "; ResponseText: " + ResponceText;
+                }
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Transaction UploadTask. TransactionId: " + transactionId + "; Pulses: " + pulses + "; ResponseMessage: " + ResponceMessage);
+                    AppConstants.WriteinFile(TAG + "Transaction UploadTask. TransactionId: " + transactionId + "; Pulses: " + pulses + "; ResponseMessage: " + ResponceMessage + respText);
                 RemoveTxnFromListOfUploadingTransactions(transactionId);
                 try {
                     if (ResponceMessage.equalsIgnoreCase("success") || ResponceMessage.equalsIgnoreCase("fail")) {

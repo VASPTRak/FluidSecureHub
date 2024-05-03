@@ -252,7 +252,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptDeptActivity.this);
             }
         });
     }
@@ -318,7 +318,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                hideKeybord();
+                                CommonUtils.hideKeyboard(AcceptDeptActivity.this);
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptDeptActivity.this);
 
@@ -408,11 +408,11 @@ public class AcceptDeptActivity extends AppCompatActivity {
         CancelTimerScreenOut();
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-    }
+    }*/
 
     private class CallSaveButtonValidation extends AsyncTask<Void, Void, String> {
 

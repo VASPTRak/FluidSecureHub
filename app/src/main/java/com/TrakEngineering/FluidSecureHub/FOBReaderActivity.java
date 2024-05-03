@@ -37,8 +37,8 @@ public class FOBReaderActivity extends AppCompatActivity {
         super.onResume();
 
         //Hide keyboard
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        CommonUtils.hideKeyboard(FOBReaderActivity.this);
     }
 
     Button btnGoPer, btnGo;

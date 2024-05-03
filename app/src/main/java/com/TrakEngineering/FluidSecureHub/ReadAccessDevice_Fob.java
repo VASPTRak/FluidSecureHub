@@ -163,7 +163,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(ReadAccessDevice_Fob.this);
             }
         });
     }
@@ -734,7 +734,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         View view = this.getCurrentFocus();
 
@@ -743,7 +743,7 @@ public class ReadAccessDevice_Fob extends AppCompatActivity {
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-    }
+    }*/
 
     public void showKeybord() {
 

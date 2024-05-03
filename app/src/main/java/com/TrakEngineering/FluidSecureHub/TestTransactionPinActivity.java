@@ -125,7 +125,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(TestTransactionPinActivity.this);
                 onBackPressed();
             }
         });
@@ -192,7 +192,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(TestTransactionPinActivity.this);
             }
         });
 
@@ -413,12 +413,12 @@ public class TestTransactionPinActivity extends AppCompatActivity {
         return isKeyboardShown;
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-    }
+    }*/
 
     @Override
     protected void onResume() {
@@ -464,7 +464,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                hideKeybord();
+                                CommonUtils.hideKeyboard(TestTransactionPinActivity.this);
                                 Istimeout_Sec = false;
 
                                 Intent i = new Intent(TestTransactionPinActivity.this, WelcomeActivity.class);

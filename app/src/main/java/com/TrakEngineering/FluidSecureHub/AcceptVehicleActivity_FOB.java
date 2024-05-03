@@ -189,7 +189,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptVehicleActivity_FOB.this);
             }
         });
 
@@ -806,7 +806,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         View view = this.getCurrentFocus();
 
@@ -815,7 +815,7 @@ public class AcceptVehicleActivity_FOB extends AppCompatActivity {
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-    }
+    }*/
 
     public void showKeybord() {
 

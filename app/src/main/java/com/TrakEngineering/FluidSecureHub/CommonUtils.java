@@ -30,6 +30,7 @@ import android.text.Html;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -364,7 +365,6 @@ public class CommonUtils {
 
     //----------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void AutoCloseCustomMessageDialog(final Activity context, String title, String message) {
 
         /*//Declare timer
@@ -431,7 +431,7 @@ public class CommonUtils {
                             timer.cancel();
                         }
 
-                        if (!WelcomeActivity.OnWelcomeActivity) {
+                        if (!title.isEmpty()) {
                             InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
                         }
@@ -449,7 +449,7 @@ public class CommonUtils {
                     alertDialog.dismiss();
                 }
                 timer.cancel();
-                if (!WelcomeActivity.OnWelcomeActivity) {
+                if (!title.isEmpty()) {
                     InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
@@ -2534,4 +2534,17 @@ public class CommonUtils {
         return versionNum;
     }
 
+    public static void hideKeyboard(Activity activity) {
+        try {
+            View view = activity.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            AppConstants.WriteinFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
+        }
+
+    }
 }

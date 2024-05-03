@@ -103,6 +103,7 @@ public class BS_BLE_BTTwo extends Service {
     public String GetPulserTypeFromLINK;
     public boolean IsAnyPostTxnCommandExecuted = false;
     public boolean isTxnLimitReached = false;
+    public int relayOffAttemptCount = 0;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -1341,6 +1342,7 @@ public class BS_BLE_BTTwo extends Service {
         try {
             //Execute relayOff Command
             Response = "";
+            relayOffAttemptCount++;
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " Sending relayOff command to Link: " + LinkName);
@@ -1381,6 +1383,16 @@ public class BS_BLE_BTTwo extends Service {
                         Log.i(TAG, " Failed to get relayOff Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Checking relayOff command response. Response: false");
+                        if (relayOffAttemptCount >= 2) {
+                            if (fillqty > 0) {
+                                if (isOnlineTxn) {
+                                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTTwo.this);
+                                } else {
+                                    offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                                }
+                            }
+                            StopTransaction(true, true);
+                        }
                     }
                     if (!AppConstants.isRelayON_fs2) {
                         TransactionCompleteFunction();

@@ -191,7 +191,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptPinActivity_FOB.this);
             }
         });
 
@@ -861,7 +861,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         return isKeyboardShown;
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
 
         View view = this.getCurrentFocus();
 
@@ -870,7 +870,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-    }
+    }*/
 
     public void showKeybord() {
 

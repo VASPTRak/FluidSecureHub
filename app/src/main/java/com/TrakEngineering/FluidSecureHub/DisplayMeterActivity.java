@@ -285,7 +285,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
 
         //Hide keyboard
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
 
         if (alertDialogMain != null) {
             if (alertDialogMain.isShowing()) {

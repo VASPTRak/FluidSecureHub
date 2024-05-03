@@ -299,7 +299,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
                 onBackPressed();
 
             }
@@ -498,7 +498,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         tv_return.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
             }
         });
 
@@ -1128,7 +1128,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     public void cancelAction(View v) {
 
-        hideKeybord();
+        CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
         onBackPressed();
     }
 
@@ -1229,7 +1229,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 btnCancel.setTextSize(18);
                 btnCancel.setLayoutParams(par);
             }
-            hideKeybord();
+            CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
 
         } else {
 
@@ -2037,7 +2037,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                hideKeybord();
+                                CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this);
 
@@ -2079,10 +2079,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         TimeoutPinScreen();
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    }
+    }*/
 
     public void showKeybord() {
 

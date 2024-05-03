@@ -115,7 +115,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     private String mDeviceAddress_hf_trak;
     private String HFDeviceName;
     private String HFDeviceAddress;
-    InputMethodManager imm;
+    //InputMethodManager imm;
     public BroadcastMagCard_dataFromServiceToUI ServiceCardReader_vehicle = null;
 
     private EditText etInput;
@@ -358,7 +358,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
             @Override
             public void onClick(View v) {
-                hideKeybord();
+                CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
             }
         });
 
@@ -2369,7 +2369,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 btnCancel.setLayoutParams(par);
             }
 
-            hideKeybord();
+            CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
 
 
         } else {
@@ -2431,16 +2431,17 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
     }
 
-    public void hideKeybord() {
+    /*public void hideKeybord() {
         imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    }
 
-    public void showKeybord() {
+    }*/
+
+    /*public void showKeybord() {
 
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
+    }*/
 
     public void AcceptVehicleNumber() {
 

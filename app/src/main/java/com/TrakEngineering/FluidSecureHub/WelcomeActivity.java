@@ -463,7 +463,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     protected void onResume() {
         super.onResume();
 
-        hideKeyboard();
+        CommonUtils.hideKeyboard(WelcomeActivity.this);
         IsHotspotEnabled();
         AppConstants.IsBTLinkSelectedCurrently = false;
 
@@ -543,7 +543,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         //Hide keyboard
         //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        hideKeyboard();
+        CommonUtils.hideKeyboard(WelcomeActivity.this);
 
         linear_fs_1.setVisibility(View.INVISIBLE);
         linear_fs_2.setVisibility(View.INVISIBLE);
@@ -603,15 +603,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         DebugWindow();
         AppConstants.showWelcomeDialogForAddNewLink = true;
-    }
-
-    public void hideKeyboard() {
-        try {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        } catch (Exception ex) {
-            AppConstants.WriteinFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
-            Log.e(TAG, "hideKeyboard: Exception: " + ex.getMessage());
-        }
     }
 
     private void copyFileFromAssets() {
@@ -6154,11 +6145,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     public void DisplayDashboardEveSecond() {
-        hideKeyboard();
+        CommonUtils.hideKeyboard(WelcomeActivity.this);
         //Display MAX fuel limit message on screen
         if (AppConstants.DisplayToastmaxlimit && !AppConstants.MaxlimitMessage.isEmpty()) {
             //AppConstants.colorToastBigFont(this, AppConstants.MaxlimitMessage, Color.BLUE);
-            CommonUtils.AutoCloseCustomMessageDialog(WelcomeActivity.this, "Message", AppConstants.MaxlimitMessage);
+            CommonUtils.AutoCloseCustomMessageDialog(WelcomeActivity.this, "", AppConstants.MaxlimitMessage);
             AppConstants.DisplayToastmaxlimit = false;
             AppConstants.MaxlimitMessage = "";
         }

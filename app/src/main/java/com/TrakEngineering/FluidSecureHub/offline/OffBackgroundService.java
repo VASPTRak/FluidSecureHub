@@ -6,17 +6,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.Aes_Encryption;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
-import com.TrakEngineering.FluidSecureHub.Constants;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -215,6 +215,21 @@ public class OffBackgroundService extends Service {
         }
 
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void ShowToast() {
+        try {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    String s = "Offline data downloaded successfully.";
+                    Toast.makeText(OffBackgroundService.this, s, Toast.LENGTH_LONG).show();
+                }
+            }, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AppConstants.WriteinFile(TAG + " ShowToast Exception: " + e.getMessage());
+        }
     }
 
     public class GetAPIToken extends AsyncTask<String, Void, String> {
@@ -477,6 +492,7 @@ public class OffBackgroundService extends Service {
                                     timer.cancel();
 
                                 AppConstants.WriteinFile("All 4 files downloaded successfully.");
+                                ShowToast();
                             }
                         } else {
 
@@ -485,6 +501,7 @@ public class OffBackgroundService extends Service {
                             if (timer != null)
                                 timer.cancel();
                             AppConstants.WriteinFile("All 3 files downloaded successfully.");
+                            ShowToast();
                         }
                     }
                 }
