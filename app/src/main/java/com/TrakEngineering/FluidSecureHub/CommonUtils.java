@@ -31,6 +31,7 @@ import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -2540,10 +2541,13 @@ public class CommonUtils {
             if (view != null) {
                 InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            } else {
+                activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            AppConstants.WriteinFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
         }
 
     }
