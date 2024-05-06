@@ -429,6 +429,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     public boolean proceedAfterManualWifiConnect = false;
     public boolean skipOnResume = false;
     public int linkPositionForUpgrade = 0;
+    public int waitCounterToHideKeyboard = 0;
 
     // ============ Bluetooth receiver for BT-SPP Upgrade =========//
     public BroadcastBlueLinkData broadcastBlueLinkData = null;
@@ -701,17 +702,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             timerGate.cancel();
 
         if (AppConstants.EnableFA) {
-
-
             if (mHandler != null && mPruneTask != null)
                 mHandler.removeCallbacks(mPruneTask);
 
             if (mService != null)
                 mService.setBeaconEventListener(null);
 
-
             unbindService(this);
-
         }
 
         OnWelcomeActivity = false;
@@ -727,13 +724,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         unregisterReceiver(btreceiver);
 
-
         if (receiver != null) {
             this.unregisterReceiver(receiver);
         }
 
         if (wifiApReciver != null) {
             this.unregisterReceiver(wifiApReciver);
+        }
+
+        if(dialogReceiver != null) {
+            unregisterReceiver(dialogReceiver);
         }
     }
 
@@ -806,7 +806,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         //mGoogleApiClient.connect();
 
         InItGUI();
-
+        CommonUtils.hideKeyboard(WelcomeActivity.this);
 
         //If checkbox is checked write logs in text file else not wite logs
         //And Set Fuiel branding Information
@@ -1172,6 +1172,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         IntentFilter mIntentFilter = new IntentFilter();
         mIntentFilter = new IntentFilter("android.net.wifi.WIFI_AP_STATE_CHANGED");
         registerReceiver(wifiApReciver, mIntentFilter);
+
+        // register BroadcastReceiver for offline data download
+        IntentFilter dialogFilter = new IntentFilter(OffBackgroundService.ACTION_SHOW_DIALOG);
+        registerReceiver(dialogReceiver, dialogFilter);
 
         //CallJobSchedular();//Job Scheduler hotspot check
 
@@ -6145,7 +6149,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
     public void DisplayDashboardEveSecond() {
-        CommonUtils.hideKeyboard(WelcomeActivity.this);
+        if (waitCounterToHideKeyboard >= 30) {
+            waitCounterToHideKeyboard = 0;
+            CommonUtils.hideKeyboard(WelcomeActivity.this);
+        } else { waitCounterToHideKeyboard++; }
+
         //Display MAX fuel limit message on screen
         if (AppConstants.DisplayToastmaxlimit && !AppConstants.MaxlimitMessage.isEmpty()) {
             //AppConstants.colorToastBigFont(this, AppConstants.MaxlimitMessage, Color.BLUE);
@@ -18758,4 +18766,14 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     //endregion
+
+    private final BroadcastReceiver dialogReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(OffBackgroundService.ACTION_SHOW_DIALOG)) {
+                String msg = "Offline data downloaded successfully.";
+                CommonUtils.AutoCloseCustomMessageDialog(WelcomeActivity.this, "", msg);
+            }
+        }
+    };
 }

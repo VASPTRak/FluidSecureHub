@@ -268,6 +268,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onResume() {
         super.onResume();
+        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
 
         if (skipOnResumeForHotspot) {
             return;
@@ -286,7 +287,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         //Hide keyboard
         //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
 
         if (alertDialogMain != null) {
             if (alertDialogMain.isShowing()) {

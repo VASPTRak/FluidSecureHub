@@ -58,6 +58,7 @@ public class OffBackgroundService extends Service {
     TimerTask repeatedTask;
     SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
     public String IsDepartmentRequire = "false";
+    public static final String ACTION_SHOW_DIALOG = "com.TrakEngineering.FluidSecureHub.action.SHOW_DIALOG";
 
     public OffBackgroundService() {
     }
@@ -217,18 +218,21 @@ public class OffBackgroundService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void ShowToast() {
+    private void ShowDialog() {
         try {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     String s = "Offline data downloaded successfully.";
                     Toast.makeText(OffBackgroundService.this, s, Toast.LENGTH_LONG).show();
                 }
-            }, 100);
+            }, 100);*/
+            Intent showDialogIntent = new Intent(ACTION_SHOW_DIALOG);
+            sendBroadcast(showDialogIntent);
         } catch (Exception e) {
             e.printStackTrace();
-            AppConstants.WriteinFile(TAG + " ShowToast Exception: " + e.getMessage());
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " ShowDialog Exception: " + e.getMessage());
         }
     }
 
@@ -492,7 +496,7 @@ public class OffBackgroundService extends Service {
                                     timer.cancel();
 
                                 AppConstants.WriteinFile("All 4 files downloaded successfully.");
-                                ShowToast();
+                                ShowDialog();
                             }
                         } else {
 
@@ -501,7 +505,7 @@ public class OffBackgroundService extends Service {
                             if (timer != null)
                                 timer.cancel();
                             AppConstants.WriteinFile("All 3 files downloaded successfully.");
-                            ShowToast();
+                            ShowDialog();
                         }
                     }
                 }
