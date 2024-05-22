@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.Aes_Encryption;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
+import com.TrakEngineering.FluidSecureHub.BuildConfig;
 import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 import com.squareup.okhttp.MediaType;
@@ -58,7 +59,7 @@ public class OffBackgroundService extends Service {
     TimerTask repeatedTask;
     SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
     public String IsDepartmentRequire = "false";
-    public static final String ACTION_SHOW_DIALOG = "com.TrakEngineering.FluidSecureHub.action.SHOW_DIALOG";
+    public static final String ACTION_SHOW_DIALOG = BuildConfig.APPLICATION_ID + ".action.SHOW_DIALOG";
 
     public OffBackgroundService() {
     }

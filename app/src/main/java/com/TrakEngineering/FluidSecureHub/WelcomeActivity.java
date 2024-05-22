@@ -452,6 +452,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     TimerTask timerTaskForUpgrade;
     Timer timerForUpgrade;
     //======================================================//
+    public boolean isWifiDialogShown = false;
 
     //============ Bluetooth reader Gatt end==============
 
@@ -528,6 +529,18 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         ReConnectBTReader();
 
         tvSSIDName.setText(R.string.selectHose);
+
+        //Hide keyboard
+        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        CommonUtils.hideKeyboard(WelcomeActivity.this);
+
+        if (isWifiDialogShown) {
+            isWifiDialogShown = false;
+            BTConstants.isReturnedFromManualWifiConnect = true;
+            UpdateFSUI_seconds();
+            return;
+        }
+
         SelectedItemPos = -1;
 
         final IntentFilter intentFilter = new IntentFilter();
@@ -541,10 +554,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-
-        //Hide keyboard
-        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        CommonUtils.hideKeyboard(WelcomeActivity.this);
 
         linear_fs_1.setVisibility(View.INVISIBLE);
         linear_fs_2.setVisibility(View.INVISIBLE);
@@ -734,6 +743,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         if(dialogReceiver != null) {
             unregisterReceiver(dialogReceiver);
+        }
+        if(btActionsReceiver != null) {
+            unregisterReceiver(btActionsReceiver);
         }
     }
 
@@ -1177,6 +1189,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         IntentFilter dialogFilter = new IntentFilter(OffBackgroundService.ACTION_SHOW_DIALOG);
         registerReceiver(dialogReceiver, dialogFilter);
 
+        // register BroadcastReceiver for WIFI communication & BT connect
+        registerReceiver(btActionsReceiver, makeBTIntentFilter());
+
         //CallJobSchedular();//Job Scheduler hotspot check
 
         AppConstants.enableHotspotManuallyWindow = true;
@@ -1193,6 +1208,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         cancelThinDownloadManager();
 
         copyFileFromAssets();
+    }
+
+    private static IntentFilter makeBTIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BTConstants.ACTION_SHOW_WIFI_DIALOG);
+        intentFilter.addAction(BTConstants.ACTION_BT_RECONNECT);
+        return intentFilter;
     }
 
     public void cancelThinDownloadManager() {
@@ -10373,6 +10395,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                                 String FirmwareFileName = c.getString("FirmwareFileName");
                                 String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
+                                String OriginalNamesOfLink = "";
+                                try {
+                                    JSONArray OriginalNamesOfLinkList = c.getJSONArray("OriginalNamesOfLink"); //.toString().replace("[\"", "").replace("\"]", "");
+                                    if (OriginalNamesOfLinkList.length() > 0) {
+                                        for (int l = 0; l < OriginalNamesOfLinkList.length(); l++) {
+                                            OriginalNamesOfLink = OriginalNamesOfLink + "," + OriginalNamesOfLinkList.getString(l);
+                                        }
+                                        OriginalNamesOfLink = OriginalNamesOfLink.substring(1);
+                                    }
+                                } catch (Exception e) { e.printStackTrace(); }
 
                                 SetBTLinksMacAddress(i, BTMacAddress);
 
@@ -10483,6 +10515,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                                 map.put("FirmwareFileName", FirmwareFileName);
                                 map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
+                                map.put("OriginalNamesOfLink", OriginalNamesOfLink);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
                                     if (isNotNULL(SiteId) && isNotNULL(HoseId) && isNotNULL(WifiSSId)) {
@@ -11410,6 +11443,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                                 String FirmwareFileName = c.getString("FirmwareFileName");
                                 String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
+                                String OriginalNamesOfLink = "";
+                                try {
+                                    JSONArray OriginalNamesOfLinkList = c.getJSONArray("OriginalNamesOfLink"); //.toString().replace("[\"", "").replace("\"]", "");
+                                    if (OriginalNamesOfLinkList.length() > 0) {
+                                        for (int l = 0; l < OriginalNamesOfLinkList.length(); l++) {
+                                            OriginalNamesOfLink = OriginalNamesOfLink + "," + OriginalNamesOfLinkList.getString(l);
+                                        }
+                                        OriginalNamesOfLink = OriginalNamesOfLink.substring(1);
+                                    }
+                                } catch (Exception e) { e.printStackTrace(); }
 
                                 AppConstants.UP_FilePath = FilePath;
 
@@ -11455,6 +11498,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                                 map.put("FirmwareFileName", FirmwareFileName);
                                 map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
+                                map.put("OriginalNamesOfLink", OriginalNamesOfLink);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -11922,6 +11966,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                             String FirmwareFileName = c.getString("FirmwareFileName");
                             String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
+                            String OriginalNamesOfLink = "";
+                            try {
+                                JSONArray OriginalNamesOfLinkList = c.getJSONArray("OriginalNamesOfLink"); //.toString().replace("[\"", "").replace("\"]", "");
+                                if (OriginalNamesOfLinkList.length() > 0) {
+                                    for (int l = 0; l < OriginalNamesOfLinkList.length(); l++) {
+                                        OriginalNamesOfLink = OriginalNamesOfLink + "," + OriginalNamesOfLinkList.getString(l);
+                                    }
+                                    OriginalNamesOfLink = OriginalNamesOfLink.substring(1);
+                                }
+                            } catch (Exception e) { e.printStackTrace(); }
 
                             ///tld upgrade
                             String IsTLDFirmwareUpgrade = c.getString("IsTLDFirmwareUpgrade");
@@ -11974,6 +12028,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                             map.put("FirmwareFileName", FirmwareFileName);
                             map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
+                            map.put("OriginalNamesOfLink", OriginalNamesOfLink);
 
                             if (IsTLDFirmwareUpgrade.trim().toLowerCase().equalsIgnoreCase("y")) {
                                 downloadTLD_BinFile(i, TLDFirmwareFilePath, TLDFIrmwareVersion);
@@ -18776,4 +18831,94 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
     };
+
+    private final BroadcastReceiver btActionsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BTConstants.ACTION_SHOW_WIFI_DIALOG)) {
+                Bundle notificationData = intent.getExtras();
+                String LinkName = notificationData.getString("LinkName");
+                String message = "Please select Wifi '" + LinkName + "' and return back.";
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + message);
+                isWifiDialogShown = true;
+                ShowWifiMessageDialog(WelcomeActivity.this, message);
+
+            } else if (intent.getAction().equals(BTConstants.ACTION_BT_RECONNECT)) {
+                Bundle notificationData = intent.getExtras();
+                int linkPosition = notificationData.getInt("LinkPosition");
+                BTSPPMain btspp = new BTSPPMain();
+                btspp.activity = WelcomeActivity.this;
+                switch (linkPosition) {
+                    case 0://Link 1
+                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
+                            btspp.connect1();
+                        }
+                        break;
+                    case 1://Link 2
+                        if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect")) {
+                            btspp.connect2();
+                        }
+                        break;
+                    case 2://Link 3
+                        if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect")) {
+                            btspp.connect3();
+                        }
+                        break;
+                    case 3://Link 4
+                        if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect")) {
+                            btspp.connect4();
+                        }
+                        break;
+                    case 4://Link 5
+                        if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect")) {
+                            btspp.connect5();
+                        }
+                        break;
+                    case 5://Link 6
+                        if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect")) {
+                            btspp.connect6();
+                        }
+                        break;
+                }
+            }
+        }
+    };
+
+    public void ShowWifiMessageDialog(final Activity context, String message) {
+        final Timer timer = new Timer();
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                }
+        );
+
+        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
+                timer.cancel();
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+
+            }
+        }, 3000);
+        alertDialog.show();
+    }
 }

@@ -104,6 +104,7 @@ public class BS_BLE_BTOne extends Service {
     public boolean IsAnyPostTxnCommandExecuted = false;
     public boolean isTxnLimitReached = false;
     public int relayOffAttemptCount = 0;
+    public List<String> OriginalNamesOfLinkList;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -163,6 +164,11 @@ public class BS_BLE_BTOne extends Service {
                     CurrentLinkMac = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
                 }
 
+                String OriginalNamesOfLink = CommonUtils.getOriginalNamesOfLink(0);
+                OriginalNamesOfLinkList = Arrays.asList(OriginalNamesOfLink.split(","));
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " <Original Names of LINK: (" + OriginalNamesOfLinkList + ")>");
+
                 // Offline functionality
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                     isOnlineTxn = true;
@@ -181,12 +187,12 @@ public class BS_BLE_BTOne extends Service {
 
                 Thread.sleep(2000);
                 AppConstants.isRelayON_fs1 = false;
-                LinkName = CommonUtils.getlinkName(0);
+                LinkName = CommonUtils.getLinkName(0);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
                     BT_BLE_Constants.BTBLELinkOneStatus = false;
                     BT_BLE_Constants.BTBLEStatusStrOne = "";
-                    checkBTLinkStatus("info"); // Changed from "upgrade" to "info" as per #1657
+                    checkBTLinkStatus("info", false); // Changed from "upgrade" to "info" as per #1657
 
                 } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
                     IsThisBTTrnx = false;
@@ -398,7 +404,7 @@ public class BS_BLE_BTOne extends Service {
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            checkBTLinkStatus("relay");
+                            checkBTLinkStatus("relay", false);
                         }
                     }, 100);
                     return;
@@ -439,11 +445,11 @@ public class BS_BLE_BTOne extends Service {
 
                         int delay = 100;
                         cancel();
-                        if (BTConstants.SwitchedBTToUDP1) {
+                        /*if (BTConstants.SwitchedBTToUDP1) {
                             DisableWifiConnection();
                             BTConstants.SwitchedBTToUDP1 = false;
                             delay = 1000;
-                        }
+                        }*/
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -719,7 +725,7 @@ public class BS_BLE_BTOne extends Service {
         return intentFilter;
     }
 
-    private void checkBTLinkStatus(String nextAction) {
+    private void checkBTLinkStatus(String nextAction, boolean isAfterWifiConnect) {
         try {
             new CountDownTimer(10000, 2000) {
                 public void onTick(long millisUntilFinished) {
@@ -752,7 +758,6 @@ public class BS_BLE_BTOne extends Service {
                 }
 
                 public void onFinish() {
-
                     if (BT_BLE_Constants.BTBLEStatusStrOne.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                         if (AppConstants.GenerateLogs)
@@ -776,7 +781,12 @@ public class BS_BLE_BTOne extends Service {
                     } else {
                         isConnected = false;
                         if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
-                            UDPFunctionalityAfterBTFailure(); //TerminateBTTransaction();
+                            if (!isAfterWifiConnect) {
+                                UDPFunctionalityAfterBTFailure(); //TerminateBTTransaction();
+                            } else {
+                                BTConstants.isReturnedFromManualWifiConnect = false;
+                                TerminateBTTransaction();
+                            }
                         } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
                             TerminateBTTxnAfterInterruption();
                         }
@@ -803,7 +813,7 @@ public class BS_BLE_BTOne extends Service {
                 if (CommonUtils.isHotspotEnabled(BS_BLE_BTOne.this)) {
                     // Disable Hotspot
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<Disabling hotspot.>");
+                        AppConstants.WriteinFile(TAG + " <Turning OFF the Hotspot. (if enabled)>");
                     WifiApManager wifiApManager = new WifiApManager(BS_BLE_BTOne.this);
                     wifiApManager.setWifiApEnabled(null, false);
                     isHotspotDisabled = true;
@@ -820,9 +830,9 @@ public class BS_BLE_BTOne extends Service {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        IsThisBTTrnx = false;
-                        BTConstants.SwitchedBTToUDP1 = true;
-                        BeginProcessUsingUDP();
+                        //IsThisBTTrnx = false;
+                        //BTConstants.SwitchedBTToUDP1 = true;
+                        BeginProcessUsingUDP(false);
                     }
                 }, 5000);
             } else {
@@ -833,15 +843,19 @@ public class BS_BLE_BTOne extends Service {
         }
     }
 
-    private void BeginProcessUsingUDP() {
+    private void BeginProcessUsingUDP(boolean isCalledAfterManualAttempt) {
         try {
-            Toast.makeText(BS_BLE_BTOne.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
+            long millis = 10000;
+            if (!isCalledAfterManualAttempt) {
+                millis = 5000;
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " " + getResources().getString(R.string.PleaseWaitForWifiConnect));
+                Toast.makeText(BS_BLE_BTOne.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
+            }
 
-            new CountDownTimer(12000, 1000) {
+            new CountDownTimer(millis, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Connecting to WiFi...");
                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     String ssid = "";
                     if (wifiManager.isWifiEnabled()) {
@@ -849,13 +863,15 @@ public class BS_BLE_BTOne extends Service {
                         ssid = wifiInfo.getSSID();
                     }
 
-                    ssid = ssid.replace("\"", "");
-
-                    if (ssid.equalsIgnoreCase(LinkName)) {
+                    ssid = ssid.replace("\"", "").trim();
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Selected Hose : " + LinkName + " & Connected Hose : " + ssid);
+                    //if (ssid.equalsIgnoreCase(LinkName)) {
+                    if (OriginalNamesOfLinkList.contains(ssid)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Connected to " + ssid + " via WiFi.");
-                        proceedToInfoCommand();
-                        //loading.cancel();
+                        //proceedToInfoCommand(); // Commented to continue with BT as per #2603
+                        BTReconnectionAttempt();
                         cancel();
                     }
                 }
@@ -867,23 +883,85 @@ public class BS_BLE_BTOne extends Service {
                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                     String ssid = wifiInfo.getSSID();
 
-                    ssid = ssid.replace("\"", "");
-                    if (ssid.equalsIgnoreCase(LinkName)) {
+                    ssid = ssid.replace("\"", "").trim();
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " (onFinish) Selected Hose : " + LinkName + " & Connected Hose : " + ssid);
+                    //if (ssid.equalsIgnoreCase(LinkName)) {
+                    if (OriginalNamesOfLinkList.contains(ssid)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Connected to " + ssid + " via WiFi.");
-                        proceedToInfoCommand();
-                        //loading.cancel();
-                        cancel();
+                        //proceedToInfoCommand(); // Commented to continue with BT as per #2603
+                        BTReconnectionAttempt();
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Unable to connect to " + LinkName + " via WiFi.");
-                        TerminateBTTransaction();
+                        if (isCalledAfterManualAttempt) {
+                            //TerminateBTTransaction();
+                            BTReconnectionAttempt();
+                        } else {
+                            Intent showWifiDialogIntent = new Intent(BTConstants.ACTION_SHOW_WIFI_DIALOG);
+                            showWifiDialogIntent.putExtra("LinkName", OriginalNamesOfLinkList.get(0));
+                            sendBroadcast(showWifiDialogIntent);
+                            WaitAndProceedAfterManualWifiConnect();
+                        }
                     }
                 }
             }.start();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " Exception in BeginProcessUsingUDP: " + e.getMessage());
+            TerminateBTTransaction();
+            e.printStackTrace();
+        }
+    }
+
+    private void BTReconnectionAttempt() {
+        BTConstants.isReturnedFromManualWifiConnect = false;
+        DisableWifiConnection();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (BT_BLE_Constants.BTBLEStatusStrOne.equalsIgnoreCase("Disconnect")) {
+                    LinkReconnectionAttempt();
+                }
+                checkBTLinkStatus("info", true);
+            }
+        }, 5000);
+    }
+
+    private void WaitAndProceedAfterManualWifiConnect() {
+        try {
+            new CountDownTimer(60000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    if (BTConstants.isReturnedFromManualWifiConnect) {
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                BeginProcessUsingUDP(true);
+                            }
+                        }, 2000);
+                        cancel();
+                    }
+                }
+
+                @Override
+                public void onFinish() {
+                    if (BTConstants.isReturnedFromManualWifiConnect) {
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                BeginProcessUsingUDP(true);
+                            }
+                        }, 2000);
+                    } else {
+                        TerminateBTTransaction();
+                    }
+                }
+            }.start();
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " Exception in WaitAndProceedAfterManualWifiConnect: " + e.getMessage());
             TerminateBTTransaction();
             e.printStackTrace();
         }
@@ -2191,7 +2269,7 @@ public class BS_BLE_BTOne extends Service {
             WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
             if (wifiManagerMM.isWifiEnabled()) {
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Disabling wifi.>");
+                    AppConstants.WriteinFile(TAG + " <Turning OFF the Wifi.>");
                 wifiManagerMM.setWifiEnabled(false);
             }
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -2202,7 +2280,7 @@ public class BS_BLE_BTOne extends Service {
                         WifiApManager wifiApManager = new WifiApManager(BS_BLE_BTOne.this);
                         if (!CommonUtils.isHotspotEnabled(BS_BLE_BTOne.this) && !AppConstants.isAllLinksAreBTLinks) {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<Enabling hotspot.>");
+                                AppConstants.WriteinFile(TAG + " <Turning ON the Hotspot.>");
                             wifiApManager.setWifiApEnabled(null, true);
                         }
                         isHotspotDisabled = false;

@@ -2131,16 +2131,29 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static String getlinkName(int linkPoistion){
+    public static String getLinkName(int linkPosition){
 
         String LinkName = "";
             try {
-                LinkName = AppConstants.DetailsServerSSIDList.get(linkPoistion).get("WifiSSId");
+                LinkName = AppConstants.DetailsServerSSIDList.get(linkPosition).get("WifiSSId");
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ "Something went wrong please check Link name Ex:"+e.toString());
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG+ "Something went wrong please check Link name Ex:"+e.toString());
                 e.printStackTrace();
             }
         return LinkName;
+    }
+
+    public static String getOriginalNamesOfLink(int linkPosition) {
+        String OriginalNamesOfLink = "";
+        try {
+            OriginalNamesOfLink = AppConstants.DetailsServerSSIDList.get(linkPosition).get("OriginalNamesOfLink");
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "Something went wrong please check Link data Ex: " + e.toString());
+            e.printStackTrace();
+        }
+        return OriginalNamesOfLink;
     }
 
     public static void DebugLogTemp(String TAG, String Fun){

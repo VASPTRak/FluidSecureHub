@@ -1,5 +1,6 @@
 package com.TrakEngineering.FluidSecureHub.BTSPP;
 
+import com.TrakEngineering.FluidSecureHub.BuildConfig;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,6 +52,8 @@ public class BTConstants {
     public static boolean isBTSPPTxnContinuedWithBLE5 = false;
     public static boolean isBTSPPTxnContinuedWithBLE6 = false;
 
+    public static final String ACTION_SHOW_WIFI_DIALOG = BuildConfig.APPLICATION_ID + ".action.SHOW_WIFI_DIALOG";
+    public static final String ACTION_BT_RECONNECT = BuildConfig.APPLICATION_ID + ".action.BT_RECONNECT";
     //public static boolean isHotspotDisabled = false;
 
     public static String info_cmd = "LK_COMM=info";
@@ -116,6 +119,8 @@ public class BTConstants {
     public static int BTConnFailedCountLink4 = 0;
     public static int BTConnFailedCountLink5 = 0;
     public static int BTConnFailedCountLink6 = 0;
+
+    public static boolean isReturnedFromManualWifiConnect = false;
 
     //Rename BT link one
     public static boolean BT1NeedRename;
