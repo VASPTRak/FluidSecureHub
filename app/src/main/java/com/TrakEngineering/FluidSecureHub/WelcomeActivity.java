@@ -13769,21 +13769,31 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     if (!BTConstants.deviceAddress1.isEmpty()) {
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
-                        RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
+                            RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        }
 
                         Handler handler = new Handler();
                         int delay = 1000;
                         handler.postDelayed(new Runnable() {
                             public void run() {
-
                                 if (!checkBTLinkStatus(1) && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
                                     retryConnect(1);
                                 }
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
-                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                                RedirectBtLinkOneToNextScreen(selSSID);
+                                if (Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
+                                    AppConstants.FS_selected = String.valueOf(selectedItemPos);
+                                    RedirectBtLinkOneToNextScreen(selSSID);
+                                } else {
+                                    BTL1State = 0;
+                                    BTConstants.CurrentSelectedLinkBT = 0;
+                                    BTConstants.CurrentTransactionIsBT = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
+                                    RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
+                                }
                             }
                         }, delay);
                     } else {
@@ -13810,21 +13820,31 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     if (!BTConstants.deviceAddress2.isEmpty()) {
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
-                        RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        if (Constants.FS_2STATUS.equalsIgnoreCase("FREE")) {
+                            RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        }
 
                         Handler handler = new Handler();
                         int delay = 1000;
                         handler.postDelayed(new Runnable() {
                             public void run() {
-
                                 if (!checkBTLinkStatus(2) && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
                                     retryConnect(2);
                                 }
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
-                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                                RedirectBtLinkTwoToNextScreen(selSSID);
+                                if (Constants.FS_2STATUS.equalsIgnoreCase("FREE")) {
+                                    AppConstants.FS_selected = String.valueOf(selectedItemPos);
+                                    RedirectBtLinkTwoToNextScreen(selSSID);
+                                } else {
+                                    BTL2State = 0;
+                                    BTConstants.CurrentSelectedLinkBT = 0;
+                                    BTConstants.CurrentTransactionIsBT = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
+                                    RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
+                                }
                             }
                         }, delay);
                     } else {
@@ -13851,21 +13871,31 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     if (!BTConstants.deviceAddress3.isEmpty()) {
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
-                        RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        if (Constants.FS_3STATUS.equalsIgnoreCase("FREE")) {
+                            RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        }
 
                         Handler handler = new Handler();
                         int delay = 1000;
                         handler.postDelayed(new Runnable() {
                             public void run() {
-
                                 if (!checkBTLinkStatus(3) && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
                                     retryConnect(3);
                                 }
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
-                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                                RedirectBtLinkThreeToNextScreen(selSSID);
+                                if (Constants.FS_3STATUS.equalsIgnoreCase("FREE")) {
+                                    AppConstants.FS_selected = String.valueOf(selectedItemPos);
+                                    RedirectBtLinkThreeToNextScreen(selSSID);
+                                } else {
+                                    BTL3State = 0;
+                                    BTConstants.CurrentSelectedLinkBT = 0;
+                                    BTConstants.CurrentTransactionIsBT = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
+                                    RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
+                                }
                             }
                         }, delay);
                     } else {
@@ -13891,21 +13921,31 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     if (!BTConstants.deviceAddress4.isEmpty()) {
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
-                        RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        if (Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+                            RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        }
 
                         Handler handler = new Handler();
                         int delay = 1000;
                         handler.postDelayed(new Runnable() {
                             public void run() {
-
                                 if (!checkBTLinkStatus(4) && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
                                     retryConnect(4);
                                 }
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
-                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                                RedirectBtLinkFourToNextScreen(selSSID);
+                                if (Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+                                    AppConstants.FS_selected = String.valueOf(selectedItemPos);
+                                    RedirectBtLinkFourToNextScreen(selSSID);
+                                } else {
+                                    BTL4State = 0;
+                                    BTConstants.CurrentSelectedLinkBT = 0;
+                                    BTConstants.CurrentTransactionIsBT = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
+                                    RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
+                                }
                             }
                         }, delay);
                     } else {
@@ -13931,21 +13971,31 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     if (!BTConstants.deviceAddress5.isEmpty()) {
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
-                        RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        if (Constants.FS_5STATUS.equalsIgnoreCase("FREE")) {
+                            RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        }
 
                         Handler handler = new Handler();
                         int delay = 1000;
                         handler.postDelayed(new Runnable() {
                             public void run() {
-
                                 if (!checkBTLinkStatus(5) && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
                                     retryConnect(5);
                                 }
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
-                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                                RedirectBtLinkFiveToNextScreen(selSSID);
+                                if (Constants.FS_5STATUS.equalsIgnoreCase("FREE")) {
+                                    AppConstants.FS_selected = String.valueOf(selectedItemPos);
+                                    RedirectBtLinkFiveToNextScreen(selSSID);
+                                } else {
+                                    BTL5State = 0;
+                                    BTConstants.CurrentSelectedLinkBT = 0;
+                                    BTConstants.CurrentTransactionIsBT = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
+                                    RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
+                                }
                             }
                         }, delay);
                     } else {
@@ -13971,21 +14021,31 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     if (!BTConstants.deviceAddress6.isEmpty()) {
                         NearByBTDevices.clear();
                         mBluetoothAdapter.startDiscovery();
-                        RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        if (Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+                            RestrictHoseSelection(getResources().getString(R.string.ConnectingStatus), true);
+                        }
 
                         Handler handler = new Handler();
                         int delay = 1000;
                         handler.postDelayed(new Runnable() {
                             public void run() {
-
                                 if (!checkBTLinkStatus(6) && BTLinkCommType != null && BTLinkCommType.equalsIgnoreCase("SPP")) {
                                     retryConnect(6);
                                 }
                                 if (BTConnectionHandler != null) {
                                     BTConnectionHandler.removeCallbacksAndMessages(null);
                                 }
-                                AppConstants.FS_selected = String.valueOf(selectedItemPos);
-                                RedirectBtLinkSixToNextScreen(selSSID);
+                                if (Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+                                    AppConstants.FS_selected = String.valueOf(selectedItemPos);
+                                    RedirectBtLinkSixToNextScreen(selSSID);
+                                } else {
+                                    BTL6State = 0;
+                                    BTConstants.CurrentSelectedLinkBT = 0;
+                                    BTConstants.CurrentTransactionIsBT = true;
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
+                                    RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
+                                }
                             }
                         }, delay);
                     } else {
