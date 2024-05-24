@@ -16225,12 +16225,12 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     AppConstants.WriteinFile(TAG + "<Size of the file to be downloaded: " + lengthOfFile + ">");
 
                 // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+                InputStream input = new BufferedInputStream(url.openStream(), 65536); //8192
 
                 // Output stream to write file
                 OutputStream output = new FileOutputStream(filePath + "/" + fileName);
 
-                byte[] data = new byte[1024];
+                byte[] data = new byte[2048]; //1024
 
                 while ((count = input.read(data)) != -1) {
                     downloadedFileLength += count;
