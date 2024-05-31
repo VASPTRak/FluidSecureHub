@@ -40,6 +40,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -150,6 +151,9 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import com.squareup.picasso.Picasso;
 import com.thanosfisherman.wifiutils.WifiUtils;
+import com.thin.downloadmanager.DefaultRetryPolicy;
+import com.thin.downloadmanager.DownloadRequest;
+import com.thin.downloadmanager.DownloadStatusListenerV1;
 import com.thin.downloadmanager.ThinDownloadManager;
 
 import org.json.JSONArray;
@@ -416,6 +420,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     ServerHandler serverHandler = new ServerHandler();
     public int HotspotEnableErrorCount = 0;
     public ProgressDialog pdUpgradeProcess;
+
+    // Upgrade File Download =================
+    public ProgressDialog pdUpgradeFileDownloadProcess;
+    public int downloadedFileProgress = 0;
+    public long lengthOfFile = 0;
+    public long downloadedFileLength = 0;
+    //=========================================
     public Handler BTConnectionHandler = new Handler(Looper.getMainLooper());
     public int delayMillis = 100;
     public String st = "";
@@ -16090,6 +16101,25 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         String logUpgrade = AppConstants.LOG_UPGRADE_HTTP;
         String linkType, btLinkCommType;
         int linkPosition;
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            pd = new ProgressDialog(WelcomeActivity.this);
+            String message = getResources().getString(R.string.PleaseWaitSeveralSeconds);
+            pd.setMessage(GetSpinnerMessage(message));
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+            // #2323
+            Window window = pd.getWindow();
+            WindowManager.LayoutParams wlp = window.getAttributes();
+            wlp.gravity = Gravity.BOTTOM | Gravity.CENTER;
+            window.setAttributes(wlp);
+            //==========================
+
+            pd.setCancelable(false);
+            pd.show();
+        }
 
         @Override
         protected Boolean doInBackground(String... param) {
@@ -16133,6 +16163,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(Boolean isFileExist) {
             try {
+                pd.dismiss();
                 if (linkType.equalsIgnoreCase("BT")) {
                     if (btLinkCommType.equalsIgnoreCase("BLE")) {
                         logUpgrade = AppConstants.LOG_UPGRADE_BT_BLE;
@@ -16164,7 +16195,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                         String binFolderPath = String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN));
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logUpgrade + "-" + TAG + "Downloading link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ")");
-                        new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name, linkType, String.valueOf(linkPosition), btLinkCommType);
+                        //new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name, linkType, String.valueOf(linkPosition), btLinkCommType);
+                        DownloadFileFromURL(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name, linkType, linkPosition, btLinkCommType);
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(logUpgrade + "-" + TAG + "Link upgrade File path null. Upgrade process skipped.");
@@ -16180,7 +16212,148 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    public class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    public void DownloadFileFromURL(String downloadUrl, String filePath, String fileName, String linkType, int linkPosition, String btLinkCommType) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pdUpgradeFileDownloadProcess = new ProgressDialog(WelcomeActivity.this);
+                            String message = getResources().getString(R.string.FileDownloadInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds);
+                            pdUpgradeFileDownloadProcess.setMessage(GetSpinnerMessage(message));
+                            pdUpgradeFileDownloadProcess.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+
+                            // #2323
+                            Window window = pdUpgradeFileDownloadProcess.getWindow();
+                            WindowManager.LayoutParams wlp = window.getAttributes();
+                            wlp.gravity = Gravity.BOTTOM | Gravity.CENTER;
+                            window.setAttributes(wlp);
+                            //==========================
+
+                            pdUpgradeFileDownloadProcess.setCancelable(false);
+                            pdUpgradeFileDownloadProcess.show();
+                        }
+                    });
+
+                    try {
+                        URL url = new URL(downloadUrl);
+                        URLConnection connection = url.openConnection();
+                        connection.connect();
+
+                        // getting file length
+                        lengthOfFile = connection.getContentLength();
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "<Size of the file to be downloaded: " + lengthOfFile + ">");
+                    } catch (Exception e) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "Error occurred while getting size of the file. Exception is: " + e.getMessage());
+                    }
+
+                    ThinDownloadManager downloadManager = new ThinDownloadManager();
+                    Uri downloadUri = Uri.parse(downloadUrl);
+                    Uri destinationUri = Uri.parse(filePath + "/" + fileName);
+                    DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
+                            //.setRetryPolicy(new DefaultRetryPolicy())
+                            .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
+                            .setDownloadResumable(true)
+                            .setStatusListener(new DownloadStatusListenerV1() {
+                                @Override
+                                public void onDownloadComplete(DownloadRequest downloadRequest) {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<Download Complete. Size of the downloaded file: " + downloadedFileLength + ">");
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ProceedAfterDownload(filePath, fileName, linkType, linkPosition, btLinkCommType);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + "<Download Failed. Size of the downloaded file: " + downloadedFileLength + "; Error: " + errorMessage + ">");
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ProceedAfterDownload(filePath, fileName, linkType, linkPosition, btLinkCommType);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {
+                                    downloadedFileProgress = progress;
+                                    downloadedFileLength = downloadedBytes;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (pdUpgradeFileDownloadProcess != null) {
+                                                if (pdUpgradeFileDownloadProcess.isShowing()) {
+                                                    pdUpgradeFileDownloadProcess.setProgress(progress);
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                    int downloadId = downloadManager.add(downloadRequest);
+                } catch (Exception e) {
+                    Log.e("Error: ", e.getMessage());
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "DownloadFileFromURL Exception: " + e.getMessage() + " (Progress: " + String.valueOf(downloadedFileProgress) + "%)");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ProceedAfterDownload(filePath, fileName, linkType, linkPosition, btLinkCommType);
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    private void ProceedAfterDownload(String filePath, String fileName, String linkType, int linkPosition, String btLinkCommType) {
+        try {
+            if (pdUpgradeFileDownloadProcess != null) {
+                if (pdUpgradeFileDownloadProcess.isShowing()) {
+                    pdUpgradeFileDownloadProcess.dismiss();
+                }
+            }
+            if (downloadedFileLength < lengthOfFile || lengthOfFile == 0) {
+                DeleteDownloadedFileAndContinueToTxn(filePath, fileName);
+            } else {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Continue to upgrade
+                        if (linkType.equalsIgnoreCase("BT")) {
+                            if (btLinkCommType.equalsIgnoreCase("BLE")) {
+                                // BLE LINK upgrade code
+                                startBTBLEServicesAndRegisterReceiver(linkPosition);
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (Exception e) { e.printStackTrace(); }
+                                CheckBTBLELinkStatusForUpgrade(linkPosition);
+                            } else {
+                                CheckBTLinkStatusForUpgrade(linkPosition, false);
+                            }
+                        } else {
+                            CheckHTTPLinkStatusForUpgrade(linkPosition);
+                        }
+                    }
+                }, 100);
+            }
+        } catch (Exception e) {
+            Log.e("Error: ", e.getMessage());
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "ProceedAfterDownload Exception: " + e.getMessage());
+        }
+    }
+
+    /*public class DownloadFileFromURL extends AsyncTask<String, String, String> {
         ProgressDialog pd;
         String linkType, filePath, fileName, btLinkCommType;
         int linkPosition;
@@ -16219,13 +16392,14 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 URL url = new URL(f_url[0]);
                 URLConnection connection = url.openConnection();
                 connection.connect();
+
                 // getting file length
                 lengthOfFile = connection.getContentLength();
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + "<Size of the file to be downloaded: " + lengthOfFile + ">");
 
                 // input stream to read file - with 8k buffer
-                InputStream input = new BufferedInputStream(url.openStream(), 65536); //8192
+                InputStream input = new BufferedInputStream(connection.getInputStream(), 65536); //url.openStream()//8192
 
                 // Output stream to write file
                 OutputStream output = new FileOutputStream(filePath + "/" + fileName);
@@ -16293,7 +16467,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 }, 100);
             }
         }
-    }
+    }*/
 
     private void DeleteDownloadedFileAndContinueToTxn(String filePath, String fileName) {
         try {
@@ -17004,24 +17178,75 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             SendBTCommands(linkPosition, BTConstants.info_cmd);
 
             new CountDownTimer(5000, 1000) {
-
                 public void onTick(long millisUntilFinished) {
                     long attempt = (5 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
                         if (upRequest.equalsIgnoreCase(BTConstants.info_cmd) && !upResponse.equalsIgnoreCase("")) {
+                            boolean proceedToUpgrade = true;
                             //Info command (before upgrade) success.
                             if (upResponse.contains("mac_address")) {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
                                 SetNewVersionFlag(linkPosition, true);
-                                getVersionFromLinkResponse(upResponse.trim(), true, linkPosition, "Before");
+                                proceedToUpgrade = getVersionFromLinkResponse(upResponse.trim(), true, linkPosition, "Before");
                                 upResponse = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + upResponse.trim());
                                 SetNewVersionFlag(linkPosition, false);
-                                getVersionFromLinkResponse(upResponse.trim(), false, linkPosition, "Before");
+                                proceedToUpgrade = getVersionFromLinkResponse(upResponse.trim(), false, linkPosition, "Before");
                             }
+
+                            if (proceedToUpgrade) {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (pdUpgradeProcess != null) {
+                                            if (pdUpgradeProcess.isShowing()) {
+                                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
+                                            }
+                                        }
+                                        upgradeCommand(linkPosition);
+                                    }
+                                }, 1000);
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " The version set for upgrade is already on the LINK.");
+                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Upgrade process skipped.");
+                                        ContinueToTheTransaction();
+                                    }
+                                }, 100);
+                            }
+                            cancel();
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: false");
+                        }
+                    }
+                }
+
+                public void onFinish() {
+                    if (upRequest.equalsIgnoreCase(BTConstants.info_cmd) && !upResponse.equalsIgnoreCase("")) {
+                        boolean proceedToUpgrade = true;
+                        //Info command (before upgrade) success.
+                        if (upResponse.contains("mac_address")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
+                            SetNewVersionFlag(linkPosition, true);
+                            proceedToUpgrade = getVersionFromLinkResponse(upResponse.trim(), true, linkPosition, "Before");
+                            upResponse = "";
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + upResponse.trim());
+                            SetNewVersionFlag(linkPosition, false);
+                            proceedToUpgrade = getVersionFromLinkResponse(upResponse.trim(), false, linkPosition, "Before");
+                        }
+
+                        if (proceedToUpgrade) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -17033,41 +17258,18 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                     upgradeCommand(linkPosition);
                                 }
                             }, 1000);
-                            cancel();
                         } else {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: false");
-                        }
-                    }
-                }
-
-                public void onFinish() {
-
-                    if (upRequest.equalsIgnoreCase(BTConstants.info_cmd) && !upResponse.equalsIgnoreCase("")) {
-                        //Info command (before upgrade) success.
-                        if (upResponse.contains("mac_address")) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
-                            SetNewVersionFlag(linkPosition, true);
-                            getVersionFromLinkResponse(upResponse.trim(), true, linkPosition, "Before");
-                            upResponse = "";
-                        } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + upResponse.trim());
-                            SetNewVersionFlag(linkPosition, false);
-                            getVersionFromLinkResponse(upResponse.trim(), false, linkPosition, "Before");
-                        }
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (pdUpgradeProcess != null) {
-                                    if (pdUpgradeProcess.isShowing()) {
-                                        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                                    }
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " The version set for upgrade is already on the LINK.");
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Upgrade process skipped.");
+                                    ContinueToTheTransaction();
                                 }
-                                upgradeCommand(linkPosition);
-                            }
-                        }, 1000);
+                            }, 100);
+                        }
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: false.");
@@ -17090,7 +17292,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    public void getVersionFromLinkResponse(String response, boolean isNewLink, int linkPosition, String beforeOrAfter) {
+    public boolean getVersionFromLinkResponse(String response, boolean isNewLink, int linkPosition, String beforeOrAfter) {
+        boolean returnFlag = true;
         try {
             String versionFromLink = "";
             if (isNewLink) {
@@ -17118,7 +17321,12 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " LINK Version (" + beforeOrAfter + " Upgrade) >> " + versionFromLink);
             }
-            if (beforeOrAfter.equalsIgnoreCase("After")) {
+            if (beforeOrAfter.equalsIgnoreCase("Before")) {
+                if (versionFromLink.trim().equalsIgnoreCase(AppConstants.UP_FirmwareVersion.trim())) {
+                    returnFlag = false;
+                    storeUpgradeFSVersion(WelcomeActivity.this, linkPosition, versionFromLink, "BT");
+                }
+            } else if (beforeOrAfter.equalsIgnoreCase("After")) {
                 storeUpgradeFSVersion(WelcomeActivity.this, linkPosition, versionFromLink, "BT");
             }
         } catch (Exception e) {
@@ -17126,6 +17334,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " getVersionFromLinkResponse (" + beforeOrAfter + " Upgrade) Exception:>>" + e.getMessage());
         }
+        return returnFlag;
     }
 
     private void upgradeCommand(int linkPosition) {
@@ -17253,12 +17462,12 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                         bytesWritten += amountOfBytesRead;
                         int progressValue = (int) (100 * ((double) bytesWritten) / ((double) file_size));
 
-                        if (pdUpgradeProcess != null) {
+                        /*if (pdUpgradeProcess != null) {
                             if (pdUpgradeProcess.isShowing()) {
                                 pdUpgradeProcess.setMessage(GetSpinnerMessage((getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)) + " " + String.valueOf(progressValue) + " %"));
                             }
-                        }
-                        //publishProgress(String.valueOf(progressValue));
+                        }*/
+                        publishProgress(String.valueOf(progressValue));
 
                         if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
                             SendBytes(linkPosition, bufferBytes);
@@ -17273,7 +17482,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             }
 
                             try {
-                                Thread.sleep(10);
+                                Thread.sleep(5);
                             } catch (Exception e) {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " Thread exception: " + e.getMessage() + " (Progress: " + progressValue + ")");
@@ -17297,6 +17506,15 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT + "-" + TAG + getBTLinkIndexByPosition(linkPosition) + " UpgradeFileUploadFunctionality InBackground Exception: " + e.getMessage());
             }
             return null;
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            if (pdUpgradeProcess != null) {
+                if (pdUpgradeProcess.isShowing()) {
+                    pdUpgradeProcess.setMessage(GetSpinnerMessage((getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)) + " " + progress[0] + " %"));
+                }
+            }
         }
 
         @Override
@@ -18436,17 +18654,68 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     long attempt = (5 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
                         if (BLE_Request.equalsIgnoreCase(BTConstants.info_cmd) && !BLE_Response.equalsIgnoreCase("")) {
+                            boolean proceedToUpgrade = true;
                             //Info command (before upgrade) success.
                             if (BLE_Response.contains("mac_address")) {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
-                                getVersionFromBLELinkResponse(BLE_Response.trim(), true, linkPosition, "Before");
+                                proceedToUpgrade = getVersionFromBLELinkResponse(BLE_Response.trim(), true, linkPosition, "Before");
                                 BLE_Response = "";
                             } else {
                                 if (AppConstants.GenerateLogs)
                                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + BLE_Response.trim());
-                                getVersionFromBLELinkResponse(BLE_Response.trim(), false, linkPosition, "Before");
+                                proceedToUpgrade = getVersionFromBLELinkResponse(BLE_Response.trim(), false, linkPosition, "Before");
                             }
+
+                            if (proceedToUpgrade) {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (pdUpgradeProcess != null) {
+                                            if (pdUpgradeProcess.isShowing()) {
+                                                pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
+                                            }
+                                        }
+                                        BTBLEUpgradeCommand(linkPosition);
+                                    }
+                                }, 1000);
+                            } else {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " The version set for upgrade is already on the LINK.");
+                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (AppConstants.GenerateLogs)
+                                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Upgrade process skipped.");
+                                        unbindBTBLEServicesAndUnregisterReceiver(linkPosition);
+                                        ContinueToTheTransaction();
+                                    }
+                                }, 100);
+                            }
+                            cancel();
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response. Response: false");
+                        }
+                    }
+                }
+
+                public void onFinish() {
+                    if (BLE_Request.equalsIgnoreCase(BTConstants.info_cmd) && !BLE_Response.equalsIgnoreCase("")) {
+                        boolean proceedToUpgrade = true;
+                        //Info command (before upgrade) success.
+                        if (BLE_Response.contains("mac_address")) {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
+                            proceedToUpgrade = getVersionFromBLELinkResponse(BLE_Response.trim(), true, linkPosition, "Before");
+                            BLE_Response = "";
+                        } else {
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + BLE_Response.trim());
+                            proceedToUpgrade = getVersionFromBLELinkResponse(BLE_Response.trim(), false, linkPosition, "Before");
+                        }
+
+                        if (proceedToUpgrade) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -18458,39 +18727,19 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                     BTBLEUpgradeCommand(linkPosition);
                                 }
                             }, 1000);
-                            cancel();
                         } else {
                             if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response. Response: false");
-                        }
-                    }
-                }
-
-                public void onFinish() {
-
-                    if (BLE_Request.equalsIgnoreCase(BTConstants.info_cmd) && !BLE_Response.equalsIgnoreCase("")) {
-                        //Info command (before upgrade) success.
-                        if (BLE_Response.contains("mac_address")) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: true");
-                            getVersionFromBLELinkResponse(BLE_Response.trim(), true, linkPosition, "Before");
-                            BLE_Response = "";
-                        } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response:>>" + BLE_Response.trim());
-                            getVersionFromBLELinkResponse(BLE_Response.trim(), false, linkPosition, "Before");
-                        }
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (pdUpgradeProcess != null) {
-                                    if (pdUpgradeProcess.isShowing()) {
-                                        pdUpgradeProcess.setMessage(GetSpinnerMessage(getResources().getString(R.string.SoftwareUpdateInProgress) + "\n" + getResources().getString(R.string.PleaseWaitSeveralSeconds)));
-                                    }
+                                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " The version set for upgrade is already on the LINK.");
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Upgrade process skipped.");
+                                    unbindBTBLEServicesAndUnregisterReceiver(linkPosition);
+                                    ContinueToTheTransaction();
                                 }
-                                BTBLEUpgradeCommand(linkPosition);
-                            }
-                        }, 1000);
+                            }, 100);
+                        }
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " Checking Info command response (before upgrade). Response: false.");
@@ -18516,7 +18765,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    public void getVersionFromBLELinkResponse(String response, boolean isNewLink, int linkPosition, String beforeOrAfter) {
+    public boolean getVersionFromBLELinkResponse(String response, boolean isNewLink, int linkPosition, String beforeOrAfter) {
+        boolean returnFlag = true;
         try {
             String versionFromLink = "";
             if (isNewLink) {
@@ -18544,7 +18794,12 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " LINK Version (" + beforeOrAfter + " Upgrade) >> " + versionFromLink);
             }
-            if (beforeOrAfter.equalsIgnoreCase("After")) {
+            if (beforeOrAfter.equalsIgnoreCase("Before")) {
+                if (versionFromLink.trim().equalsIgnoreCase(AppConstants.UP_FirmwareVersion.trim())) {
+                    returnFlag = false;
+                    storeUpgradeFSVersion(WelcomeActivity.this, linkPosition, versionFromLink, "BT");
+                }
+            } else if (beforeOrAfter.equalsIgnoreCase("After")) {
                 storeUpgradeFSVersion(WelcomeActivity.this, linkPosition, versionFromLink, "BT");
             }
         } catch (Exception e) {
@@ -18552,6 +18807,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + getBTBLELinkIndexByPosition(linkPosition) + " getVersionFromBLELinkResponse (" + beforeOrAfter + " Upgrade) Exception:>>" + e.getMessage());
         }
+        return returnFlag;
     }
 
     private void BTBLEUpgradeCommand(int linkPosition) {

@@ -1300,7 +1300,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String serverRes) {
-
+            CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
             String VehicleNumber = "";
             try {
 
@@ -1363,7 +1363,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Something went wrong in hose selection");
                         }
-
 
                         SharedPreferences sharedPref = AcceptVehicleActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
@@ -1660,7 +1659,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
                         Constants.AccVehicleNumber_FS6 = V_Number;
                     }
-
+                    CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
                     if (IsOdoMeterRequire.equalsIgnoreCase("True") && !IsGateHub.equalsIgnoreCase("True")) {
 
                         Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptOdoActivity.class);//AcceptPinActivity
@@ -2690,7 +2689,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
         IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
 
-
+        CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
         if (IsOdoMeterRequire.equalsIgnoreCase("True") && !IsGateHub.equalsIgnoreCase("True")) {
 
             Intent intent = new Intent(AcceptVehicleActivity_new.this, AcceptOdoActivity.class);//AcceptPinActivity
@@ -3038,7 +3037,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         }
 
                         /////////////////
-
+                        CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
                         if (isAllowed) {
 
                             if (RequireOdometerEntry.trim().toLowerCase().equalsIgnoreCase("y")) {
@@ -3084,7 +3083,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                 }
             }
         } else {
-
+            CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
             String validateVehicles = "Yes";
             if (IsNonValidateVehicle.equalsIgnoreCase("True")) {
                 validateVehicles = "No";

@@ -1482,7 +1482,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     alertDialog.dismiss();
                 }
             }
-
+            CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
             if (serverRes != null && !serverRes.isEmpty()) {
 
                 try {
@@ -2150,7 +2150,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     public void InCaseOfGateHub() {
 
         //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +" InCaseOfGateHub PIN Accepted:" + etPersonnelPin.getText().toString().trim());
-
+        CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
         String vehicleNumber = "";
 
         if (!etPersonnelPin.getText().toString().trim().isEmpty()) {
@@ -2257,7 +2257,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         break;
                     }
                 }
-
+                CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
                 if (isAllowed) {
 
                     boolean isAssigned = false;
