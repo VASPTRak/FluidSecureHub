@@ -188,7 +188,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonUtils.hideKeyboard(AcceptVehicleOtherInfo.this);
                 Istimeout_Sec = false;
 
                 if (AppConstants.GenerateLogs)
@@ -258,7 +258,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                             //offline-------------------
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " Offline Entered Vehicle Other Info: " + etOther.getText());
-
+                            CommonUtils.hideKeyboard(AcceptVehicleOtherInfo.this);
                             if (OfflineConstants.isOfflineAccess(AcceptVehicleOtherInfo.this)) {
                                 EntityHub obj = controller.getOfflineHubDetails(AcceptVehicleOtherInfo.this);
                                 if (obj.PersonnelPINNumberRequired.equalsIgnoreCase("Y")) {
@@ -375,11 +375,12 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }*/
 
-    public void showKeybord() {
+    /*public void showKeybord() {
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
+    }*/
+
     private static boolean isAllASCII(String input) {
         boolean isASCII = true;
         for (int i = 0; i < input.length(); i++) {

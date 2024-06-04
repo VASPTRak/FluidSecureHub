@@ -190,7 +190,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonUtils.hideKeyboard(AcceptDeptActivity.this);
                 Istimeout_Sec=false;
 
                 CommonUtils.LogMessage(TAG, TAG + "Entered Department : " + etDeptNumber.getText(), null);
@@ -212,7 +212,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
                         AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForDepartment + ", and try again.");
                     CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.RequireDeptNumber).replace("Department", ScreenNameForDepartment));
                 }
-
             }
         });
 
@@ -674,6 +673,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
     }
 
     public void allValid() {
+        CommonUtils.hideKeyboard(AcceptDeptActivity.this);
         EntityHub obj = controller.getOfflineHubDetails(AcceptDeptActivity.this);
         if (obj.IsOtherRequire.equalsIgnoreCase("True") && !obj.HUBType.equalsIgnoreCase("G")) {
             Intent intent = new Intent(AcceptDeptActivity.this, AcceptOtherActivity.class);

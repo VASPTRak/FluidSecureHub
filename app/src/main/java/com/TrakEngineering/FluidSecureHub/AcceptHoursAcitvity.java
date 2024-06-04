@@ -558,7 +558,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
     }
 
     public void allValid() {
-
+        CommonUtils.hideKeyboard(AcceptHoursAcitvity.this);
         SharedPreferences sharedPrefODO = AcceptHoursAcitvity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
         String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
@@ -597,7 +597,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
     }
 
     public void offlineValidHrs() {
-
+        CommonUtils.hideKeyboard(AcceptHoursAcitvity.this);
         try {
             controller.updateHoursByVehicleId(AppConstants.OFF_VEHICLE_ID, etHours.getText().toString().trim());
         } catch (Exception e) {

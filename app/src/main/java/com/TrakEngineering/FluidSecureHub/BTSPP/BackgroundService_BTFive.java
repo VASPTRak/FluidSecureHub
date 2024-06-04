@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.BackgroundService;
@@ -24,7 +21,6 @@ import com.TrakEngineering.FluidSecureHub.CommonUtils;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 import com.TrakEngineering.FluidSecureHub.Constants;
 import com.TrakEngineering.FluidSecureHub.DBController;
-import com.TrakEngineering.FluidSecureHub.R;
 import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
 import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.entity.SwitchTimeBounce;
@@ -36,7 +32,6 @@ import com.TrakEngineering.FluidSecureHub.offline.OffDBController;
 import com.TrakEngineering.FluidSecureHub.offline.OffTranzSyncService;
 import com.TrakEngineering.FluidSecureHub.offline.OfflineConstants;
 import com.TrakEngineering.FluidSecureHub.server.ServerHandler;
-import com.TrakEngineering.FluidSecureHub.wifihotspot.WifiApManager;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
@@ -85,19 +80,17 @@ public class BackgroundService_BTFive extends Service {
     String OffLastTXNid = "0";
     ConnectionDetector cd = new ConnectionDetector(BackgroundService_BTFive.this);
     OffDBController offlineController = new OffDBController(BackgroundService_BTFive.this);
-    String ipForUDP = "192.168.4.1";
+    //String ipForUDP = "192.168.4.1"; // Removed UDP code as per #2603
     public int infoCommandAttempt = 0;
     public boolean isConnected = false;
     public boolean isHotspotDisabled = false;
     public boolean isOnlineTxn = true;
     public int versionNumberOfLinkFive = 0;
-    public String PulserTimingAdjust;
-    public String IsResetSwitchTimeBounce;
-    public String GetPulserTypeFromLINK;
+    public String PulserTimingAdjust, IsResetSwitchTimeBounce, IsBypassPumpReset, GetPulserTypeFromLINK;
     public boolean IsAnyPostTxnCommandExecuted = false;
     public boolean isTxnLimitReached = false;
     public int relayOffAttemptCount = 0;
-    public List<String> OriginalNamesOfLinkList;
+    //public List<String> OriginalNamesOfLinkList;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -158,16 +151,15 @@ public class BackgroundService_BTFive extends Service {
                     VehicleNumber = VehicleNumber.substring(VehicleNumber.length() - 20);
                 }
 
-                //UDP Connection..!!
                 if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() > 0) {
                     LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
-                    CurrentLinkMac = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
+                    //CurrentLinkMac = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
                 }
 
-                String OriginalNamesOfLink = CommonUtils.getOriginalNamesOfLink(4);
+                /*String OriginalNamesOfLink = CommonUtils.getOriginalNamesOfLink(4);
                 OriginalNamesOfLinkList = Arrays.asList(OriginalNamesOfLink.split(","));
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: <Original Names of LINK: (" + OriginalNamesOfLinkList + ")>");
+                    AppConstants.WriteinFile(TAG + " BTLink_5: <Original Names of LINK: (" + OriginalNamesOfLinkList + ")>");*/
 
                 // Offline functionality
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
@@ -194,12 +186,11 @@ public class BackgroundService_BTFive extends Service {
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
 
-                    checkBTLinkStatus("info", false); // Changed from "upgrade" to "info" as per #1657
-
-                } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
+                    checkBTLinkStatus("info"); // Changed from "upgrade" to "info" as per #1657
+                /*} else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
                     IsThisBTTrnx = false;
                     infoCommand();
-                    //BeginProcessUsingUDP();
+                    //BeginProcessUsingUDP();*/
                 } else {
                     //Something went Wrong in hose selection.
                     IsThisBTTrnx = false;
@@ -217,7 +208,7 @@ public class BackgroundService_BTFive extends Service {
         return Service.START_NOT_STICKY;
     }
 
-    private void UDPFunctionalityAfterBTFailure() {
+    /*private void UDPFunctionalityAfterBTFailure() {
         try {
             if (CommonUtils.CheckAllHTTPLinksAreFree()) {
                 if (AppConstants.GenerateLogs)
@@ -252,9 +243,9 @@ public class BackgroundService_BTFive extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    private void BeginProcessUsingUDP(boolean isCalledAfterManualAttempt) {
+    /*private void BeginProcessUsingUDP(boolean isCalledAfterManualAttempt) {
         try {
             long millis = 10000;
             if (!isCalledAfterManualAttempt) {
@@ -324,9 +315,9 @@ public class BackgroundService_BTFive extends Service {
             TerminateBTTransaction();
             e.printStackTrace();
         }
-    }
+    }*/
 
-    private void BTReconnectionAttempt() {
+    /*private void BTReconnectionAttempt() {
         BTConstants.isReturnedFromManualWifiConnect = false;
         DisableWifiConnection();
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -338,9 +329,9 @@ public class BackgroundService_BTFive extends Service {
                 checkBTLinkStatus("info", true);
             }
         }, 5000);
-    }
+    }*/
 
-    private void WaitAndProceedAfterManualWifiConnect() {
+    /*private void WaitAndProceedAfterManualWifiConnect() {
         try {
             new CountDownTimer(60000, 1000) {
                 @Override
@@ -376,7 +367,7 @@ public class BackgroundService_BTFive extends Service {
             TerminateBTTransaction();
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void TerminateBTTransaction() {
         try {
@@ -408,7 +399,7 @@ public class BackgroundService_BTFive extends Service {
         }
     }
 
-    private void checkBTLinkStatus(String nextAction, boolean isAfterWifiConnect) {
+    private void checkBTLinkStatus(String nextAction) {
         try {
             new CountDownTimer(10000, 2000) {
                 public void onTick(long millisUntilFinished) {
@@ -463,12 +454,13 @@ public class BackgroundService_BTFive extends Service {
                     } else {
                         isConnected = false;
                         if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
-                            if (!isAfterWifiConnect) {
+                            TerminateBTTransaction();
+                            /*if (!isAfterWifiConnect) {
                                 UDPFunctionalityAfterBTFailure(); //TerminateBTTransaction();
                             } else {
                                 BTConstants.isReturnedFromManualWifiConnect = false;
                                 TerminateBTTransaction();
-                            }
+                            }*/
                         } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
                             TerminateBTTxnAfterInterruption();
                         }
@@ -500,11 +492,12 @@ public class BackgroundService_BTFive extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending Info command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send5(BTConstants.info_cmd);
-            } else {
+            }
+            /*else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending Info command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPFive(BTConstants.info_cmd, ipForUDP, this)).start();
-            }
+            }*/
             //Thread.sleep(1000);
             new CountDownTimer(5000, 1000) {
                 public void onTick(long millisUntilFinished) {
@@ -751,11 +744,12 @@ public class BackgroundService_BTFive extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending transactionId command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send5(transaction_id_cmd);
-            } else {
+            }
+            /*else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending transactionId command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPFive(transaction_id_cmd, ipForUDP, this)).start();
-            }
+            }*/
             Thread.sleep(500);
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
@@ -827,11 +821,12 @@ public class BackgroundService_BTFive extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOn command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send5(BTConstants.relay_on_cmd);
-            } else {
+            }
+            /*else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOn command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPFive(BTConstants.relay_on_cmd, ipForUDP, this)).start();
-            }
+            }*/
 
             if (!isAfterReconnect) {
                 InsertInitialTransactionToSqlite();//Insert empty transaction into sqlite
@@ -903,11 +898,12 @@ public class BackgroundService_BTFive extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOff command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send5(BTConstants.relay_off_cmd);
-            } else {
+            }
+            /*else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOff command (UDP) to Link: " + LinkName);
                 new Thread(new ClientSendAndListenUDPFive(BTConstants.relay_off_cmd, ipForUDP, this)).start();
-            }
+            }*/
 
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
@@ -1012,11 +1008,12 @@ public class BackgroundService_BTFive extends Service {
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending rename command to Link: " + LinkName + " (New Name: " + BTConstants.BT5REPLACEBLE_WIFI_NAME + ")");
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send5(BTConstants.namecommand + BTConstants.BT5REPLACEBLE_WIFI_NAME);
-            } else {
+            }
+            /*else {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink_5: Sending rename command (UDP) to Link: " + LinkName + " (New Name: " + BTConstants.BT5REPLACEBLE_WIFI_NAME + ")");
                 new Thread(new ClientSendAndListenUDPFive(BTConstants.namecommand + BTConstants.BT5REPLACEBLE_WIFI_NAME, ipForUDP, this)).start();
-            }
+            }*/
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag" + AppConstants.LANG_PARAM);
@@ -1229,8 +1226,8 @@ public class BackgroundService_BTFive extends Service {
             Constants.FS_5Pulse = "00";
             AppConstants.GoButtonAlreadyClicked = false;
             AppConstants.isInfoCommandSuccess_fs5 = false;
-            BTConstants.SwitchedBTToUDP5 = false;
-            DisableWifiConnection();
+            //BTConstants.SwitchedBTToUDP5 = false;
+            //DisableWifiConnection();
             CancelTimer();
             IsAnyPostTxnCommandExecuted = true;
             if (AppConstants.GenerateLogs)
@@ -1404,7 +1401,7 @@ public class BackgroundService_BTFive extends Service {
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            checkBTLinkStatus("relay", false);
+                            checkBTLinkStatus("relay");
                         }
                     }, 100);
                     return;
@@ -1511,7 +1508,7 @@ public class BackgroundService_BTFive extends Service {
         }
     }
 
-    private void DisableWifiConnection() {
+    /*private void DisableWifiConnection() {
         try {
             //Disable wifi connection
             WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -1545,7 +1542,7 @@ public class BackgroundService_BTFive extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink_5: DisableWifiConnection Exception>> " + e.getMessage());
         }
-    }
+    }*/
 
     private void pulseCount() {
         try {
@@ -1579,7 +1576,7 @@ public class BackgroundService_BTFive extends Service {
             Constants.FS_5Gallons = (precision.format(fillqty));
             Constants.FS_5Pulse = outputQuantity;
 
-            if (isOnlineTxn || BTConstants.SwitchedBTToUDP5) {
+            if (isOnlineTxn) { // || BTConstants.SwitchedBTToUDP5
                 UpdateTransactionToSqlite(outputQuantity);
             } else {
                 if (fillqty > 0) {

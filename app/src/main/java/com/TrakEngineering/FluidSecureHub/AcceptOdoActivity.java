@@ -595,7 +595,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
     }
 
     public void offlineValidOdo() {
-
+        CommonUtils.hideKeyboard(AcceptOdoActivity.this);
         if (IsNonValidateVehicle.equalsIgnoreCase("False")) {
             try {
                 controller.updateOdometerByVehicleId(AppConstants.OFF_VEHICLE_ID, editOdoTenths.getText().toString().trim());
@@ -633,7 +633,7 @@ public class AcceptOdoActivity extends AppCompatActivity {
     }
 
     public void allValid() {
-
+        CommonUtils.hideKeyboard(AcceptOdoActivity.this);
         SharedPreferences sharedPrefODO = AcceptOdoActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
         String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");

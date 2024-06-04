@@ -1437,7 +1437,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             // AppConstants.APDU_FOB_KEY = "";
                             AppConstants.VehicleLocal_FOB_KEY = "";
                             tv_vehicle_no_below.setText(getResources().getString(R.string.EnterHeading) + " " + ScreenNameForVehicle + ":");
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "<(New Barcode) Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) editVehicleNumber.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             editVehicleNumber.requestFocus();
                             inputMethodManager.showSoftInput(editVehicleNumber, 0);
@@ -1473,7 +1474,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                             // AppConstants.APDU_FOB_KEY = "";
                             AppConstants.VehicleLocal_FOB_KEY = "";
                             tv_vehicle_no_below.setText(getResources().getString(R.string.EnterHeading) + " " + ScreenNameForVehicle + ":");
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "<(NewFob) Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) editVehicleNumber.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             editVehicleNumber.requestFocus();
                             inputMethodManager.showSoftInput(editVehicleNumber, 0);
@@ -2055,14 +2057,14 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                         } else if (IsNewFob.equalsIgnoreCase("Yes")) {
 
-
                             AcceptVehicleNumber();//Enable edittext field and Enter button
                             IsNewFobVar = false;
 
                             // AppConstants.APDU_FOB_KEY = "";
                             AppConstants.VehicleLocal_FOB_KEY = "";
                             tv_vehicle_no_below.setText(getResources().getString(R.string.EnterHeading) + " " + ScreenNameForVehicle + ":");
-
+                            if (AppConstants.GenerateLogs)
+                                AppConstants.WriteinFile(TAG + "<(NewFobDetect) Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) editVehicleNumber.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             editVehicleNumber.requestFocus();
                             inputMethodManager.showSoftInput(editVehicleNumber, 0);
@@ -2655,8 +2657,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                         dialog.dismiss();
 
                         CallSaveButtonFunctionality();
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        /*InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);*/
                     }
                 }
         );
@@ -2666,8 +2668,8 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                     public void onClick(DialogInterface dialog, int arg1) {
                         dialog.dismiss();
 
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        /*InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);*/
                     }
                 }
         );

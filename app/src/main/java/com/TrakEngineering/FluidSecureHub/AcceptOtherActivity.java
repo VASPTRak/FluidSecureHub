@@ -162,7 +162,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonUtils.hideKeyboard(AcceptOtherActivity.this);
                 Istimeout_Sec = false;
 
                 if (AppConstants.GenerateLogs)
@@ -289,9 +289,9 @@ public class AcceptOtherActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }*/
 
-    public void showKeybord() {
+    /*public void showKeybord() {
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
+    }*/
 }

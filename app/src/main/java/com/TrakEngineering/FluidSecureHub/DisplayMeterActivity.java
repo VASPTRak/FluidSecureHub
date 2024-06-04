@@ -287,6 +287,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         //Hide keyboard
         //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
 
         if (alertDialogMain != null) {
             if (alertDialogMain.isShowing()) {
@@ -295,7 +296,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
         //getIpOverOSVersion();
 
-        //UDP Connection..!!
         SERVERIP = "";
         String IpAddress = "";
         try {
@@ -706,7 +706,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(DisplayMeterActivity.this);
-
+                                CommonUtils.hideKeyboard(DisplayMeterActivity.this);
                                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
@@ -809,8 +809,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     BTServiceSelectionFunction();
-                } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
-                    UDPServiceSelectionFunction();
+                /*} else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
+                    UDPServiceSelectionFunction();*/
                 } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                         StartButtonFunctionality();
@@ -887,6 +887,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     @SuppressLint("ResourceAsColor")
     public void CompleteTasksbeforeStartbuttonClick() {
         try {
+            CommonUtils.hideKeyboard(DisplayMeterActivity.this);
             BtnStartStateChange(false);
             //btnCancel.setClickable(false);
 
@@ -2365,7 +2366,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         tThanks.purge();
 
         WelcomeActivity.SelectedItemPos = -1;
-
+        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
         Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
@@ -2911,8 +2912,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     public void StartButtonFunctionality() {
-
         try {
+            CommonUtils.hideKeyboard(DisplayMeterActivity.this);
             SharedPreferences sharedPref = this.getSharedPreferences("PreferanceHttpAddress", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -2931,8 +2932,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
-
-
             } else if (AppConstants.FS_selected.equalsIgnoreCase("1")) {
 
                 editor.putString("HttpLinkTwo", HTTP_URL);
@@ -2948,7 +2947,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
-
             } else if (AppConstants.FS_selected.equalsIgnoreCase("2")) {
 
                 editor.putString("HttpLinkThree", HTTP_URL);
@@ -2964,7 +2962,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
-
             } else if (AppConstants.FS_selected.equalsIgnoreCase("3")) {
 
                 editor.putString("HttpLinkFour", HTTP_URL);
@@ -4121,8 +4118,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private void UDPServiceSelectionFunction() {
-
+    /*private void UDPServiceSelectionFunction() {
         if (!SERVER_IP.isEmpty()) {
             BtnStartStateChange(true);
             Log.i(TAG, "UDP Link ");
@@ -4221,33 +4217,32 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
             }
         }
-    }
+    }*/
 
     private void BackToWelcomeActivity() {
+        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
         Intent i = new Intent(DisplayMeterActivity.this, WelcomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
 
     private void proceedToPostResume() {
-
+        CommonUtils.hideKeyboard(DisplayMeterActivity.this);
         if (LinkCommunicationType.equalsIgnoreCase("BT")) {
             if (!onResumeAlreadyCalled) {
                 onResumeAlreadyCalled = true;
                 new CheckAndRetryBTConnection().execute();
             }
-        } else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
-            //cHECK UDP INFO COMMAND HERE
+        /*} else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
+            //cHECK UDP INFO COMMAND HERE*/
         } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
             CompleteTasksbeforeStartbuttonClick();
         } else {
             //Something went wrong in hose selection.
         }
-
     }
 
     public class CheckAndRetryBTConnection extends AsyncTask<String, Void, String> {
-
         boolean isReconnectionTried = false;
 
         @Override

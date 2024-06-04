@@ -432,10 +432,10 @@ public class CommonUtils {
                             timer.cancel();
                         }
 
-                        if (!title.isEmpty()) {
+                        /*if (!title.isEmpty()) {
                             InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                        }
+                        }*/
                     }
                 }
         );
@@ -450,10 +450,10 @@ public class CommonUtils {
                     alertDialog.dismiss();
                 }
                 timer.cancel();
-                if (!title.isEmpty()) {
+                /*if (!title.isEmpty()) {
                     InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                }
+                }*/
             }
         }, 4000);
 
@@ -639,10 +639,10 @@ public class CommonUtils {
                             AppConstants.GoButtonAlreadyClicked = false;
                         }
 
-                        if (!title.isEmpty()) {
+                        /*if (!title.isEmpty()) {
                             InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                        }
+                        }*/
                     }
                 }
         );
@@ -2144,7 +2144,7 @@ public class CommonUtils {
         return LinkName;
     }
 
-    public static String getOriginalNamesOfLink(int linkPosition) {
+    /*public static String getOriginalNamesOfLink(int linkPosition) {
         String OriginalNamesOfLink = "";
         try {
             OriginalNamesOfLink = AppConstants.DetailsServerSSIDList.get(linkPosition).get("OriginalNamesOfLink");
@@ -2154,7 +2154,7 @@ public class CommonUtils {
             e.printStackTrace();
         }
         return OriginalNamesOfLink;
-    }
+    }*/
 
     public static void DebugLogTemp(String TAG, String Fun){
 
