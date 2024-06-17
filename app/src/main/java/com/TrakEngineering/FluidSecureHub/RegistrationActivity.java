@@ -517,6 +517,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         } else if (cd.isConnectingToInternet()) {
                             new ReplaceHUBFromApp().execute(hubName, imeiNumber, userName, userPass, userMobile);
                         } else {
+                            AppConstants.WriteinFile(TAG + " " + getResources().getString(R.string.no_internet));
                             CommonUtils.showNoInternetDialog(RegistrationActivity.this);
                         }
                     }

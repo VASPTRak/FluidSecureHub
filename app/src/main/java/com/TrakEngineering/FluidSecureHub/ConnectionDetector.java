@@ -58,7 +58,7 @@ public class ConnectionDetector {
                     Constants.CurrentNetworkType = "14-64 kbps";
                     return false; // ~ 14-64 kbps
                 case TelephonyManager.NETWORK_TYPE_EDGE:
-                    Constants.CurrentNetworkType = "50-100 kbps";
+                    Constants.CurrentNetworkType = "100-200 kbps";
                     return false; // ~ 50-100 kbps
                 case TelephonyManager.NETWORK_TYPE_EVDO_0:
                     Constants.CurrentNetworkType = "400-1000 kbps";
@@ -100,9 +100,13 @@ public class ConnectionDetector {
                 case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
                     Constants.CurrentNetworkType = "10+ Mbps";
                     return true; // ~ 10+ Mbps
+                case TelephonyManager.NETWORK_TYPE_NR: // 5G
+                    Constants.CurrentNetworkType = "100+ Mbps";
+                    return true; // ~ 100+ Mbps
                 // Unknown
                 case TelephonyManager.NETWORK_TYPE_UNKNOWN:
                 default:
+                    AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: " + subType + ">");
                     Constants.CurrentNetworkType = "_unknown";
                     return false;
             }

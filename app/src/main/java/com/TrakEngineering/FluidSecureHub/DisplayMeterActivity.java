@@ -536,7 +536,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //--------------------------------------------------
 
         //temp code
-        UpdateDiffStatusMessages("6");
+        UpdateDiffStatusMessages("8"); // Changed '6" to "8" as per #2603
 
         if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
 
