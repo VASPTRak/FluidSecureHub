@@ -9,7 +9,12 @@ public class BTConstants {
 
     public static int SelectedLinkForPaireddevices = 0;
     public static int CurrentSelectedLinkBT = 0;
-    public static boolean CurrentTransactionIsBT = false;
+    public static boolean CurrentTransactionIsBT1 = false;
+    public static boolean CurrentTransactionIsBT2 = false;
+    public static boolean CurrentTransactionIsBT3 = false;
+    public static boolean CurrentTransactionIsBT4 = false;
+    public static boolean CurrentTransactionIsBT5 = false;
+    public static boolean CurrentTransactionIsBT6 = false;
     public static boolean BTLinkOneStatus = false;
     public static boolean BTLinkTwoStatus = false;
     public static boolean BTLinkThreeStatus = false;

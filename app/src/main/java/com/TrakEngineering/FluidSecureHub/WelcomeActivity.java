@@ -3393,7 +3393,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                         }*/
                     } else {
                         //Normal hub app code below....
-                        BTConstants.CurrentTransactionIsBT = false;
+                        ResetCurrentTransactionIsBTFlag(SelectedItemPos);
                         BTConstants.CurrentSelectedLinkBT = 0;
                         OfflineConstants.storeCurrentTransaction(WelcomeActivity.this, "", selSiteId, "", "", "", "", "", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm"), "", "", "", "");
 
@@ -3905,6 +3905,36 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
         dialog.show();
+    }
+
+    private void ResetCurrentTransactionIsBTFlag(int selectedItemPos) {
+        try {
+            switch (selectedItemPos) {
+                case 0:
+                    BTConstants.CurrentTransactionIsBT1 = false;
+                    break;
+                case 1://Link Two
+                    BTConstants.CurrentTransactionIsBT2 = false;
+                    break;
+                case 2://Link Three
+                    BTConstants.CurrentTransactionIsBT3 = false;
+                    break;
+                case 3://Link Four
+                    BTConstants.CurrentTransactionIsBT4 = false;
+                    break;
+                case 4://Link Five
+                    BTConstants.CurrentTransactionIsBT5 = false;
+                    break;
+                case 5://Link Six
+                    BTConstants.CurrentTransactionIsBT6 = false;
+                    break;
+                default://Something went wrong in link selection please try again.
+                    break;
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "ResetCurrentTransactionIsBTFlag Exception:" + e.getMessage());
+        }
     }
 
     class WifiReceiver extends BroadcastReceiver {
@@ -6065,13 +6095,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (AppConstants.IsTransactionFailed1) {
                 AppConstants.IsTransactionFailed1 = false;
-                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT1) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS1: " + getResources().getString(R.string.HotspotOffMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
                     String logType = "", logPrefix = "";
-                    if (BTConstants.CurrentTransactionIsBT) {
+                    if (BTConstants.CurrentTransactionIsBT1) {
                         logType = AppConstants.LOG_TXTN_BT;
                         logPrefix = "BTLink_1: ";
                     } else {
@@ -6154,7 +6184,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             String BTLinkCommType1 = serverSSIDList.get(0).get("BTLinkCommType");
             // BT Link reconnection attempt for interrupted transaction
-            if (BTConstants.CurrentTransactionIsBT && (!BTConstants.BTLinkOneStatus && !BT_BLE_Constants.BTBLELinkOneStatus) && AppConstants.isRelayON_fs1) { // && !BTConstants.SwitchedBTToUDP1
+            if (BTConstants.CurrentTransactionIsBT1 && (!BTConstants.BTLinkOneStatus && !BT_BLE_Constants.BTBLELinkOneStatus) && AppConstants.isRelayON_fs1) { // && !BTConstants.SwitchedBTToUDP1
                 if (BTLinkCommType1 != null && BTLinkCommType1.equalsIgnoreCase("SPP")) {
                     if (CountBeforeReconnectRelay1 >= 1) {
                         if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
@@ -6230,13 +6260,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (AppConstants.IsTransactionFailed2) {
                 AppConstants.IsTransactionFailed2 = false;
-                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT2) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS2: " + getResources().getString(R.string.HotspotOffMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
                     String logType = "", logPrefix = "";
-                    if (BTConstants.CurrentTransactionIsBT) {
+                    if (BTConstants.CurrentTransactionIsBT2) {
                         logType = AppConstants.LOG_TXTN_BT;
                         logPrefix = "BTLink_2: ";
                     } else {
@@ -6319,7 +6349,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             String BTLinkCommType2 = serverSSIDList.get(1).get("BTLinkCommType");
             // BT Link reconnection attempt for interrupted transaction
-            if (BTConstants.CurrentTransactionIsBT && (!BTConstants.BTLinkTwoStatus && !BT_BLE_Constants.BTBLELinkTwoStatus) && AppConstants.isRelayON_fs2) { // && !BTConstants.SwitchedBTToUDP2
+            if (BTConstants.CurrentTransactionIsBT2 && (!BTConstants.BTLinkTwoStatus && !BT_BLE_Constants.BTBLELinkTwoStatus) && AppConstants.isRelayON_fs2) { // && !BTConstants.SwitchedBTToUDP2
                 if (BTLinkCommType2 != null && BTLinkCommType2.equalsIgnoreCase("SPP")) {
                     if (CountBeforeReconnectRelay2 >= 1) {
                         if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect")) {
@@ -6394,13 +6424,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (AppConstants.IsTransactionFailed3) {
                 AppConstants.IsTransactionFailed3 = false;
-                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT3) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS3: " + getResources().getString(R.string.HotspotOffMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
                     String logType = "", logPrefix = "";
-                    if (BTConstants.CurrentTransactionIsBT) {
+                    if (BTConstants.CurrentTransactionIsBT3) {
                         logType = AppConstants.LOG_TXTN_BT;
                         logPrefix = "BTLink_3: ";
                     } else {
@@ -6483,7 +6513,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             String BTLinkCommType3 = serverSSIDList.get(2).get("BTLinkCommType");
             // BT Link reconnection attempt for interrupted transaction
-            if (BTConstants.CurrentTransactionIsBT && (!BTConstants.BTLinkThreeStatus && !BT_BLE_Constants.BTBLELinkThreeStatus) && AppConstants.isRelayON_fs3) { // && !BTConstants.SwitchedBTToUDP3
+            if (BTConstants.CurrentTransactionIsBT3 && (!BTConstants.BTLinkThreeStatus && !BT_BLE_Constants.BTBLELinkThreeStatus) && AppConstants.isRelayON_fs3) { // && !BTConstants.SwitchedBTToUDP3
                 if (BTLinkCommType3 != null && BTLinkCommType3.equalsIgnoreCase("SPP")) {
                     if (CountBeforeReconnectRelay3 >= 1) {
                         if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect")) {
@@ -6558,13 +6588,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (AppConstants.IsTransactionFailed4) {
                 AppConstants.IsTransactionFailed4 = false;
-                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT4) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS4: " + getResources().getString(R.string.HotspotOffMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
                     String logType = "", logPrefix = "";
-                    if (BTConstants.CurrentTransactionIsBT) {
+                    if (BTConstants.CurrentTransactionIsBT4) {
                         logType = AppConstants.LOG_TXTN_BT;
                         logPrefix = "BTLink_4: ";
                     } else {
@@ -6647,7 +6677,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             String BTLinkCommType4 = serverSSIDList.get(3).get("BTLinkCommType");
             // BT Link reconnection attempt for interrupted transaction
-            if (BTConstants.CurrentTransactionIsBT && (!BTConstants.BTLinkFourStatus && !BT_BLE_Constants.BTBLELinkFourStatus) && AppConstants.isRelayON_fs4) { // && !BTConstants.SwitchedBTToUDP4
+            if (BTConstants.CurrentTransactionIsBT4 && (!BTConstants.BTLinkFourStatus && !BT_BLE_Constants.BTBLELinkFourStatus) && AppConstants.isRelayON_fs4) { // && !BTConstants.SwitchedBTToUDP4
                 if (BTLinkCommType4 != null && BTLinkCommType4.equalsIgnoreCase("SPP")) {
                     if (CountBeforeReconnectRelay4 >= 1) {
                         if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect")) {
@@ -6723,13 +6753,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (AppConstants.IsTransactionFailed5) {
                 AppConstants.IsTransactionFailed5 = false;
-                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT5) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS5: " + getResources().getString(R.string.HotspotOffMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
                     String logType = "", logPrefix = "";
-                    if (BTConstants.CurrentTransactionIsBT) {
+                    if (BTConstants.CurrentTransactionIsBT5) {
                         logType = AppConstants.LOG_TXTN_BT;
                         logPrefix = "BTLink_5: ";
                     } else {
@@ -6812,7 +6842,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             String BTLinkCommType5 = serverSSIDList.get(4).get("BTLinkCommType");
             // BT Link reconnection attempt for interrupted transaction
-            if (BTConstants.CurrentTransactionIsBT && (!BTConstants.BTLinkFiveStatus && !BT_BLE_Constants.BTBLELinkFiveStatus) && AppConstants.isRelayON_fs5) { // && !BTConstants.SwitchedBTToUDP5
+            if (BTConstants.CurrentTransactionIsBT5 && (!BTConstants.BTLinkFiveStatus && !BT_BLE_Constants.BTBLELinkFiveStatus) && AppConstants.isRelayON_fs5) { // && !BTConstants.SwitchedBTToUDP5
                 if (BTLinkCommType5 != null && BTLinkCommType5.equalsIgnoreCase("SPP")) {
                     if (CountBeforeReconnectRelay5 >= 1) {
                         if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect")) {
@@ -6887,13 +6917,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             if (AppConstants.IsTransactionFailed6) {
                 AppConstants.IsTransactionFailed6 = false;
-                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT) {
+                if (!CommonUtils.isHotspotEnabled(WelcomeActivity.this) && !BTConstants.CurrentTransactionIsBT6) {
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "BS_FS6: " + getResources().getString(R.string.HotspotOffMessage));
                     CommonUtils.showCustomMessageDilaog(WelcomeActivity.this, "", getResources().getString(R.string.HotspotOffMessage));
                 } else {
                     String logType = "", logPrefix = "";
-                    if (BTConstants.CurrentTransactionIsBT) {
+                    if (BTConstants.CurrentTransactionIsBT6) {
                         logType = AppConstants.LOG_TXTN_BT;
                         logPrefix = "BTLink_6: ";
                     } else {
@@ -6976,7 +7006,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
             String BTLinkCommType6 = serverSSIDList.get(5).get("BTLinkCommType");
             // BT Link reconnection attempt for interrupted transaction
-            if (BTConstants.CurrentTransactionIsBT && (!BTConstants.BTLinkSixStatus && !BT_BLE_Constants.BTBLELinkSixStatus) && AppConstants.isRelayON_fs6) { // && !BTConstants.SwitchedBTToUDP6
+            if (BTConstants.CurrentTransactionIsBT6 && (!BTConstants.BTLinkSixStatus && !BT_BLE_Constants.BTBLELinkSixStatus) && AppConstants.isRelayON_fs6) { // && !BTConstants.SwitchedBTToUDP6
                 if (BTLinkCommType6 != null && BTLinkCommType6.equalsIgnoreCase("SPP")) {
                     if (CountBeforeReconnectRelay6 >= 1) {
                         if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect")) {
@@ -13518,81 +13548,69 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         try {
             switch (position) {
                 case 1:
-                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
-                        BTConstants.CurrentTransactionIsBT = false;
-                    } else {
+                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink_1: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
                         btspp.connect1();
-                        BTConstants.CurrentTransactionIsBT = false;
+                        BTConstants.CurrentTransactionIsBT1 = false;
                     }
                     break;
                 case 2:
-                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connecting...")) {
-                        BTConstants.CurrentTransactionIsBT = false;
-                    } else {
+                    if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink_2: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
                         btspp.connect2();
-                        BTConstants.CurrentTransactionIsBT = false;
+                        BTConstants.CurrentTransactionIsBT2 = false;
                     }
                     break;
                 case 3:
-                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Connecting...")) {
-                        BTConstants.CurrentTransactionIsBT = false;
-                    } else {
+                    if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink_3: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
                         btspp.connect3();
-                        BTConstants.CurrentTransactionIsBT = false;
+                        BTConstants.CurrentTransactionIsBT3 = false;
                     }
                     break;
                 case 4:
-                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Connecting...")) {
-                        BTConstants.CurrentTransactionIsBT = false;
-                    } else {
+                    if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink_4: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
                         btspp.connect4();
-                        BTConstants.CurrentTransactionIsBT = false;
+                        BTConstants.CurrentTransactionIsBT4 = false;
                     }
                     break;
                 case 5:
-                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Connecting...")) {
-                        BTConstants.CurrentTransactionIsBT = false;
-                    } else {
+                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink_5: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
                         btspp.connect5();
-                        BTConstants.CurrentTransactionIsBT = false;
+                        BTConstants.CurrentTransactionIsBT5 = false;
                     }
                     break;
                 case 6:
-                    if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Connecting...")) {
-                        BTConstants.CurrentTransactionIsBT = false;
-                    } else {
+                    if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect")) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink_6: Retrying to Connect");
                         //Retrying to connect to link
                         BTSPPMain btspp = new BTSPPMain();
                         btspp.activity = WelcomeActivity.this;
                         btspp.connect6();
-                        BTConstants.CurrentTransactionIsBT = false;
+                        BTConstants.CurrentTransactionIsBT6 = false;
                     }
                     break;
             }
@@ -13614,6 +13632,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         BTL1State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        BTConstants.CurrentTransactionIsBT1 = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13642,7 +13661,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 } else {
                                     BTL1State = 0;
                                     BTConstants.CurrentSelectedLinkBT = 0;
-                                    BTConstants.CurrentTransactionIsBT = true;
+                                    BTConstants.CurrentTransactionIsBT1 = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13665,6 +13684,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         BTL2State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        BTConstants.CurrentTransactionIsBT2 = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13693,7 +13713,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 } else {
                                     BTL2State = 0;
                                     BTConstants.CurrentSelectedLinkBT = 0;
-                                    BTConstants.CurrentTransactionIsBT = true;
+                                    BTConstants.CurrentTransactionIsBT2 = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13716,6 +13736,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         BTL3State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        BTConstants.CurrentTransactionIsBT3 = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13744,7 +13765,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 } else {
                                     BTL3State = 0;
                                     BTConstants.CurrentSelectedLinkBT = 0;
-                                    BTConstants.CurrentTransactionIsBT = true;
+                                    BTConstants.CurrentTransactionIsBT3 = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13766,6 +13787,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         BTL4State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        BTConstants.CurrentTransactionIsBT4 = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13794,7 +13816,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 } else {
                                     BTL4State = 0;
                                     BTConstants.CurrentSelectedLinkBT = 0;
-                                    BTConstants.CurrentTransactionIsBT = true;
+                                    BTConstants.CurrentTransactionIsBT4 = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13816,6 +13838,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         BTL5State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        BTConstants.CurrentTransactionIsBT5 = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13844,7 +13867,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 } else {
                                     BTL5State = 0;
                                     BTConstants.CurrentSelectedLinkBT = 0;
-                                    BTConstants.CurrentTransactionIsBT = true;
+                                    BTConstants.CurrentTransactionIsBT5 = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13866,6 +13889,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     } else {
                         BTL6State = 0;
                         BTConstants.CurrentSelectedLinkBT = 0;
+                        BTConstants.CurrentTransactionIsBT6 = true;
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                         RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -13894,7 +13918,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 } else {
                                     BTL6State = 0;
                                     BTConstants.CurrentSelectedLinkBT = 0;
-                                    BTConstants.CurrentTransactionIsBT = true;
+                                    BTConstants.CurrentTransactionIsBT6 = true;
                                     if (AppConstants.GenerateLogs)
                                         AppConstants.WriteinFile(TAG + getResources().getString(R.string.HoseInUse));
                                     RestrictHoseSelection(getResources().getString(R.string.HoseInUse), false);
@@ -14431,7 +14455,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         tvSSIDName.setText(selSSID);
         AppConstants.FS1_CONNECTED_SSID = selSSID;
         Constants.CurrentSelectedHose = "FS1";
-        BTConstants.CurrentTransactionIsBT = true;
+        BTConstants.CurrentTransactionIsBT1 = true;
         BTConstants.CurrentSelectedLinkBT = 1;
         String ReplaceableHoseName = "";
 
@@ -14483,7 +14507,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         tvSSIDName.setText(selSSID);
         AppConstants.FS2_CONNECTED_SSID = selSSID;
         Constants.CurrentSelectedHose = "FS2";
-        BTConstants.CurrentTransactionIsBT = true;
+        BTConstants.CurrentTransactionIsBT2 = true;
         BTConstants.CurrentSelectedLinkBT = 2;
         String ReplaceableHoseName = "";
 
@@ -14534,7 +14558,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         tvSSIDName.setText(selSSID);
         AppConstants.FS3_CONNECTED_SSID = selSSID;
         Constants.CurrentSelectedHose = "FS3";
-        BTConstants.CurrentTransactionIsBT = true;
+        BTConstants.CurrentTransactionIsBT3 = true;
         BTConstants.CurrentSelectedLinkBT = 3;
         String ReplaceableHoseName = "";
 
@@ -14585,7 +14609,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         tvSSIDName.setText(selSSID);
         AppConstants.FS4_CONNECTED_SSID = selSSID;
         Constants.CurrentSelectedHose = "FS4";
-        BTConstants.CurrentTransactionIsBT = true;
+        BTConstants.CurrentTransactionIsBT4 = true;
         BTConstants.CurrentSelectedLinkBT = 4;
         String ReplaceableHoseName = "";
 
@@ -14635,7 +14659,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         tvSSIDName.setText(selSSID);
         AppConstants.FS5_CONNECTED_SSID = selSSID;
         Constants.CurrentSelectedHose = "FS5";
-        BTConstants.CurrentTransactionIsBT = true;
+        BTConstants.CurrentTransactionIsBT5 = true;
         BTConstants.CurrentSelectedLinkBT = 5;
         String ReplaceableHoseName = "";
 
@@ -14685,7 +14709,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         tvSSIDName.setText(selSSID);
         AppConstants.FS6_CONNECTED_SSID = selSSID;
         Constants.CurrentSelectedHose = "FS6";
-        BTConstants.CurrentTransactionIsBT = true;
+        BTConstants.CurrentTransactionIsBT6 = true;
         BTConstants.CurrentSelectedLinkBT = 6;
         String ReplaceableHoseName = "";
 

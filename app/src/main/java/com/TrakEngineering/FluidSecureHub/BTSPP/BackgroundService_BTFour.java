@@ -89,7 +89,7 @@ public class BackgroundService_BTFour extends Service {
     public String PulserTimingAdjust, IsResetSwitchTimeBounce, IsBypassPumpReset, GetPulserTypeFromLINK;
     public boolean IsAnyPostTxnCommandExecuted = false;
     public boolean isTxnLimitReached = false;
-    public int relayOffAttemptCount = 0;
+    //public int relayOffAttemptCount = 0;
     //public List<String> OriginalNamesOfLinkList;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -892,7 +892,7 @@ public class BackgroundService_BTFour extends Service {
             //Execute relayOff Command
             Request = "";
             Response = "";
-            relayOffAttemptCount++;
+            //relayOffAttemptCount++;
             if (IsThisBTTrnx) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " BTLink_4: Sending relayOff command to Link: " + LinkName);
@@ -935,7 +935,7 @@ public class BackgroundService_BTFour extends Service {
                         Log.i(TAG, "BTLink_4: Failed to get relayOff Command Response:>>" + Response);
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink_4: Checking relayOff command response. Response: false");
-                        if (relayOffAttemptCount >= 2) {
+                        if (BTConstants.isRelayOnAfterReconnect4) {
                             if (fillqty > 0) {
                                 if (isOnlineTxn) {
                                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFour.this);
@@ -943,8 +943,8 @@ public class BackgroundService_BTFour extends Service {
                                     offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
                                 }
                             }
-                            StopTransaction(true, true);
                         }
+                        StopTransaction(true, true);
                     }
                     if (!AppConstants.isRelayON_fs4) {
                         TransactionCompleteFunction();

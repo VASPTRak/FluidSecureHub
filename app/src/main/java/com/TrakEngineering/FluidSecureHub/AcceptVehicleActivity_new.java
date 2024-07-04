@@ -1108,7 +1108,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     }
 
     public void cancelAction(View v) {
-
+        CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
         onBackPressed();
     }
 
@@ -3789,11 +3789,10 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
                 if (dialogBus.isShowing()) {
                     dialogBus.dismiss();
                 }
-
             }
         });
 

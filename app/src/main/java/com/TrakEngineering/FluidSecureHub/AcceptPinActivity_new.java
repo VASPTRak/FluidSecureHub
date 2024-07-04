@@ -688,7 +688,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 return true;
             case R.id.mreboot_reader:
                 AppConstants.showReaderStatus = true;
-                CustomDilaogForRebootCmd(AcceptPinActivity_new.this, "Please enter a code to continue.", "Message");
+                CustomDialogForRebootCmd(AcceptPinActivity_new.this, "Please enter a code to continue.", "Message");
                 return true;
             case R.id.mshow_reader_status:
                 if (AppConstants.GenerateLogs)
@@ -2963,7 +2963,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     }
 
-    private void CustomDilaogForRebootCmd(final Activity context, String title, String message) {
+    private void CustomDialogForRebootCmd(final Activity context, String title, String message) {
 
         final Dialog dialogBus = new Dialog(context);
         dialogBus.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -2974,7 +2974,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         EditText edt_code = (EditText) dialogBus.findViewById(R.id.edt_code);
         TextView edt_message = (TextView) dialogBus.findViewById(R.id.edt_message);
         Button btnAllow = (Button) dialogBus.findViewById(R.id.btnAllow);
-        Button btnCancel = (Button) dialogBus.findViewById(R.id.btn_cancel);
+        Button btnCancelDialog = (Button) dialogBus.findViewById(R.id.btn_cancel);
         edt_message.setText(Html.fromHtml(title));
 
         btnAllow.setOnClickListener(new View.OnClickListener() {
@@ -2997,7 +2997,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             }
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnCancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

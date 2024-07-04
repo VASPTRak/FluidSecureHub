@@ -4005,10 +4005,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void BTServiceSelectionFunction() {
-
-        if (BTConstants.CurrentTransactionIsBT) {
-            // BtnStartStateChange(true);
-            Log.i(TAG, "BT Link ");
+        if (BTConstants.CurrentSelectedLinkBT == 0) {
+            //Something went wrong in selecting link please check
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Selected BT LINK (" + AppConstants.CURRENT_SELECTED_SSID + ") is unavailable.");
+            TerminateTransaction("BT");
+        } else {
             switch (BTConstants.CurrentSelectedLinkBT) {
                 case 1://Link 1
                     // BtnStartStateChange(true);
@@ -4110,11 +4112,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 default://Something went wrong in link selection please try again.
                     break;
             }
-        } else {
-            //Something went wrong in selecting link please check
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "Selected BT LINK (" + AppConstants.CURRENT_SELECTED_SSID + ") is unavailable.");
-            TerminateTransaction("BT");
         }
     }
 
