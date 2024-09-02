@@ -146,6 +146,12 @@ public class BackgroundService extends Service {
 
         uploadConnectionissueLogtoserver();// upload connection issue log.
 
+        UpdateCheckMOStatusFlagOfLink();
+
+        UpdateResetMOCheckFlagOfLink();
+
+        UpdateManualOverrideStatusOfLink();
+
         //Clear shared preferance regarding Last 20 trxn
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -502,27 +508,7 @@ public class BackgroundService extends Service {
             if (!linkJsonData.equals("")) {
                 SaveMultipleTransactionsRetroFit(linkJsonData);
             }
-
-            String last1LinkJsonData = sharedPref.getString("LAST1_LINK" + i, "");
-            if (!last1LinkJsonData.equals("")) {
-                SaveMultipleTransactionsRetroFit(last1LinkJsonData);
-            }
-
-            String bleLinkJsonData = sharedPref.getString("BLE_LINK" + i, "");
-            if (!bleLinkJsonData.equals("")) {
-                SaveMultipleTransactionsRetroFit(bleLinkJsonData);
-            }
         }
-
-
-        /*//Below code is to merge all links data.
-        Gson gson = new Gson();
-        String json = gson.toJson(arrayList);
-
-        String Merged_jsonData = "{\"cmtxtnid_20_record\":"+json+"}";
-        Log.i(TAG,"Merged_json"+Merged_jsonData);*/
-
-
     }
 
     private void uploadConnectionissueLogtoserver(){
@@ -967,6 +953,253 @@ public class BackgroundService extends Service {
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void UpdateCheckMOStatusFlagOfLink() {
+        try {
+            //For Hose One......1
+            SharedPreferences FS1Pref = this.getSharedPreferences("storeCheckMOStatusFlag1", 0);
+            String jsonData1 = FS1Pref.getString("jsonData", "");
+            String authString1 = FS1Pref.getString("authString", "");
+
+            if (!jsonData1.trim().isEmpty() && !authString1.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData1, authString1, "storeCheckMOStatusFlag1");
+            }
+
+            //For Hose Two....2
+            SharedPreferences FS2Pref = this.getSharedPreferences("storeCheckMOStatusFlag2", 0);
+            String jsonData2 = FS2Pref.getString("jsonData", "");
+            String authString2 = FS2Pref.getString("authString", "");
+
+            if (!jsonData2.trim().isEmpty() && !authString2.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData2, authString2, "storeCheckMOStatusFlag2");
+            }
+
+            //For Hose Three..3
+            SharedPreferences FS3Pref = this.getSharedPreferences("storeCheckMOStatusFlag3", 0);
+            String jsonData3 = FS3Pref.getString("jsonData", "");
+            String authString3 = FS3Pref.getString("authString", "");
+
+            if (!jsonData3.trim().isEmpty() && !authString3.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData3, authString3, "storeCheckMOStatusFlag3");
+            }
+
+            //For Hose 4
+            SharedPreferences FS4Pref = this.getSharedPreferences("storeCheckMOStatusFlag4", 0);
+            String jsonData4 = FS4Pref.getString("jsonData", "");
+            String authString4 = FS4Pref.getString("authString", "");
+
+            if (!jsonData4.trim().isEmpty() && !authString4.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData4, authString4, "storeCheckMOStatusFlag4");
+            }
+
+            //For Hose 5
+            SharedPreferences FS5Pref = this.getSharedPreferences("storeCheckMOStatusFlag5", 0);
+            String jsonData5 = FS5Pref.getString("jsonData", "");
+            String authString5 = FS5Pref.getString("authString", "");
+
+            if (!jsonData5.trim().isEmpty() && !authString5.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData5, authString5, "storeCheckMOStatusFlag5");
+            }
+
+            //For Hose 6
+            SharedPreferences FS6Pref = this.getSharedPreferences("storeCheckMOStatusFlag6", 0);
+            String jsonData6 = FS6Pref.getString("jsonData", "");
+            String authString6 = FS6Pref.getString("authString", "");
+
+            if (!jsonData6.trim().isEmpty() && !authString6.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData6, authString6, "storeCheckMOStatusFlag6");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "UpdateCheckMOStatusFlagOfLink Exception: " + e.getMessage());
+        }
+    }
+
+    private void UpdateResetMOCheckFlagOfLink() {
+        try {
+            //For Hose One......1
+            SharedPreferences FS1Pref = this.getSharedPreferences("storeResetMOCheckFlag1", 0);
+            String jsonData1 = FS1Pref.getString("jsonData", "");
+            String authString1 = FS1Pref.getString("authString", "");
+
+            if (!jsonData1.trim().isEmpty() && !authString1.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData1, authString1, "storeResetMOCheckFlag1");
+            }
+
+            //For Hose Two....2
+            SharedPreferences FS2Pref = this.getSharedPreferences("storeResetMOCheckFlag2", 0);
+            String jsonData2 = FS2Pref.getString("jsonData", "");
+            String authString2 = FS2Pref.getString("authString", "");
+
+            if (!jsonData2.trim().isEmpty() && !authString2.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData2, authString2, "storeResetMOCheckFlag2");
+            }
+
+            //For Hose Three..3
+            SharedPreferences FS3Pref = this.getSharedPreferences("storeResetMOCheckFlag3", 0);
+            String jsonData3 = FS3Pref.getString("jsonData", "");
+            String authString3 = FS3Pref.getString("authString", "");
+
+            if (!jsonData3.trim().isEmpty() && !authString3.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData3, authString3, "storeResetMOCheckFlag3");
+            }
+
+            //For Hose 4
+            SharedPreferences FS4Pref = this.getSharedPreferences("storeResetMOCheckFlag4", 0);
+            String jsonData4 = FS4Pref.getString("jsonData", "");
+            String authString4 = FS4Pref.getString("authString", "");
+
+            if (!jsonData4.trim().isEmpty() && !authString4.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData4, authString4, "storeResetMOCheckFlag4");
+            }
+
+            //For Hose 5
+            SharedPreferences FS5Pref = this.getSharedPreferences("storeResetMOCheckFlag5", 0);
+            String jsonData5 = FS5Pref.getString("jsonData", "");
+            String authString5 = FS5Pref.getString("authString", "");
+
+            if (!jsonData5.trim().isEmpty() && !authString5.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData5, authString5, "storeResetMOCheckFlag5");
+            }
+
+            //For Hose 6
+            SharedPreferences FS6Pref = this.getSharedPreferences("storeResetMOCheckFlag6", 0);
+            String jsonData6 = FS6Pref.getString("jsonData", "");
+            String authString6 = FS6Pref.getString("authString", "");
+
+            if (!jsonData6.trim().isEmpty() && !authString6.trim().isEmpty()) {
+                new UpdateMOStatusDetailsOfLink().execute(jsonData6, authString6, "storeResetMOCheckFlag6");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "UpdateResetMOCheckFlagOfLink Exception: " + e.getMessage());
+        }
+    }
+
+    private void UpdateManualOverrideStatusOfLink() {
+        try {
+            //For Hose One......1
+            SharedPreferences FS1Pref = this.getSharedPreferences("storeManualOverrideStatus1", 0);
+            String jsonData1 = FS1Pref.getString("jsonData", "");
+            String authString1 = FS1Pref.getString("authString", "");
+            String isServerCallInProgress1 = FS1Pref.getString("isServerCallInProgress", "false");
+
+            if (!jsonData1.trim().isEmpty() && !authString1.trim().isEmpty() && isServerCallInProgress1.equalsIgnoreCase("false")) {
+                SharedPreferences.Editor editor = FS1Pref.edit();
+                editor.putString("isServerCallInProgress", "true");
+                editor.apply();
+                new UpdateMOStatusDetailsOfLink().execute(jsonData1, authString1, "storeManualOverrideStatus1");
+            }
+
+            //For Hose Two....2
+            SharedPreferences FS2Pref = this.getSharedPreferences("storeManualOverrideStatus2", 0);
+            String jsonData2 = FS2Pref.getString("jsonData", "");
+            String authString2 = FS2Pref.getString("authString", "");
+            String isServerCallInProgress2 = FS2Pref.getString("isServerCallInProgress", "false");
+
+            if (!jsonData2.trim().isEmpty() && !authString2.trim().isEmpty() && isServerCallInProgress2.equalsIgnoreCase("false")) {
+                SharedPreferences.Editor editor = FS2Pref.edit();
+                editor.putString("isServerCallInProgress", "true");
+                editor.apply();
+                new UpdateMOStatusDetailsOfLink().execute(jsonData2, authString2, "storeManualOverrideStatus2");
+            }
+
+            //For Hose Three..3
+            SharedPreferences FS3Pref = this.getSharedPreferences("storeManualOverrideStatus3", 0);
+            String jsonData3 = FS3Pref.getString("jsonData", "");
+            String authString3 = FS3Pref.getString("authString", "");
+            String isServerCallInProgress3 = FS3Pref.getString("isServerCallInProgress", "false");
+
+            if (!jsonData3.trim().isEmpty() && !authString3.trim().isEmpty() && isServerCallInProgress3.equalsIgnoreCase("false")) {
+                SharedPreferences.Editor editor = FS3Pref.edit();
+                editor.putString("isServerCallInProgress", "true");
+                editor.apply();
+                new UpdateMOStatusDetailsOfLink().execute(jsonData3, authString3, "storeManualOverrideStatus3");
+            }
+
+            //For Hose 4
+            SharedPreferences FS4Pref = this.getSharedPreferences("storeManualOverrideStatus4", 0);
+            String jsonData4 = FS4Pref.getString("jsonData", "");
+            String authString4 = FS4Pref.getString("authString", "");
+            String isServerCallInProgress4 = FS4Pref.getString("isServerCallInProgress", "false");
+
+            if (!jsonData4.trim().isEmpty() && !authString4.trim().isEmpty() && isServerCallInProgress4.equalsIgnoreCase("false")) {
+                SharedPreferences.Editor editor = FS4Pref.edit();
+                editor.putString("isServerCallInProgress", "true");
+                editor.apply();
+                new UpdateMOStatusDetailsOfLink().execute(jsonData4, authString4, "storeManualOverrideStatus4");
+            }
+
+            //For Hose 5
+            SharedPreferences FS5Pref = this.getSharedPreferences("storeManualOverrideStatus5", 0);
+            String jsonData5 = FS5Pref.getString("jsonData", "");
+            String authString5 = FS5Pref.getString("authString", "");
+            String isServerCallInProgress5 = FS5Pref.getString("isServerCallInProgress", "false");
+
+            if (!jsonData5.trim().isEmpty() && !authString5.trim().isEmpty() && isServerCallInProgress5.equalsIgnoreCase("false")) {
+                SharedPreferences.Editor editor = FS5Pref.edit();
+                editor.putString("isServerCallInProgress", "true");
+                editor.apply();
+                new UpdateMOStatusDetailsOfLink().execute(jsonData5, authString5, "storeManualOverrideStatus5");
+            }
+
+            //For Hose 6
+            SharedPreferences FS6Pref = this.getSharedPreferences("storeManualOverrideStatus6", 0);
+            String jsonData6 = FS6Pref.getString("jsonData", "");
+            String authString6 = FS6Pref.getString("authString", "");
+            String isServerCallInProgress6 = FS6Pref.getString("isServerCallInProgress", "false");
+
+            if (!jsonData6.trim().isEmpty() && !authString6.trim().isEmpty() && isServerCallInProgress6.equalsIgnoreCase("false")) {
+                SharedPreferences.Editor editor = FS6Pref.edit();
+                editor.putString("isServerCallInProgress", "true");
+                editor.apply();
+                new UpdateMOStatusDetailsOfLink().execute(jsonData6, authString6, "storeManualOverrideStatus6");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "UpdateManualOverrideStatusOfLink Exception: " + e.getMessage());
+        }
+    }
+
+    public class UpdateMOStatusDetailsOfLink extends AsyncTask<String, Void, String> {
+        String PrefName = "";
+        protected String doInBackground(String... param) {
+            String resp = "";
+            PrefName = param[2];
+
+            try {
+                OkHttpClient client = new OkHttpClient();
+                MediaType TEXT = MediaType.parse("application/text;charset=UTF-8");
+
+                RequestBody body = RequestBody.create(TEXT, param[0]);
+                Request request = new Request.Builder()
+                        .url(AppConstants.webURL)
+                        .post(body)
+                        .addHeader("Authorization", param[1])
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resp = response.body().string();
+            } catch (Exception e) {
+                Log.d("Ex", e.getMessage());
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                if (result.contains("success") && !PrefName.isEmpty()) {
+                    SharedPreferences preferences = getSharedPreferences(PrefName, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.clear();
+                    editor.commit();
+                }
+            } catch (Exception e) {
+                System.out.println("onPostExecute" + e);
             }
         }
     }

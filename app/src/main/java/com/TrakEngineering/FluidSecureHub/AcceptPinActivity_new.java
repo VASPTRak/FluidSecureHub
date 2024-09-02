@@ -641,7 +641,6 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         menu.findItem(R.id.mreboot_reader).setVisible(true);
         //menu.findItem(R.id.mconfigure_tld).setVisible(false);
         menu.findItem(R.id.madd_link).setVisible(false);
-        //menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.enable_debug_window).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(true);
@@ -1567,6 +1566,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "ValidateFor Vehicle: " + ResponceText);
 
+                            CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
                             AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this); //Clear EditText on move to welcome activity.
                             Intent intent = new Intent(AcceptPinActivity_new.this, WelcomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -2458,17 +2458,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     }
 
     public void GetBackToWelcomeActivity() {
-
-
-        //AppConstants.colorToast(getApplicationContext(), "Something went wrong, Please try again", Color.BLUE);
-
         Istimeout_Sec = false;
         AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this);
+        CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
 
         Intent i = new Intent(AcceptPinActivity_new.this, WelcomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
-
     }
 
     public void DialogRecreate(final Activity context, final String title, final String message) {

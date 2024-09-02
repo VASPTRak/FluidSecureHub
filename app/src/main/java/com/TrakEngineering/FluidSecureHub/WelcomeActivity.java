@@ -457,7 +457,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     TimerTask timerTaskForUpgrade;
     Timer timerForUpgrade;
     //======================================================//
-    //public boolean isWifiDialogShown = false;
 
     //============ Bluetooth reader Gatt end==============
 
@@ -527,25 +526,14 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         ctx = WelcomeActivity.this;
         IsFARequired();//Enable disable FA on Checkbox on ui
 
-        getipOverOSVersion();
+        getIpOverOSVersion();
 
         //Reconnect BT reader if disconnected
         ConnectCount = 0;
         ReConnectBTReader();
 
         tvSSIDName.setText(R.string.selectHose);
-
-        //Hide keyboard
-        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         CommonUtils.hideKeyboard(WelcomeActivity.this);
-
-        /*if (isWifiDialogShown) {
-            isWifiDialogShown = false;
-            BTConstants.isReturnedFromManualWifiConnect = true;
-            UpdateFSUI_seconds();
-            return;
-        }*/
-
         SelectedItemPos = -1;
 
         final IntentFilter intentFilter = new IntentFilter();
@@ -749,9 +737,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         if(dialogReceiver != null) {
             unregisterReceiver(dialogReceiver);
         }
-        /*if(btActionsReceiver != null) {
-            unregisterReceiver(btActionsReceiver);
-        }*/
     }
 
 
@@ -847,7 +832,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         //setUrlFromSharedPref(this);//Set url App Txt URL
         //UpdateServerMessages();
         DownloadFile();
-        //getipOverOSVersion();
+        //getIpOverOSVersion();
         KeepDataTransferAlive();//Check For FirmwreUpgrade & KeepDataTransferAlive
         KeepDataTransferAliveBT();//Check For Keep Alive BT Links
 
@@ -1194,9 +1179,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         IntentFilter dialogFilter = new IntentFilter(OffBackgroundService.ACTION_SHOW_DIALOG);
         registerReceiver(dialogReceiver, dialogFilter);
 
-        /*// register BroadcastReceiver for WIFI communication & BT connect
-        registerReceiver(btActionsReceiver, makeBTIntentFilter());*/
-
         //CallJobSchedular();//Job Scheduler hotspot check
 
         AppConstants.enableHotspotManuallyWindow = true;
@@ -1213,14 +1195,32 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         cancelThinDownloadManager();
 
         copyFileFromAssets();
+
+        logOfflineDownloadDetails();
     }
 
-    /*private static IntentFilter makeBTIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BTConstants.ACTION_SHOW_WIFI_DIALOG);
-        intentFilter.addAction(BTConstants.ACTION_BT_RECONNECT);
-        return intentFilter;
-    }*/
+    private void logOfflineDownloadDetails() {
+        try {
+            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
+            String isOffline = sharedPref.getString("isOffline", "false");
+            String OFFLineDataDwnldFreq = sharedPref.getString("OFFLineDataDwnldFreq", "Weekly");
+            int WeekDay = sharedPref.getInt("DayOfWeek", 2);
+            int OfflineDataDownloadTimeInHrs = sharedPref.getInt("HourOfDay", 2);
+            int OfflineDataDownloadTimeInMin = sharedPref.getInt("MinuteOfHour", 22);
+
+            if (isOffline.equalsIgnoreCase("True")) {
+                String DayOfWeek = "";
+                if (OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly")) {
+                    DayOfWeek = " (" + WeekDay + ")";
+                }
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(TAG + " <Scheduled offline download: " + OFFLineDataDwnldFreq + DayOfWeek + "; HourOfDay:" + OfflineDataDownloadTimeInHrs + "; Minute:" + OfflineDataDownloadTimeInMin + ">");
+            }
+        } catch (Exception e) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "logOfflineDownloadDetails Exception:>> " + e.getMessage());
+        }
+    }
 
     public void cancelThinDownloadManager() {
         try {
@@ -1696,7 +1696,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             if (AppConstants.DetailsListOfConnectedDevices == null || AppConstants.DetailsListOfConnectedDevices.size() == 0) {
-                getipOverOSVersion();//Refreshed donnected devices list on hose selection.
+                getIpOverOSVersion();//Refreshed donnected devices list on hose selection.
             }
 
             refreshWiFiList(v);
@@ -1816,6 +1816,15 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             String BTselMacAddress = serverSSIDList.get(0).get("BTMacAddress");
             String FirmwareFileName = serverSSIDList.get(0).get("FirmwareFileName");
             String BTLinkCommType = serverSSIDList.get(0).get("BTLinkCommType");
+            String PulserTimingAdjust = serverSSIDList.get(0).get("PulserTimingAdjust");
+            String IsResetSwitchTimeBounce = serverSSIDList.get(0).get("IsResetSwitchTimeBounce");
+            String GetPulserTypeFromLINK = serverSSIDList.get(0).get("GetPulserTypeFromLINK");
+            SaveCalibrationDetailsInSharedPref(0, PulserTimingAdjust, IsResetSwitchTimeBounce, GetPulserTypeFromLINK);
+            String MOStatusCheckFlag = serverSSIDList.get(0).get("MOStatusCheckFlag");
+            String IsCheckMOStatus = serverSSIDList.get(0).get("IsCheckMOStatus");
+            String IsResetMOCheckFlag = serverSSIDList.get(0).get("IsResetMOCheckFlag");
+            SaveMOStatusDetailsInSharedPref(0, MOStatusCheckFlag, IsCheckMOStatus, IsResetMOCheckFlag);
+
             AppConstants.CURRENT_SELECTED_SSID = selSSID;
             AppConstants.CURRENT_SELECTED_SITEID = selSiteId;
             AppConstants.FS1_CONNECTED_SSID = selSSID;
@@ -3287,6 +3296,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     String IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
                     String GetPulserTypeFromLINK = serverSSIDList.get(SelectedItemPos).get("GetPulserTypeFromLINK");
                     SaveCalibrationDetailsInSharedPref(SelectedItemPos, PulserTimingAdjust, IsResetSwitchTimeBounce, GetPulserTypeFromLINK);
+                    String MOStatusCheckFlag = serverSSIDList.get(SelectedItemPos).get("MOStatusCheckFlag");
+                    String IsCheckMOStatus = serverSSIDList.get(SelectedItemPos).get("IsCheckMOStatus");
+                    String IsResetMOCheckFlag = serverSSIDList.get(SelectedItemPos).get("IsResetMOCheckFlag");
+                    SaveMOStatusDetailsInSharedPref(SelectedItemPos, MOStatusCheckFlag, IsCheckMOStatus, IsResetMOCheckFlag);
 
                     if (BTLinkCommType == null) {
                         BTLinkCommType = "SPP";
@@ -3954,7 +3967,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    public void getipOverOSVersion() {
+    public void getIpOverOSVersion() {
         if (Build.VERSION.SDK_INT >= 31) {
             CommonUtils.GetDetailsFromARP();
         } else if (Build.VERSION.SDK_INT >= 29) {
@@ -7393,6 +7406,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         String IsResetSwitchTimeBounce = serverSSIDList.get(SelectedItemPos).get("IsResetSwitchTimeBounce");
         String GetPulserTypeFromLINK = serverSSIDList.get(SelectedItemPos).get("GetPulserTypeFromLINK");
         SaveCalibrationDetailsInSharedPref(SelectedItemPos, PulserTimingAdjust, IsResetSwitchTimeBounce, GetPulserTypeFromLINK);
+        String MOStatusCheckFlag = serverSSIDList.get(SelectedItemPos).get("MOStatusCheckFlag");
+        String IsCheckMOStatus = serverSSIDList.get(SelectedItemPos).get("IsCheckMOStatus");
+        String IsResetMOCheckFlag = serverSSIDList.get(SelectedItemPos).get("IsResetMOCheckFlag");
+        SaveMOStatusDetailsInSharedPref(SelectedItemPos, MOStatusCheckFlag, IsCheckMOStatus, IsResetMOCheckFlag);
 
         if (IsHoseNameReplaced == null) {
             IsHoseNameReplaced = "";
@@ -7706,6 +7723,58 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     editor6.putString("PulserTimingAdjust_FS6", PulserTimingAdjust);
                     editor6.putString("IsResetSwitchTimeBounce_FS6", IsResetSwitchTimeBounce);
                     editor6.putString("GetPulserTypeFromLINK_FS6", GetPulserTypeFromLINK);
+                    editor6.commit();
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void SaveMOStatusDetailsInSharedPref(int selectedLinkPos, String MOStatusCheckFlag, String IsCheckMOStatus, String IsResetMOCheckFlag) {
+        try {
+            SharedPreferences moStatusPref = this.getSharedPreferences(Constants.PREF_MOStatusDetails, Context.MODE_PRIVATE);
+            switch (selectedLinkPos) {
+                case 0:
+                    SharedPreferences.Editor editor1 = moStatusPref.edit();
+                    editor1.putString("MOStatusCheckFlag_FS1", MOStatusCheckFlag);
+                    editor1.putString("IsCheckMOStatus_FS1", IsCheckMOStatus);
+                    editor1.putString("IsResetMOCheckFlag_FS1", IsResetMOCheckFlag);
+                    editor1.commit();
+                    break;
+                case 1:
+                    SharedPreferences.Editor editor2 = moStatusPref.edit();
+                    editor2.putString("MOStatusCheckFlag_FS2", MOStatusCheckFlag);
+                    editor2.putString("IsCheckMOStatus_FS2", IsCheckMOStatus);
+                    editor2.putString("IsResetMOCheckFlag_FS2", IsResetMOCheckFlag);
+                    editor2.commit();
+                    break;
+                case 2:
+                    SharedPreferences.Editor editor3 = moStatusPref.edit();
+                    editor3.putString("MOStatusCheckFlag_FS3", MOStatusCheckFlag);
+                    editor3.putString("IsCheckMOStatus_FS3", IsCheckMOStatus);
+                    editor3.putString("IsResetMOCheckFlag_FS3", IsResetMOCheckFlag);
+                    editor3.commit();
+                    break;
+                case 3:
+                    SharedPreferences.Editor editor4 = moStatusPref.edit();
+                    editor4.putString("MOStatusCheckFlag_FS4", MOStatusCheckFlag);
+                    editor4.putString("IsCheckMOStatus_FS4", IsCheckMOStatus);
+                    editor4.putString("IsResetMOCheckFlag_FS4", IsResetMOCheckFlag);
+                    editor4.commit();
+                    break;
+                case 4:
+                    SharedPreferences.Editor editor5 = moStatusPref.edit();
+                    editor5.putString("MOStatusCheckFlag_FS5", MOStatusCheckFlag);
+                    editor5.putString("IsCheckMOStatus_FS5", IsCheckMOStatus);
+                    editor5.putString("IsResetMOCheckFlag_FS5", IsResetMOCheckFlag);
+                    editor5.commit();
+                    break;
+                case 5:
+                    SharedPreferences.Editor editor6 = moStatusPref.edit();
+                    editor6.putString("MOStatusCheckFlag_FS6", MOStatusCheckFlag);
+                    editor6.putString("IsCheckMOStatus_FS6", IsCheckMOStatus);
+                    editor6.putString("IsResetMOCheckFlag_FS6", IsResetMOCheckFlag);
                     editor6.commit();
                     break;
             }
@@ -9139,7 +9208,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                                 Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                             } else {
-                                getipOverOSVersion();
+                                getIpOverOSVersion();
                             }
 
                             if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
@@ -10289,16 +10358,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                                 String FirmwareFileName = c.getString("FirmwareFileName");
                                 String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
-                                /*String OriginalNamesOfLink = "";
-                                try {
-                                    JSONArray OriginalNamesOfLinkList = c.getJSONArray("OriginalNamesOfLink"); //.toString().replace("[\"", "").replace("\"]", "");
-                                    if (OriginalNamesOfLinkList.length() > 0) {
-                                        for (int l = 0; l < OriginalNamesOfLinkList.length(); l++) {
-                                            OriginalNamesOfLink = OriginalNamesOfLink + "," + OriginalNamesOfLinkList.getString(l);
-                                        }
-                                        OriginalNamesOfLink = OriginalNamesOfLink.substring(1);
-                                    }
-                                } catch (Exception e) { e.printStackTrace(); }*/
+                                String MOStatusCheckFlag = c.getString("MOStatusCheckFlag");
+                                String IsCheckMOStatus = c.getString("IsCheckMOStatus");
+                                String IsResetMOCheckFlag = c.getString("IsResetMOCheckFlag");
 
                                 SetBTLinksMacAddress(i, BTMacAddress);
 
@@ -10409,7 +10471,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                                 map.put("FirmwareFileName", FirmwareFileName);
                                 map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
-                                //map.put("OriginalNamesOfLink", OriginalNamesOfLink);
+                                map.put("MOStatusCheckFlag", MOStatusCheckFlag);
+                                map.put("IsCheckMOStatus", IsCheckMOStatus);
+                                map.put("IsResetMOCheckFlag", IsResetMOCheckFlag);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
                                     if (isNotNULL(SiteId) && isNotNULL(HoseId) && isNotNULL(WifiSSId)) {
@@ -10498,7 +10562,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                         if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
                                             Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                         else {
-                                            getipOverOSVersion();
+                                            getIpOverOSVersion();
                                         }
 
                                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
@@ -10588,7 +10652,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                         if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                                             Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                         } else {
-                                            getipOverOSVersion();
+                                            getIpOverOSVersion();
                                         }
 
                                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
@@ -11337,16 +11401,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                                 String FirmwareFileName = c.getString("FirmwareFileName");
                                 String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
-                                /*String OriginalNamesOfLink = "";
-                                try {
-                                    JSONArray OriginalNamesOfLinkList = c.getJSONArray("OriginalNamesOfLink"); //.toString().replace("[\"", "").replace("\"]", "");
-                                    if (OriginalNamesOfLinkList.length() > 0) {
-                                        for (int l = 0; l < OriginalNamesOfLinkList.length(); l++) {
-                                            OriginalNamesOfLink = OriginalNamesOfLink + "," + OriginalNamesOfLinkList.getString(l);
-                                        }
-                                        OriginalNamesOfLink = OriginalNamesOfLink.substring(1);
-                                    }
-                                } catch (Exception e) { e.printStackTrace(); }*/
+                                String MOStatusCheckFlag = c.getString("MOStatusCheckFlag");
+                                String IsCheckMOStatus = c.getString("IsCheckMOStatus");
+                                String IsResetMOCheckFlag = c.getString("IsResetMOCheckFlag");
 
                                 AppConstants.UP_FilePath = FilePath;
 
@@ -11392,7 +11449,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                                 map.put("FirmwareFileName", FirmwareFileName);
                                 map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
-                                //map.put("OriginalNamesOfLink", OriginalNamesOfLink);
+                                map.put("MOStatusCheckFlag", MOStatusCheckFlag);
+                                map.put("IsCheckMOStatus", IsCheckMOStatus);
+                                map.put("IsResetMOCheckFlag", IsResetMOCheckFlag);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
@@ -11438,7 +11497,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                         if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0)
                                             Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                         else {
-                                            getipOverOSVersion();
+                                            getIpOverOSVersion();
                                         }
 
                                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
@@ -11525,7 +11584,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                         if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                                             Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                                         } else {
-                                            getipOverOSVersion();
+                                            getIpOverOSVersion();
                                         }
 
                                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
@@ -11860,16 +11919,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                             String FirmwareFileName = c.getString("FirmwareFileName");
                             String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
-                            /*String OriginalNamesOfLink = "";
-                            try {
-                                JSONArray OriginalNamesOfLinkList = c.getJSONArray("OriginalNamesOfLink"); //.toString().replace("[\"", "").replace("\"]", "");
-                                if (OriginalNamesOfLinkList.length() > 0) {
-                                    for (int l = 0; l < OriginalNamesOfLinkList.length(); l++) {
-                                        OriginalNamesOfLink = OriginalNamesOfLink + "," + OriginalNamesOfLinkList.getString(l);
-                                    }
-                                    OriginalNamesOfLink = OriginalNamesOfLink.substring(1);
-                                }
-                            } catch (Exception e) { e.printStackTrace(); }*/
+                            String MOStatusCheckFlag = c.getString("MOStatusCheckFlag");
+                            String IsCheckMOStatus = c.getString("IsCheckMOStatus");
+                            String IsResetMOCheckFlag = c.getString("IsResetMOCheckFlag");
 
                             ///tld upgrade
                             String IsTLDFirmwareUpgrade = c.getString("IsTLDFirmwareUpgrade");
@@ -11922,7 +11974,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                             map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                             map.put("FirmwareFileName", FirmwareFileName);
                             map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
-                            //map.put("OriginalNamesOfLink", OriginalNamesOfLink);
+                            map.put("MOStatusCheckFlag", MOStatusCheckFlag);
+                            map.put("IsCheckMOStatus", IsCheckMOStatus);
+                            map.put("IsResetMOCheckFlag", IsResetMOCheckFlag);
 
                             if (IsTLDFirmwareUpgrade.trim().toLowerCase().equalsIgnoreCase("y")) {
                                 downloadTLD_BinFile(i, TLDFirmwareFilePath, TLDFIrmwareVersion);
@@ -12370,7 +12424,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     wifiApManager.setWifiApEnabled(null, true);
                 }
                 ChangeWifiState(false);
-                getipOverOSVersion();
+                getIpOverOSVersion();
                 loading.dismiss();
             }
         }, 5000);
@@ -12390,7 +12444,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
                 wifiApManager.setWifiApEnabled(null, true);
                 ChangeWifiState(false);
-                getipOverOSVersion();
+                getIpOverOSVersion();
             }
         }, 2000);
 
@@ -12408,7 +12462,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
                 wifiApManager.setWifiApEnabled(null, true);
                 ChangeWifiState(false);
-                getipOverOSVersion();
+                getIpOverOSVersion();
             }
         }, 4000);
 
@@ -12426,7 +12480,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 loading.dismiss();
                 wifiApManager.setWifiApEnabled(null, true);
                 ChangeWifiState(false);
-                getipOverOSVersion();
+                getIpOverOSVersion();
             }
         }, 6000);*/
 
@@ -14168,7 +14222,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                         if (AppConstants.DetailsListOfConnectedDevices != null && AppConstants.DetailsListOfConnectedDevices.size() > 0) {
                             Chk_ip = AppConstants.DetailsListOfConnectedDevices.get(0).get("ipAddress");
                         } else {
-                            getipOverOSVersion();
+                            getIpOverOSVersion();
                         }
 
                         if (Chk_ip != null && Chk_ip.length() > 3 && !ReconfigureLink.equalsIgnoreCase("true")) {
@@ -15126,7 +15180,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         return isConnected;
     }
 
-    public void Change_P_Type() {
+    /*public void Change_P_Type() {
         try {
             BTLinkList.clear();
             if (serverSSIDList != null) {
@@ -15155,12 +15209,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             } else {
                 Toast.makeText(getApplicationContext(), "BT LINK not found.", Toast.LENGTH_SHORT).show();
             }
-
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "Exception in Change_P_Type. " + ex.getMessage());
         }
-    }
+    }*/
 
     public void OscilloscopeLinkSelection() {
         try {
@@ -19158,6 +19211,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 String IsResetSwitchTimeBounce = c.getString("IsResetSwitchTimeBounce");
                                 String FirmwareFileName = c.getString("FirmwareFileName");
                                 String GetPulserTypeFromLINK = c.getString("GetPulserTypeFromLINK");
+                                String MOStatusCheckFlag = c.getString("MOStatusCheckFlag");
+                                String IsCheckMOStatus = c.getString("IsCheckMOStatus");
+                                String IsResetMOCheckFlag = c.getString("IsResetMOCheckFlag");
 
                                 SetBTLinksMacAddress(i, BTMacAddress);
 
@@ -19228,6 +19284,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                                 map.put("IsResetSwitchTimeBounce", IsResetSwitchTimeBounce);
                                 map.put("FirmwareFileName", FirmwareFileName);
                                 map.put("GetPulserTypeFromLINK", GetPulserTypeFromLINK);
+                                map.put("MOStatusCheckFlag", MOStatusCheckFlag);
+                                map.put("IsCheckMOStatus", IsCheckMOStatus);
+                                map.put("IsResetMOCheckFlag", IsResetMOCheckFlag);
 
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
                                     if (isNotNULL(SiteId) && isNotNULL(HoseId) && isNotNULL(WifiSSId)) {
@@ -19317,93 +19376,4 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
-    /*private final BroadcastReceiver btActionsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BTConstants.ACTION_SHOW_WIFI_DIALOG)) {
-                Bundle notificationData = intent.getExtras();
-                String LinkName = notificationData.getString("LinkName");
-                String message = "Please select Wifi '" + LinkName + "' and return back.";
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + message);
-                isWifiDialogShown = true;
-                ShowWifiMessageDialog(WelcomeActivity.this, message);
-
-            } else if (intent.getAction().equals(BTConstants.ACTION_BT_RECONNECT)) {
-                Bundle notificationData = intent.getExtras();
-                int linkPosition = notificationData.getInt("LinkPosition");
-                BTSPPMain btspp = new BTSPPMain();
-                btspp.activity = WelcomeActivity.this;
-                switch (linkPosition) {
-                    case 0://Link 1
-                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
-                            btspp.connect1();
-                        }
-                        break;
-                    case 1://Link 2
-                        if (BTConstants.BTStatusStrTwo.equalsIgnoreCase("Disconnect")) {
-                            btspp.connect2();
-                        }
-                        break;
-                    case 2://Link 3
-                        if (BTConstants.BTStatusStrThree.equalsIgnoreCase("Disconnect")) {
-                            btspp.connect3();
-                        }
-                        break;
-                    case 3://Link 4
-                        if (BTConstants.BTStatusStrFour.equalsIgnoreCase("Disconnect")) {
-                            btspp.connect4();
-                        }
-                        break;
-                    case 4://Link 5
-                        if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Disconnect")) {
-                            btspp.connect5();
-                        }
-                        break;
-                    case 5://Link 6
-                        if (BTConstants.BTStatusStrSix.equalsIgnoreCase("Disconnect")) {
-                            btspp.connect6();
-                        }
-                        break;
-                }
-            }
-        }
-    };*/
-
-    /*public void ShowWifiMessageDialog(final Activity context, String message) {
-        final Timer timer = new Timer();
-        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
-
-        alertDialogBuilder.setMessage(message);
-        alertDialogBuilder.setCancelable(false);
-
-        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        dialog.dismiss();
-
-                        if (timer != null) {
-                            timer.cancel();
-                        }
-                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                    }
-                }
-        );
-
-        androidx.appcompat.app.AlertDialog alertDialog = alertDialogBuilder.create();
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
-                }
-                timer.cancel();
-                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-
-            }
-        }, 3000);
-        alertDialog.show();
-    }*/
 }

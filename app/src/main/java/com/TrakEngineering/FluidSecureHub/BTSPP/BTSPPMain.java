@@ -126,7 +126,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
         try {
             //Log command sent:str
-            BTConstants.CurrentCommand_LinkOne = str;
+            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                BTConstants.CurrentCommand_LinkOne = str;
+            }
             Log.i(TAG, "BTSPPLink_1: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
             service1.write(data);
@@ -270,7 +272,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
         try {
             //Log command sent:str
-            BTConstants.CurrentCommand_LinkTwo = str;
+            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                BTConstants.CurrentCommand_LinkTwo = str;
+            }
             Log.i(TAG, "BTSPPLink_2: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
             service2.write(data);
@@ -413,7 +417,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
         try {
             //Log command sent:str
-            BTConstants.CurrentCommand_LinkThree = str;
+            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                BTConstants.CurrentCommand_LinkThree = str;
+            }
             Log.i(TAG, "BTSPPLink_3: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
             service3.write(data);
@@ -557,7 +563,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
         try {
             //Log command sent:str
-            BTConstants.CurrentCommand_LinkFour = str;
+            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                BTConstants.CurrentCommand_LinkFour = str;
+            }
             Log.i(TAG, "BTSPPLink_4: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
             service4.write(data);
@@ -699,7 +707,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
         try {
             //Log command sent:str
-            BTConstants.CurrentCommand_LinkFive = str;
+            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                BTConstants.CurrentCommand_LinkFive = str;
+            }
             Log.i(TAG, "BTSPPLink_5: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
             service5.write(data);
@@ -844,7 +854,9 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
         }
         try {
             //Log command sent:str
-            BTConstants.CurrentCommand_LinkSix = str;
+            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                BTConstants.CurrentCommand_LinkSix = str;
+            }
             Log.i(TAG, "BTSPPLink_6: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
             service6.write(data);

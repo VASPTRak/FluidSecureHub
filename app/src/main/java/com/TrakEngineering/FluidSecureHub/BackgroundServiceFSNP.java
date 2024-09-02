@@ -112,7 +112,7 @@ public class BackgroundServiceFSNP extends BackgroundService {
 
                         //Log.e(TAG, " FAEnabled  AppConstants.EnableFA:"+AppConstants.EnableFA);
                         //UPdate Connected hotspot List
-                        getipOverOSVersion();
+                        getIpOverOSVersion();
 
                         //List of Near-by FSNP/Ble mac address list
                         if (AppConstants.DetailsServerSSIDList != null && !AppConstants.DetailsServerSSIDList.isEmpty()) {
@@ -1086,7 +1086,7 @@ public class BackgroundServiceFSNP extends BackgroundService {
         }
     }
 
-    public void getipOverOSVersion(){
+    public void getIpOverOSVersion(){
         if (Build.VERSION.SDK_INT >= 29) {
             new GetConnectedDevicesIPOS10().execute();
         }else{

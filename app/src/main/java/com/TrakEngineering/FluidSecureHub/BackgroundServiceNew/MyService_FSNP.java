@@ -130,7 +130,7 @@ public class MyService_FSNP extends Service {
                 if (IsFaRequired){
                     Log.i(TAG, "Invoke background service onCreate method.");
                     //UPdate Connected hotspot List
-                    getipOverOSVersion();
+                    getIpOverOSVersion();
 
                     //List of Near-by FSNP/Ble mac address list
                     if (AppConstants.DetailsServerSSIDList != null && !AppConstants.DetailsServerSSIDList.isEmpty()) {
@@ -178,7 +178,7 @@ public class MyService_FSNP extends Service {
         timer.cancel();
     }
 
-    public void getipOverOSVersion(){
+    public void getIpOverOSVersion(){
         if (Build.VERSION.SDK_INT >= 29) {
             new GetConnectedDevicesIPOS10().execute();
         }else{

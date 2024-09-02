@@ -22,6 +22,7 @@ import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 import com.TrakEngineering.FluidSecureHub.Constants;
 import com.TrakEngineering.FluidSecureHub.DBController;
 import com.TrakEngineering.FluidSecureHub.WelcomeActivity;
+import com.TrakEngineering.FluidSecureHub.entity.ManualOverrideStatus;
 import com.TrakEngineering.FluidSecureHub.entity.RenameHose;
 import com.TrakEngineering.FluidSecureHub.entity.SwitchTimeBounce;
 import com.TrakEngineering.FluidSecureHub.entity.TrazComp;
@@ -65,7 +66,6 @@ public class BackgroundService_BTTwo extends Service {
     int pulseCount = 0;
     int stopCount = 0;
     int RespCount = 0; //, LinkResponseCount = 0;
-    int fdCheckCount = 0;
     long stopAutoFuelSeconds = 0;
     Integer Pulses = 0;
     Integer pre_pulse = 0;
@@ -85,12 +85,13 @@ public class BackgroundService_BTTwo extends Service {
     public boolean isConnected = false;
     public boolean isHotspotDisabled = false;
     public boolean isOnlineTxn = true;
-    public int versionNumberOfLinkTwo = 0;
+    public String versionNumberOfLinkTwo = "";
     public String PulserTimingAdjust, IsResetSwitchTimeBounce, IsBypassPumpReset, GetPulserTypeFromLINK;
     public boolean IsAnyPostTxnCommandExecuted = false;
     public boolean isTxnLimitReached = false;
+    public String MOStatusCheckFlag, IsCheckMOStatus, IsResetMOCheckFlag;
+    public boolean isManualOverrideDetected = false;
     //public int relayOffAttemptCount = 0;
-    //public List<String> OriginalNamesOfLinkList;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -147,6 +148,11 @@ public class BackgroundService_BTTwo extends Service {
                 IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS2", "0");
                 GetPulserTypeFromLINK = calibrationPref.getString("GetPulserTypeFromLINK_FS2", "False");
 
+                SharedPreferences moStatusPref = this.getSharedPreferences(Constants.PREF_MOStatusDetails, Context.MODE_PRIVATE);
+                MOStatusCheckFlag = moStatusPref.getString("MOStatusCheckFlag_FS2", "OFF");
+                IsCheckMOStatus = moStatusPref.getString("IsCheckMOStatus_FS2", "False");
+                IsResetMOCheckFlag = moStatusPref.getString("IsResetMOCheckFlag_FS2", "False");
+
                 if (VehicleNumber.length() > 20) {
                     VehicleNumber = VehicleNumber.substring(VehicleNumber.length() - 20);
                 }
@@ -155,11 +161,6 @@ public class BackgroundService_BTTwo extends Service {
                     LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
                     //CurrentLinkMac = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
                 }
-
-                /*String OriginalNamesOfLink = CommonUtils.getOriginalNamesOfLink(1);
-                OriginalNamesOfLinkList = Arrays.asList(OriginalNamesOfLink.split(","));
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_2: <Original Names of LINK: (" + OriginalNamesOfLinkList + ")>");*/
 
                 // Offline functionality
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
@@ -232,9 +233,9 @@ public class BackgroundService_BTTwo extends Service {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //IsThisBTTrnx = false;
-                        //BTConstants.SwitchedBTToUDP2 = true;
-                        BeginProcessUsingUDP(false);
+                        IsThisBTTrnx = false;
+                        BTConstants.SwitchedBTToUDP2 = true;
+                        BeginProcessUsingUDP();
                     }
                 }, 5000);
             } else {
@@ -245,19 +246,15 @@ public class BackgroundService_BTTwo extends Service {
         }
     }*/
 
-    /*private void BeginProcessUsingUDP(boolean isCalledAfterManualAttempt) {
+    /*private void BeginProcessUsingUDP() {
         try {
-            long millis = 10000;
-            if (!isCalledAfterManualAttempt) {
-                millis = 5000;
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_2: " + getResources().getString(R.string.PleaseWaitForWifiConnect));
-                Toast.makeText(BackgroundService_BTTwo.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(BackgroundService_BTTwo.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
 
-            new CountDownTimer(millis, 1000) {
+            new CountDownTimer(12000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " BTLink_2: Connecting to WiFi...");
                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     String ssid = "";
                     if (wifiManager.isWifiEnabled()) {
@@ -265,15 +262,13 @@ public class BackgroundService_BTTwo extends Service {
                         ssid = wifiInfo.getSSID();
                     }
 
-                    ssid = ssid.replace("\"", "").trim();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_2: Selected Hose : " + LinkName + " & Connected Hose : " + ssid);
-                    //if (ssid.equalsIgnoreCase(LinkName)) {
-                    if (OriginalNamesOfLinkList.contains(ssid)) {
+                    ssid = ssid.replace("\"", "");
+
+                    if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink_2: Connected to " + ssid + " via WiFi.");
-                        //proceedToInfoCommand(); // Commented to continue with BT as per #2603
-                        BTReconnectionAttempt();
+                        proceedToInfoCommand();
+                        //loading.cancel();
                         cancel();
                     }
                 }
@@ -285,85 +280,23 @@ public class BackgroundService_BTTwo extends Service {
                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                     String ssid = wifiInfo.getSSID();
 
-                    ssid = ssid.replace("\"", "").trim();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_2: (onFinish) Selected Hose : " + LinkName + " & Connected Hose : " + ssid);
-                    //if (ssid.equalsIgnoreCase(LinkName)) {
-                    if (OriginalNamesOfLinkList.contains(ssid)) {
+                    ssid = ssid.replace("\"", "");
+                    if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink_2: Connected to " + ssid + " via WiFi.");
-                        //proceedToInfoCommand(); // Commented to continue with BT as per #2603
-                        BTReconnectionAttempt();
+                        proceedToInfoCommand();
+                        //loading.cancel();
+                        cancel();
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink_2: Unable to connect to " + LinkName + " via WiFi.");
-                        if (isCalledAfterManualAttempt) {
-                            //TerminateBTTransaction();
-                            BTReconnectionAttempt();
-                        } else {
-                            Intent showWifiDialogIntent = new Intent(BTConstants.ACTION_SHOW_WIFI_DIALOG);
-                            showWifiDialogIntent.putExtra("LinkName", OriginalNamesOfLinkList.get(0));
-                            sendBroadcast(showWifiDialogIntent);
-                            WaitAndProceedAfterManualWifiConnect();
-                        }
-                    }
-                }
-            }.start();
-        } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_2: Exception in BeginProcessUsingUDP: " + e.getMessage());
-            TerminateBTTransaction();
-            e.printStackTrace();
-        }
-    }*/
-
-    /*private void BTReconnectionAttempt() {
-        BTConstants.isReturnedFromManualWifiConnect = false;
-        DisableWifiConnection();
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent btReconnectIntent = new Intent(BTConstants.ACTION_BT_RECONNECT);
-                btReconnectIntent.putExtra("LinkPosition", 1);
-                sendBroadcast(btReconnectIntent);
-                checkBTLinkStatus("info", true);
-            }
-        }, 5000);
-    }*/
-
-    /*private void WaitAndProceedAfterManualWifiConnect() {
-        try {
-            new CountDownTimer(60000, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    if (BTConstants.isReturnedFromManualWifiConnect) {
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                BeginProcessUsingUDP(true);
-                            }
-                        }, 2000);
-                        cancel();
-                    }
-                }
-
-                @Override
-                public void onFinish() {
-                    if (BTConstants.isReturnedFromManualWifiConnect) {
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                BeginProcessUsingUDP(true);
-                            }
-                        }, 2000);
-                    } else {
                         TerminateBTTransaction();
                     }
                 }
             }.start();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_2: Exception in WaitAndProceedAfterManualWifiConnect: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_2: Exception in BeginProcessUsingUDP: " + e.getMessage());
             TerminateBTTransaction();
             e.printStackTrace();
         }
@@ -454,13 +387,7 @@ public class BackgroundService_BTTwo extends Service {
                     } else {
                         isConnected = false;
                         if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
-                            TerminateBTTransaction();
-                            /*if (!isAfterWifiConnect) {
-                                UDPFunctionalityAfterBTFailure(); //TerminateBTTransaction();
-                            } else {
-                                BTConstants.isReturnedFromManualWifiConnect = false;
-                                TerminateBTTransaction();
-                            }*/
+                            TerminateBTTransaction(); //UDPFunctionalityAfterBTFailure();
                         } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
                             TerminateBTTxnAfterInterruption();
                         }
@@ -523,7 +450,7 @@ public class BackgroundService_BTTwo extends Service {
                                     @Override
                                     public void run() {
                                         AppConstants.isInfoCommandSuccess_fs2 = true;
-                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo && (versionNumberOfLinkTwo >= 1411)) {
+                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo && CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkTwo, BTConstants.supportedLinkVersionForLast1)) {
                                             last1Command();
                                         } else {
                                             transactionIdCommand(TransactionId);
@@ -566,7 +493,7 @@ public class BackgroundService_BTTwo extends Service {
                                 @Override
                                 public void run() {
                                     AppConstants.isInfoCommandSuccess_fs2 = true;
-                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo && (versionNumberOfLinkTwo >= 1411)) {
+                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkTwo && CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkTwo, BTConstants.supportedLinkVersionForLast1)) {
                                         last1Command();
                                     } else {
                                         transactionIdCommand(TransactionId);
@@ -861,7 +788,7 @@ public class BackgroundService_BTTwo extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink_2: Checking relayOn command response. Response: ON");
                     } else {
                         //UpgradeTransaction Status RelayON command fail.
-                        if (isAfterReconnect && (fillqty > 0)) {
+                        if (isAfterReconnect && (Pulses > 0 || fillqty > 0)) {
                             if (isOnlineTxn) {
                                 CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTTwo.this);
                             } else {
@@ -936,7 +863,7 @@ public class BackgroundService_BTTwo extends Service {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " BTLink_2: Checking relayOff command response. Response: false");
                         if (BTConstants.isRelayOnAfterReconnect2) {
-                            if (fillqty > 0) {
+                            if (Pulses > 0 || fillqty > 0) {
                                 if (isOnlineTxn) {
                                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTTwo.this);
                                 } else {
@@ -987,12 +914,10 @@ public class BackgroundService_BTTwo extends Service {
     public void ProceedToPostTransactionCommands() {
         // Free the link and continue to post transaction commands
         StopTransaction(true, false); // Free the link
-        if (versionNumberOfLinkTwo >= 1411) { // Last20 command supported from this version onwards
+        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkTwo, BTConstants.supportedLinkVersionForLast20)) { // Last20 command supported from this version onwards
             last20Command();
-        } else if (versionNumberOfLinkTwo >= 145) { // Set P_Type command supported from this version onwards
-            P_Type_Command();
         } else {
-            CloseTransaction(false); // ProceedToPostTransactionCommands
+            ProceedToNextCommand();
         }
     }
 
@@ -1065,7 +990,7 @@ public class BackgroundService_BTTwo extends Service {
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + " BTLink_2: Checking last20 command response. Response: true"); //>>" + Response.trim()
                             parseLast20CommandResponse(Response.trim());
-                            P_Type_Command();
+                            ProceedToNextCommand();
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_2: Waiting for last20 Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
@@ -1083,13 +1008,139 @@ public class BackgroundService_BTTwo extends Service {
                             AppConstants.WriteinFile(TAG + " BTLink_2: Checking last20 command response. Response: true"); //>>" + Response.trim()
                         parseLast20CommandResponse(Response.trim());
                     }
-                    P_Type_Command();
+                    ProceedToNextCommand();
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink_2: last20 Command Exception:>>" + e.getMessage());
+            ProceedToNextCommand();
+        }
+    }
+    //endregion
+
+    private void ProceedToNextCommand() {
+        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkTwo, BTConstants.supportedLinkVersionForMOStatus)) { // CheckMOStatus command supported from this version onwards
+            CheckMOStatusCommand();
+        } else if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkTwo, BTConstants.supportedLinkVersionForP_Type)) { // Set P_Type command supported from this version onwards
+            P_Type_Command();
+        } else {
+            CloseTransaction(false); // ProceedToNextCommand
+        }
+    }
+
+    //region CheckMOStatus Command
+    private void CheckMOStatusCommand() {
+        try {
+            if (IsCheckMOStatus != null) {
+                if (IsCheckMOStatus.trim().equalsIgnoreCase("True") && !MOStatusCheckFlag.isEmpty() && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTTwo.this, "storeCheckMOStatusFlag2")) {
+                    //Execute CheckMOStatus Command
+                    Request = "";
+                    Response = "";
+                    IsAnyPostTxnCommandExecuted = true;
+
+                    if (IsThisBTTrnx) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink_2: Sending (Check MO Status: " + MOStatusCheckFlag + ") command to Link: " + LinkName);
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.send2(BTConstants.checkMOStatus_command + MOStatusCheckFlag);
+                    }
+
+                    new CountDownTimer(4000, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            long attempt = (4 - (millisUntilFinished / 1000));
+                            if (attempt > 0) {
+                                if (Request.contains(BTConstants.checkMOStatus_command) && Response.contains("if_check_mo_status")) {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " BTLink_2: Checking (Check MO Status) command response:>> " + Response);
+                                    UpdateCheckMOStatusFlagOfLink();
+                                    ResetMOCheckFlagCommand();
+                                    cancel();
+                                } else {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " BTLink_2: Checking (Check MO Status) command response. Response: false");
+                                }
+                            }
+                        }
+
+                        public void onFinish() {
+                            if (Request.contains(BTConstants.checkMOStatus_command) && Response.contains("if_check_mo_status")) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink_2: Checking (Check MO Status) command response:>> " + Response);
+                                UpdateCheckMOStatusFlagOfLink();
+                            }
+                            ResetMOCheckFlagCommand();
+                        }
+                    }.start();
+                } else {
+                    ResetMOCheckFlagCommand();
+                }
+            } else {
+                ResetMOCheckFlagCommand();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink_2: Check MO Status Command Exception:>>" + e.getMessage());
+            ResetMOCheckFlagCommand();
+        }
+    }
+    //endregion
+
+    //region ResetMOCheckFlag Command
+    private void ResetMOCheckFlagCommand() {
+        try {
+            if (IsResetMOCheckFlag != null) {
+                if (IsResetMOCheckFlag.trim().equalsIgnoreCase("True") && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTTwo.this, "storeResetMOCheckFlag2")) {
+                    //Execute ResetMOCheckFlag Command
+                    Request = "";
+                    Response = "";
+                    IsAnyPostTxnCommandExecuted = true;
+
+                    if (IsThisBTTrnx) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + " BTLink_2: Sending Reset MO Check Flag command to Link: " + LinkName);
+                        BTSPPMain btspp = new BTSPPMain();
+                        btspp.send2(BTConstants.resetMOCheckFlag_command);
+                    }
+
+                    new CountDownTimer(4000, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            long attempt = (4 - (millisUntilFinished / 1000));
+                            if (attempt > 0) {
+                                if (Request.contains(BTConstants.resetMOCheckFlag_command) && Response.contains("mo_check_flag")) {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " BTLink_2: Checking Reset MO Check Flag command response:>> " + Response);
+                                    UpdateResetMOCheckFlagOfLink();
+                                    P_Type_Command();
+                                    cancel();
+                                } else {
+                                    if (AppConstants.GenerateLogs)
+                                        AppConstants.WriteinFile(TAG + " BTLink_2: Checking Reset MO Check Flag command response. Response: false");
+                                }
+                            }
+                        }
+
+                        public void onFinish() {
+                            if (Request.contains(BTConstants.resetMOCheckFlag_command) && Response.contains("mo_check_flag")) {
+                                if (AppConstants.GenerateLogs)
+                                    AppConstants.WriteinFile(TAG + " BTLink_2: Checking Reset MO Check Flag command response:>> " + Response);
+                                UpdateResetMOCheckFlagOfLink();
+                            }
+                            P_Type_Command();
+                        }
+                    }.start();
+                } else {
+                    P_Type_Command();
+                }
+            } else {
+                P_Type_Command();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink_2: Reset MO Check Flag Command Exception:>>" + e.getMessage());
             P_Type_Command();
         }
     }
@@ -1487,7 +1538,7 @@ public class BackgroundService_BTTwo extends Service {
     private void TerminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
-            if (fillqty > 0) {
+            if (Pulses > 0 || fillqty > 0) {
                 if (isOnlineTxn) {
                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTTwo.this);
                 } else {
@@ -1579,7 +1630,7 @@ public class BackgroundService_BTTwo extends Service {
             if (isOnlineTxn) { // || BTConstants.SwitchedBTToUDP2
                 UpdateTransactionToSqlite(outputQuantity);
             } else {
-                if (fillqty > 0) {
+                if (Pulses > 0 || fillqty > 0) {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
                 if (AppConstants.GenerateLogs)
@@ -1660,6 +1711,15 @@ public class BackgroundService_BTTwo extends Service {
                             ReadPulse();
                         }
                     }
+
+                    if (MOStatusCheckFlag.equalsIgnoreCase("ON")) {
+                        if (Response.contains("**")) {
+                            if (!isManualOverrideDetected) {
+                                isManualOverrideDetected = true;
+                                UpdateManualOverrideStatusOfLink();
+                            }
+                        }
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1710,7 +1770,7 @@ public class BackgroundService_BTTwo extends Service {
         imap.put("authString", authString);
         imap.put("sqliteId", sqliteID + "");
 
-        if (fillqty > 0) {
+        if (Pulses > 0 || fillqty > 0) {
 
             //in progress (transaction recently started, no new information): Transaction ongoing = 8  --non zero qty
             CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_BTTwo.this);
@@ -1754,9 +1814,7 @@ public class BackgroundService_BTTwo extends Service {
             boolean isInsert = true;
             ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
             if (alltranz != null && alltranz.size() > 0) {
-
                 for (int i = 0; i < alltranz.size(); i++) {
-
                     if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
                         isInsert = false;
                         break;
@@ -1769,7 +1827,7 @@ public class BackgroundService_BTTwo extends Service {
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_2: SaveLastBTTransactionToServer Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " BTLink_2: SaveLastBTTransactionInLocalDB Exception: " + e.getMessage());
         }
     }
 
@@ -1922,7 +1980,7 @@ public class BackgroundService_BTTwo extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink_2: LINK Version >> " + version);
             storeUpgradeFSVersion(BackgroundService_BTTwo.this, AppConstants.UP_HoseId_fs2, version);
-            versionNumberOfLinkTwo = CommonUtils.GetVersionNumberFromLink(version);
+            versionNumberOfLinkTwo = CommonUtils.getVersionFromLink(version);
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
@@ -2182,49 +2240,19 @@ public class BackgroundService_BTTwo extends Service {
 
     private void parseLast1CommandResponse(String response) {
         try {
-            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("records");
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject j = jsonArray.getJSONObject(i);
                 String txtn = j.getString("txtn");
-                String date = j.getString("date");
-                String vehicle = j.getString("vehicle");
                 String pulse = j.getString("pulse");
-                String dflag = j.getString("dflag");
 
-                try {
-                    if (!date.contains("-") && date.length() == 12) { // change date format from "yyMMddHHmmss" to "yyyy-MM-dd HH:mm:ss"
-                        date = BTConstants.parseDateForOldVersion(date);
-                    }
-                } catch (Exception e) {
-                    Log.i(TAG, " Exception while parsing date format.>> " + e.getMessage());
+                if (!txtn.equalsIgnoreCase("N/A") && !pulse.equalsIgnoreCase("-1")) {
+                    SaveLastBTTransactionInLocalDB(txtn, pulse);
                 }
-
-                HashMap<String, String> Hmap = new HashMap<>();
-                Hmap.put("TransactionID", txtn);//TransactionID
-                Hmap.put("Pulses", pulse);//Pulses
-                Hmap.put("FuelQuantity", ReturnQty(pulse));//FuelQuantity
-                Hmap.put("TransactionDateTime", date); //TransactionDateTime
-                Hmap.put("VehicleId", vehicle); //VehicleId
-                Hmap.put("dflag", dflag);
-
-                arrayList.add(Hmap);
             }
-
-            Gson gs = new Gson();
-            EntityCmd20Txn ety = new EntityCmd20Txn();
-            ety.cmtxtnid_20_record = arrayList;
-
-            String json20txn = gs.toJson(ety);
-
-            SharedPreferences sharedPref = this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("LAST1_LINK2", json20txn);
-            editor.apply();
         } catch (Exception e) {
-            e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " BTLink_2: Exception in parseLast1CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
@@ -2279,4 +2307,96 @@ public class BackgroundService_BTTwo extends Service {
                 AppConstants.WriteinFile(TAG + " BTLink_2: Exception in parseLast20CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
+
+    private void UpdateCheckMOStatusFlagOfLink() {
+        try {
+            String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTTwo.this).PersonEmail;
+
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTTwo.this) + ":" + userEmail + ":" + "UpdateCheckMOStatusFlagOfLink" + AppConstants.LANG_PARAM);
+
+            ManualOverrideStatus manualOverrideStatus = new ManualOverrideStatus();
+            manualOverrideStatus.SiteId = BTConstants.BT2SITE_ID;
+
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(manualOverrideStatus);
+
+            SharedPreferences pref;
+            SharedPreferences.Editor editor;
+
+            pref = BackgroundService_BTTwo.this.getSharedPreferences("storeCheckMOStatusFlag2", 0);
+            editor = pref.edit();
+
+            // Storing
+            editor.putString("jsonData", jsonData);
+            editor.putString("authString", authString);
+
+            // commit changes
+            editor.commit();
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink_2: UpdateCheckMOStatusFlagOfLink Exception: " + ex.getMessage());
+        }
+    }
+
+    private void UpdateResetMOCheckFlagOfLink() {
+        try {
+            String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTTwo.this).PersonEmail;
+
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTTwo.this) + ":" + userEmail + ":" + "ResetManualOverrideStatusOfLink" + AppConstants.LANG_PARAM);
+
+            ManualOverrideStatus manualOverrideStatus = new ManualOverrideStatus();
+            manualOverrideStatus.SiteId = BTConstants.BT2SITE_ID;
+
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(manualOverrideStatus);
+
+            SharedPreferences pref;
+            SharedPreferences.Editor editor;
+
+            pref = BackgroundService_BTTwo.this.getSharedPreferences("storeResetMOCheckFlag2", 0);
+            editor = pref.edit();
+
+            // Storing
+            editor.putString("jsonData", jsonData);
+            editor.putString("authString", authString);
+
+            // commit changes
+            editor.commit();
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink_2: UpdateResetMOCheckFlagOfLink Exception: " + ex.getMessage());
+        }
+    }
+
+    private void UpdateManualOverrideStatusOfLink() {
+        try {
+            String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTTwo.this).PersonEmail;
+
+            String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTTwo.this) + ":" + userEmail + ":" + "UpdateManualOverrideStatusOfLink" + AppConstants.LANG_PARAM);
+
+            ManualOverrideStatus manualOverrideStatus = new ManualOverrideStatus();
+            manualOverrideStatus.SiteId = BTConstants.BT2SITE_ID;
+
+            Gson gson = new Gson();
+            String jsonData = gson.toJson(manualOverrideStatus);
+
+            SharedPreferences pref;
+            SharedPreferences.Editor editor;
+
+            pref = BackgroundService_BTTwo.this.getSharedPreferences("storeManualOverrideStatus2", 0);
+            editor = pref.edit();
+
+            // Storing
+            editor.putString("jsonData", jsonData);
+            editor.putString("authString", authString);
+            editor.putString("isServerCallInProgress", "false");
+
+            // commit changes
+            editor.commit();
+        } catch (Exception ex) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " BTLink_2: UpdateManualOverrideStatusOfLink Exception: " + ex.getMessage());
+        }
+    }
+
 }

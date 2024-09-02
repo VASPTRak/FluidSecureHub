@@ -915,7 +915,15 @@ public class CommonUtils {
     }
 
 
-    public static void SaveVehiFuelInPref_FS1(Context activity, String TransactionId_FS1, String VehicleId_FS1, String PhoneNumber_FS1, String PersonId_FS1, String PulseRatio_FS1, String MinLimit_FS1, String FuelTypeId_FS1, String ServerDate_FS1, String IntervalToStopFuel_FS1, String PrintDate_FS1, String Company_FS1, String Location_FS1, String PersonName_FS1, String PrinterMacAddress_FS1, String PrinterName_FS1, String vehicleNumber_FS1, String accOther_FS1, String VehicleSum_FS1, String DeptSum_FS1, String VehPercentage_FS1, String DeptPercentage_FS1, String SurchargeType_FS1, String ProductPrice_FS1, String IsTLDCall_FS1, String EnablePrinter_FS1, String OdoMeter_FS1, String Hours_FS1, String PumpOnTime_FS1,String LimitReachedMessage_FS1,String VehicleNumber_FS1,String TransactionDateWithFormat_FS1,String SiteId_FS1) {
+    public static void SaveVehiFuelInPref_FS1(Context activity, String TransactionId_FS1, String VehicleId_FS1, String PhoneNumber_FS1,
+                                              String PersonId_FS1, String PulseRatio_FS1, String MinLimit_FS1, String FuelTypeId_FS1,
+                                              String ServerDate_FS1, String IntervalToStopFuel_FS1, String PrintDate_FS1, String Company_FS1,
+                                              String Location_FS1, String PersonName_FS1, String PrinterMacAddress_FS1, String PrinterName_FS1,
+                                              String vehicleNumber_FS1, String accOther_FS1, String VehicleSum_FS1, String DeptSum_FS1,
+                                              String VehPercentage_FS1, String DeptPercentage_FS1, String SurchargeType_FS1,
+                                              String ProductPrice_FS1, String IsTLDCall_FS1, String EnablePrinter_FS1, String OdoMeter_FS1,
+                                              String Hours_FS1, String PumpOnTime_FS1, String LimitReachedMessage_FS1, String VehicleNumber_FS1,
+                                              String TransactionDateWithFormat_FS1, String SiteId_FS1) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -957,7 +965,13 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref(Context activity, String TransactionId, String VehicleId, String PhoneNumber, String PersonId, String PulseRatio, String MinLimit, String FuelTypeId, String ServerDate, String IntervalToStopFuel, String PrintDate, String Company, String Location, String PersonName, String PrinterMacAddress, String PrinterName, String vehicleNumber, String accOther, String VehicleSum, String DeptSum, String VehPercentage, String DeptPercentage, String SurchargeType, String ProductPrice, String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime,String LimitReachedMessage,String VehicleNumber,String TransactionDateWithFormat,String SiteId) {
+    public static void SaveVehiFuelInPref(Context activity, String TransactionId, String VehicleId, String PhoneNumber, String PersonId,
+                                          String PulseRatio, String MinLimit, String FuelTypeId, String ServerDate, String IntervalToStopFuel,
+                                          String PrintDate, String Company, String Location, String PersonName, String PrinterMacAddress,
+                                          String PrinterName, String vehicleNumber, String accOther, String VehicleSum, String DeptSum,
+                                          String VehPercentage, String DeptPercentage, String SurchargeType, String ProductPrice,
+                                          String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime,
+                                          String LimitReachedMessage, String VehicleNumber, String TransactionDateWithFormat, String SiteId) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -999,7 +1013,15 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS3(Context activity, String TransactionId_FS3, String VehicleId_FS3, String PhoneNumber_FS3, String PersonId_FS3, String PulseRatio_FS3, String MinLimit_FS3, String FuelTypeId_FS3, String ServerDate_FS3, String IntervalToStopFuel_FS3, String PrintDate_FS3, String Company_FS3, String Location_FS3, String PersonName_FS3, String PrinterMacAddress_FS3, String PrinterName_FS3, String vehicleNumber_FS3, String accOther_FS3, String VehicleSum_FS3, String DeptSum_FS3, String VehPercentage_FS3, String DeptPercentage_FS3, String SurchargeType_FS3, String ProductPrice_FS3, String IsTLDCall_FS3, String EnablePrinter_FS3, String OdoMeter_FS3, String Hours_FS3, String PumpOnTime_FS3,String LimitReachedMessage_FS3,String VehicleNumber_FS3,String TransactionDateWithFormat_FS3,String SiteId_FS3) {
+    public static void SaveVehiFuelInPref_FS3(Context activity, String TransactionId_FS3, String VehicleId_FS3, String PhoneNumber_FS3,
+                                              String PersonId_FS3, String PulseRatio_FS3, String MinLimit_FS3, String FuelTypeId_FS3,
+                                              String ServerDate_FS3, String IntervalToStopFuel_FS3, String PrintDate_FS3, String Company_FS3,
+                                              String Location_FS3, String PersonName_FS3, String PrinterMacAddress_FS3, String PrinterName_FS3,
+                                              String vehicleNumber_FS3, String accOther_FS3, String VehicleSum_FS3, String DeptSum_FS3,
+                                              String VehPercentage_FS3, String DeptPercentage_FS3, String SurchargeType_FS3,
+                                              String ProductPrice_FS3, String IsTLDCall_FS3, String EnablePrinter_FS3, String OdoMeter_FS3,
+                                              String Hours_FS3, String PumpOnTime_FS3, String LimitReachedMessage_FS3, String VehicleNumber_FS3,
+                                              String TransactionDateWithFormat_FS3, String SiteId_FS3) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -1040,7 +1062,15 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS4(Context activity, String TransactionId_FS4, String VehicleId_FS4, String PhoneNumber_FS4, String PersonId_FS4, String PulseRatio_FS4, String MinLimit_FS4, String FuelTypeId_FS4, String ServerDate_FS4, String IntervalToStopFuel_FS4, String PrintDate_FS4, String Company_FS4, String Location_FS4, String PersonName_FS4, String PrinterMacAddress_FS4, String PrinterName_FS4, String vehicleNumber_FS4, String accOther_FS4, String VehicleSum_FS4, String DeptSum_FS4, String VehPercentage_FS4, String DeptPercentage_FS4, String SurchargeType_FS4, String ProductPrice_FS4, String IsTLDCall_FS4, String EnablePrinter_FS4, String OdoMeter_FS4, String Hours_FS4, String PumpOnTime_FS4,String LimitReachedMessage_FS4,String VehicleNumber_FS4,String TransactionDateWithFormat_FS4,String SiteId_FS4) {
+    public static void SaveVehiFuelInPref_FS4(Context activity, String TransactionId_FS4, String VehicleId_FS4, String PhoneNumber_FS4,
+                                              String PersonId_FS4, String PulseRatio_FS4, String MinLimit_FS4, String FuelTypeId_FS4,
+                                              String ServerDate_FS4, String IntervalToStopFuel_FS4, String PrintDate_FS4, String Company_FS4,
+                                              String Location_FS4, String PersonName_FS4, String PrinterMacAddress_FS4, String PrinterName_FS4,
+                                              String vehicleNumber_FS4, String accOther_FS4, String VehicleSum_FS4, String DeptSum_FS4,
+                                              String VehPercentage_FS4, String DeptPercentage_FS4, String SurchargeType_FS4,
+                                              String ProductPrice_FS4, String IsTLDCall_FS4, String EnablePrinter_FS4, String OdoMeter_FS4,
+                                              String Hours_FS4, String PumpOnTime_FS4, String LimitReachedMessage_FS4, String VehicleNumber_FS4,
+                                              String TransactionDateWithFormat_FS4, String SiteId_FS4) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -1082,7 +1112,15 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS5(Context activity, String TransactionId_FS5, String VehicleId_FS5, String PhoneNumber_FS5, String PersonId_FS5, String PulseRatio_FS5, String MinLimit_FS5, String FuelTypeId_FS5, String ServerDate_FS5, String IntervalToStopFuel_FS5, String PrintDate_FS5, String Company_FS5, String Location_FS5, String PersonName_FS5, String PrinterMacAddress_FS5, String PrinterName_FS5, String vehicleNumber_FS5, String accOther_FS5, String VehicleSum_FS5, String DeptSum_FS5, String VehPercentage_FS5, String DeptPercentage_FS5, String SurchargeType_FS5, String ProductPrice_FS5, String IsTLDCall_FS5, String EnablePrinter_FS5, String OdoMeter_FS5, String Hours_FS5, String PumpOnTime_FS5,String LimitReachedMessage_FS5,String VehicleNumber_FS5,String TransactionDateWithFormat_FS5,String SiteId_FS5) {
+    public static void SaveVehiFuelInPref_FS5(Context activity, String TransactionId_FS5, String VehicleId_FS5, String PhoneNumber_FS5,
+                                              String PersonId_FS5, String PulseRatio_FS5, String MinLimit_FS5, String FuelTypeId_FS5,
+                                              String ServerDate_FS5, String IntervalToStopFuel_FS5, String PrintDate_FS5, String Company_FS5,
+                                              String Location_FS5, String PersonName_FS5, String PrinterMacAddress_FS5, String PrinterName_FS5,
+                                              String vehicleNumber_FS5, String accOther_FS5, String VehicleSum_FS5, String DeptSum_FS5,
+                                              String VehPercentage_FS5, String DeptPercentage_FS5, String SurchargeType_FS5,
+                                              String ProductPrice_FS5, String IsTLDCall_FS5, String EnablePrinter_FS5, String OdoMeter_FS5,
+                                              String Hours_FS5, String PumpOnTime_FS5, String LimitReachedMessage_FS5, String VehicleNumber_FS5,
+                                              String TransactionDateWithFormat_FS5, String SiteId_FS5) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -1124,7 +1162,15 @@ public class CommonUtils {
         editor.commit();
     }
 
-    public static void SaveVehiFuelInPref_FS6(Context activity, String TransactionId_FS6, String VehicleId_FS6, String PhoneNumber_FS6, String PersonId_FS6, String PulseRatio_FS6, String MinLimit_FS6, String FuelTypeId_FS6, String ServerDate_FS6, String IntervalToStopFuel_FS6, String PrintDate_FS6, String Company_FS6, String Location_FS6, String PersonName_FS6, String PrinterMacAddress_FS6, String PrinterName_FS6, String vehicleNumber_FS6, String accOther_FS6, String VehicleSum_FS6, String DeptSum_FS6, String VehPercentage_FS6, String DeptPercentage_FS6, String SurchargeType_FS6, String ProductPrice_FS6, String IsTLDCall_FS6, String EnablePrinter_FS6, String OdoMeter_FS6, String Hours_FS6, String PumpOnTime_FS6,String LimitReachedMessage_FS6,String VehicleNumber_FS6,String TransactionDateWithFormat_FS6,String SiteId_FS6) {
+    public static void SaveVehiFuelInPref_FS6(Context activity, String TransactionId_FS6, String VehicleId_FS6, String PhoneNumber_FS6,
+                                              String PersonId_FS6, String PulseRatio_FS6, String MinLimit_FS6, String FuelTypeId_FS6,
+                                              String ServerDate_FS6, String IntervalToStopFuel_FS6, String PrintDate_FS6, String Company_FS6,
+                                              String Location_FS6, String PersonName_FS6, String PrinterMacAddress_FS6, String PrinterName_FS6,
+                                              String vehicleNumber_FS6, String accOther_FS6, String VehicleSum_FS6, String DeptSum_FS6,
+                                              String VehPercentage_FS6, String DeptPercentage_FS6, String SurchargeType_FS6,
+                                              String ProductPrice_FS6, String IsTLDCall_FS6, String EnablePrinter_FS6, String OdoMeter_FS6,
+                                              String Hours_FS6, String PumpOnTime_FS6, String LimitReachedMessage_FS6, String VehicleNumber_FS6,
+                                              String TransactionDateWithFormat_FS6, String SiteId_FS6) {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -1227,16 +1273,13 @@ public class CommonUtils {
     }
 
     public static UserInfoEntity getCustomerDetailsCC(Context ctx) {
-
         UserInfoEntity userInfoEntity = new UserInfoEntity();
-
         SharedPreferences sharedPref = ctx.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
         userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
 
         return userInfoEntity;
     }
@@ -1301,21 +1344,6 @@ public class CommonUtils {
         return userInfoEntity;
     }
 
-    public static UserInfoEntity getCustomerDetails_backgroundService(BackgroundService_AP activity) {
-
-        UserInfoEntity userInfoEntity = new UserInfoEntity();
-
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-
-        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
-        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
-        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
-
-        return userInfoEntity;
-    }
-
     public static UserInfoEntity getCustomerDetails_KdtAlive(BackgroundServiceKeepDataTransferAlive activity) {
 
         UserInfoEntity userInfoEntity = new UserInfoEntity();
@@ -1344,53 +1372,7 @@ public class CommonUtils {
         return userInfoEntity;
     }
 
-    public static UserInfoEntity getCustomerDetails_backgroundService_PIPE(BackgroundService_AP_PIPE activity) {
-
-        UserInfoEntity userInfoEntity = new UserInfoEntity();
-
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-
-        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
-        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
-        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
-
-        return userInfoEntity;
-    }
-
-    public static UserInfoEntity getCustomerDetails_backgroundService_FS3(BackgroundService_FS_UNIT_3 activity) {
-
-        UserInfoEntity userInfoEntity = new UserInfoEntity();
-
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-
-        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
-        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
-        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
-
-        return userInfoEntity;
-    }
-
-    public static UserInfoEntity getCustomerDetails_backgroundService_FS4(BackgroundService_FS_UNIT_4 activity) {
-
-        UserInfoEntity userInfoEntity = new UserInfoEntity();
-
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-
-        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
-        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
-        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
-
-        return userInfoEntity;
-    }
-
-    public static UserInfoEntity getCustomerDetails_backgroundServiceBT(Context ctx) {
-
+    public static UserInfoEntity getCustomerDetails_backgroundServiceHTTP(Context ctx) {
         UserInfoEntity userInfoEntity = new UserInfoEntity();
         SharedPreferences sharedPref = ctx.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
@@ -1399,36 +1381,17 @@ public class CommonUtils {
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
         userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
 
-
         return userInfoEntity;
     }
 
-    public static UserInfoEntity getCustomerDetails_backgroundService_FS5(BackgroundService_FS_UNIT_5 activity) {
-
+    public static UserInfoEntity getCustomerDetails_backgroundServiceBT(Context ctx) {
         UserInfoEntity userInfoEntity = new UserInfoEntity();
-
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = ctx.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
         userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
-
-        return userInfoEntity;
-    }
-
-    public static UserInfoEntity getCustomerDetails_backgroundService_FS6(BackgroundService_FS_UNIT_6 activity) {
-
-        UserInfoEntity userInfoEntity = new UserInfoEntity();
-
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-
-        userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
-        userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
-        userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
-
 
         return userInfoEntity;
     }
@@ -2144,18 +2107,6 @@ public class CommonUtils {
         return LinkName;
     }
 
-    /*public static String getOriginalNamesOfLink(int linkPosition) {
-        String OriginalNamesOfLink = "";
-        try {
-            OriginalNamesOfLink = AppConstants.DetailsServerSSIDList.get(linkPosition).get("OriginalNamesOfLink");
-        } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Something went wrong please check Link data Ex: " + e.toString());
-            e.printStackTrace();
-        }
-        return OriginalNamesOfLink;
-    }*/
-
     public static void DebugLogTemp(String TAG, String Fun){
 
         //This code is to check the issue with the duplicate sqlite insert Qty
@@ -2537,15 +2488,41 @@ public class CommonUtils {
         }
     }
 
-    public static int GetVersionNumberFromLink(String versionFromLink) {
-        int versionNum = 0;
+    public static String getVersionFromLink(String versionFromLink) {
+        String version = "";
         try {
-            String version = versionFromLink.replaceAll("[^0-9]", "");
-            versionNum = Integer.parseInt(version);
+            version = versionFromLink.replaceAll("[^0-9.]", "");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return versionNum;
+        return version;
+    }
+
+    public static boolean checkBTVersionCompatibility(String currentVersion, String compatibleVersion) {
+        // Checking currentVersion >= compatibleVersion (last1, last20, bypassPumpReset, p_type, MOStatus)
+        if (currentVersion.isEmpty()) {
+            currentVersion = "1";
+        }
+        String[] parts1 = currentVersion.split("\\.");
+        String[] parts2 = compatibleVersion.split("\\.");
+
+        int maxLength = Math.max(parts1.length, parts2.length);
+
+        for (int i = 0; i < maxLength; i++) {
+            int v1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
+            int v2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
+
+            if (v1 > v2) {
+                return true;
+            } else if (v1 < v2) {
+                return false;
+            }
+
+            if (i == maxLength - 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void hideKeyboard(Activity activity) {

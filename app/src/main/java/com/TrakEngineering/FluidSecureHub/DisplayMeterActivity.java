@@ -107,7 +107,6 @@ import static java.lang.String.format;
 
 public class DisplayMeterActivity extends AppCompatActivity implements View.OnClickListener { //, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 
-
     //WifiManager wifiManager;
     private static final String TAG = "DisplayMAct ";
     private String vehicleNumber, odometerTenths = "0", dNumber = "", pNumber = "", oText = "", hNumber = "";
@@ -232,8 +231,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     //private boolean skipOnPostResumeForHotspot = false;
     public int hotspotToggleAttempt = 0;
     private Dialog toastDialog = null;
-    public String PulserTimingAdjust;
-    public String IsResetSwitchTimeBounce;
+    //public String PulserTimingAdjust;
+    //public String IsResetSwitchTimeBounce;
     public int connTimeout = 10;
 
     /*@Override
@@ -439,7 +438,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         //getListOfConnectedDevice();
         getIpOverOSVersion();
-        GetCalibrationDetails();
+        //GetCalibrationDetails();
 
         tv_hoseConnected.setText("Connected to " + AppConstants.CURRENT_SELECTED_SSID);
         if (Constants.CurrentSelectedHose.equals("FS1")) {
@@ -638,7 +637,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    public void GetCalibrationDetails() {
+    /*public void GetCalibrationDetails() {
         try {
             SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
 
@@ -670,7 +669,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " GetCalibrationDetails Exception " + e.getMessage());
         }
-    }
+    }*/
 
     private void TimeOutDisplayMeterScreen() {
         SharedPreferences sharedPrefODO = DisplayMeterActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -1112,7 +1111,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {
+    /*public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {
 
         SharedPreferences sharedPrefODO = DisplayMeterActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String HubId = sharedPrefODO.getString(AppConstants.HubId, "");// HubId equals to personId
@@ -1129,7 +1128,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (hoseid != null && !hoseid.trim().isEmpty()) {
                 new DisplayMeterActivity.UpgradeCurrentVersionWithUgradableVersion(objEntityClass).execute();
 
-                /*try {
+                *//*try {
                     JSONObject jsonObject = new JSONObject(objUP.response);
                     String ResponceMessage = jsonObject.getString("ResponceMessage");
                     String ResponceText = jsonObject.getString("ResponceText");
@@ -1139,7 +1138,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }*//*
             }
         } else {
             if (AppConstants.GenerateLogs)
@@ -1172,10 +1171,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             Istimeout_Sec = true;
             ResetTimeoutDisplayMeterScreen();
         }
+    }*/
 
-    }
-
-    public class GetUpgradeFirmwareStatus extends AsyncTask<String, Void, String> {
+    /*public class GetUpgradeFirmwareStatus extends AsyncTask<String, Void, String> {
 
         String FS_selected;
         String jsonData;
@@ -1222,7 +1220,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     AppConstants.WriteinFile(TAG + " GetUpgradeFirmwareStatus doInBackground Exception " + e.getMessage());
                 System.out.println(e);
             }
-
             return response;
         }
 
@@ -1298,10 +1295,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(e.getMessage());
             }
         }
-    }
+    }*/
 
-    public class UpgradeCurrentVersionWithUgradableVersion extends AsyncTask<Void, Void, Void> {
-
+    /*public class UpgradeCurrentVersionWithUgradableVersion extends AsyncTask<Void, Void, Void> {
 
         UpgradeVersionEntity objupgrade;
         public String response = null;
@@ -1333,29 +1329,21 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             }
             return null;
         }
+    }*/
 
-    }
-
-
-    public void GetLastTransaction() {
+    /*public void GetLastTransaction() {
         try {
             Thread.sleep(1000);
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending LASTTXTNID command to Link: " + LinkName);
             new CommandsGET_TxnId().execute(URL_GET_TXNID);
-
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "  LastTXNid Ex:" + e.getMessage() + " ");
         }
+    }*/
 
-
-    }
-
-
-    public void stopButtonFunctionality() {
-
-
+    /*public void stopButtonFunctionality() {
         quantityRecords.clear();
 
         btnStart.setVisibility(View.GONE);
@@ -1367,42 +1355,29 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         //it stops pulsar logic------
         stopTimer = false;
 
-
         new CommandsPOST().execute(URL_RELAY, jsonRelayOff, "");
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 try {
-
                     new GETFINALPulsar().execute(URL_GET_PULSAR);
-
                 } catch (Exception e) {
                     System.out.println(e);
                 }
             }
         }, 2000);
+    }*/
 
-
-    }
-
-
-    public void finalLastStep() {
-
+    /*public void finalLastStep() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 if (AppConstants.NeedToRename) {
-
                     consoleString += "RENAME:\n" + jsonRename;
-
                     new CommandsPOST().execute(URL_WIFI, jsonRename, "");
-
                 }
             }
-
         }, 2500);
 
         long secondsTime = 3000;
@@ -1414,78 +1389,51 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 //AppConstants.disconnectWiFi(DisplayMeterActivity.this);
-
                 TransactionCompleteFunction();
-
             }
-
         }, secondsTime);
-    }
+    }*/
 
-    public void startQuantityInterval() {
-
-
+    /*public void startQuantityInterval() {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-
                 try {
-
                     if (stopTimer) {
-
-                        /*
+                        *//*
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-
                             setHttpTransportWifi(URL_GET_PULSAR, EMPTY_Val);
-
                         } else {
-
                         }
-                        */
-
+                        *//*
                         new GETPulsarQuantity().execute(URL_GET_PULSAR);
-
                     }
-
                 } catch (Exception e) {
                     System.out.println(e);
                 }
-
             }
         }, 0, 2000);
+    }*/
 
 
-    }
-
-
-    public void secondsTimeLogic(String currentDT) {
-
+    /*public void secondsTimeLogic(String currentDT) {
         try {
-
-
             if (quantityRecords.size() > 0) {
-
                 Date nowDT = sdformat.parse(currentDT);
                 Date d2 = sdformat.parse(quantityRecords.get(0).get("b"));
 
                 long seconds = (nowDT.getTime() - d2.getTime()) / 1000;
 
-
                 if (stopAutoFuelSeconds > 0) {
-
                     if (seconds >= stopAutoFuelSeconds) {
-
                         if (qtyFrequencyCount()) {
-
                             //qty is same for some time
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.");
                             toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nQuantity is same for last " + stopAutoFuelSeconds + " seconds.", Color.BLUE);
                             stopButtonFunctionality();
                             stopTimer = false;
-
                         } else {
                             quantityRecords.remove(0);
                             System.out.println("0 th pos deleted");
@@ -1493,16 +1441,14 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         }
                     }
                 }
-
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " secondsTimeLogic Exception " + e.getMessage());
         }
-    }
+    }*/
 
-
-    public void AlertSettings(final Context ctx, String message) {
+    /*public void AlertSettings(final Context ctx, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setCancelable(false);
@@ -1514,15 +1460,13 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         startActivity(new Intent(Settings.ACTION_SETTINGS));
                     }
                 }
-
         );
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-    }
+    }*/
 
-    public void TransactionCompleteFunction() {
-
+    /*public void TransactionCompleteFunction() {
         try {
             TrazComp authEntityClass = new TrazComp();
             authEntityClass.PersonId = PersonId;
@@ -1551,7 +1495,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             System.out.println("TrazComp......" + jsonData);
 
-            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).Email;
+            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
 
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
@@ -1562,9 +1506,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             boolean isInsert = true;
             ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
             if (alltranz != null && alltranz.size() > 0) {
-
                 for (int i = 0; i < alltranz.size(); i++) {
-
                     if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
                         isInsert = false;
                         break;
@@ -1572,17 +1514,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
             }
 
-
             if (isInsert && fillqty > 0) {
                 controller.insertTransactions(imap);
             }
 
-           /* Constants.AccVehicleNumber = "";
+           *//* Constants.AccVehicleNumber = "";
             Constants.AccOdoMeter = 0;
             Constants.AccDepartmentNumber = "";
             Constants.AccPersonnelPIN = "";
-            Constants.AccOther = "";*/
-
+            Constants.AccOther = "";*//*
 
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
@@ -1590,19 +1530,16 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             CommonUtils.LogMessage(TAG, "AuthTestAsyncTask ", ex);
         }
 
-
         isTransactionComp = true;
 
         AppConstants.BUSY_STATUS = true;
-
 
         btnCancel.setVisibility(View.GONE);
         consoleString = "";
         tvConsole.setText("");
 
-
         if (AppConstants.NeedToRename) {
-            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).Email;
+            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
 
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag" + AppConstants.LANG_PARAM);
 
@@ -1615,9 +1552,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             String jsonData = gson.toJson(rhose);
 
             storeIsRenameFlag(DisplayMeterActivity.this, AppConstants.NeedToRename, jsonData, authString);
-
         }
-
 
         //startService(new Intent(DisplayMeterActivity.this, BackgroundService.class));
 
@@ -1631,15 +1566,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 alertThankYou(tvGallons.getText().toString() + "\n" + tvCounts.getText().toString() + "\n\nThank You!!!");
             }
         }, 1500);
+    }*/
 
-
-    }
-
-    public boolean qtyFrequencyCount() {
-
-
+    /*public boolean qtyFrequencyCount() {
         if (quantityRecords.size() > 0) {
-
             ArrayList<String> data = new ArrayList<>();
 
             for (HashMap<String, String> hm : quantityRecords) {
@@ -1651,29 +1581,21 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             System.out.println("size--" + uniqueSet.size());
 
-            /*for (String temp : uniqueSet) {
+            *//*for (String temp : uniqueSet) {
                 System.out.println(temp + ": " + Collections.frequency(data, temp));
-            }*/
+            }*//*
 
             if (uniqueSet.size() == 1) {
                 return true;
             }
         }
-
         return false;
-    }
+    }*/
 
-
-    public class GETPulsarQuantity extends AsyncTask<String, Void, String> {
-
+    /*public class GETPulsarQuantity extends AsyncTask<String, Void, String> {
         public String resp = "";
-
-
         protected String doInBackground(String... param) {
-
-
             try {
-
                 //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
@@ -1685,51 +1607,33 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " GETPulsarQuantity doInBackground Exception " + e.getMessage());
                 Log.d("Ex", e.getMessage());
             }
-
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
-
             try {
-
                 consoleString += "OUTPUT- " + result + "\n";
-
                 tvConsole.setText(consoleString);
-
                 System.out.println(result);
-
                 if (stopTimer)
                     pulsarQtyLogic(result);
-
-
             } catch (Exception e) {
-
                 System.out.println(e);
             }
-
         }
-    }
+    }*/
 
-    public class GETFINALPulsar extends AsyncTask<String, Void, String> {
-
+    /*public class GETFINALPulsar extends AsyncTask<String, Void, String> {
         public String resp = "";
 
-
         protected String doInBackground(String... param) {
-
-
             try {
-
                 //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
@@ -1741,34 +1645,24 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " GETFINALPulsar doInBackground Exception " + e.getMessage());
                 Log.d("Ex", e.getMessage());
             }
-
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
-
             try {
-
                 System.out.println(result);
-
-
                 if (result.contains("pulsar_status")) {
-
                     JSONObject jsonObject = new JSONObject(result);
                     JSONObject joPulsarStat = jsonObject.getJSONObject("pulsar_status");
                     String counts = joPulsarStat.getString("counts");
 
                     convertCountToQuantity(counts);
-
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -1776,23 +1670,17 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             finalLastStep();
                         }
                     }, 1000);
-
-
                 }
-
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " GETFINALPulsar onPostExecute Exception " + e.getMessage());
                 System.out.println(e);
             }
-
         }
-    }
+    }*/
 
-    public void pulsarQtyLogic(String result) {
-
+    /*public void pulsarQtyLogic(String result) {
         int secure_status = 0;
-
         try {
             if (result.contains("pulsar_status")) {
                 JSONObject jsonObject = new JSONObject(result);
@@ -1801,11 +1689,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 String pulsar_status = joPulsarStat.getString("pulsar_status");
                 String pulsar_secure_status = joPulsarStat.getString("pulsar_secure_status");
 
-
                 if (pulsar_status.trim().equalsIgnoreCase("1")) {
                     pulsarConnected = true;
                 } else if (pulsar_status.trim().equalsIgnoreCase("0")) {
-
                     pulsarConnected = false;
                     if (!pulsarConnected) {
                         if (AppConstants.GenerateLogs)
@@ -1815,9 +1701,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     }
                 }
 
-
                 convertCountToQuantity(counts);
-
 
                 if (!pulsar_secure_status.trim().isEmpty()) {
                     secure_status = Integer.parseInt(pulsar_secure_status);
@@ -1851,9 +1735,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality();
                     }
-
                 }
-
             }
             Date currDT = new Date();
             String strCurDT = sdformat.format(currDT);
@@ -1866,14 +1748,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             //if quantity same for some interval
             secondsTimeLogic(strCurDT);
 
-
             //if quantity reach max limit
             if (!outputQuantity.trim().isEmpty()) {
                 try {
-
                     if (minFuelLimit > 0) {
                         if (fillqty >= minFuelLimit) {
-
                             if (AppConstants.GenerateLogs)
                                 AppConstants.WriteinFile(TAG + "Auto Stop!\n\nYou reached MAX fuel limit.");
                             toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, "Auto Stop!\n\nYou reached MAX fuel limit.", Color.BLUE);
@@ -1883,7 +1762,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         }
                     }
                 } catch (Exception e) {
-
                 }
             }
         } catch (Exception e) {
@@ -1891,9 +1769,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 AppConstants.WriteinFile(TAG + " pulsarQtyLogic Exception " + e.getMessage());
             System.out.println(e);
         }
-    }
+    }*/
 
-    public void convertCountToQuantity(String counts) {
+    /*public void convertCountToQuantity(String counts) {
         outputQuantity = counts;
 
         fillqty = Double.parseDouble(outputQuantity);
@@ -1901,22 +1779,14 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         fillqty = AppConstants.roundNumber(fillqty, 2);
 
-
         tvCounts.setText(getResources().getString(R.string.Pulse) + " " + outputQuantity);
         tvGallons.setText(getResources().getString(R.string.Quantity) + " " + AppConstants.spanishNumberSystem("" + fillqty));
+    }*/
 
-    }
-
-
-    public class CommandsGET extends AsyncTask<String, Void, String> {
-
+    /*public class CommandsGET extends AsyncTask<String, Void, String> {
         public String resp = "";
-
         protected String doInBackground(String... param) {
-
-
             try {
-
                 //OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(15, TimeUnit.SECONDS);
                 client.setReadTimeout(15, TimeUnit.SECONDS);
@@ -1930,38 +1800,27 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("urlStr" + request.urlString());
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " CommandsGET doInBackground Exception " + e.getMessage());
                 Log.d("Ex", e.getMessage());
             }
-
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
-
             try {
-
                 consoleString += "OUTPUT- " + result + "\n";
-
                 tvConsole.setText(consoleString);
-
                 System.out.println(result);
-
             } catch (Exception e) {
-
                 System.out.println(e);
             }
-
         }
-    }
+    }*/
 
-    public class CommandsPOST extends AsyncTask<String, Void, String> {
+    /*public class CommandsPOST extends AsyncTask<String, Void, String> {
 
         public String resp = "";
         public String calledFor = "";
@@ -2006,48 +1865,38 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " CommandsPOST doInBackground Exception " + e.getMessage());
                 Log.d("Ex", e.getMessage());
             }
-
-
             return resp;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
             pd.dismiss();
             try {
-
                 //consoleString += "OUTPUT- " + result + "\n";
-
                 //tvConsole.setText(consoleString);
-
                 System.out.println(result);
                 if (calledFor.equalsIgnoreCase("sampling_time")) {
-
                     UpdateSwitchTimeBounceForLink();
-                    checkFirmwareUpdateMain(); //StorePumpOffTimeForLink();
+                    //checkFirmwareUpdateMain(); //StorePumpOffTimeForLink();
+                    BtnStartStateChange(true);
                 }
-                /*else if (calledFor.equalsIgnoreCase("pulsar_off_time")) {
+                *//*else if (calledFor.equalsIgnoreCase("pulsar_off_time")) {
                     checkFirmwareUpdateMain();
-                }*/
-
+                }*//*
             } catch (Exception e) {
-
                 System.out.println(e);
             }
-
         }
-    }
+    }*/
 
-    private void UpdateSwitchTimeBounceForLink() {
+    /*private void UpdateSwitchTimeBounceForLink() {
         try {
-            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).Email;
+            String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
 
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "UpdateSwitchTimeBounceForLink" + AppConstants.LANG_PARAM);
 
@@ -2064,9 +1913,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "UpdateSwitchTimeBounceForLink Exception: " + ex.getMessage());
         }
-    }
+    }*/
 
-    public void storeSwitchTimeBounceFlag(Context context, String jsonData, String authString) {
+    /*public void storeSwitchTimeBounceFlag(Context context, String jsonData, String authString) {
         try {
             SharedPreferences pref;
             SharedPreferences.Editor editor;
@@ -2149,7 +1998,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
+    }*/
 
     /*public void startTimerForQuantityCheck(long millisInFuture) {
 
@@ -2168,11 +2017,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 quantityRecords.clear();
             }
         }.start();
-    }
-*/
+    }*/
 
-
-    public void connectToWiFiOld() {
+    /*public void connectToWiFiOld() {
 
         tvWifiList.setText("");
 
@@ -2183,14 +2030,14 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         List<ScanResult> scanResultList = wifiManager.getScanResults();
 
-        /*
+        *//*
         String wifiavailList = "";
         for (ScanResult result : scanResultList) {
             wifiavailList += result.SSID + "\n";
         }
 
         tvWifiList.setText(wifiavailList);
-        */
+        *//*
 
         String networkSSID = AppConstants.LAST_CONNECTED_SSID;
         String networkPass = AppConstants.WIFI_PASSWORD;
@@ -2269,11 +2116,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     wifiManager.setWifiEnabled(true);
                 }
             }
-
         }
-
-
-    }
+    }*/
 
     public String getScanResultSecurity(ScanResult scanResult) {
         Log.i(TAG, "* getScanResultSecurity");
@@ -2290,9 +2134,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         return "OPEN";
     }
 
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void connectToWiFiNew() {
+    /*public void connectToWiFiNew() {
         try {
             WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(android.content.Context.WIFI_SERVICE);
             wifiManager.setWifiEnabled(true);
@@ -2304,7 +2147,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             wifiConfig.SSID = String.format("\"%s\"", AppConstants.LAST_CONNECTED_SSID);
             wifiConfig.preSharedKey = String.format("\"%s\"", AppConstants.WIFI_PASSWORD);
 
-
             //remember id
             int netId = wifiManager.addNetwork(wifiConfig);
             wifiManager.disconnect();
@@ -2314,10 +2156,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }*/
 
-    }
-
-    private int getExistingNetworkId(String SSID) {
+    /*private int getExistingNetworkId(String SSID) {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
         if (configuredNetworks != null) {
@@ -2328,7 +2169,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             }
         }
         return -1;
-    }
+    }*/
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2372,58 +2213,40 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         startActivity(i);
     }
 
-    public class AboveVessionHttp extends AsyncTask<Network, Void, String> {
-
+    /*public class AboveVessionHttp extends AsyncTask<Network, Void, String> {
         String cmdURL;
         String cmdJSON;
 
         public AboveVessionHttp(String cmdURL, String cmdJSON) {
             this.cmdURL = cmdURL;
             this.cmdJSON = cmdJSON;
-
         }
 
         protected String doInBackground(Network... ntwrk) {
             String resp = "";
-
-
             try {
-
                 resp = sendCommandViaWiFi(ntwrk[0], cmdURL, cmdJSON);
-
-
             } catch (Exception e) {
                 System.out.println(e);
             }
-
-
             return resp;
         }
 
-
         @Override
         protected void onPostExecute(String result) {
-
             System.out.println("MM-" + result);
-
             consoleString += "OUTPUT- " + result + "\n";
-
             tvConsole.setText(consoleString);
-
-
             if (result.contains("pulsar_status")) {
-
                 if (stopTimer)
                     pulsarQtyLogic(result);
             }
         }
-    }
+    }*/
 
 
-    @TargetApi(21)
+    /*@TargetApi(21)
     private void setHttpTransportWifi(final String cmdURL, final String cmdJSON) {
-
-
         NetworkRequest.Builder requestbuilder = new NetworkRequest.Builder();
         requestbuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
 
@@ -2433,21 +2256,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onAvailable(Network network) {
                 System.out.println("wifi network found");
-
                 new AboveVessionHttp(cmdURL, cmdJSON).execute(network);
-
             }
         });
+    }*/
 
-    }
-
-
-    @TargetApi(21)
+    /*@TargetApi(21)
     private String sendCommandViaWiFi(Network network, String URLName, String jsonN) {
         String ress = "";
         try {
-
-
             // client one, should go via wifi
             okhttp3.OkHttpClient.Builder builder1 = new okhttp3.OkHttpClient.Builder();
             builder1.socketFactory(network.getSocketFactory());
@@ -2461,40 +2278,25 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         .url(URLName)
                         .build();
             } else {
-
                 okhttp3.MediaType JSON = okhttp3.MediaType.parse("application/json");
-
-
                 okhttp3.RequestBody body = okhttp3.RequestBody.create(JSON, jsonN);
-
-
                 request1 = new okhttp3.Request.Builder()
                         .url(URLName)
                         .post(body)
                         .build();
             }
-
-
             System.out.println("sending via wifi network");
-
             okhttp3.Response response = client1.newCall(request1).execute();
-
             ress = response.body().string();
-
-
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " sendCommandViaWiFi Exception " + e.getMessage());
             System.out.println(e);
         }
         return ress;
-    }
-
-
-    /////////////////////////////////////////////////////////
+    }*/
 
     /*public boolean connectToSSID(String SSID) {
-
         WifiConfiguration configuration = createOpenWifiConfiguration(SSID);
         int networkId = wifiManagerMM.addNetwork(configuration);
         Log.d("", "networkId assigned while adding network is " + networkId);
@@ -2590,8 +2392,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         tThanks.scheduleAtFixedRate(taskThanks, 0, 1000);
     }
 
-
-    public void connectToWifiMarsh() {
+    /*public void connectToWifiMarsh() {
         try {
             WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(android.content.Context.WIFI_SERVICE);
             WifiConfiguration wc = new WifiConfiguration();
@@ -2619,10 +2420,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-
-  /*  public void startTimerFirst() {
+    /*public void startTimerFirst() {
         tFirst = new Timer();
         taskFirst = new TimerTask() {
 
@@ -2645,7 +2445,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         tFirst.scheduleAtFixedRate(taskFirst, 0, 1000);
     }*/
 
-    public void stopFirstTimer(boolean flag) {
+    /*public void stopFirstTimer(boolean flag) {
         if (flag) {
             tFirst.cancel();
             tFirst.purge();
@@ -2660,8 +2460,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
         }
-
-    }
+    }*/
 
 
     /* public class SetBTConnectionPrinter extends AsyncTask<String, Void, String> {
@@ -2908,7 +2707,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             btnStart.setTextColor(Color.parseColor("#000000"));
 
         }
-
     }
 
     public void StartButtonFunctionality() {
@@ -3008,35 +2806,30 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " StartButtonFunctionality Exception: " + e.getMessage());
         }
-
     }
 
-    public void getCMDLast10Txn() {
+    /*public void getCMDLast10Txn() {
         try {
             new CommandsGET_CmdTxt10().execute(URL_GET_TXN_LAST10);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-
-    public String getCMDLastSingleTXn() {
-
+    /*public String getCMDLastSingleTXn() {
         String txn1 = "";
-
         try {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending TXN_LAST10 command to Link: " + LinkName);
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending TXN_LAST10 (to get Last Single Txn) command to Link: " + LinkName);
             String resp = new CommandsGET_CmdTxt10_Single().execute(URL_GET_TXN_LAST10).get();
-            if (AppConstants.GenerateLogs) AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "TXN_LAST10 Response: " + resp);
+
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "TXN_LAST10 Response: " + resp);
 
             if (resp.contains("cmtxtnid_10_record")) {
                 JSONObject jobj = new JSONObject(resp);
@@ -3044,16 +2837,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 txn1 = cm.getString("1:TXTNINFO:");
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return txn1;
-    }
+    }*/
 
-    public HashMap<String, String> splitTrIdQty(String val) {
+    /*public HashMap<String, String> splitTrIdQty(String val) {
         HashMap<String, String> map = new HashMap<>();
         String parts[];
         if (val != null && val.contains("-")) {
@@ -3082,14 +2874,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
             arrayList.add(map);
         }
-
         return map;
     }
 
-
     public class EntityCmd10Txn {
         ArrayList cmtxtnid_10_record;
-    }
+    }*/
 
     public class CommandsGET_Info extends AsyncTask<String, Void, String> {
         //ProgressDialog pd;
@@ -3163,7 +2953,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         e.printStackTrace();
                     }
 
-                    //Skip in offline mode
+                    BtnStartStateChange(true); // As per #2693
+
+                    /*//Skip in offline mode
                     if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS && AppConstants.NETWORK_STRENGTH) {
                         //Current transaction is online
                         //getCMDLast10Txn(); //temp comment
@@ -3190,8 +2982,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     } else {
                         //Current transaction is offline dont save, CONTINUE
                         SET_PULSAR_Command();
-                    }
-
+                    }*/
                 } else {
                     count_InfoCmd = count_InfoCmd + 1;
                     if (count_InfoCmd > 1) {
@@ -3238,39 +3029,38 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public void SET_PULSAR_Command() {
+    /*public void SET_PULSAR_Command() {
         try {
             if (IsResetSwitchTimeBounce != null) {
                 if (IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1")) {
                     Thread.sleep(1000);
-                    /*if (AppConstants.GenerateLogs)
+                    *//*if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RELAY command to Link: " + LinkName);
-                    new CommandsGET_RelayResp().execute(URL_RELAY);*/
+                    new CommandsGET_RelayResp().execute(URL_RELAY);*//*
                     if (AppConstants.GenerateLogs)
                         AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
                     //1495 (Eva) Need notification for transactions where gallons are 1000 or over 7/7/21  JOHN 7-8-2021  No. It turns out that the Pulser Timing Adjust under Calibration Options
                     new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + PulserTimingAdjust + "}}", "sampling_time");
 
                 } else {
-                    checkFirmwareUpdateMain();
+                    //checkFirmwareUpdateMain();
+                    BtnStartStateChange(true);
                 }
             } else {
-                checkFirmwareUpdateMain();
+                //checkFirmwareUpdateMain();
+                BtnStartStateChange(true);
             }
-
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SET_PULSAR_Command Exception: " + e.getMessage());
+            BtnStartStateChange(true);
         }
-    }
+    }*/
 
-    public class CommandsGET_TxnId extends AsyncTask<String, Void, String> {
-
+    /*public class CommandsGET_TxnId extends AsyncTask<String, Void, String> {
         public String resp = "";
-
         //ProgressDialog pd;
         //AlertDialog alertDialog;
-
         @Override
         protected void onPreExecute() {
             ShowLoader(getResources().getString(R.string.PleaseWaitMessage));
@@ -3291,7 +3081,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (SocketException se) {
                 StoreLinkDisconnectInfo(se);
                 Log.d("Ex", se.getMessage());
@@ -3300,7 +3089,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "CommandsGET_TxnId InBackground " + e.getMessage());
             }
-
             return resp;
         }
 
@@ -3316,12 +3104,15 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("LastTXNid;;;" + LastTXNid);
                 System.out.println("OfflineLastTransactionID_DisplayMeterAct" + LastTXNid);
 
+                if (AppConstants.GenerateLogs)
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " LastTXNid: " + LastTXNid);
+
                 if (LastTXNid.equalsIgnoreCase("99999999")) {
                     SET_PULSAR_Command();
                 } else {
                     Thread.sleep(1000);
                     if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RECORD10_PULSAR command to Link: " + LinkName);
+                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Sending RECORD10_PULSAR (to get Last Single Txn) command to Link: " + LinkName);
                     new CommandsGET_Record10().execute(URL_RECORD10_PULSAR, LastTXNid);
                 }
             } catch (Exception e) {
@@ -3330,15 +3121,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(e);
             }
         }
-    }
+    }*/
 
-    public class CommandsGET_Record10 extends AsyncTask<String, Void, String> {
-
+    /*public class CommandsGET_Record10 extends AsyncTask<String, Void, String> {
         public String LastTXNid = "";
-
         //ProgressDialog pd;
         //AlertDialog alertDialog;
-
         @Override
         protected void onPreExecute() {
             ShowLoader(getResources().getString(R.string.PleaseWaitMessage));
@@ -3346,7 +3134,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
         protected String doInBackground(String... param) {
             String resp = "";
-
             try {
                 LastTXNid = param[1];
 
@@ -3363,7 +3150,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (SocketException se) {
                 StoreLinkDisconnectInfo(se);
                 Log.d("Ex", se.getMessage());
@@ -3385,7 +3171,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " LAST TRANS RawData" + " LastTXNid: " + LastTXNid + "; Resp: " + respp);
+                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " RECORD10_PULSAR Response: " + respp);
 
                 if (LastTXNid.equals("-1")) {
                     System.out.println(LastTXNid);
@@ -3441,9 +3227,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             boolean isInsert = true;
                             ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
                             if (alltranz != null && alltranz.size() > 0) {
-
                                 for (int i = 0; i < alltranz.size(); i++) {
-
                                     if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
                                         isInsert = false;
                                         break;
@@ -3465,12 +3249,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(e);
             }
         }
-    }
+    }*/
 
-    public class CommandsGET_CmdTxt10 extends AsyncTask<String, Void, String> {
-
+    /*public class CommandsGET_CmdTxt10 extends AsyncTask<String, Void, String> {
         public String resp = "";
-
         @Override
         protected void onPreExecute() {
         }
@@ -3490,7 +3272,6 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("urlStr" + request.urlString());
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 if (AppConstants.GenerateLogs)
                     AppConstants.WriteinFile(TAG + " CommandsGET_CmdTxt10 doInBackground Exception " + e.getMessage());
@@ -3557,12 +3338,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println(e);
             }
         }
-    }
+    }*/
 
-    public class CommandsGET_CmdTxt10_Single extends AsyncTask<String, Void, String> {
-
+    /*public class CommandsGET_CmdTxt10_Single extends AsyncTask<String, Void, String> {
         public String resp = "";
-
         @Override
         protected void onPreExecute() {
         }
@@ -3582,13 +3361,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 System.out.println("urlStr" + request.urlString());
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
-
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
             }
             return resp;
         }
-    }
+    }*/
 
     @Override
     protected void onDestroy() {
@@ -3620,10 +3398,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    private void SaveLastTransactionInLocalDB(String txnid, String counts) {
-
+    /*private void SaveLastTransactionInLocalDB(String txnid, String counts) {
         try {
-
             Pulses = Integer.parseInt(counts);
             double lastCnt = Double.parseDouble(counts);
             double Lastqty = lastCnt / numPulseRatio; //convert to gallons
@@ -3660,9 +3436,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             boolean isInsert = true;
             ArrayList<HashMap<String, String>> alltranz = controller.getAllTransaction();
             if (alltranz != null && alltranz.size() > 0) {
-
                 for (int i = 0; i < alltranz.size(); i++) {
-
                     if (jsonData.equalsIgnoreCase(alltranz.get(i).get("jsonData")) && authString.equalsIgnoreCase(alltranz.get(i).get("authString"))) {
                         isInsert = false;
                         break;
@@ -3673,14 +3447,11 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             if (isInsert && Lastqty > 0) {
                 controller.insertTransactions(imap);
             }
-
         } catch (Exception ex) {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SaveLastTransactionInLocalDB Exception: " + ex.getMessage());
         }
-
-
-    }
+    }*/
 
     private void CancelTimerScreenOut() {
 
@@ -3783,7 +3554,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public void checkFirmwareUpdateMain() {
+    /*public void checkFirmwareUpdateMain() {
 
         if (AppConstants.FS_selected.equalsIgnoreCase("0")) {
 
@@ -3881,11 +3652,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             } else {
                 BtnStartStateChange(true);
             }
-
         }
-
-    }
-
+    }*/
 
     public void SetOverrideQty(int i) {
 

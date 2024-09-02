@@ -90,6 +90,7 @@ public class Constants {
     public static final String PREF_LINK_pumpofftime = "SaveLinkPumpOffTime";
     public static final String PREF_TXTN_INTERRUPTED = "storeTxtnInterrupted";
     public static final String PREF_CalibrationDetails = "CalibrationDetails";
+    public static final String PREF_MOStatusDetails = "MOStatusDetails";
 
     public static final int VERSION_CODES_NINE = 28;
 

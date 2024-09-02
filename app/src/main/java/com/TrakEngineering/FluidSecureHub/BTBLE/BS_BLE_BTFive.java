@@ -71,7 +71,6 @@ public class BS_BLE_BTFive extends Service {
     int pulseCount = 0;
     int stopCount = 0;
     int RespCount = 0; //, LinkResponseCount = 0;
-    int fdCheckCount = 0;
     long stopAutoFuelSeconds = 0;
     Integer Pulses = 0;
     Integer pre_pulse = 0;
@@ -91,12 +90,11 @@ public class BS_BLE_BTFive extends Service {
     public boolean isConnected = false;
     public boolean isHotspotDisabled = false;
     public boolean isOnlineTxn = true;
-    public int versionNumberOfLinkFive = 0;
+    public String versionNumberOfLinkFive = "";
     public String PulserTimingAdjust, IsResetSwitchTimeBounce, GetPulserTypeFromLINK;
     public boolean IsAnyPostTxnCommandExecuted = false;
     public boolean isTxnLimitReached = false;
     //public int relayOffAttemptCount = 0;
-    //public List<String> OriginalNamesOfLinkList;
 
     SimpleDateFormat sdformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     ArrayList<HashMap<String, String>> quantityRecords = new ArrayList<>();
@@ -154,11 +152,6 @@ public class BS_BLE_BTFive extends Service {
                     LinkCommunicationType = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("LinkCommunicationType");
                     //CurrentLinkMac = WelcomeActivity.serverSSIDList.get(WelcomeActivity.SelectedItemPos).get("MacAddress");
                 }
-
-                /*String OriginalNamesOfLink = CommonUtils.getOriginalNamesOfLink(4);
-                OriginalNamesOfLinkList = Arrays.asList(OriginalNamesOfLink.split(","));
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Original Names of LINK: (" + OriginalNamesOfLinkList + ")>");*/
 
                 // Offline functionality
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
@@ -532,7 +525,7 @@ public class BS_BLE_BTFive extends Service {
             if (isOnlineTxn) { // || BTConstants.SwitchedBTToUDP5
                 UpdateTransactionToSqlite(outputQuantity);
             } else {
-                if (fillqty > 0) {
+                if (Pulses > 0 || fillqty > 0) {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
                 if (AppConstants.GenerateLogs)
@@ -574,7 +567,7 @@ public class BS_BLE_BTFive extends Service {
         imap.put("authString", authString);
         imap.put("sqliteId", sqliteID + "");
 
-        if (fillqty > 0) {
+        if (Pulses > 0 || fillqty > 0) {
 
             //in progress (transaction recently started, no new information): Transaction ongoing = 8  --non zero qty
             CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BS_BLE_BTFive.this);
@@ -771,13 +764,7 @@ public class BS_BLE_BTFive extends Service {
                     } else {
                         isConnected = false;
                         if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
-                            TerminateBTTransaction();
-                            /*if (!isAfterWifiConnect) {
-                                UDPFunctionalityAfterBTFailure(); //TerminateBTTransaction();
-                            } else {
-                                BTConstants.isReturnedFromManualWifiConnect = false;
-                                TerminateBTTransaction();
-                            }*/
+                            TerminateBTTransaction(); //UDPFunctionalityAfterBTFailure();
                         } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
                             TerminateBTTxnAfterInterruption();
                         }
@@ -821,9 +808,9 @@ public class BS_BLE_BTFive extends Service {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //IsThisBTTrnx = false;
-                        //BTConstants.SwitchedBTToUDP5 = true;
-                        BeginProcessUsingUDP(false);
+                        IsThisBTTrnx = false;
+                        BTConstants.SwitchedBTToUDP5 = true;
+                        BeginProcessUsingUDP();
                     }
                 }, 5000);
             } else {
@@ -834,19 +821,15 @@ public class BS_BLE_BTFive extends Service {
         }
     }*/
 
-    /*private void BeginProcessUsingUDP(boolean isCalledAfterManualAttempt) {
+    /*private void BeginProcessUsingUDP() {
         try {
-            long millis = 10000;
-            if (!isCalledAfterManualAttempt) {
-                millis = 5000;
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " " + getResources().getString(R.string.PleaseWaitForWifiConnect));
-                Toast.makeText(BS_BLE_BTFive.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(BS_BLE_BTFive.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
 
-            new CountDownTimer(millis, 1000) {
+            new CountDownTimer(12000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + " Connecting to WiFi...");
                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     String ssid = "";
                     if (wifiManager.isWifiEnabled()) {
@@ -854,15 +837,13 @@ public class BS_BLE_BTFive extends Service {
                         ssid = wifiInfo.getSSID();
                     }
 
-                    ssid = ssid.replace("\"", "").trim();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Selected Hose : " + LinkName + " & Connected Hose : " + ssid);
-                    //if (ssid.equalsIgnoreCase(LinkName)) {
-                    if (OriginalNamesOfLinkList.contains(ssid)) {
+                    ssid = ssid.replace("\"", "");
+
+                    if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Connected to " + ssid + " via WiFi.");
-                        //proceedToInfoCommand(); // Commented to continue with BT as per #2603
-                        BTReconnectionAttempt();
+                        proceedToInfoCommand();
+                        //loading.cancel();
                         cancel();
                     }
                 }
@@ -874,85 +855,23 @@ public class BS_BLE_BTFive extends Service {
                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                     String ssid = wifiInfo.getSSID();
 
-                    ssid = ssid.replace("\"", "").trim();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " (onFinish) Selected Hose : " + LinkName + " & Connected Hose : " + ssid);
-                    //if (ssid.equalsIgnoreCase(LinkName)) {
-                    if (OriginalNamesOfLinkList.contains(ssid)) {
+                    ssid = ssid.replace("\"", "");
+                    if (ssid.equalsIgnoreCase(LinkName)) {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Connected to " + ssid + " via WiFi.");
-                        //proceedToInfoCommand(); // Commented to continue with BT as per #2603
-                        BTReconnectionAttempt();
+                        proceedToInfoCommand();
+                        //loading.cancel();
+                        cancel();
                     } else {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Unable to connect to " + LinkName + " via WiFi.");
-                        if (isCalledAfterManualAttempt) {
-                            //TerminateBTTransaction();
-                            BTReconnectionAttempt();
-                        } else {
-                            Intent showWifiDialogIntent = new Intent(BTConstants.ACTION_SHOW_WIFI_DIALOG);
-                            showWifiDialogIntent.putExtra("LinkName", OriginalNamesOfLinkList.get(0));
-                            sendBroadcast(showWifiDialogIntent);
-                            WaitAndProceedAfterManualWifiConnect();
-                        }
-                    }
-                }
-            }.start();
-        } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception in BeginProcessUsingUDP: " + e.getMessage());
-            TerminateBTTransaction();
-            e.printStackTrace();
-        }
-    }*/
-
-    /*private void BTReconnectionAttempt() {
-        BTConstants.isReturnedFromManualWifiConnect = false;
-        DisableWifiConnection();
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (BT_BLE_Constants.BTBLEStatusStrFive.equalsIgnoreCase("Disconnect")) {
-                    LinkReconnectionAttempt();
-                }
-                checkBTLinkStatus("info", true);
-            }
-        }, 5000);
-    }*/
-
-    /*private void WaitAndProceedAfterManualWifiConnect() {
-        try {
-            new CountDownTimer(60000, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    if (BTConstants.isReturnedFromManualWifiConnect) {
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                BeginProcessUsingUDP(true);
-                            }
-                        }, 2000);
-                        cancel();
-                    }
-                }
-
-                @Override
-                public void onFinish() {
-                    if (BTConstants.isReturnedFromManualWifiConnect) {
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                BeginProcessUsingUDP(true);
-                            }
-                        }, 2000);
-                    } else {
                         TerminateBTTransaction();
                     }
                 }
             }.start();
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception in WaitAndProceedAfterManualWifiConnect: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " Exception in BeginProcessUsingUDP: " + e.getMessage());
             TerminateBTTransaction();
             e.printStackTrace();
         }
@@ -991,7 +910,7 @@ public class BS_BLE_BTFive extends Service {
     private void TerminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
-            if (fillqty > 0) {
+            if (Pulses > 0 || fillqty > 0) {
                 if (isOnlineTxn) {
                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTFive.this);
                 } else {
@@ -1053,7 +972,7 @@ public class BS_BLE_BTFive extends Service {
                                     @Override
                                     public void run() {
                                         AppConstants.isInfoCommandSuccess_fs5 = true;
-                                        if (IsThisBTTrnx && BT_BLE_Constants.isNewVersionLinkFive) { // && (versionNumberOfLinkFive >= 145)) {
+                                        if (IsThisBTTrnx && BT_BLE_Constants.isNewVersionLinkFive) {
                                             last1Command();
                                         } else {
                                             transactionIdCommand(TransactionId);
@@ -1095,7 +1014,7 @@ public class BS_BLE_BTFive extends Service {
                                 @Override
                                 public void run() {
                                     AppConstants.isInfoCommandSuccess_fs5 = true;
-                                    if (IsThisBTTrnx && BT_BLE_Constants.isNewVersionLinkFive) { // && (versionNumberOfLinkFive >= 145)) {
+                                    if (IsThisBTTrnx && BT_BLE_Constants.isNewVersionLinkFive) {
                                         last1Command();
                                     } else {
                                         transactionIdCommand(TransactionId);
@@ -1384,7 +1303,7 @@ public class BS_BLE_BTFive extends Service {
                             AppConstants.WriteinFile(TAG + " Checking relayOn command response. Response: ON");
                     } else {
                         //UpgradeTransaction Status RelayON command fail.
-                        if (isAfterReconnect && (fillqty > 0)) {
+                        if (isAfterReconnect && (Pulses > 0 || fillqty > 0)) {
                             if (isOnlineTxn) {
                                 CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTFive.this);
                             } else {
@@ -1457,7 +1376,7 @@ public class BS_BLE_BTFive extends Service {
                         if (AppConstants.GenerateLogs)
                             AppConstants.WriteinFile(TAG + " Checking relayOff command response. Response: false");
                         if (BTConstants.isRelayOnAfterReconnect5) {
-                            if (fillqty > 0) {
+                            if (Pulses > 0 || fillqty > 0) {
                                 if (isOnlineTxn) {
                                     CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BS_BLE_BTFive.this);
                                 } else {
@@ -1508,7 +1427,7 @@ public class BS_BLE_BTFive extends Service {
     public void ProceedToPostTransactionCommands() {
         // Free the link and continue to post transaction commands
         StopTransaction(true, false); // Free the link
-        if (versionNumberOfLinkFive >= 145) { // Set P_Type command supported from this version onwards
+        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.supportedLinkVersionForP_Type)) { // Set P_Type command supported from this version onwards
             P_Type_Command();
         } else {
             CloseTransaction(false); // ProceedToPostTransactionCommands
@@ -1809,7 +1728,7 @@ public class BS_BLE_BTFive extends Service {
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " LINK Version >> " + version);
             storeUpgradeFSVersion(BS_BLE_BTFive.this, AppConstants.UP_HoseId_fs5, version);
-            versionNumberOfLinkFive = CommonUtils.GetVersionNumberFromLink(version);
+            versionNumberOfLinkFive = CommonUtils.getVersionFromLink(version);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1927,86 +1846,28 @@ public class BS_BLE_BTFive extends Service {
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " SaveLastBTTransactionToServer Exception: " + e.getMessage());
+                AppConstants.WriteinFile(TAG + " SaveLastBTTransactionInLocalDB Exception: " + e.getMessage());
         }
     }
 
     private void parseLast1CommandResponse(String response) {
         try {
-            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("records");
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject j = jsonArray.getJSONObject(i);
                 String txtn = j.getString("txtn");
-                String date = j.getString("date");
-                String vehicle = j.getString("vehicle");
                 String pulse = j.getString("pulse");
-                String dflag = j.getString("dflag");
 
-                try {
-                    if (!date.contains("-") && date.length() == 12) { // change date format from "yyMMddHHmmss" to "yyyy-MM-dd HH:mm:ss"
-                        date = BTConstants.parseDateForOldVersion(date);
-                    }
-                } catch (Exception e) {
-                    Log.i(TAG, " Exception while parsing date format.>> " + e.getMessage());
+                if (!txtn.equalsIgnoreCase("N/A") && !pulse.equalsIgnoreCase("-1")) {
+                    SaveLastBTTransactionInLocalDB(txtn, pulse);
                 }
-
-                HashMap<String, String> Hmap = new HashMap<>();
-                Hmap.put("TransactionID", txtn);//TransactionID
-                Hmap.put("Pulses", pulse);//Pulses
-                Hmap.put("FuelQuantity", ReturnQty(pulse));//FuelQuantity
-                Hmap.put("TransactionDateTime", date); //TransactionDateTime
-                Hmap.put("VehicleId", vehicle); //VehicleId
-                Hmap.put("dflag", dflag);
-
-                arrayList.add(Hmap);
             }
-
-            Gson gs = new Gson();
-            EntityCmd20Txn ety = new EntityCmd20Txn();
-            ety.cmtxtnid_20_record = arrayList;
-
-            String json20txn = gs.toJson(ety);
-
-            SharedPreferences sharedPref = BS_BLE_BTFive.this.getSharedPreferences("storeCmtxtnid_20_record", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("BLE_LINK5", json20txn);
-            editor.apply();
-
         } catch (Exception e) {
-            e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + " Exception in parseLast1CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
-    }
-
-    private String ReturnQty(String outputQuantity) {
-        String return_qty = "";
-        try {
-            double fillqty = 0;
-            Integer Pulses = Integer.parseInt(outputQuantity);
-            if (Pulses > 0) {
-                fillqty = Double.parseDouble(outputQuantity);
-                fillqty = fillqty / numPulseRatio;//convert to gallons
-
-                fillqty = AppConstants.roundNumber(fillqty, 2);
-
-                DecimalFormat precision = new DecimalFormat("0.00");
-                return_qty = (precision.format(fillqty));
-            } else {
-                return_qty = "0";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return return_qty;
-    }
-
-    public class EntityCmd20Txn {
-        ArrayList cmtxtnid_20_record;
-        String jsonfromLink;
     }
 
     private void ParseGetPulserTypeCommandResponse(String response) {

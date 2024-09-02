@@ -1,6 +1,5 @@
 package com.TrakEngineering.FluidSecureHub.BTSPP;
 
-import com.TrakEngineering.FluidSecureHub.BuildConfig;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,8 +56,6 @@ public class BTConstants {
     public static boolean isBTSPPTxnContinuedWithBLE5 = false;
     public static boolean isBTSPPTxnContinuedWithBLE6 = false;
 
-    //public static final String ACTION_SHOW_WIFI_DIALOG = BuildConfig.APPLICATION_ID + ".action.SHOW_WIFI_DIALOG";
-    //public static final String ACTION_BT_RECONNECT = BuildConfig.APPLICATION_ID + ".action.BT_RECONNECT";
     //public static boolean isHotspotDisabled = false;
 
     public static String info_cmd = "LK_COMM=info";
@@ -78,8 +75,16 @@ public class BTConstants {
     public static String last1_cmd = "LK_COMM=last1";
     public static String last20_cmd = "LK_COMM=last20";
     public static String reboot_cmd = "LK_COMM=restartnow";
+    public static String checkMOStatus_command = "LK_COMM=if_check_mo_status=";
+    public static String resetMOCheckFlag_command = "LK_COMM=mo_check_flag_reset";
     public static String ScopeStatus = "";
     public static String[] p_types = {"1", "2", "3", "4"};
+
+    public static String supportedLinkVersionForP_Type = "1.4.5";
+    public static String supportedLinkVersionForBypassPumpReset = "1.4.8";
+    public static String supportedLinkVersionForLast1 = "1.4.11";
+    public static String supportedLinkVersionForLast20 = "1.4.11";
+    public static String supportedLinkVersionForMOStatus = "1.4.12";
 
     public static boolean retryConnForInfoCommand1 = false;
     public static boolean retryConnForInfoCommand2 = false;
@@ -124,8 +129,6 @@ public class BTConstants {
     public static int BTConnFailedCountLink4 = 0;
     public static int BTConnFailedCountLink5 = 0;
     public static int BTConnFailedCountLink6 = 0;
-
-    //public static boolean isReturnedFromManualWifiConnect = false;
 
     //Rename BT link one
     public static boolean BT1NeedRename;

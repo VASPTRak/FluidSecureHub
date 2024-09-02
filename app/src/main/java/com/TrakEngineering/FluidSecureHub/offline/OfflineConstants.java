@@ -434,7 +434,6 @@ public class OfflineConstants {
 
     public static void storeOfflineAccess(Context ctx, String isTotalOffline, String isOffline, String OFFLineDataDwnldFreq, int OfflineDataDownloadDay, int OfflineDataDownloadTimeInHrs, int OfflineDataDownloadTimeInMin) {
 
-
         Log.i(TAG, "Scheduled offline download: " + OFFLineDataDwnldFreq + ":(" + OfflineDataDownloadDay + ") HourOfDay:" + OfflineDataDownloadTimeInHrs + " Minute:" + OfflineDataDownloadTimeInMin);
 
         SharedPreferences pref = ctx.getSharedPreferences("storeOfflineAccess", 0);
@@ -464,12 +463,10 @@ public class OfflineConstants {
         SharedPreferences sharedPref = ctx.getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
         String isTotalOffline = sharedPref.getString("isTotalOffline", "");
 
-
         if (isTotalOffline.trim().equalsIgnoreCase("True"))
             return true;
         else
             return false;
-
     }
 
     public static void setAlarmManagerToStartDownloadOfflineData(Context ctx) {

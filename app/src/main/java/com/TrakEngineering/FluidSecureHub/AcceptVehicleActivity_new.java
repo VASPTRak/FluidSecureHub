@@ -516,7 +516,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
         menu.findItem(R.id.mreboot_reader).setVisible(true);
         //menu.findItem(R.id.mconfigure_tld).setVisible(false);
         menu.findItem(R.id.madd_link).setVisible(false);
-        //menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);
         menu.findItem(R.id.mcamera_front).setVisible(false);
@@ -1458,6 +1457,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
                                 AppConstants.WriteinFile(TAG + "Vehicle Activity ValidationFor Pin" + ResponceText);
 
                             CommonUtils.AutoCloseCustomMessageDialog(AcceptVehicleActivity_new.this, "Message", ResponceText);
+                            CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
 
                             IsNewFobVar = true;
                             Thread.sleep(1000);
@@ -2237,6 +2237,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
 
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity_new.this);
+                                CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
 
                                 // ActivityHandler.GetBacktoWelcomeActivity();
                                 Intent i = new Intent(AcceptVehicleActivity_new.this, WelcomeActivity.class);
@@ -2733,17 +2734,13 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     }
 
     public void GetBackToWelcomeActivity() {
-
-
-        //AppConstants.colorToast(getApplicationContext(), "Something went wrong, Please try again", Color.BLUE);
-
         Istimeout_Sec = false;
         AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity_new.this);
+        CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
 
         Intent i = new Intent(AcceptVehicleActivity_new.this, WelcomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
-
     }
 
     public class TagReaderFun extends AsyncTask<Void, Void, String> {

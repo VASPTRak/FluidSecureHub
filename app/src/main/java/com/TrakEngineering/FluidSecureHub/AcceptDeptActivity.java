@@ -264,7 +264,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
         menu.findItem(R.id.enable_debug_window).setVisible(false);
         menu.findItem(R.id.mclose).setVisible(false);
         menu.findItem(R.id.madd_link).setVisible(false);
-        //menu.findItem(R.id.mupgrade_normal_link).setVisible(false);
         menu.findItem(R.id.mreconnect_ble_readers).setVisible(false);
         menu.findItem(R.id.mreboot_reader).setVisible(false);
         menu.findItem(R.id.mcamera_back).setVisible(false);

@@ -334,7 +334,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 }
 
                 if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
-                    startService(new Intent(AcceptPinActivity_FOB.this, com.TrakEngineering.FluidSecureHub.MagCardGAtt.ServiceMagCard.class));
+                    startService(new Intent(AcceptPinActivity_FOB.this, ServiceMagCard.class));
                     if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register MagReader:"+mMagCardDeviceAddress);
                 }
             }

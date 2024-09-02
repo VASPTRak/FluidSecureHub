@@ -1309,43 +1309,57 @@ public class OffDBController extends SQLiteOpenHelper {
     }
 
     public String selectRowCountOfDatabase() {
-
         String rowDetails = "";
-
+        Cursor cursorLink = null;
+        Cursor cursorVehicle = null;
+        Cursor cursorPersonnel = null;
+        Cursor cursorDept = null;
         try {
             SQLiteDatabase database = this.getWritableDatabase();
 
             String selectQuery = "SELECT COUNT(*) FROM " + TBL_LINK;
-            Cursor cursor = database.rawQuery(selectQuery, null);
-            if (cursor.moveToFirst()) {
-                String rowCount = cursor.getString(0);
+            cursorLink = database.rawQuery(selectQuery, null);
+            if (cursorLink.moveToFirst()) {
+                String rowCount = cursorLink.getString(0);
                 rowDetails += "LINKS:" + rowCount + "; ";
             }
 
             String selectQuery2 = "SELECT COUNT(*) FROM " + TBL_VEHICLE;
-            Cursor cursor2 = database.rawQuery(selectQuery2, null);
-            if (cursor2.moveToFirst()) {
-                String rowCount = cursor2.getString(0);
+            cursorVehicle = database.rawQuery(selectQuery2, null);
+            if (cursorVehicle.moveToFirst()) {
+                String rowCount = cursorVehicle.getString(0);
                 rowDetails += "Vehicle:" + rowCount + "; ";
             }
 
             String selectQuery3 = "SELECT COUNT(*) FROM " + TBL_PERSONNEL;
-            Cursor cursor3 = database.rawQuery(selectQuery3, null);
-            if (cursor3.moveToFirst()) {
-                String rowCount = cursor3.getString(0);
+            cursorPersonnel = database.rawQuery(selectQuery3, null);
+            if (cursorPersonnel.moveToFirst()) {
+                String rowCount = cursorPersonnel.getString(0);
                 rowDetails += "Personnel:" + rowCount + "; ";
             }
 
             String selectQuery4 = "SELECT COUNT(*) FROM " + TBL_DEPARTMENT;
-            Cursor cursor4 = database.rawQuery(selectQuery4, null);
-            if (cursor4.moveToFirst()) {
-                String rowCount = cursor4.getString(0);
+            cursorDept = database.rawQuery(selectQuery4, null);
+            if (cursorDept.moveToFirst()) {
+                String rowCount = cursorDept.getString(0);
                 rowDetails += "Department:" + rowCount + " ";
             }
         } catch (Exception e) {
-            e.printStackTrace();
             if (AppConstants.GenerateLogs)
                 AppConstants.WriteinFile(TAG + "selectRowCountOfDatabase Exception: " + e.getMessage());
+        } finally {
+            if (cursorLink != null) {
+                cursorLink.close();
+            }
+            if (cursorVehicle != null) {
+                cursorVehicle.close();
+            }
+            if (cursorPersonnel != null) {
+                cursorPersonnel.close();
+            }
+            if (cursorDept != null) {
+                cursorDept.close();
+            }
         }
         return rowDetails;
     }

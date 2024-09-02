@@ -23,7 +23,6 @@ import android.util.Log;
 import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.BTBLE.BT_BLE_Constants;
 import com.TrakEngineering.FluidSecureHub.BTSPP.BTConstants;
-import com.TrakEngineering.FluidSecureHub.BuildConfig;
 import com.TrakEngineering.FluidSecureHub.ConnectionDetector;
 
 import java.io.File;
@@ -48,11 +47,11 @@ public class BLEServiceCodeThree extends Service {
     private static final int STATE_CONNECTED = 2;
     public ConnectionDetector cd = new ConnectionDetector(BLEServiceCodeThree.this);
 
-    public final static String ACTION_GATT_CONNECTED = BuildConfig.APPLICATION_ID + ".QRLe.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED = BuildConfig.APPLICATION_ID + ".QRLe.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED = BuildConfig.APPLICATION_ID + ".QRLe.ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE = BuildConfig.APPLICATION_ID + ".QRLe.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA = BuildConfig.APPLICATION_ID + ".QRLe.EXTRA_DATA";
+    public final static String ACTION_GATT_CONNECTED = TAG + ".ACTION_GATT_CONNECTED";
+    public final static String ACTION_GATT_DISCONNECTED = TAG + ".ACTION_GATT_DISCONNECTED";
+    public final static String ACTION_GATT_SERVICES_DISCOVERED = TAG + ".ACTION_GATT_SERVICES_DISCOVERED";
+    public final static String ACTION_DATA_AVAILABLE = TAG + ".ACTION_DATA_AVAILABLE";
+    public final static String EXTRA_DATA = TAG + ".EXTRA_DATA";
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -460,7 +459,9 @@ public class BLEServiceCodeThree extends Service {
         }
         /*if (AppConstants.GenerateLogs)
             AppConstants.WriteinFile(TAG + " writeCustomCharacteristic ~~~~~~~~~ " + bleCommand);*/
-        BT_BLE_Constants.CurrentCommand_LinkThree = bleCommand;
+        if (!bleCommand.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+            BT_BLE_Constants.CurrentCommand_LinkThree = bleCommand;
+        }
         byte[] strBytes = bleCommand.getBytes();
 
         BluetoothGattCharacteristic mWriteCharacteristic = null;
