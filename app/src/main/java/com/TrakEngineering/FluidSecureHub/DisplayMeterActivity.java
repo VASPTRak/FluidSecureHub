@@ -215,8 +215,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     TimerTask taskThanks;
 
     // int timeFirst = 60;
-    Timer tFirst;
-    TimerTask taskFirst;
+    //Timer tFirst;
+    //TimerTask taskFirst;
 
     String URL_GET_TXN_LAST10 = "";
     ArrayList<HashMap<String, String>> arrayList;

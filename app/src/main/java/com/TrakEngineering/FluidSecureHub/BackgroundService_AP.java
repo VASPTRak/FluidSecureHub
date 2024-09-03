@@ -119,9 +119,11 @@ public class BackgroundService_AP extends Service {
     String LinkName = "", OtherName, IsOtherRequire, OtherLabel, VehicleNumber, PrintDate, CompanyName, Location, PersonName, PrinterMacAddress, PrinterName, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit, FuelTypeId, ServerDate, IntervalToStopFuel, IsTLDCall, EnablePrinter, _OdoMeter, _Hours, PumpOnTime,LimitReachedMessage,SiteId;
 
     int timeFirst = 60;
-    Timer tFirst;
-    TimerTask taskFirst;
+    //Timer tFirst;
+    //TimerTask taskFirst;
     boolean stopTimer;
+    Timer pulse_timer;
+    List<Timer> TimerList = new ArrayList<Timer>();
     boolean pulsarConnected = false;
     double minFuelLimit = 0, numPulseRatio = 0;
     String consoleString = "", outputQuantity = "0";
@@ -384,7 +386,7 @@ public class BackgroundService_AP extends Service {
         return IsRelayOn;
     }
 
-    public void stopFirstTimer(boolean flag) {
+    /*public void stopFirstTimer(boolean flag) {
         if (flag) {
             tFirst.cancel();
             tFirst.purge();
@@ -399,7 +401,7 @@ public class BackgroundService_AP extends Service {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
         }
-    }
+    }*/
 
     public class CommandsPOST extends AsyncTask<String, Void, String> {
         public String resp = "";
@@ -496,7 +498,9 @@ public class BackgroundService_AP extends Service {
     public void startQuantityInterval() {
         CommonUtils.sharedPrefTxtnInterrupted(BackgroundService_AP.this, TransactionId, true);
         GETPulsarCallCompleted = true; // set as true for first attempt
-        new Timer().schedule(new TimerTask() {
+        pulse_timer = new Timer();
+        TimerList.add(pulse_timer);
+        TimerTask tt = new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -530,7 +534,8 @@ public class BackgroundService_AP extends Service {
                         AppConstants.WriteinFile(TAG + "startQuantityInterval Exception: " + e.getMessage());
                 }
             }
-        }, 0, 4000);
+        };
+        pulse_timer.schedule(tt, 0, 4000);
     }
 
     public boolean IsFsConnected(String toMatchString) {
@@ -1562,6 +1567,7 @@ public class BackgroundService_AP extends Service {
         CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         IsFuelingStop = "1";
         stopTimer = false;
+        CancelTimer();
         Constants.FS_2STATUS = "FREE";
         Constants.FS_2Pulse = "00";
         IsAnyPostTxnCommandExecuted = true;
@@ -1581,6 +1587,17 @@ public class BackgroundService_AP extends Service {
             AppConstants.WriteinFile(TAG + "Transaction Completed. \n==============================================================================");
         if (startBackgroundServices) {
             PostTransactionBackgroundTasks(true);
+        }
+        this.stopSelf();
+    }
+
+    private void CancelTimer() {
+        try {
+            for (int i = 0; i < TimerList.size(); i++) {
+                TimerList.get(i).cancel();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1891,14 +1908,13 @@ public class BackgroundService_AP extends Service {
                 AppConstants.WriteinFile(TAG + "Sending TXN_LAST10 (to get Last Single Txn) command to Link: " + LinkName);
             String resp = new CommandsGET_CmdTxt10_Single().execute(URL_GET_TXN_LAST10).get();
 
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "TXN_LAST10 Response: " + resp);
             if (resp.contains("cmtxtnid_10_record")) {
                 JSONObject jobj = new JSONObject(resp);
                 JSONObject cm = jobj.getJSONObject("cmtxtnid_10_record");
 
                 txn1 = cm.getString("2:TXTNINFO:"); // This is post transaction command so taking the 2nd position object
-            } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "TXN_LAST10 Response: " + resp);
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)

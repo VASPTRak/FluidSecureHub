@@ -72,8 +72,9 @@ public class OffBackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         try {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + " <Started.>");
             if (AppConstants.IsAllHosesAreFree()) {
                 AppConstants.selectHosePressed = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
