@@ -517,7 +517,11 @@ public class OffBackgroundService extends Service {
             long period = 60000L;
             timer = new Timer("TimerOffDownload");
 
-            timer.scheduleAtFixedRate(repeatedTask, delay, period);
+            //timer.scheduleAtFixedRate(repeatedTask, delay, period); // Commented on 19-Sep-2024
+            // Use of scheduleAtFixedRate is strongly discouraged because it can lead to unexpected behavior
+            // when Android processes become cached (tasks may unexpectedly execute hundreds or thousands of times
+            // in quick succession when a process changes from cached to uncached); prefer using schedule
+            timer.schedule(repeatedTask, delay, period);
 
         } catch (Exception e) {
             e.printStackTrace();

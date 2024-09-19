@@ -157,6 +157,7 @@ public class AppConstants {
 
     public static final String PACKAGE_BACKGROUND_SERVICE = BuildConfig.APPLICATION_ID + ".BackgroundService";
     public static final String PACKAGE_BS_OffTransSync = BuildConfig.APPLICATION_ID + ".offline.OffTranzSyncService";
+    public static final String PACKAGE_BS_OffDataDownload = BuildConfig.APPLICATION_ID + ".offline.OffBackgroundService";
 
     public static ArrayList<HashMap<String, String>> temp_serverSSIDList;
 

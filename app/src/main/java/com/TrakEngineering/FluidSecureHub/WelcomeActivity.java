@@ -84,6 +84,9 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.TrakEngineering.FluidSecureHub.BTBLE.BTBLE_LinkOne.BLEServiceCodeOne;
 import com.TrakEngineering.FluidSecureHub.BTBLE.BTBLE_LinkTwo.BLEServiceCodeTwo;
@@ -200,7 +203,6 @@ import static com.TrakEngineering.FluidSecureHub.server.ServerHandler.TEXT;
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener, ServiceConnection, EddystoneScannerService.OnBeaconEventListener { //GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
 
     public boolean hoseClicked = false;
-
 
     OffDBController offcontroller = new OffDBController(WelcomeActivity.this);
 
@@ -841,6 +843,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         if (OfflineConstants.isOfflineAccess(WelcomeActivity.this)) {
             MidnightTaskExecute();
         }
+
+        //============= WorkManager ================
+        WorkManager workManager = WorkManager.getInstance(WelcomeActivity.this);
+        WorkRequest workRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 15, TimeUnit.MINUTES).build();
+        workManager.enqueue(workRequest);
+        //==========================================
+
         //Network signal strength check
         /*
         psListener = new PhoneCustomStateListener();
