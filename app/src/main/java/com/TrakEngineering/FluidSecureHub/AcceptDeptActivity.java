@@ -167,6 +167,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
             public void run() {
                 if (Istimeout_Sec)
                 {
+                    CommonUtils.hideKeyboard(AcceptDeptActivity.this);
                     Istimeout_Sec = false;
                     AppConstants.ClearEdittextFielsOnBack(AcceptDeptActivity.this);
 
@@ -320,7 +321,6 @@ public class AcceptDeptActivity extends AppCompatActivity {
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptDeptActivity.this);
 
-
                                 Intent i = new Intent(AcceptDeptActivity.this, WelcomeActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(i);
@@ -386,7 +386,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        CommonUtils.hideKeyboard(AcceptDeptActivity.this);
         // ActivityHandler.removeActivity(4);
         AppConstants.serverCallInProgressForPin = false;
         AppConstants.serverCallInProgressForVehicle = false;

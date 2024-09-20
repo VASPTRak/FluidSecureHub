@@ -1107,7 +1107,6 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     }
 
     public void cancelAction(View v) {
-        CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
         onBackPressed();
     }
 
@@ -2195,6 +2194,7 @@ public class AcceptVehicleActivity_new extends AppCompatActivity implements Serv
     @Override
     public void onBackPressed() {
 
+        CommonUtils.hideKeyboard(AcceptVehicleActivity_new.this);
         // ActivityHandler.removeActivity(1);
         AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity_new.this);
         Istimeout_Sec = false;

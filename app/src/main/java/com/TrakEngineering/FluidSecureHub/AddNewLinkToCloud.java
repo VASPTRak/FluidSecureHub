@@ -279,6 +279,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CommonUtils.hideKeyboard(AddNewLinkToCloud.this);
                 IsTimeout_Sec = false;
                 //AlertDialogBox(AddNewLinkToCloud.this, "New success message");
                 if (validateData()) {
@@ -318,7 +319,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         btnMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonUtils.hideKeyboard(AddNewLinkToCloud.this);
                 IsTimeout_Sec = false;
                 SetSubscriptionKeyForAzureMap();
 
@@ -850,6 +851,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     }
 
     private boolean validateData() {
+        String pumpOnTime = edt_pumpOnTime.getText().toString().trim();
+        String pumpOffTime = edt_pumpOffTime.getText().toString().trim();
 
         if (edt_linkname.getText().toString().trim().isEmpty()) {
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameRequired), "");
@@ -860,24 +863,18 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         } else if (!validateLinkNameForMac(edt_linkname.getText().toString().trim())) {
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LinkNameInvalid), " (Entered Link Name: " + edt_linkname.getText().toString() + ")");
             return false;
-        } else if (edt_pumpOnTime.getText().toString().trim().isEmpty()) {
+        } else if (pumpOnTime.isEmpty()) {
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOnTimeRequired), "");
             return false;
-        } else if (edt_pumpOffTime.getText().toString().trim().isEmpty()) {
+        } else if (Integer.parseInt(pumpOnTime) < 30) {
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOnTimeMinLimit), "");
+            return false;
+        } else if (pumpOffTime.isEmpty()) {
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOffTimeRequired), "");
             return false;
-        /*} else if (edt_username.getText().toString().trim().isEmpty()) {
-            edt_username.setError("Enter valid data");
+        } else if (Integer.parseInt(pumpOffTime) < 10) {
+            showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.PumpOffTimeMinLimit), "");
             return false;
-        } else if (edt_enter_password.getText().toString().trim().isEmpty()) {
-            edt_enter_password.setError("Enter valid data");
-            return false;*/
-        /*} else if (edt_UnitsMeasured.getText().toString().trim().isEmpty()) {
-            edt_UnitsMeasured.setError("Enter valid data");
-            return false;
-        } else if (edt_Pulses.getText().toString().trim().isEmpty()) {
-            edt_Pulses.setError("Enter valid data");
-            return false;*/
         } else if (!edt_LinkNewName.getText().toString().trim().isEmpty()) {
             if (!edt_LinkNewName.getText().toString().trim().matches(expression)) {
                 showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.NewNameInvalid), " (Entered New Name: " + edt_LinkNewName.getText().toString() + ")");
@@ -890,6 +887,18 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.LocationRequired), "");
             return false;
         }
+        /*} else if (edt_username.getText().toString().trim().isEmpty()) {
+            edt_username.setError("Enter valid data");
+            return false;
+        } else if (edt_enter_password.getText().toString().trim().isEmpty()) {
+            edt_enter_password.setError("Enter valid data");
+            return false;*/
+        /*} else if (edt_UnitsMeasured.getText().toString().trim().isEmpty()) {
+            edt_UnitsMeasured.setError("Enter valid data");
+            return false;
+        } else if (edt_Pulses.getText().toString().trim().isEmpty()) {
+            edt_Pulses.setError("Enter valid data");
+            return false;*/
         /*else if (edt_StreetAddress.getText().toString().trim().isEmpty()) {
             showCustomMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.AddressRequired));
             return false;
@@ -1565,7 +1574,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     }
 
     private void BackToWelcomeActivity() {
-
+        CommonUtils.hideKeyboard(AddNewLinkToCloud.this);
         int waitingTime = 100;
         if(enableHotspotAfterNewLinkConfigure) {
             waitingTime = 2000;

@@ -466,9 +466,11 @@
     <string name="PumpOnTimeHeading">Bombee a tiempo:</string>
     <string name="PumpOnTimeRequired">Por favor, introduzca bombee a tiempo.</string>
     <string name="PumpOnTimeToolTip">Esta es la cantidad de segundos que el usuario tendrá para comenzar a bombear una vez que el sistema encienda la bomba.</string>
+    <string name="PumpOnTimeMinLimit">La cantidad mínima de segundos permitidos para el tiempo de encendido de la bomba es 30.</string>
     <string name="PumpOffTimeHeading">Tiempo de bomba apagada:</string>
     <string name="PumpOffTimeRequired">Ingrese el tiempo de apagado de la bomba.</string>
     <string name="PumpOffTimeToolTip">Una vez que el flujo de producto se detiene, esta es la cantidad de segundos que el usuario tendrá que comenzar a bombear nuevamente antes de que finalice la transacción.</string>
+    <string name="PumpOffTimeMinLimit">La cantidad mínima de segundos permitidos para el tiempo de apagado de la bomba es 10.</string>
     <string name="PulseRatioHeading">Relación de pulso:</string>
     <string name="PulseRatioToolTip">Estas son las relaciones de pulso estándar. Si está utilizando nuestro Pulser óptico, que es el más común, seleccionará 20/1. Si está utilizando un dispensador tipo gabinete, lo típico para estos es 10/1 o 100/1. Por favor llame a Soporte con cualquier pregunta.</string>
 

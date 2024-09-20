@@ -312,10 +312,10 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                 pd.dismiss();
             }
 
+            CommonUtils.hideKeyboard(TestTransactionPinActivity.this);
             if (serverRes != null && !serverRes.isEmpty()) {
 
                 try {
-
                     JSONObject jsonObject = new JSONObject(serverRes);
 
                     String ResponceText = jsonObject.getString("ResponceText");
@@ -594,6 +594,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
     }
 
     public void GetBackToWelcomeActivity() {
+        CommonUtils.hideKeyboard(TestTransactionPinActivity.this);
         Istimeout_Sec = false;
         AppConstants.ClearEdittextFielsOnBack(TestTransactionPinActivity.this);
 

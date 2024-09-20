@@ -124,12 +124,11 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
             public void run() {
                 //do something
                 if (Istimeout_Sec) {
-
                     try {
-
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                CommonUtils.hideKeyboard(AcceptHoursAcitvity.this);
                                 Istimeout_Sec = false;
                                 AppConstants.ClearEdittextFielsOnBack(AcceptHoursAcitvity.this);
 
@@ -141,19 +140,14 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
                         CancelTimerScreenOut();
                     } catch (Exception e) {
-
                         System.out.println(e);
                     }
-
                 }
-
             }
 
             ;
         };
         ScreenOutTime.schedule(ttt, screenTimeOut, 500);
-
-
     }
 
     public void ResetTimeoutHoursScreen() {
@@ -629,6 +623,7 @@ public class AcceptHoursAcitvity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        CommonUtils.hideKeyboard(AcceptHoursAcitvity.this);
         // ActivityHandler.removeActivity(5);
         AppConstants.serverCallInProgressForPin = false;
         AppConstants.serverCallInProgressForVehicle = false;

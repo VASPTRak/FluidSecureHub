@@ -1126,13 +1126,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     }
 
     public void cancelAction(View v) {
-
-        CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
         onBackPressed();
     }
 
     @Override
     public void onBackPressed() {
+        CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
         if (IsGateHub.equalsIgnoreCase("True")) {
             AppConstants.GoButtonAlreadyClicked = false;
         }

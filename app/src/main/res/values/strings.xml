@@ -466,9 +466,11 @@
     <string name="PumpOnTimeHeading">Pump On Time:</string>
     <string name="PumpOnTimeRequired">Please enter Pump On Time.</string>
     <string name="PumpOnTimeToolTip">This is the number of seconds the user will have to start pumping once the system turns on the pump.</string>
+    <string name="PumpOnTimeMinLimit">The minimum amount of seconds allowed for Pump On Time is 30.</string>
     <string name="PumpOffTimeHeading">Pump Off Time:</string>
     <string name="PumpOffTimeRequired">Please enter Pump Off Time.</string>
     <string name="PumpOffTimeToolTip">Once the flow of product stops, this is the number of seconds the user will have to start pumping again before the transaction is terminated.</string>
+    <string name="PumpOffTimeMinLimit">The minimum amount of seconds allowed for Pump Off Time is 10.</string>
     <string name="PulseRatioHeading">Pulse Ratio:</string>
     <string name="PulseRatioToolTip">These are the standard pulse ratios. If you are using our Optical Pulser which is the most common, you will select 20/1. If you are using a cabinet type dispenser the typical for these is 10/1 or 100/1. Please call Support with any questions.</string>
 

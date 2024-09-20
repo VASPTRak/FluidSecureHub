@@ -476,6 +476,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         AppConstants.IsBTLinkSelectedCurrently = false;
 
         if (skipOnResume && !proceedAfterManualWifiConnect) {
+            if (AppConstants.GenerateLogs)
+                AppConstants.WriteinFile(TAG + "<onResume Skipped.>");
             skipOnResume = false;
             return;
         }
@@ -844,11 +846,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             MidnightTaskExecute();
         }
 
-        //============= WorkManager ================
+        /*//============= WorkManager ================
         WorkManager workManager = WorkManager.getInstance(WelcomeActivity.this);
         WorkRequest workRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 15, TimeUnit.MINUTES).build();
         workManager.enqueue(workRequest);
-        //==========================================
+        //==========================================*/
 
         //Network signal strength check
         /*
@@ -1372,7 +1374,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onStop() {
         super.onStop();
-
         OnWelcomeActivity = false;
         if (loading != null) {
             loading.dismiss();
@@ -12713,10 +12714,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-
     private void ChangeWifiState(boolean enable) {
-
-        skipOnResume = true;
+        //skipOnResume = true;
         WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         if (enable) {
             //Enable wifi
@@ -12724,9 +12723,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             //Disable wifi
             wifiManagerMM.setWifiEnabled(false);
-
         }
-
     }
 
     //Link Reconfigure code below

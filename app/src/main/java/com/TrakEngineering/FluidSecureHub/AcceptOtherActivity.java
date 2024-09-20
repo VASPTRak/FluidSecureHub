@@ -123,6 +123,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (Istimeout_Sec) {
+                    CommonUtils.hideKeyboard(AcceptOtherActivity.this);
                     Istimeout_Sec = false;
                     AppConstants.ClearEdittextFielsOnBack(AcceptOtherActivity.this);
 
@@ -256,7 +257,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        CommonUtils.hideKeyboard(AcceptOtherActivity.this);
         // ActivityHandler.removeActivity(6);
         AppConstants.serverCallInProgressForPin = false;
         AppConstants.serverCallInProgressForVehicle = false;
