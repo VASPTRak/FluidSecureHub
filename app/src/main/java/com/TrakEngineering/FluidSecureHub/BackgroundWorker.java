@@ -1,7 +1,10 @@
 package com.TrakEngineering.FluidSecureHub;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,9 +13,12 @@ import androidx.work.WorkerParameters;
 
 import com.TrakEngineering.FluidSecureHub.offline.OffBackgroundService;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class BackgroundWorker extends Worker {
 
@@ -44,14 +50,31 @@ public class BackgroundWorker extends Worker {
 
     private void startProcess() {
         try {
-            boolean isBSRunning = CommonUtils.checkServiceRunning(context, AppConstants.PACKAGE_BS_OffDataDownload);
-            if (!isBSRunning) {
+            if (checkLastOfflineBSStartDateTime()) { // (CurrDateTime - LastOfflineBSStartDateTime) > 10 min [To reduce repetitive calls]
+                // Checking if the HUB app is running or not
+                boolean isForeground = new ForegroundCheckTask().execute(context).get();
                 if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Starting the Offline Background Service.>");
-                context.startService(new Intent(context, OffBackgroundService.class));
+                    AppConstants.WriteinFile(TAG + "<The HUB App is running: " + ((isForeground) ? "Yes" : "No") + ">");
+                if (isForeground) {
+                    saveLastOfflineBSStartDateTimeInSharedPref();
+                    boolean isBSRunning = CommonUtils.checkServiceRunning(context, AppConstants.PACKAGE_BS_OffDataDownload);
+                    if (!isBSRunning) {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "<Starting the Offline Background Service.>");
+                        context.startService(new Intent(context, OffBackgroundService.class));
+                    } else {
+                        if (AppConstants.GenerateLogs)
+                            AppConstants.WriteinFile(TAG + "<Offline Background Service is running.>");
+                    }
+                } else {
+                    if (AppConstants.GenerateLogs)
+                        AppConstants.WriteinFile(TAG + "<The HUB App is in the background. Launching the HUB App.>");
+                    Intent activity = new Intent(context, SplashActivity.class);
+                    activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    context.startActivity(activity);
+                }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Offline Background Service is running.>");
+                Log.d(TAG, "startProcess: Skipped.");
             }
         } catch (Exception e) {
             if (AppConstants.GenerateLogs)
@@ -59,10 +82,73 @@ public class BackgroundWorker extends Worker {
         }
     }
 
+    public void saveLastOfflineBSStartDateTimeInSharedPref() {
+        SharedPreferences sharedPref = context.getSharedPreferences("WorkManagerExecutionInfo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("LastOfflineBSStartDateTime", AppConstants.currentDateFormat("yyyy-MM-dd HH:mm:ss"));
+        editor.apply();
+    }
+
+    public boolean checkLastOfflineBSStartDateTime() {
+        String CurrDateTime = CommonUtils.getTodaysDateTemp();
+        SharedPreferences sharedPref = context.getSharedPreferences("WorkManagerExecutionInfo", Context.MODE_PRIVATE);
+        String LastOfflineBSStartDateTime = sharedPref.getString("LastOfflineBSStartDateTime", "");
+        if (LastOfflineBSStartDateTime.isEmpty()) {
+            return true;
+        } else {
+            int diffMin = getDiffInMinutes(CurrDateTime, LastOfflineBSStartDateTime);
+            return diffMin >= 10;
+        }
+    }
+
+    private int getDiffInMinutes(String CurrDateTime, String LastOfflineBSStartDateTime) {
+        int DiffTime = 0;
+        Date date1, date2;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            date1 = sdf.parse(CurrDateTime);
+            date2 = sdf.parse(LastOfflineBSStartDateTime);
+            long diff = date1.getTime() - date2.getTime();
+            long seconds = diff / 1000;
+            long minutes = seconds / 60;
+            long hours = minutes / 60;
+            long days = hours / 24;
+
+            DiffTime = (int) minutes;
+        } catch (ParseException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return DiffTime;
+    }
+
     @Override
     public void onStopped() {
         super.onStopped();
         if (AppConstants.GenerateLogs)
             AppConstants.WriteinFile(TAG + "<Worker has been cancelled.>");
+    }
+
+    public class ForegroundCheckTask extends AsyncTask<Context, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Context... params) {
+            final Context context = params[0].getApplicationContext();
+            return isAppOnForeground(context);
+        }
+
+        private boolean isAppOnForeground(Context context) {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            if (appProcesses == null) {
+                return false;
+            }
+            final String packageName = context.getPackageName();
+            for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

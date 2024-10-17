@@ -846,11 +846,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             MidnightTaskExecute();
         }
 
-        /*//============= WorkManager ================
+        //============= WorkManager ================
         WorkManager workManager = WorkManager.getInstance(WelcomeActivity.this);
         WorkRequest workRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 15, TimeUnit.MINUTES).build();
         workManager.enqueue(workRequest);
-        //==========================================*/
+        //==========================================
 
         //Network signal strength check
         /*
@@ -4438,7 +4438,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     }, 10000);
                 }
-
             } catch (Exception e) {
                 ChangeWifiState(false);//turn wifi off
                 e.printStackTrace();
@@ -4447,7 +4446,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
     }
-
 
     private class WiFiConnectTask extends AsyncTask<String, Void, String> {
 
@@ -15321,26 +15319,22 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         startActivity(i);
     }
 
-    private void BTServiceSelectionFunction(String linkPosition) {
+    /*private void BTServiceSelectionFunction(String linkPosition) {
         long sqlite_id = 0;
         switch (linkPosition) {
             case "0"://Link 1
-
                 Log.i(TAG, "BTServiceSelected One>>");
                 Intent serviceIntent1 = new Intent(WelcomeActivity.this, BackgroundService_BTOne.class);
                 serviceIntent1.putExtra("SERVER_IP", "");
                 serviceIntent1.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent1);
-
                 break;
             case "1"://Link 2
-
                 Log.i(TAG, "BTServiceSelected Two>>");
                 Intent serviceIntent2 = new Intent(WelcomeActivity.this, BackgroundService_BTTwo.class);
                 serviceIntent2.putExtra("SERVER_IP", "");
                 serviceIntent2.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent2);
-
                 break;
             case "2"://Link 3
                 Log.i(TAG, "BTServiceSelected Three>>");
@@ -15348,7 +15342,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 serviceIntent3.putExtra("SERVER_IP", "");
                 serviceIntent3.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent3);
-
                 break;
             case "3"://Link 4
                 Log.i(TAG, "BTServiceSelected Four>>");
@@ -15356,7 +15349,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 serviceIntent4.putExtra("SERVER_IP", "");
                 serviceIntent4.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent4);
-
                 break;
             case "4"://Link 5
                 Log.i(TAG, "BTServiceSelected Five>>");
@@ -15364,7 +15356,6 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 serviceIntent5.putExtra("SERVER_IP", "");
                 serviceIntent5.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent5);
-
                 break;
             case "5"://Link 6
                 Log.i(TAG, "BTServiceSelected Six>>");
@@ -15372,12 +15363,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 serviceIntent6.putExtra("SERVER_IP", "");
                 serviceIntent6.putExtra("sqlite_id", sqlite_id);
                 startService(serviceIntent6);
-
                 break;
             default://Something went wrong in link selection please try again.
                 break;
         }
-    }
+    }*/
 
     public class RedirectToOscilloscope extends AsyncTask<String, String, String> {
 

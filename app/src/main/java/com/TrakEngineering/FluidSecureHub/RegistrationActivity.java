@@ -131,7 +131,7 @@ public class RegistrationActivity extends AppCompatActivity {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonUtils.hideKeyboard(RegistrationActivity.this);
                 if (etFName.getText().toString().trim().isEmpty()) {
                     //redToast(RegistrationActivity.this, "Please enter HUB Name");
                     AppConstants.WriteinFile(TAG + " " + getResources().getString(R.string.HUBNameRequired));

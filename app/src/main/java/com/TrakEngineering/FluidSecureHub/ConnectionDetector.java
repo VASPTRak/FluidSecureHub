@@ -45,6 +45,7 @@ public class ConnectionDetector {
         NetworkInfo info = Connectivity.getActiveNetworkInfo();
 
         if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+            AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: WIFI>");
             Constants.CurrentNetworkType = "_wifi on";
             return false;
         } else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
@@ -52,12 +53,15 @@ public class ConnectionDetector {
             // check NetworkInfo subtype
             switch (subType) {
                 case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: " + subType + ">");
                     Constants.CurrentNetworkType = "50-100 kbps";
                     return false; // ~ 50-100 kbps
                 case TelephonyManager.NETWORK_TYPE_CDMA:
+                    AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: " + subType + ">");
                     Constants.CurrentNetworkType = "14-64 kbps";
                     return false; // ~ 14-64 kbps
                 case TelephonyManager.NETWORK_TYPE_EDGE:
+                    AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: " + subType + ">");
                     Constants.CurrentNetworkType = "100-200 kbps";
                     return false; // ~ 50-100 kbps
                 case TelephonyManager.NETWORK_TYPE_EVDO_0:
@@ -67,6 +71,7 @@ public class ConnectionDetector {
                     Constants.CurrentNetworkType = "600-1400 kbps";
                     return true; // ~ 600-1400 kbps
                 case TelephonyManager.NETWORK_TYPE_GPRS:
+                    AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: " + subType + ">");
                     Constants.CurrentNetworkType = "100 kbps";
                     return false; // ~ 100 kbps
                 case TelephonyManager.NETWORK_TYPE_HSDPA:
@@ -95,6 +100,7 @@ public class ConnectionDetector {
                     Constants.CurrentNetworkType = "10-20 Mbps";
                     return true; // ~ 10-20 Mbps
                 case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+                    AppConstants.WriteinFile(TAG + " <NETWORK_TYPE: " + subType + ">");
                     Constants.CurrentNetworkType = "25 kbps";
                     return false; // ~25 kbps
                 case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
