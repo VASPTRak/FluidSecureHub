@@ -577,10 +577,9 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
         alertDialog.show();
     }*/
 
-    private void actionOnResult(String response) {
+    private void actionOnResult(String imeiNumber, String response) {
 
         try {
-
             JSONObject jsonObj = new JSONObject(response);
 
             String ResponceMessage = jsonObj.getString(AppConstants.RES_MESSAGE);
@@ -590,7 +589,6 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
                 String userData = jsonObj.getString(AppConstants.RES_DATA_USER);
 
                 try {
-
                     JSONObject jsonObject = new JSONObject(userData);
 
                     String userName = jsonObject.getString("PersonName");
@@ -783,6 +781,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
             } else if (ResponceMessage.equalsIgnoreCase("fail")) {
 
                 String ResponceText = jsonObj.getString(AppConstants.RES_TEXT);
+                String validationFailFor = jsonObj.getString(AppConstants.VALIDATION_FOR_TEXT);
 
                 if (ResponceText.equalsIgnoreCase("New Registration")) {
 
@@ -790,39 +789,33 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
                     finish();
 
                 } else if (ResponceText.equalsIgnoreCase("notapproved")) {
-                    AppConstants.WriteinFile( "CheckApproved: " + getResources().getString(R.string.regiNotApproved));
-                    AlertDialogBox(SplashActivity.this, getResources().getString(R.string.regiNotApproved));
-
-                } else if (ResponceText.equalsIgnoreCase("IMEI not exists")) {
-                    AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
-                    AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
-
-                } else if (ResponceText.equalsIgnoreCase("No data found")) {
-                    AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
-                    AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
+                    AppConstants.WriteinFile( "CheckApproved: (not_approved) IMEI: " + imeiNumber + "; Error: " + validationFailFor); //getResources().getString(R.string.regiNotApproved)
+                    if (validationFailFor.trim().isEmpty()) {
+                        validationFailFor = getResources().getString(R.string.regiNotApproved);
+                    }
+                    AlertDialogBox(SplashActivity.this, validationFailFor);
 
                 } else {
-                    AppConstants.WriteinFile( "CheckApproved: " + ResponceText);
+                    AppConstants.WriteinFile( "CheckApproved: IMEI: " + imeiNumber + "; Error: " + ResponceText);
                     AppConstants.AlertDialogFinish(SplashActivity.this, ResponceText);
                 }
-
             } else {
                 AppConstants.WriteinFile( "CheckApproved: No Internet");
                 AppConstants.AlertDialogFinishWithTitle(SplashActivity.this, "", "No Internet");
             }
-
-
         } catch (Exception e) {
+            AppConstants.WriteinFile( "CheckApproved (actionOnResult): Exception: " + e.getMessage());
             CommonUtils.LogMessage(TAG, "", e);
         }
     }
 
     public class CheckApproved extends AsyncTask<String, Void, String> {
-
         public String resp = "";
+        public String imeiNumber = "";
 
         protected String doInBackground(String... param) {
             try {
+                imeiNumber = param[0];
                 MediaType TEXT = MediaType.parse("application/x-www-form-urlencoded");
 
                 OkHttpClient client = new OkHttpClient();
@@ -850,7 +843,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
         @Override
         protected void onPostExecute(String response) {
             if (response != null && response.startsWith("{")) {
-                actionOnResult(response);
+                actionOnResult(imeiNumber, response);
             } else {
                 if (OfflineConstants.isOfflineAccess(SplashActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
@@ -1109,7 +1102,6 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
             System.out.println("imeiNumber" + imeiNumber);
 
             if (imeiNumber != null && !imeiNumber.trim().isEmpty() && !imeiNumber.trim().equalsIgnoreCase("null")) {
-
                 new CheckApproved().execute(imeiNumber);
 
             } else {

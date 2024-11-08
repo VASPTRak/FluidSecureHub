@@ -404,7 +404,6 @@ public class AppConstants {
         return (double) tmp / factor;
     }
 
-
     public static String convertStingToBase64(String text) {
         String base64 = "";
         try {
@@ -413,14 +412,12 @@ public class AppConstants {
         } catch (Exception e) {
             System.out.println(e);
         }
-
         base64 = base64.replaceAll("\\n", "");
 
         return base64;
     }
 
     public static String getIMEI(Context ctx) {
-
         String storedUUIDIMEI = "";
         try {
 
@@ -433,7 +430,6 @@ public class AppConstants {
         } catch (Exception e) {
 
         }
-
         return storedUUIDIMEI;
     }
 
