@@ -109,32 +109,32 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
             if (rdSelectedType != null) {
                 selectedType = rdSelectedType.getText().toString().trim();
             }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Selected Type: " + selectedType);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Selected Type: " + selectedType);
 
             if (!selectedType.isEmpty()) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Sending p_type command.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Sending p_type command.");
                 BTSPPMain btspp = new BTSPPMain();
-                //btspp.sendP_Type(BTConstants.p_type_command + selectedType);
+                //btspp.sendP_Type(BTConstants.P_TYPE_COMMAND + selectedType);
                 switch (LinkPosition) {
                     case "0"://Link 1
-                        btspp.send1(BTConstants.p_type_command + selectedType);
+                        btspp.send1(BTConstants.P_TYPE_COMMAND + selectedType);
                         break;
                     case "1"://Link 2
-                        btspp.send2(BTConstants.p_type_command + selectedType);
+                        btspp.send2(BTConstants.P_TYPE_COMMAND + selectedType);
                         break;
                     case "2"://Link 3
-                        btspp.send3(BTConstants.p_type_command + selectedType);
+                        btspp.send3(BTConstants.P_TYPE_COMMAND + selectedType);
                         break;
                     case "3"://Link 4
-                        btspp.send4(BTConstants.p_type_command + selectedType);
+                        btspp.send4(BTConstants.P_TYPE_COMMAND + selectedType);
                         break;
                     case "4"://Link 5
-                        btspp.send5(BTConstants.p_type_command + selectedType);
+                        btspp.send5(BTConstants.P_TYPE_COMMAND + selectedType);
                         break;
                     case "5"://Link 6
-                        btspp.send6(BTConstants.p_type_command + selectedType);
+                        btspp.send6(BTConstants.P_TYPE_COMMAND + selectedType);
                         break;
                     default://Something went wrong in link selection please try again.
                         break;
@@ -151,8 +151,8 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
             }
 
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception in SetP_TypeForLink: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception in SetP_TypeForLink: " + ex.getMessage());
         }
     }
 
@@ -224,8 +224,8 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
                     Request = notificationData.getString("Request");
                     Response = notificationData.getString("Response");
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "BTLink: Response from Link >>" + Response.trim());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "BTLink: Response from Link >>" + Response.trim());
 
                     if (Response.contains("pulser_type")) {
                         getPulserType(Response);
@@ -233,8 +233,8 @@ public class BT_Link_P_Type_Activity extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink: onReceive Exception:" + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "BTLink: onReceive Exception:" + e.getMessage());
             }
         }
     }

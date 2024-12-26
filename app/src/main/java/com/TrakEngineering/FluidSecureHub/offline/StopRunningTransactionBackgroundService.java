@@ -40,32 +40,32 @@ public class StopRunningTransactionBackgroundService extends Service {
     public void StopRunningTransaction() {
 
 
-        if (Constants.FS_1STATUS.equalsIgnoreCase("BUSY") && Constants.FS_2STATUS.equalsIgnoreCase("BUSY") && Constants.FS_3STATUS.equalsIgnoreCase("BUSY") && Constants.FS_4STATUS.equalsIgnoreCase("BUSY")) {
+        if (Constants.FS_1_STATUS.equalsIgnoreCase("BUSY") && Constants.FS_2_STATUS.equalsIgnoreCase("BUSY") && Constants.FS_3_STATUS.equalsIgnoreCase("BUSY") && Constants.FS_4_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop All 4 transaction
             StopTxn(0);
             StopTxn(1);
             StopTxn(2);
             StopTxn(3);
-        } else if (Constants.FS_1STATUS.equalsIgnoreCase("BUSY") && Constants.FS_2STATUS.equalsIgnoreCase("BUSY") && Constants.FS_3STATUS.equalsIgnoreCase("BUSY")) {
+        } else if (Constants.FS_1_STATUS.equalsIgnoreCase("BUSY") && Constants.FS_2_STATUS.equalsIgnoreCase("BUSY") && Constants.FS_3_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop 1,2,3
             StopTxn(0);
             StopTxn(1);
             StopTxn(2);
-        } else if (Constants.FS_1STATUS.equalsIgnoreCase("BUSY") && Constants.FS_2STATUS.equalsIgnoreCase("BUSY")) {
+        } else if (Constants.FS_1_STATUS.equalsIgnoreCase("BUSY") && Constants.FS_2_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop 1,2
             StopTxn(0);
             StopTxn(1);
 
-        } else if (Constants.FS_1STATUS.equalsIgnoreCase("BUSY")) {
+        } else if (Constants.FS_1_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop only 1
             StopTxn(0);
-        } else if (Constants.FS_2STATUS.equalsIgnoreCase("BUSY")) {
+        } else if (Constants.FS_2_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop only 2
             StopTxn(1);
-        } else if (Constants.FS_3STATUS.equalsIgnoreCase("BUSY")) {
+        } else if (Constants.FS_3_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop only 3
             StopTxn(2);
-        } else if (Constants.FS_4STATUS.equalsIgnoreCase("BUSY")) {
+        } else if (Constants.FS_4_STATUS.equalsIgnoreCase("BUSY")) {
             //Stop only 4
             StopTxn(3);
         }
@@ -76,17 +76,17 @@ public class StopRunningTransactionBackgroundService extends Service {
 
         try {
 
-            for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
+            for (int i = 0; i < AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.size(); i++) {
 
-                String Mac_Address = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                String IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                String Mac_Address = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(i).get("macAddress");
+                String IpAddress = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(i).get("ipAddress");
 
                 //List of Near-by FSNP/Ble mac address list
-                if (AppConstants.DetailsServerSSIDList != null && !AppConstants.DetailsServerSSIDList.isEmpty()) {
+                if (AppConstants.DETAILS_SERVER_SSID_LIST != null && !AppConstants.DETAILS_SERVER_SSID_LIST.isEmpty()) {
 
-                    String MacAddress = AppConstants.DetailsServerSSIDList.get(p).get("MacAddress");
-                    String fsnpAddress = AppConstants.DetailsServerSSIDList.get(p).get("FSNPMacAddress");
-                    String fsnpName = AppConstants.DetailsServerSSIDList.get(p).get("FSAntenna2");
+                    String MacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("MacAddress");
+                    String fsnpAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSNPMacAddress");
+                    String fsnpName = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSAntenna2");
 
                     if (MacAddress.equalsIgnoreCase(Mac_Address)) {
                         String HTTP_URL = "http://" + IpAddress + ":80/";
@@ -103,8 +103,8 @@ public class StopRunningTransactionBackgroundService extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile( "  StopTxn" + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile( "  StopTxn" + e);
         }
 
     }

@@ -46,7 +46,7 @@ public class WifiApManager {
     public boolean setWifiApEnabled(WifiConfiguration wifiConfig, boolean enabled) {
         try {
 
-            AppConstants.IsProblemWhileEnableHotspot = false;
+            AppConstants.IS_PROBLEM_WHILE_ENABLE_HOTSPOT = false;
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                 if (enabled) {
@@ -72,8 +72,8 @@ public class WifiApManager {
             }
 
         } catch (Exception e) {
-            AppConstants.WriteinFile(" setWifiApEnabled Exception: " + e);
-            AppConstants.IsProblemWhileEnableHotspot = true;
+            AppConstants.writeInFile(" setWifiApEnabled Exception: " + e);
+            AppConstants.IS_PROBLEM_WHILE_ENABLE_HOTSPOT = true;
             Log.e(this.getClass().toString(), "", e);
             return false;
         }

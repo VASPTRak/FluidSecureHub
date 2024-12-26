@@ -16,20 +16,20 @@ public class PhoneCustomStateListener extends PhoneStateListener {
         //Log.d(getClass().getCanonicalName(), "------ gsm signal --> " + signalSupport);
 
         if (signalSupport > 30) {
-            Constants.CurrentSignalStrength = "Signal GSM : Good";
-            Constants.IsSignalSrtengthOk = true;
+            Constants.CURRENT_SIGNAL_STRENGTH = "Signal GSM : Good";
+            Constants.IS_SIGNAL_STRENGTH_OK = true;
 
         } else if (signalSupport > 20 && signalSupport < 30) {
-            Constants.CurrentSignalStrength = "Signal GSM : Avarage";
-            Constants.IsSignalSrtengthOk = true;
+            Constants.CURRENT_SIGNAL_STRENGTH = "Signal GSM : Avarage";
+            Constants.IS_SIGNAL_STRENGTH_OK = true;
 
         } else if (signalSupport < 20 && signalSupport > 3) {
-            Constants.CurrentSignalStrength = "Signal GSM : Weak";
-            Constants.IsSignalSrtengthOk = false;
+            Constants.CURRENT_SIGNAL_STRENGTH = "Signal GSM : Weak";
+            Constants.IS_SIGNAL_STRENGTH_OK = false;
 
         } else if (signalSupport < 3) {
-            Constants.CurrentSignalStrength = "Signal GSM : Very weak";
-            Constants.IsSignalSrtengthOk = false;
+            Constants.CURRENT_SIGNAL_STRENGTH = "Signal GSM : Very weak";
+            Constants.IS_SIGNAL_STRENGTH_OK = false;
 
         }
     }

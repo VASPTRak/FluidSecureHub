@@ -73,10 +73,10 @@ public class OffBackgroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " <Started.>");
-            if (AppConstants.IsAllHosesAreFree()) {
-                AppConstants.selectHosePressed = false;
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " <Started.>");
+            if (AppConstants.isAllHosesAreFree()) {
+                AppConstants.SELECT_HOSE_PRESSED = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
 
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("storeOfflineAccess", Context.MODE_PRIVATE);
@@ -95,15 +95,15 @@ public class OffBackgroundService extends Service {
                 int CurrentMinutes = calendar.get(Calendar.MINUTE);
 
                 if (cd.isConnecting() && isOffline.equalsIgnoreCase("True")) {
-                    if (!AppConstants.isOfflineDownloadStarted) {
+                    if (!AppConstants.IS_OFFLINE_DOWNLOAD_STARTED) {
                         if (checkSharedPrefOfflineData()) {
                             if (checkOfflineDataTime(CurrentHour24, CurrentMinutes, SavedOfflineHourOfDay, SavedOfflineMinuteOfHour)) {
-                                if ((OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) || AppConstants.forceDownloadOfflineData) {
+                                if ((OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) || AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA) {
                                     //Weekly logic
                                     Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                                    AppConstants.isOfflineDownloadStarted = true;
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                    AppConstants.IS_OFFLINE_DOWNLOAD_STARTED = true;
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
                                     deleteAllDownloadedFiles();
 
                                     new GetAPIToken().execute();
@@ -111,9 +111,9 @@ public class OffBackgroundService extends Service {
                                 } else if (OFFLineDataDwnldFreq.equalsIgnoreCase("Daily")) {
                                     //Everyday logic
                                     Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                                    AppConstants.isOfflineDownloadStarted = true;
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                                    AppConstants.IS_OFFLINE_DOWNLOAD_STARTED = true;
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
                                     deleteAllDownloadedFiles();
 
                                     new GetAPIToken().execute();
@@ -121,20 +121,20 @@ public class OffBackgroundService extends Service {
                                 } else {
                                     //WeekDay did not match
                                     Log.i(TAG, " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + "; CurrentWeekDay>>" + CurrentDay);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + "; CurrentWeekDay>>" + CurrentDay);
                                 }
                             }
                         }
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Offline data download has already started");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " Offline data download has already started");
                     }
                 } else {
                     //NO internet connection 0r  Offline status False
                     Log.i(TAG, " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Internet connection status>>" + cd.isConnecting() + "; Offline status>>" + isOffline);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Internet connection status>>" + cd.isConnecting() + "; Offline status>>" + isOffline);
                 }
 
                 /*if (cd.isConnecting() && isOffline.equalsIgnoreCase("True") && checkSharedPrefOfflineData()) {
@@ -142,8 +142,8 @@ public class OffBackgroundService extends Service {
                     if (OFFLineDataDwnldFreq.equalsIgnoreCase("Weekly") && WeekDay == CurrentDay) {
                         //Weekly logic
                         Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
                         deleteAllDownloadedFiles();
 
                         new GetAPIToken().execute();
@@ -151,8 +151,8 @@ public class OffBackgroundService extends Service {
                     } else if (OFFLineDataDwnldFreq.equalsIgnoreCase("Daily")) {
                         //Everyday logic
                         Log.i(TAG, " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " Started Offline data download Frequency>>" + OFFLineDataDwnldFreq);
                         deleteAllDownloadedFiles();
 
                         new GetAPIToken().execute();
@@ -160,40 +160,40 @@ public class OffBackgroundService extends Service {
                     } else {
                         //WeekDay did not match
                         Log.i(TAG, " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " Skip download offline data scheduled on Weekday>>" + WeekDay + " CurrentWeekDay>>" + CurrentDay);
                     }
 
                 } else {
                     //NO internet connection 0r  Offline status False
                     Log.i(TAG, " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Internet connection status>>" + cd.isConnecting() + " Offline status>>" + isOffline);
                 }*/
                 //} else {
 
-                //    if (AppConstants.GenerateLogs)
-                //        AppConstants.WriteinFile(TAG + " No previous offline data.");
+                //    if (AppConstants.GENERATE_LOGS)
+                //        AppConstants.writeInFile(TAG + " No previous offline data.");
 
-                    /*if (!AppConstants.selectHosePressed) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " No previous offline data hence start offline data download.");
+                    /*if (!AppConstants.SELECT_HOSE_PRESSED) {
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " No previous offline data hence start offline data download.");
 
                         deleteAllDownloadedFiles();
 
                         new GetAPIToken().execute();
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " No previous offline data but select hose is pressed.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " No previous offline data but select hose is pressed.");
 
                     }*/
                 //}
             } else {
                 Log.i(TAG, " onStartCommand -------------- One of the hose is busy, Skip offline data download");
-                if (AppConstants.forceDownloadOfflineData) {
-                    AppConstants.forceDownloadOfflineData = false;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " One of the hose is busy, Offline data download skipped");
+                if (AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA) {
+                    AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA = false;
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " One of the hose is busy, Offline data download skipped");
                 }
                 cancelThinDownloadManager();
             }
@@ -201,17 +201,17 @@ public class OffBackgroundService extends Service {
 
         } catch (Exception e) {
             Log.i(TAG, " onStartCommand Exception:" + e.toString());
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " onStartCommand Exception:" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " onStartCommand Exception:" + e.getMessage());
             stopSelf();
         }
 
         try {
             if (!OfflineConstants.isOfflineAccess(OffBackgroundService.this)) {
                 ThinDownloadManager downloadManager = new ThinDownloadManager();
-                if (AppConstants.offlineDownloadIds != null && AppConstants.offlineDownloadIds.size() > 0) {
+                if (AppConstants.OFFLINE_DOWNLOAD_IDS != null && AppConstants.OFFLINE_DOWNLOAD_IDS.size() > 0) {
                     downloadManager.cancelAll();
-                    AppConstants.offlineDownloadIds.clear();
+                    AppConstants.OFFLINE_DOWNLOAD_IDS.clear();
                 }
             }
         } catch (Exception e) {
@@ -233,8 +233,8 @@ public class OffBackgroundService extends Service {
             sendBroadcast(showDialogIntent);
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " ShowDialog Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " ShowDialog Exception: " + e.getMessage());
         }
     }
 
@@ -263,8 +263,8 @@ public class OffBackgroundService extends Service {
                 resp = response.body().string();
             } catch (Exception e) {
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPIToken InBackground Exception:" + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPIToken InBackground Exception:" + e.getMessage());
             }
             return resp;
         }
@@ -280,7 +280,7 @@ public class OffBackgroundService extends Service {
                     String expires_in = jsonObject.getString("expires_in");
                     String refresh_token = jsonObject.getString("refresh_token");
 
-                    AppConstants.WriteinFile(TAG + " Started offline data downloading..API token success");
+                    AppConstants.writeInFile(TAG + " Started offline data downloading..API token success");
 
                     controller.storeOfflineToken(OffBackgroundService.this, access_token, token_type, expires_in, refresh_token);
 
@@ -290,16 +290,16 @@ public class OffBackgroundService extends Service {
                         new GetAPIHubDetails().execute();
 
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " GetAPIToken onPostExecute NoInternet");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " GetAPIToken onPostExecute NoInternet");
                     }
                 } catch (JSONException e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPIToken onPostExecute Exception:" + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GetAPIToken onPostExecute Exception:" + e.getMessage());
                 }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPIToken InPost Result err:" + result);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPIToken InPost Result err:" + result);
             }
         }
     }
@@ -324,8 +324,8 @@ public class OffBackgroundService extends Service {
 
             } catch (Exception e) {
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPIHubDetails InBackground Exception:" + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPIHubDetails InBackground Exception:" + e.getMessage());
             }
             return resp;
         }
@@ -379,11 +379,11 @@ public class OffBackgroundService extends Service {
                         if (cd.isConnecting()) {
 
                             if (IsDepartmentRequire.equalsIgnoreCase("true")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " <Offline Link,Vehicle,Pin,Department data download started.>");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " <Offline Link,Vehicle,Pin,Department data download started.>");
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " <Offline Link,Vehicle,Pin data download started.>");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " <Offline Link,Vehicle,Pin data download started.>");
                             }
 
                             /*new GetAPILinkDetails().execute();
@@ -397,19 +397,19 @@ public class OffBackgroundService extends Service {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (AppConstants.IsAllHosesAreFree()) {
-                                        if (!AppConstants.selectHosePressed) {
+                                    if (AppConstants.isAllHosesAreFree()) {
+                                        if (!AppConstants.SELECT_HOSE_PRESSED) {
                                             AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
                                             startDownloadTimerTask();
                                         } else {
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + " Offline download cancelled.");
+                                            if (AppConstants.GENERATE_LOGS)
+                                                AppConstants.writeInFile(TAG + " Offline download cancelled.");
                                             stopSelf();
                                         }
                                     } else {
-                                        AppConstants.forceDownloadOfflineData = false;
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " One of the hose is busy, Offline data download skipped");
+                                        AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA = false;
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + " One of the hose is busy, Offline data download skipped");
                                         cancelThinDownloadManager();
                                         stopSelf();
                                     }
@@ -417,21 +417,21 @@ public class OffBackgroundService extends Service {
                             }, 60000 * 3);
 
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " GetAPIHubDetails onPostExecute NoInternet");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " GetAPIHubDetails onPostExecute NoInternet");
                         }
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " GetAPIHubDetails onPostExecute Response fail: " + result);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " GetAPIHubDetails onPostExecute Response fail: " + result);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPIHubDetails onPostExecute Exception:" + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GetAPIHubDetails onPostExecute Exception:" + e.getMessage());
                 }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPIHubDetails onPostExecute Response error:" + result);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPIHubDetails onPostExecute Response error:" + result);
             }
         }
     }
@@ -449,8 +449,8 @@ public class OffBackgroundService extends Service {
 
             repeatedTask = new TimerTask() {
                 public void run() {
-                    if (AppConstants.selectHosePressed) {
-                        AppConstants.isOfflineDownloadStarted = false;
+                    if (AppConstants.SELECT_HOSE_PRESSED) {
+                        AppConstants.IS_OFFLINE_DOWNLOAD_STARTED = false;
                         repeatedTask.cancel();
                     }
 
@@ -459,7 +459,7 @@ public class OffBackgroundService extends Service {
                     // Download Vehicle Data
                     String status_v = getDownloadFileStatus("Vehicle");
 
-                    if ((status_v.isEmpty() || status_v.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
+                    if ((status_v.isEmpty() || status_v.equalsIgnoreCase("2")) && !AppConstants.SELECT_HOSE_PRESSED) {
                         if (!VehicleDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(VehicleDataFilePath, "Vehicle");
                     }
@@ -467,7 +467,7 @@ public class OffBackgroundService extends Service {
                     // Download Personnel Data
                     String status_p = getDownloadFileStatus("Personnel");
 
-                    if ((status_p.isEmpty() || status_p.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
+                    if ((status_p.isEmpty() || status_p.equalsIgnoreCase("2")) && !AppConstants.SELECT_HOSE_PRESSED) {
                         if (!PersonnelDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(PersonnelDataFilePath, "Personnel");
                     }
@@ -475,7 +475,7 @@ public class OffBackgroundService extends Service {
                     // Download Link Data
                     String status_l = getDownloadFileStatus("Link");
 
-                    if ((status_l.isEmpty() || status_l.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed) {
+                    if ((status_l.isEmpty() || status_l.equalsIgnoreCase("2")) && !AppConstants.SELECT_HOSE_PRESSED) {
                         if (!LinkDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(LinkDataFilePath, "Link");
                     }
@@ -483,21 +483,21 @@ public class OffBackgroundService extends Service {
                     // Download Department Data
                     String status_d = getDownloadFileStatus("Department");
 
-                    if ((status_d.isEmpty() || status_d.equalsIgnoreCase("2")) && !AppConstants.selectHosePressed && IsDepartmentRequire.equalsIgnoreCase("true")) {
+                    if ((status_d.isEmpty() || status_d.equalsIgnoreCase("2")) && !AppConstants.SELECT_HOSE_PRESSED && IsDepartmentRequire.equalsIgnoreCase("true")) {
                         if (!DepartmentDataFilePath.equalsIgnoreCase(""))
                             downloadLibrary(DepartmentDataFilePath, "Department");
                     }
 
-                    if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1") && !AppConstants.selectHosePressed) {
+                    if (status_v.equalsIgnoreCase("1") && status_p.equalsIgnoreCase("1") && status_l.equalsIgnoreCase("1") && !AppConstants.SELECT_HOSE_PRESSED) {
 
-                        AppConstants.isOfflineDownloadStarted = false;
+                        AppConstants.IS_OFFLINE_DOWNLOAD_STARTED = false;
                         if (IsDepartmentRequire.equalsIgnoreCase("true")) {
                             if (status_d.equalsIgnoreCase("1")) {
                                 setSharedPrefOfflineData(getApplicationContext());
                                 if (timer != null)
                                     timer.cancel();
 
-                                AppConstants.WriteinFile("All 4 files downloaded successfully.");
+                                AppConstants.writeInFile("All 4 files downloaded successfully.");
                                 ShowDialog();
                             }
                         } else {
@@ -506,7 +506,7 @@ public class OffBackgroundService extends Service {
 
                             if (timer != null)
                                 timer.cancel();
-                            AppConstants.WriteinFile("All 3 files downloaded successfully.");
+                            AppConstants.writeInFile("All 3 files downloaded successfully.");
                             ShowDialog();
                         }
                     }
@@ -517,7 +517,7 @@ public class OffBackgroundService extends Service {
             long period = 60000L;
             timer = new Timer("TimerOffDownload");
 
-            //timer.scheduleAtFixedRate(repeatedTask, delay, period); // Commented on 19-Sep-2024
+            //timer.scheduleAtFixedRate(repeatedTask, delay, period); // Commented on 19-Sep-2024 (Check PROD commit v1.19)
             // Use of scheduleAtFixedRate is strongly discouraged because it can lead to unexpected behavior
             // when Android processes become cached (tasks may unexpectedly execute hundreds or thousands of times
             // in quick succession when a process changes from cached to uncached); prefer using schedule
@@ -551,8 +551,8 @@ public class OffBackgroundService extends Service {
 
             } catch (Exception e) {
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPILinkDetails InBackground Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPILinkDetails InBackground Exception: " + e.getMessage());
             }
             return resp;
         }
@@ -581,8 +581,8 @@ public class OffBackgroundService extends Service {
 
                     JSONArray jsonArr = jsonObject.getJSONArray("LinkDataObj");
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPILinkDetails Json length = " + jsonArr.length());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GetAPILinkDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -614,8 +614,8 @@ public class OffBackgroundService extends Service {
                                     InsetFT = controller.insertFuelTimings(SiteId, "", FromTime, ToTime);
 
                                     if (InsetFT == -1)
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " linkJsonParsing - Something went wrong inserting FuelTimings");
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + " linkJsonParsing - Something went wrong inserting FuelTimings");
                                 }
                             }
 
@@ -624,26 +624,26 @@ public class OffBackgroundService extends Service {
                                     APMacAddress, BluetoothMacAddress, BTLinkCommType);
 
                             if (InsetLD == -1)
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " linkJsonParsing - Something went wrong inserting LinkDetails");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " linkJsonParsing - Something went wrong inserting LinkDetails");
                         }
                     }
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Offline Link data download process completed Successfully");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Offline Link data download process completed Successfully");
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " linkJsonParsing Response fail: " + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " linkJsonParsing Response fail: " + result);
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " linkJsonParsing Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " linkJsonParsing Exception: " + e.getMessage());
             }
 
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " linkJsonParsing Result error: " + result);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " linkJsonParsing Result error: " + result);
         }
     }
 
@@ -672,8 +672,8 @@ public class OffBackgroundService extends Service {
 
             } catch (Exception e) {
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPIVehicleDetails InBackground Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPIVehicleDetails InBackground Exception: " + e.getMessage());
 
             }
             return resp;
@@ -701,8 +701,8 @@ public class OffBackgroundService extends Service {
 
                     JSONArray jsonArr = jsonObject.getJSONArray("VehicleDataObj");
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPIVehicleDetails Json length = " + jsonArr.length());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GetAPIVehicleDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -738,24 +738,24 @@ public class OffBackgroundService extends Service {
                                     FuelQuantityOfVehiclePerMonth);
 
                             if (InsertVD == -1)
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " vehicleJsonParsing - Something went wrong inserting VehicleDetails ");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " vehicleJsonParsing - Something went wrong inserting VehicleDetails ");
                         }
                     }
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Offline Vehicle data download process completed Successfully");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Offline Vehicle data download process completed Successfully");
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " vehicleJsonParsing Response fail: " + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " vehicleJsonParsing Response fail: " + result);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " vehicleJsonParsing Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " vehicleJsonParsing Exception: " + e.getMessage());
             }
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " vehicleJsonParsing Result error: " + result);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " vehicleJsonParsing Result error: " + result);
         }
     }
 
@@ -783,8 +783,8 @@ public class OffBackgroundService extends Service {
 
             } catch (Exception e) {
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAPIPersonnelPinDetails InBackground Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAPIPersonnelPinDetails InBackground Exception: " + e.getMessage());
 
             }
             return resp;
@@ -813,8 +813,8 @@ public class OffBackgroundService extends Service {
 
                     JSONArray jsonArr = jsonObject.getJSONArray("PersonDataObj");
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPIPersonnelDetails Json length = " + jsonArr.length());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GetAPIPersonnelDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -863,28 +863,28 @@ public class OffBackgroundService extends Service {
                                     AssignedVehicles, MagneticCardReaderNumber, Barcode, AssignedDepartments.toString());
 
                             if (InsertPD == -1)
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " personnelJsonParsing - Something went wrong inserting PersonnelDetails");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " personnelJsonParsing - Something went wrong inserting PersonnelDetails");
 
                         }
                         String SaveDate = CommonUtils.getDateInString();
                         CommonUtils.SaveOfflineDbSizeDateTime(OffBackgroundService.this, SaveDate);
                     }
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " personnelJsonParsing Response fail: " + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " personnelJsonParsing Response fail: " + result);
                 }
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline Personnel data download process completed Successfully");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Offline Personnel data download process completed Successfully");
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " personnelJsonParsing Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " personnelJsonParsing Exception: " + e.getMessage());
             }
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " personnelJsonParsing Result error: " + result);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " personnelJsonParsing Result error: " + result);
         }
     }
 
@@ -905,8 +905,8 @@ public class OffBackgroundService extends Service {
 
                     JSONArray jsonArr = jsonObject.getJSONArray("DepartmentDataObj");
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GetAPIDepartmentDetails Json length = " + jsonArr.length());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GetAPIDepartmentDetails Json length = " + jsonArr.length());
 
                     if (jsonArr != null && jsonArr.length() > 0) {
                         for (int j = 0; j < jsonArr.length(); j++) {
@@ -919,30 +919,30 @@ public class OffBackgroundService extends Service {
                             InsertDD = controller.insertDepartmentDetails(DepartmentId, DepartmentName, DepartmentNumber);
 
                             if (InsertDD == -1) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " departmentJsonParsing - Something went wrong inserting DepartmentDetails");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " departmentJsonParsing - Something went wrong inserting DepartmentDetails");
                             }
                         }
                     }
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Offline Department data download process completed Successfully.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Offline Department data download process completed Successfully.");
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " departmentJsonParsing Response fail: " + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " departmentJsonParsing Response fail: " + result);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " departmentJsonParsing Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " departmentJsonParsing Exception: " + e.getMessage());
             }
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " departmentJsonParsing Result error: " + result);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " departmentJsonParsing Result error: " + result);
         }
     }
 
     public boolean checkSharedPrefOfflineData() {
-        if (AppConstants.forceDownloadOfflineData) {
+        if (AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA) {
             return true;
         }
 
@@ -953,15 +953,15 @@ public class OffBackgroundService extends Service {
         if (curr_date.trim().equalsIgnoreCase(last_date.trim())) {
             //Offline data already downloaded in last 24 hours therefor skip offline data downloading process
             Log.i(TAG, " Already downloaded Offline data on:" + last_date.trim() + " >>Skip Downloading.");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Already downloaded Offline data on:" + last_date.trim() + " >>Skip Downloading.");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Already downloaded Offline data on:" + last_date.trim() + " >>Skip Downloading.");
             return false;
         } else
             return true;
     }
 
     public boolean checkOfflineDataTime(int CurrentHour, int CurrentMinutes, int HourOfDay, int MinuteOfHour) {
-        if (AppConstants.forceDownloadOfflineData) {
+        if (AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA) {
             return true;
         }
 
@@ -973,13 +973,13 @@ public class OffBackgroundService extends Service {
                 return true;
             } else {
                 Log.i(TAG, " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Offline data download time is set as :" + (HourOfDay + ":" + MinuteOfHour).trim() + "; Current time is "+ (CurrentHour + ":" + CurrentMinutes).trim() + " >>Skip Downloading.");
                 return false;
             }
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Skip Downloading.");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Skip Downloading.");
             return false;
         }
     }
@@ -1026,7 +1026,7 @@ public class OffBackgroundService extends Service {
 
         Uri downloadUri = Uri.parse(downloadUrl);
         //Uri destinationUri = Uri.parse(Environment.getExternalStorageDirectory() + "/FSdata/" + fileName + ".txt");
-        Uri destinationUri = Uri.parse(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName) + "/" + fileName + ".txt");
+        Uri destinationUri = Uri.parse(getApplicationContext().getExternalFilesDir(AppConstants.OFFLINE_DATA_FOLDER_NAME) + "/" + fileName + ".txt");
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
                 //.addCustomHeader("Auth-Token", "YourTokenApiKey")
                 .setRetryPolicy(new DefaultRetryPolicy())
@@ -1036,18 +1036,18 @@ public class OffBackgroundService extends Service {
                 .setStatusListener(new DownloadStatusListenerV1() {
                     @Override
                     public void onDownloadComplete(DownloadRequest downloadRequest) {
-                        AppConstants.WriteinFile("download-Complete--" + fileName);
+                        AppConstants.writeInFile("download-Complete--" + fileName);
 
                         insertDownloadFileStatus(fileName, "1");
 
-                        if (!AppConstants.selectHosePressed) {
+                        if (!AppConstants.SELECT_HOSE_PRESSED) {
                             readEncryptedFileParseJsonInSqlite(fileName);
                         }
                     }
 
                     @Override
                     public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
-                        AppConstants.WriteinFile("download-Failed--" + fileName + " " + errorCode + " " + errorMessage);
+                        AppConstants.writeInFile("download-Failed--" + fileName + " " + errorCode + " " + errorMessage);
 
                         insertDownloadFileStatus(fileName, "2");
 
@@ -1061,24 +1061,24 @@ public class OffBackgroundService extends Service {
                     @Override
                     public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {
                         insertDownloadFileStatus(fileName, "3");
-                        //AppConstants.WriteinFile("download-onProgress--" + fileName + " " + totalBytes + " " + downloadedBytes + " " + progress);
+                        //AppConstants.writeInFile("download-onProgress--" + fileName + " " + totalBytes + " " + downloadedBytes + " " + progress);
                     }
                 });
                 /*.setDownloadListener(new DownloadStatusListener() {
                     @Override
                     public void onDownloadComplete(int id) {
-                        AppConstants.WriteinFile("download-Complete--" + fileName);
+                        AppConstants.writeInFile("download-Complete--" + fileName);
 
                         insertDownloadFileStatus(fileName, "1");
 
-                        if (!AppConstants.selectHosePressed)
+                        if (!AppConstants.SELECT_HOSE_PRESSED)
                             readEncryptedFileParseJsonInSqlite(fileName);
 
                     }
 
                     @Override
                     public void onDownloadFailed(int id, int errorCode, String errorMessage) {
-                        AppConstants.WriteinFile("download-Failed--" + fileName + " " + errorCode + " " + errorMessage);
+                        AppConstants.writeInFile("download-Failed--" + fileName + " " + errorCode + " " + errorMessage);
 
                         insertDownloadFileStatus(fileName, "2");
 
@@ -1094,7 +1094,7 @@ public class OffBackgroundService extends Service {
                     public void onProgress(int id, long totalBytes, long downlaodedBytes, int progress) {
 
                         insertDownloadFileStatus(fileName, "3");
-                        //AppConstants.WriteinFile("download-onProgress--" + fileName + " " + totalBytes + " " + downlaodedBytes + " " + progress);
+                        //AppConstants.writeInFile("download-onProgress--" + fileName + " " + totalBytes + " " + downlaodedBytes + " " + progress);
                     }
                 });*/
 
@@ -1102,7 +1102,7 @@ public class OffBackgroundService extends Service {
         int downloadId = downloadManager.add(downloadRequest);
 
         try {
-            AppConstants.offlineDownloadIds.add(downloadId + "");
+            AppConstants.OFFLINE_DOWNLOAD_IDS.add(downloadId + "");
         } catch (Exception e) {
         }
 
@@ -1112,7 +1112,7 @@ public class OffBackgroundService extends Service {
     public void readEncryptedFileParseJsonInSqlite(String file_name) {
 
         //File file = new File(Environment.getExternalStorageDirectory() + "/FSdata/" + file_name + ".txt");
-        File file = new File(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName) + "/" + file_name + ".txt");
+        File file = new File(getApplicationContext().getExternalFilesDir(AppConstants.OFFLINE_DATA_FOLDER_NAME) + "/" + file_name + ".txt");
 
         //File file = new File(file_pathrul);
 
@@ -1176,7 +1176,7 @@ public class OffBackgroundService extends Service {
     public void deleteAllDownloadedFiles() {
         try {
             //File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
-            File dir = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName)));
+            File dir = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.OFFLINE_DATA_FOLDER_NAME)));
             if (dir.isDirectory()) {
                 String[] children = dir.list();
                 for (int i = 0; i < children.length; i++) {
@@ -1184,20 +1184,20 @@ public class OffBackgroundService extends Service {
                 }
             }
         } catch (Exception e) {
-            AppConstants.WriteinFile("deleteAllDownloadedFiles-" + e.getMessage());
+            AppConstants.writeInFile("deleteAllDownloadedFiles-" + e.getMessage());
         }
     }
 
     public void cancelThinDownloadManager() {
         try {
-            AppConstants.isOfflineDownloadStarted = false;
+            AppConstants.IS_OFFLINE_DOWNLOAD_STARTED = false;
             ThinDownloadManager downloadManager = new ThinDownloadManager();
             downloadManager.cancelAll();
-            if (AppConstants.offlineDownloadIds != null && AppConstants.offlineDownloadIds.size() > 0) {
-                AppConstants.offlineDownloadIds.clear();
+            if (AppConstants.OFFLINE_DOWNLOAD_IDS != null && AppConstants.OFFLINE_DOWNLOAD_IDS.size() > 0) {
+                AppConstants.OFFLINE_DOWNLOAD_IDS.clear();
             }
             deleteIncompleteOfflineDataFiles();
-            //AppConstants.WriteinFile("WelAct- cancel offline Download...");
+            //AppConstants.writeInFile("WelAct- cancel offline Download...");
 
         } catch (Exception e) {
         }
@@ -1205,7 +1205,7 @@ public class OffBackgroundService extends Service {
 
     public void deleteIncompleteOfflineDataFiles() {
         //File dir = new File(Environment.getExternalStorageDirectory() + "/FSdata");
-        File dir = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.OfflineDataFolderName)));
+        File dir = new File(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.OFFLINE_DATA_FOLDER_NAME)));
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
@@ -1242,8 +1242,8 @@ public class OffBackgroundService extends Service {
             } catch (Exception e) {
 
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GenerateFilesAPI InBackG Ex:" + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GenerateFilesAPI InBackG Ex:" + e.getMessage());
 
             }
 
@@ -1270,32 +1270,32 @@ public class OffBackgroundService extends Service {
 
                         if (cd.isConnecting()) {
 
-                            /*if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Offline data Link,Vehicle,Pin Start ");
+                            /*if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " Offline data Link,Vehicle,Pin Start ");
 
                             AppConstants.clearSharedPrefByName(OffBackgroundService.this, "DownloadFileStatus");
 
                             startDownloadTimerTask();*/
 
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost NoInternet");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " GenerateFilesAPI InPost NoInternet");
                         }
 
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost Response fail" + result);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " GenerateFilesAPI InPost Response fail" + result);
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost Ex:" + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " GenerateFilesAPI InPost Ex:" + e.getMessage());
                 }
 
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GenerateFilesAPI InPost Response err:" + result);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GenerateFilesAPI InPost Response err:" + result);
             }
 
         }

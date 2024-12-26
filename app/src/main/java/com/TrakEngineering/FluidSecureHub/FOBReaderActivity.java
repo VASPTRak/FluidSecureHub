@@ -48,7 +48,7 @@ public class FOBReaderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AppConstants.GenerateLogs = true;
+        AppConstants.GENERATE_LOGS = true;
         SharedPreferences sharedPref = FOBReaderActivity.this.getSharedPreferences("LanguageSettings", Context.MODE_PRIVATE);
         String language = sharedPref.getString("language", "");
         StoreLanguageSettings(language, false);
@@ -59,13 +59,13 @@ public class FOBReaderActivity extends AppCompatActivity {
         HubType = sharedPrefODO.getString("HubType", "");
         CompanyName = sharedPrefODO.getString("CompanyName", "");
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
         ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Person");
 
         // set User Information
         UserInfoEntity qaz = CommonUtils.getCustomerDetails(FOBReaderActivity.this);
-        AppConstants.Title = getResources().getString(R.string.Name) + " : " + qaz.PersonName +
+        AppConstants.TITLE = getResources().getString(R.string.Name) + " : " + qaz.PersonName +
                 "\n" + getResources().getString(R.string.Mobile) + " : " + qaz.PhoneNumber +
                 "\n" + getResources().getString(R.string.Email) + " : " + qaz.PersonEmail;
 
@@ -82,7 +82,7 @@ public class FOBReaderActivity extends AppCompatActivity {
         TextView tvVersionNum = (TextView) findViewById(R.id.tvVersionNum);
         tvVersionNum.setText(getResources().getString(R.string.VersionHeading) + ": " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
-        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "UserInfo:\n" +AppConstants.Title + "\nAppVersion : " + CommonUtils.getVersionCode(FOBReaderActivity.this));
+        if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "UserInfo:\n" +AppConstants.TITLE + "\nAppVersion : " + CommonUtils.getVersionCode(FOBReaderActivity.this));
 
         InItGUI();
 
@@ -170,22 +170,22 @@ public class FOBReaderActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.mrestartapp:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Restart app.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Restart app.");
                 Intent i = new Intent(FOBReaderActivity.this, SplashActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
                 break;
 
             case R.id.menuSpanish:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Spanish language selected.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Spanish language selected.>");
                 StoreLanguageSettings("es", true);
                 break;
 
             case R.id.menuEnglish:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<English language selected.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<English language selected.>");
                 StoreLanguageSettings("en", true);
                 break;
 
@@ -220,15 +220,15 @@ public class FOBReaderActivity extends AppCompatActivity {
 
             if (isRecreate) {
                 //recreate();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Restarting the activity.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Restarting the activity.>");
                 Intent i = new Intent(FOBReaderActivity.this, FOBReaderActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 this.startActivity(i);
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
         }
     }
 
@@ -247,10 +247,10 @@ public class FOBReaderActivity extends AppCompatActivity {
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(FOBReaderActivity.this);
 
-        AppConstants.Title = getResources().getString(R.string.HUBName) + " " + CommonUtils.getSpareHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
-        //AppConstants.HubName = userInfoEntity.PersonName;
+        AppConstants.TITLE = getResources().getString(R.string.HUBName) + " " + CommonUtils.getSpareHUBNumberByName(userInfoEntity.PersonName); //+ "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail
+        //AppConstants.HUB_NAME = userInfoEntity.PersonName;
         tvTitle = (TextView) findViewById(R.id.textView);
-        tvTitle.setText(AppConstants.Title);
+        tvTitle.setText(AppConstants.TITLE);
 
         tvCompanyName = (TextView) findViewById(R.id.tvCompanyName);
         tvCompanyName.setText(getResources().getString(R.string.CompanyName) + " " +  CompanyName);
@@ -290,18 +290,18 @@ public class FOBReaderActivity extends AppCompatActivity {
 
     public void IsLogRequiredAndBranding() {
 
-        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_Log_Data, Context.MODE_PRIVATE);
-        AppConstants.GenerateLogs = Boolean.parseBoolean(sharedPref.getString(AppConstants.LogRequiredFlag, "True"));
-        String CompanyBrandName = sharedPref.getString(AppConstants.CompanyBrandName, "FluidSecure");
-        String CompanyBrandLogoLink = sharedPref.getString(AppConstants.CompanyBrandLogoLink, "");
-        String SupportEmail = sharedPref.getString(AppConstants.SupportEmail, "");
-        String SupportPhonenumber = sharedPref.getString(AppConstants.SupportPhonenumber, "");
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_LOG_DATA, Context.MODE_PRIVATE);
+        AppConstants.GENERATE_LOGS = Boolean.parseBoolean(sharedPref.getString(AppConstants.LOG_REQUIRED_FLAG, "True"));
+        String CompanyBrandName = sharedPref.getString(AppConstants.COMPANY_BRAND_NAME, "FluidSecure");
+        String CompanyBrandLogoLink = sharedPref.getString(AppConstants.COMPANY_BRAND_LOGO_LINK, "");
+        String SupportEmail = sharedPref.getString(AppConstants.SUPPORT_EMAIL, "");
+        String SupportPhonenumber = sharedPref.getString(AppConstants.SUPPORT_PHONE_NUMBER, "");
 
-        AppConstants.BrandName = CompanyBrandName;
+        AppConstants.BRAND_NAME = CompanyBrandName;
         support_email.setText(SupportEmail);
         support_phone.setText(SupportPhonenumber);
 
-        getSupportActionBar().setTitle(AppConstants.BrandName);
+        getSupportActionBar().setTitle(AppConstants.BRAND_NAME);
         //getSupportActionBar().setIcon(R.drawable.fuel_secure_lock);
 
         if (!CompanyBrandLogoLink.equalsIgnoreCase("")) {

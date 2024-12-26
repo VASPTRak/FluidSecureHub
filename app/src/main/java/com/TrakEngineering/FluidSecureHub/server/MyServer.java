@@ -43,9 +43,9 @@ public class MyServer extends NanoHTTPD {
         super(PORT);
         start();
         Log.i(TAG, " \nRunning! Point your browers to http://localhost:8085/ \n");
-        AppConstants.Server_mesage = "Server Running..!!!";
-        //if (AppConstants.GenerateLogs)
-        //    AppConstants.WriteinFile(TAG + " http server up and running");
+        AppConstants.SERVER_MESSAGE = "Server Running..!!!";
+        //if (AppConstants.GENERATE_LOGS)
+        //    AppConstants.writeInFile(TAG + " http server up and running");
 
     }
 
@@ -65,7 +65,7 @@ public class MyServer extends NanoHTTPD {
         String mimeType = "text/plain";
 
         Log.i(TAG, "http server called");
-        if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " http server called");
+        if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " http server called");
 
         RequestFor = session.getHeaders().get("requestfor");
 
@@ -87,49 +87,49 @@ public class MyServer extends NanoHTTPD {
 
                 } catch (Exception e) {
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile("Exception in RequestFor:" + e);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile("Exception in RequestFor:" + e);
                 }
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("TLD_REQ_To_http_server: ProbeAddr: " + ProbeAddrAsString + " Level:" + Level + " TLDFirmwareVersion:" + TLDFirmwareVersionSave);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile("TLD_REQ_To_http_server: ProbeAddr: " + ProbeAddrAsString + " Level:" + Level + " TLDFirmwareVersion:" + TLDFirmwareVersionSave);
 
 
                 TldMacAddress = GetProbeOffByOne(ProbeAddrAsString);//add 1 hex in tlc prob mac
 
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Mac_AddressInHeader:" + ProbeAddrAsString + "\nMac_AddressAfterOff:" + TldMacAddress);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Mac_AddressInHeader:" + ProbeAddrAsString + "\nMac_AddressAfterOff:" + TldMacAddress);
 
                 try {
 
                     controller.insertTLDReadings(convertStringToMacAddress(TldMacAddress), Level, "0", TLDFirmwareVersionSave, AppConstants.getIMEI(ctx), "", "", "", CommonUtils.getTodaysDateInString(), "", "y");
 
 
-                    if (AppConstants.DetailsServerSSIDList != null && AppConstants.DetailsServerSSIDList.size() > 0) {
+                    if (AppConstants.DETAILS_SERVER_SSID_LIST != null && AppConstants.DETAILS_SERVER_SSID_LIST.size() > 0) {
 
-                        for (int i = 0; i < AppConstants.DetailsServerSSIDList.size(); i++) {
+                        for (int i = 0; i < AppConstants.DETAILS_SERVER_SSID_LIST.size(); i++) {
 
-                            String PROBEMacAddressWithColun = AppConstants.DetailsServerSSIDList.get(i).get("PROBEMacAddress");
-                            String PROBEMacAddress = AppConstants.DetailsServerSSIDList.get(i).get("PROBEMacAddress").replaceAll(":", "");
+                            String PROBEMacAddressWithColun = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("PROBEMacAddress");
+                            String PROBEMacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("PROBEMacAddress").replaceAll(":", "");
 
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "SSID list ProbeMacAddress:" + PROBEMacAddress + "  TldMacAddress:" + TldMacAddress);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "SSID list ProbeMacAddress:" + PROBEMacAddress + "  TldMacAddress:" + TldMacAddress);
 
                             if (TldMacAddress.equalsIgnoreCase(PROBEMacAddress)) {
 
 
-                                String selSiteId = AppConstants.DetailsServerSSIDList.get(i).get("SiteId");
+                                String selSiteId = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("SiteId");
 
-                                String TLDFirmwareFilePath = AppConstants.DetailsServerSSIDList.get(i).get("TLDFirmwareFilePath");
+                                String TLDFirmwareFilePath = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("TLDFirmwareFilePath");
 
-                                IsTLDFirmwareUpgrade = AppConstants.DetailsServerSSIDList.get(i).get("IsTLDFirmwareUpgrade");
+                                IsTLDFirmwareUpgrade = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("IsTLDFirmwareUpgrade");
                                 try {
-                                    ScheduleTankReading = AppConstants.DetailsServerSSIDList.get(i).get("ScheduleTankReading");
+                                    ScheduleTankReading = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("ScheduleTankReading");
                                 } catch (Exception e) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Exception ScheduleTankReading");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "Exception ScheduleTankReading");
                                 }
 
                                 if (cd.isConnecting()) {
@@ -151,13 +151,13 @@ public class MyServer extends NanoHTTPD {
                     } else {
 
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " TLDUpgrade SSID List Empty not able to upgrade");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " TLDUpgrade SSID List Empty not able to upgrade");
                     }
 
                 } catch (Exception e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Exception TLDUpgrade AppConstants.DetailsServerSSIDList");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Exception TLDUpgrade AppConstants.DETAILS_SERVER_SSID_LIST");
                 }
 
 
@@ -168,8 +168,8 @@ public class MyServer extends NanoHTTPD {
                 //------------------------------------------------------------------------------------------
 
                 ResMsg = "{\"TLD_update\":\"" + IsTLDFirmwareUpgrade + "\", \"Schedule\":\"" + ScheduleTankReading + "\" , \"current_time\":\"" + AppConstants.currentDateFormat("HH:mm:ss") + "\"}";
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("TLD_RES_Frm_http_server" + ResMsg);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile("TLD_RES_Frm_http_server" + ResMsg);
 
                 System.out.println("TLD-" + ResMsg);
 
@@ -185,8 +185,8 @@ public class MyServer extends NanoHTTPD {
                 fsvmData = new String(buffer);
 
                 Log.i(TAG, "http server fsvmData: " + fsvmData);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " http server fsvmData: " + fsvmData);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " http server fsvmData: " + fsvmData);
 
                 Map<String, String> param = session.getParms();
                 //String B = param.get("data");
@@ -207,12 +207,12 @@ public class MyServer extends NanoHTTPD {
                 String fstag_ble = session.getHeaders().get("fstag_ble");
 
 
-                AppConstants.Header_data = "POST: " + Post + "\nHost: " + host + "\nFirmware version: " + FirmwareVersion + "\nContentLength: " + ContentLength + "\nremote_addr:" + remote_addr + "\nhttpclientip" + httpclientip + "\nfsvm_station:" + fsvm_station + "\nfstag_ble:" + fstag_ble;
+                AppConstants.HEADER_DATA = "POST: " + Post + "\nHost: " + host + "\nFirmware version: " + FirmwareVersion + "\nContentLength: " + ContentLength + "\nremote_addr:" + remote_addr + "\nhttpclientip" + httpclientip + "\nfsvm_station:" + fsvm_station + "\nfstag_ble:" + fstag_ble;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  HttpServer Header_data " + AppConstants.Header_data);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  HttpServer Header_data " + AppConstants.HEADER_DATA);
 
-                AppConstants.Server_Request = "FsvmData:" + fsvmData + "\nData in param:  " + A;
+                AppConstants.SERVER_REQUEST = "FsvmData:" + fsvmData + "\nData in param:  " + A;
 
                 if (FSTag != null)
                     FSTag = FSTag.replaceAll(":", "").toLowerCase().trim();
@@ -239,23 +239,23 @@ public class MyServer extends NanoHTTPD {
 
                 }
 
-                AppConstants.Server_Request = "FsvmData:" + fsvmData + "\nData in param:  " + A;
+                AppConstants.SERVER_REQUEST = "FsvmData:" + fsvmData + "\nData in param:  " + A;
 
 
-                AppConstants.Header_data = "POST: " + Post + "\nHost: " + host + "\nFirmware version: " + FirmwareVersion + "\nContentLength: " + ContentLength + "\nremote_addr:" + remote_addr + "\nhttpclientip" + httpclientip + "\nfsvm_station:" + fsvm_station + "\nfstag_ble:" + fstag_ble;
+                AppConstants.HEADER_DATA = "POST: " + Post + "\nHost: " + host + "\nFirmware version: " + FirmwareVersion + "\nContentLength: " + ContentLength + "\nremote_addr:" + remote_addr + "\nhttpclientip" + httpclientip + "\nfsvm_station:" + fsvm_station + "\nfstag_ble:" + fstag_ble;
 
 
                 try {
 
                     Log.i(TAG, " FsvmData:" + fsvmData);
-                    Log.i(TAG, " Header_data:" + AppConstants.Header_data);
+                    Log.i(TAG, " Header_data:" + AppConstants.HEADER_DATA);
                     FsvmInfo objEntityClass = new FsvmInfo();
                     objEntityClass.IMEIUDID = AppConstants.getIMEI(ctx);
                     objEntityClass.Email = CommonUtils.getCustomerDetailsCC(ctx).PersonEmail;
                     objEntityClass.transactionDate = CommonUtils.getTodaysDateInString();
                     objEntityClass.TransactionFrom = "AP";
-                    objEntityClass.CurrentLat = String.valueOf(Constants.Latitude);
-                    objEntityClass.CurrentLng = String.valueOf(Constants.Longitude);
+                    objEntityClass.CurrentLat = String.valueOf(Constants.LATITUDE);
+                    objEntityClass.CurrentLng = String.valueOf(Constants.LONGITUDE);
                     objEntityClass.VehicleRecurringMSG = fsvmData; //xyz;//
                     objEntityClass.FSTagMacAddress = fstag_ble;//"3C:A5:39:9A:B6:24";//
                     objEntityClass.CurrentFSVMFirmwareVersion = FirmwareVersion;//"3C:A5:39:9A:B6:24";//
@@ -268,16 +268,16 @@ public class MyServer extends NanoHTTPD {
                     String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "VINAuthorization" + AppConstants.LANG_PARAM);
 
                     Log.i(TAG, " NanoHTTPD serve response jsonData:" + jsonData);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  NanoHTTPD serve response jsonData:" + jsonData);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  NanoHTTPD serve response jsonData:" + jsonData);
 
 
                     try {
 
                         String response = new SaveFsvmDataToServer().execute(jsonData, authString).get();
                         Log.i(TAG, "SaveFsvmDataToServer_Response" + response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " SaveFsvmDataToServer_Response" + response);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " SaveFsvmDataToServer_Response" + response);
 
                         if (!response.equals(null) || !response.equals("")) {
 
@@ -346,14 +346,14 @@ public class MyServer extends NanoHTTPD {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  FsvmDataAsyncCall --Exception " + e);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "  FsvmDataAsyncCall --Exception " + e);
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  Response serve 2 --Exception " + e);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  Response serve 2 --Exception " + e);
                 }
 
 
@@ -361,8 +361,8 @@ public class MyServer extends NanoHTTPD {
 
         } catch (IOException e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  Response serve 1 --Exception " + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  Response serve 1 --Exception " + e);
         }
 
         return newFixedLengthResponse(ResMsg, f);
@@ -409,7 +409,7 @@ public class MyServer extends NanoHTTPD {
         }
 
 
-        AppConstants.Server_Response = "jsonData_fsvm:" + jsonData_fsvm;
+        AppConstants.SERVER_RESPONSE = "jsonData_fsvm:" + jsonData_fsvm;
 
         return jsonData_fsvm;
     }
@@ -434,14 +434,14 @@ public class MyServer extends NanoHTTPD {
                 System.out.println("authString--" + authString);
 
 
-                response = serverHandler.PostTextData(ctx, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(ctx, AppConstants.WEB_URL, jsonData, authString);
 
                 System.out.println("Id..." + jsonData);
 
             } catch (Exception e) {
                 Log.i(TAG, " SaveFsvmDataToServer doInBackground " + e);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  SaveFsvmDataToServer doInBackground " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  SaveFsvmDataToServer doInBackground " + e);
             }
 
             return response;

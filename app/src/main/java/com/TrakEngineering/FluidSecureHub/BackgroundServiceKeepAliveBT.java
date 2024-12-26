@@ -73,7 +73,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         try {
             super.onStart(intent, startId);
 
-            if (WelcomeActivity.OnWelcomeActivity && !AppConstants.isBTLinkUpgradeInProgress) {
+            if (WelcomeActivity.OnWelcomeActivity && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
                 boolean startProcess = false;
                 if (SSIDList != null && SSIDList.size() > 0) {
                     for (int i = 0; i < SSIDList.size(); i++) {
@@ -86,16 +86,16 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 }
 
                 if (startProcess) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<Started>");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "<Started>");
                     DefectiveBTLinks.clear();
                     StartProcess();
                 }
 
             } else {
                 Log.i(TAG, "Skip keepAlive not on Welcome activity or upgrade process is running.");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Skipped>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Skipped>");
             }
 
         } catch (NullPointerException e) {
@@ -124,7 +124,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     //while (i < SSIDList.size()) {
                     //for (int i = 0; i < SSIDList.size(); i++) {
                     int position = counter;
-                    //boolean IsAllHosesAreFree = AppConstants.IsAllHosesAreFree();
+                    //boolean isAllHosesAreFree = AppConstants.isAllHosesAreFree();
                     boolean isLinkFree = GetBTLinkBusyStatus(position);
                     String selSSID = SSIDList.get(position).get("WifiSSId");
                     String selBTMacAddress = SSIDList.get(position).get("BTMacAddress");
@@ -132,8 +132,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     try {
                         LinkCommunicationType = SSIDList.get(position).get("LinkCommunicationType");
                     } catch (Exception e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Exception while getting LinkCommunicationType of WifiSSId (" + selSSID + "). " + e.getMessage());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Exception while getting LinkCommunicationType of WifiSSId (" + selSSID + "). " + e.getMessage());
                     }
 
                 /*if (LinkCommunicationType != null) {
@@ -144,52 +144,52 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     continue;
                 }*/
                     if (LinkCommunicationType != null && LinkCommunicationType.equalsIgnoreCase("BT")) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "==============================================================================");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "==============================================================================");
                         IsBTLinkConnected = false;
                         //IsInfoCommandSuccess = false;
 
-                        if (WelcomeActivity.OnWelcomeActivity && isLinkFree && !AppConstants.isBTLinkUpgradeInProgress) {
+                        if (WelcomeActivity.OnWelcomeActivity && isLinkFree && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
                             switch (position) {
                                 case 0://Link One
-                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkOneStatus && BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BT_LINK_ONE_STATUS && BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
-                                        BTConstants.BTConnFailedCountLink1 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK1 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT0");
                                     }
                                     break;
                                 case 1://Link Two
-                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkTwoStatus && BTConstants.BTStatusStrTwo.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BT_LINK_TWO_STATUS && BTConstants.BT_STATUS_STR_TWO.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
-                                        BTConstants.BTConnFailedCountLink2 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK2 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT1");
                                     }
                                     break;
                                 case 2://Link Three
-                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkThreeStatus && BTConstants.BTStatusStrThree.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BT_LINK_THREE_STATUS && BTConstants.BT_STATUS_STR_THREE.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
-                                        BTConstants.BTConnFailedCountLink3 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK3 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT2");
                                     }
                                     break;
                                 case 3://Link Four
-                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkFourStatus && BTConstants.BTStatusStrFour.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BT_LINK_FOUR_STATUS && BTConstants.BT_STATUS_STR_FOUR.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
-                                        BTConstants.BTConnFailedCountLink4 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK4 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT3");
                                     }
                                     break;
                                 case 4://Link Five
-                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkFiveStatus && BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BT_LINK_FIVE_STATUS && BTConstants.BT_STATUS_STR_FIVE.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
-                                        BTConstants.BTConnFailedCountLink5 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK5 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT4");
                                     }
                                     break;
                                 case 5://Link Six
-                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BTLinkSixStatus && BTConstants.BTStatusStrSix.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
+                                    if (selBTMacAddress != null && !selBTMacAddress.isEmpty() && BTConstants.BT_LINK_SIX_STATUS && BTConstants.BT_STATUS_STR_SIX.equalsIgnoreCase("Connected")) { // && CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
                                         IsBTLinkConnected = true;
-                                        BTConstants.BTConnFailedCountLink6 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK6 = 0;
                                         SaveDefectiveBTLinkDateTimeSharedPref(BackgroundServiceKeepAliveBT.this, "BTConnDT5");
                                     }
                                     break;
@@ -203,25 +203,25 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                     LinkRebootFunctionality(position, selSSID);
                                 } else {
                                     boolean continueToRetry = true;
-                                    if (AppConstants.IsAllHosesAreFree() && !AppConstants.isBTLinkUpgradeInProgress &&
-                                            (BTConstants.BTConnFailedCountLink1 == 3 || BTConstants.BTConnFailedCountLink2 == 3 ||
-                                                    BTConstants.BTConnFailedCountLink3 == 3 || BTConstants.BTConnFailedCountLink4 == 3 ||
-                                                    BTConstants.BTConnFailedCountLink5 == 3 || BTConstants.BTConnFailedCountLink6 == 3)) {
+                                    if (AppConstants.isAllHosesAreFree() && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS &&
+                                            (BTConstants.BT_CONN_FAILED_COUNT_LINK1 == 3 || BTConstants.BT_CONN_FAILED_COUNT_LINK2 == 3 ||
+                                                    BTConstants.BT_CONN_FAILED_COUNT_LINK3 == 3 || BTConstants.BT_CONN_FAILED_COUNT_LINK4 == 3 ||
+                                                    BTConstants.BT_CONN_FAILED_COUNT_LINK5 == 3 || BTConstants.BT_CONN_FAILED_COUNT_LINK6 == 3)) {
                                         // Reset count for all positions
-                                        BTConstants.BTConnFailedCountLink1 = 0;
-                                        BTConstants.BTConnFailedCountLink2 = 0;
-                                        BTConstants.BTConnFailedCountLink3 = 0;
-                                        BTConstants.BTConnFailedCountLink4 = 0;
-                                        BTConstants.BTConnFailedCountLink5 = 0;
-                                        BTConstants.BTConnFailedCountLink6 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK1 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK2 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK3 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK4 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK5 = 0;
+                                        BTConstants.BT_CONN_FAILED_COUNT_LINK6 = 0;
                                         continueToRetry = false;
                                         try {
                                             //Disable BT------------
                                             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                                             mBluetoothAdapter.disable();
                                             Log.i(TAG, "BTKeepAlive: BT OFF");
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "<BT OFF>");
+                                            if (AppConstants.GENERATE_LOGS)
+                                                AppConstants.writeInFile(TAG + "<BT OFF>");
                                             IsBTToggled = true;
                                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                                 @Override
@@ -229,28 +229,28 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                                     //Enable BT------------
                                                     mBluetoothAdapter.enable();
                                                     Log.i(TAG, "BTKeepAlive: BT ON");
-                                                    if (AppConstants.GenerateLogs)
-                                                        AppConstants.WriteinFile(TAG + "<BT ON>");
+                                                    if (AppConstants.GENERATE_LOGS)
+                                                        AppConstants.writeInFile(TAG + "<BT ON>");
                                                     try {
                                                         Thread.sleep(1000);
                                                     } catch (Exception e) { e.printStackTrace(); }
                                                     Log.d(TAG, "BTKeepAlive: Checking CheckIfPresentInPairedDeviceList after BT ON");
                                                     if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
-                                                        BTConstants.RetryBTConnectionLinkPosition = position;
+                                                        BTConstants.RETRY_BT_CONNECTION_LINK_POSITION = position;
                                                     }
                                                 }
                                             }, 2000);
                                         } catch (Exception e) {
                                             continueToRetry = true;
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(TAG + "Exception while toggling Bluetooth.");
+                                            if (AppConstants.GENERATE_LOGS)
+                                                AppConstants.writeInFile(TAG + "Exception while toggling Bluetooth.");
                                         }
                                     }
                                     if (continueToRetry) {
                                         IsBTToggled = false;
                                         Log.d(TAG, "BTKeepAlive: Checking CheckIfPresentInPairedDeviceList inside continueToRetry");
                                         if (CommonFunctions.CheckIfPresentInPairedDeviceList(selBTMacAddress)) {
-                                            BTConstants.RetryBTConnectionLinkPosition = position;
+                                            BTConstants.RETRY_BT_CONNECTION_LINK_POSITION = position;
                                             Thread.sleep(1000);
                                         }
                                     }
@@ -261,8 +261,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                                 ContinueForNextLink(false);
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<Skipped Keep Alive for the Link: " + selSSID + ">");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<Skipped Keep Alive for the Link: " + selSSID + ">");
                             ContinueForNextLink(false);
                         }
                     } else {
@@ -275,11 +275,11 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 //}
             } else {
                 Log.i(TAG, "SSID List Empty");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "SSID List Empty");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "SSID List Empty");
             }
 
-            if (AppConstants.IsAllHosesAreFree() && !AppConstants.isBTLinkUpgradeInProgress) {
+            if (AppConstants.isAllHosesAreFree() && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
                 //boolean rebootFlag = false; // reboot
                 if (DefectiveBTLinks != null && DefectiveBTLinks.size() > 0) {
 
@@ -295,8 +295,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                             if (sendMail) {
                                 setSharedPrefDefectiveLink(BackgroundServiceKeepAliveBT.this, linkName);
                                 Log.i(TAG, "Defective links email sent to: " + linkName + " Message: " + Message + " TDifferance: " + diffMin);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "LINK (" + linkName + ") did not respond to KeepAlive");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "LINK (" + linkName + ") did not respond to KeepAlive");
                                 SendDefectiveLinkInfoEmailAsyncCall(linkName);
                             }
                         }
@@ -305,13 +305,13 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
 
                 /*if (rebootFlag) {
                     // Tablet Reboot functionality
-                    if (AppConstants.IsAllHosesAreFree()) {
+                    if (AppConstants.isAllHosesAreFree()) {
                         boolean sendReboot = checkSharedPrefForReboot(BackgroundServiceKeepAliveBT.this);
                         if (sendReboot && !isRebootDeviceCalled) {
                             isRebootDeviceCalled = true;
                             setSharedPrefForReboot(BackgroundServiceKeepAliveBT.this);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<Calling SureMDM Reboot>");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<Calling SureMDM Reboot>");
                             new CallSureMDMRebootDevice(BackgroundServiceKeepAliveBT.this).execute();
                         }
                     }
@@ -320,8 +320,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Main Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Main Exception: " + e.getMessage());
         }
     }
 
@@ -337,28 +337,28 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             response = "";
             //waitCounter = 0;
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Sending reboot command to Link: " + selectedSSID);
-            SendBTCommands(linkPosition, BTConstants.reboot_cmd);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Sending reboot command to Link: " + selectedSSID);
+            SendBTCommands(linkPosition, BTConstants.REBOOT_COMMAND);
 
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     //BTKeepAliveCompleteFunction(); // To unregister the receiver after reboot
-                    BTConstants.RetryBTConnectionLinkPosition = linkPosition;
+                    BTConstants.RETRY_BT_CONNECTION_LINK_POSITION = linkPosition;
                     new CountDownTimer(10000, 1000) {
                         public void onTick(long millisUntilFinished) {
                             //waitCounter++;
                             if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "<Connected after reboot. Link: " + selectedSSID + "; Position: " + (linkPosition + 1) + ">");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "<Connected after reboot. Link: " + selectedSSID + "; Position: " + (linkPosition + 1) + ">");
                                 InfoCommand(linkPosition, selectedSSID);
                                 cancel();
                             }
                             /*else {
                                 if (waitCounter > 1) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Waiting for Reconnect after rebooting the Link: " + selectedSSID);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "Waiting for Reconnect after rebooting the Link: " + selectedSSID);
                                 }
                             }*/
                         }
@@ -366,12 +366,12 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                         public void onFinish() {
                             //waitCounter = 0;
                             if (getBTStatusStr(linkPosition).equalsIgnoreCase("Connected")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "<Connected after reboot. Link: " + selectedSSID + "; Position: " + (linkPosition + 1) + ">");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "<Connected after reboot. Link: " + selectedSSID + "; Position: " + (linkPosition + 1) + ">");
                                 InfoCommand(linkPosition, selectedSSID);
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "<Failed to reconnect after rebooting the Link: " + selectedSSID + "; Position: " + (linkPosition + 1) + ">");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "<Failed to reconnect after rebooting the Link: " + selectedSSID + "; Position: " + (linkPosition + 1) + ">");
                                 ContinueForNextLink(true);
                             }
                         }
@@ -381,8 +381,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "LinkRebootFunctionality Exception: " + e.getMessage() + "; Link: " + selectedSSID + "; Position: " + (linkPosition + 1));
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "LinkRebootFunctionality Exception: " + e.getMessage() + "; Link: " + selectedSSID + "; Position: " + (linkPosition + 1));
             ContinueForNextLink(true);
         }
     }
@@ -396,15 +396,15 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 request = "";
                 response = "";
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Sending Info command to Link: " + selectedSSID);
-                SendBTCommands(linkPosition, BTConstants.info_cmd);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Sending Info command to Link: " + selectedSSID);
+                SendBTCommands(linkPosition, BTConstants.INFO_COMMAND);
 
                 new CountDownTimer(4000, 1000) {
                     public void onTick(long millisUntilFinished) {
-                        if (request.equalsIgnoreCase(BTConstants.info_cmd) && response.contains("version")) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Success");
+                        if (request.equalsIgnoreCase(BTConstants.INFO_COMMAND) && response.contains("version")) {
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Success");
                             SaveDefectiveBTLinkInfoCmdDateTimeSharedPref(linkPosition);
                             CheckInabilityToConnectLinks(linkPosition, selectedSSID, IsBTLinkConnected, true);
                             //BTKeepAliveCompleteFunction();
@@ -413,14 +413,14 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     }
 
                     public void onFinish() {
-                        if (request.equalsIgnoreCase(BTConstants.info_cmd) && response.contains("version")) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Success");
+                        if (request.equalsIgnoreCase(BTConstants.INFO_COMMAND) && response.contains("version")) {
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Success");
                             SaveDefectiveBTLinkInfoCmdDateTimeSharedPref(linkPosition);
                             CheckInabilityToConnectLinks(linkPosition, selectedSSID, IsBTLinkConnected, true);
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Failed");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " Info command Failed");
                             CheckInabilityToConnectLinks(linkPosition, selectedSSID, IsBTLinkConnected, false);
                         }
                         //BTKeepAliveCompleteFunction();
@@ -433,8 +433,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "InfoCommand Exception: " + e.getMessage() + "; Link: " + selectedSSID + "; Position: " + (linkPosition + 1));
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "InfoCommand Exception: " + e.getMessage() + "; Link: " + selectedSSID + "; Position: " + (linkPosition + 1));
             BTKeepAliveCompleteFunction();
         }
     }
@@ -532,28 +532,28 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         try {
             switch (linkPosition) {
                 case 0://Link 1
-                    BTStatusStr = BTConstants.BTStatusStrOne;
+                    BTStatusStr = BTConstants.BT_STATUS_STR_ONE;
                     break;
                 case 1://Link 2
-                    BTStatusStr = BTConstants.BTStatusStrTwo;
+                    BTStatusStr = BTConstants.BT_STATUS_STR_TWO;
                     break;
                 case 2://Link 3
-                    BTStatusStr = BTConstants.BTStatusStrThree;
+                    BTStatusStr = BTConstants.BT_STATUS_STR_THREE;
                     break;
                 case 3://Link 4
-                    BTStatusStr = BTConstants.BTStatusStrFour;
+                    BTStatusStr = BTConstants.BT_STATUS_STR_FOUR;
                     break;
                 case 4://Link 5
-                    BTStatusStr = BTConstants.BTStatusStrFive;
+                    BTStatusStr = BTConstants.BT_STATUS_STR_FIVE;
                     break;
                 case 5://Link 6
-                    BTStatusStr = BTConstants.BTStatusStrSix;
+                    BTStatusStr = BTConstants.BT_STATUS_STR_SIX;
                     break;
             }
         } catch (Exception e) {
             BTStatusStr = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " getBTStatusStr Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " getBTStatusStr Exception:>>" + e.getMessage());
         }
         return BTStatusStr;
     }
@@ -622,29 +622,29 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     intentFilter = new IntentFilter("BroadcastBlueLinkSixData");
                     break;
             }
-            /*if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<Registering the receiver for Link: " + selectedSSID + ">");*/
+            /*if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<Registering the receiver for Link: " + selectedSSID + ">");*/
             registerReceiver(broadcastBlueLinkData, intentFilter);
             isBroadcastReceiverRegistered = true;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " <Broadcast Receiver Registered. (" + broadcastBlueLinkData + ")>");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " <Broadcast Receiver Registered. (" + broadcastBlueLinkData + ")>");
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "RegisterBTReceiver Exception: " + e.getMessage() + "; Link Position: " + (linkPosition + 1));
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "RegisterBTReceiver Exception: " + e.getMessage() + "; Link Position: " + (linkPosition + 1));
             return false;
         }
     }
 
     private void UnregisterReceiver() {
-        /*if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "<Unregistering the receiver>");*/
+        /*if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "<Unregistering the receiver>");*/
         try {
             unregisterReceiver(broadcastBlueLinkData);
             if (broadcastBlueLinkData != null) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Broadcast Receiver Unregistered. (" + broadcastBlueLinkData + ")>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Broadcast Receiver Unregistered. (" + broadcastBlueLinkData + ")>");
                 broadcastBlueLinkData = null;
             }
         } catch (Exception e) {
@@ -698,8 +698,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(btLinkPosition) + " onReceive Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(btLinkPosition) + " onReceive Exception: " + e.getMessage());
             }
         }
     }
@@ -709,29 +709,29 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         try {
             switch (linkPosition) {
                 case 0:
-                    isLinkFree = Constants.FS_1STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted1;
+                    isLinkFree = Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_1;
                     break;
                 case 1://Link Two
-                    isLinkFree = Constants.FS_2STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted2;
+                    isLinkFree = Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_2;
                     break;
                 case 2://Link Three
-                    isLinkFree = Constants.FS_3STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted3;
+                    isLinkFree = Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_3;
                     break;
                 case 3://Link Four
-                    isLinkFree = Constants.FS_4STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted4;
+                    isLinkFree = Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_4;
                     break;
                 case 4://Link Five
-                    isLinkFree = Constants.FS_5STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted5;
+                    isLinkFree = Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_5;
                     break;
                 case 5://Link Six
-                    isLinkFree = Constants.FS_6STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted6;
+                    isLinkFree = Constants.FS_6_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_6;
                     break;
                 default://Something went wrong in link selection please try again.
                     break;
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "GetBTLinkBusyStatus Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "GetBTLinkBusyStatus Exception: " + e.getMessage());
         }
         return isLinkFree;
     }
@@ -761,14 +761,14 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     break;
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(linkPosition) + " SendBTCommands Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(linkPosition) + " SendBTCommands Exception:>>" + e.getMessage());
         }
     }
 
     private void CheckInabilityToConnectLinks(int position, String selectedSSID, boolean IsBTLinkConnected, boolean IsInfoCommandSuccess) {
-        //if (AppConstants.GenerateLogs)
-        //    AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(position) + " [selectedSSID: " + selectedSSID + "; IsBTLinkConnected: " + IsBTLinkConnected + "; IsInfoCommandSuccess: " + IsInfoCommandSuccess + "]");
+        //if (AppConstants.GENERATE_LOGS)
+        //    AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(position) + " [selectedSSID: " + selectedSSID + "; IsBTLinkConnected: " + IsBTLinkConnected + "; IsInfoCommandSuccess: " + IsInfoCommandSuccess + "]");
         try {
             Log.i(TAG, "CheckDetails \n------------------------------\nSelected SSID:" + selectedSSID + "\nIsBTLinkConnected:" + IsBTLinkConnected + "\nIsInfoCommandSuccess:" + IsInfoCommandSuccess + "\n------------------------");
 
@@ -824,8 +824,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
 
             DefectiveBTLinks.add(map);
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + getBTLinkIndexByPosition(position) + " CheckInabilityToConnectLinks Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + getBTLinkIndexByPosition(position) + " CheckInabilityToConnectLinks Exception:>>" + e.getMessage());
         }
         if (!IsBTToggled) {
             ContinueForNextLink(true);
@@ -836,10 +836,10 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         counter++;
         BTKeepAliveCompleteFunction();
         if (isBTLink) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "==============================================================================");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "==============================================================================");
         }
-        if (WelcomeActivity.OnWelcomeActivity && !AppConstants.isBTLinkUpgradeInProgress) {
+        if (WelcomeActivity.OnWelcomeActivity && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
             StartProcess(); // Next Link
         }
     }
@@ -886,7 +886,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         RequestBody body = RequestBody.create(TEXT, param2);
         OkHttpClient httpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(AppConstants.webURL)
+                .url(AppConstants.WEB_URL)
                 .post(body)
                 .addHeader("Authorization", authString)
                 .build();
@@ -907,8 +907,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                     throw new IOException("Error response " + response);
                 } else {
                     String result = responseBody.string();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "SendDefectiveLinkInfoEmailAsyncCall (LinkName: " + linkName + ") ~Result\n" + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "SendDefectiveLinkInfoEmailAsyncCall (LinkName: " + linkName + ") ~Result\n" + result);
 
                     try {
                         JSONObject jsonObjectSite = null;
@@ -954,7 +954,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 client.setWriteTimeout(4, TimeUnit.SECONDS);
 
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .addHeader("Authorization", authString)
                         .addHeader("ReqType", "Normal")
                         .build();
@@ -964,8 +964,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
 
             } catch (Exception e) {
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<CallSureMDMRebootDevice -InBackground-Exception: " + e.getMessage() + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<CallSureMDMRebootDevice -InBackground-Exception: " + e.getMessage() + ">");
                 isRebootDeviceCalled = false;
             }
             return resp;
@@ -974,8 +974,8 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         @Override
         protected void onPostExecute(String result) {
             isRebootDeviceCalled = false;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<CallSureMDMRebootDevice Response: " + result + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<CallSureMDMRebootDevice Response: " + result + ">");
         }
     }*/ // reboot
 }

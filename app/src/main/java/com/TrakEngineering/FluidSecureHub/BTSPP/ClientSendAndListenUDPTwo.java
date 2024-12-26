@@ -49,11 +49,11 @@ public class ClientSendAndListenUDPTwo implements Runnable {
                     String Response = new String(message, 0, p.getLength());
                     //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
                     Log.d("Received text", Response);
-                    //AppConstants.WriteinFile(TAG + " Link 2: Received text: " + Response);
+                    //AppConstants.writeInFile(TAG + " Link 2: Received text: " + Response);
                     //run = false;
 
-                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
-                        BTConstants.isNewVersionLinkTwo = true;
+                    if (strcmd.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("records")) {
+                        BTConstants.IS_NEW_VERSION_LINK_TWO = true;
                     }
 
                     if (Response.contains("$$")) {
@@ -67,7 +67,7 @@ public class ClientSendAndListenUDPTwo implements Runnable {
                         sendBroadcastIntentFromLinkTwo(sb2.toString());
                         sb2.setLength(0);
                     } else {
-                        if (BTConstants.isNewVersionLinkTwo) {
+                        if (BTConstants.IS_NEW_VERSION_LINK_TWO) {
                             sb2.append(Response);
                         } else {
                             // For old version Link response
@@ -90,7 +90,7 @@ public class ClientSendAndListenUDPTwo implements Runnable {
     }
 
     public void sendBroadcastIntentFromLinkTwo(String resp) {
-        //AppConstants.WriteinFile(TAG + " Link 2: Final Response: " + resp);
+        //AppConstants.writeInFile(TAG + " Link 2: Final Response: " + resp);
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkTwoData");
         broadcastIntent.putExtra("Request", strcmd);

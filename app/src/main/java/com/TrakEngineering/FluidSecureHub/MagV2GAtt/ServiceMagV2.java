@@ -57,7 +57,7 @@ public class ServiceMagV2 extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
-        AppConstants.RebootHF_reader = false;
+        AppConstants.REBOOT_HF_READER = false;
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -105,7 +105,7 @@ public class ServiceMagV2 extends Service {
             if (LeServiceMagV2.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
 
-                Constants.Mag_ReaderStatus = "Mag Connected";
+                Constants.MAG_READER_STATUS = "Mag Connected";
                 System.out.println("ACTION_GATT_MagV2_CONNECTED");
 
                 /*timerMagV2 = new Timer();
@@ -115,7 +115,7 @@ public class ServiceMagV2 extends Service {
                     public void run() {
 
                         //Execute below code only if QR reader is  connected
-                        if (Constants.QR_ReaderStatus.equalsIgnoreCase("QR Connected") || Constants.QR_ReaderStatus.equalsIgnoreCase("QR Discovered")) {
+                        if (Constants.QR_READER_STATUS.equalsIgnoreCase("QR Connected") || Constants.QR_READER_STATUS.equalsIgnoreCase("QR Discovered")) {
                             //BLE Upgrade
                             if ((IsQRUpdate.trim().equalsIgnoreCase("Y")) && bleVersionCallCount == 0) {
                                 try {
@@ -150,19 +150,19 @@ public class ServiceMagV2 extends Service {
 
             } else if (LeServiceMagV2.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                Constants.Mag_ReaderStatus = "Mag Disconnected";
+                Constants.MAG_READER_STATUS = "Mag Disconnected";
                 System.out.println("ACTION_GATT_MagV2_DISCONNECTED");
 
             } else if (LeServiceMagV2.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 System.out.println("ACTION_GATT_MagV2_SERVICES_DISCOVERED");
-                Constants.Mag_ReaderStatus = "Mag Discovered";
+                Constants.MAG_READER_STATUS = "Mag Discovered";
             } else if (LeServiceMagV2.ACTION_DATA_AVAILABLE.equals(action)) {
                 System.out.println("ACTION_GATT_MagV2_AVAILABLE");
                 System.out.println("ACTION_DATA_AVAILABLE");
-                Constants.Mag_ReaderStatus = "Mag Connected";
+                Constants.MAG_READER_STATUS = "Mag Connected";
                 displayData(intent.getStringExtra(LeServiceMagV2.EXTRA_DATA));
             } else {
-                Constants.Mag_ReaderStatus = "Mag Disconnected";
+                Constants.MAG_READER_STATUS = "Mag Disconnected";
             }
         }
     };
@@ -273,7 +273,7 @@ public class ServiceMagV2 extends Service {
                 success = folder.mkdirs();
             }
             if (!success) {
-                AppConstants.AlertDialogBox(ServiceMagV2.this, "Please check File is present in FSCardReader_QR Folder in Internal(Device) Storage");
+                AppConstants.alertDialogBox(ServiceMagV2.this, "Please check File is present in FSCardReader_QR Folder in Internal(Device) Storage");
             }
 
             if (BLEFileLocation != null) {
@@ -282,16 +282,16 @@ public class ServiceMagV2 extends Service {
                 File f = new File(CheckVersionFileLocation);
                 if (f.exists()) {
                     Log.e(TAG, " BLF Upgrade File already downloaded. skip downloading..");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " File already downloaded. skip downloading..");
                 } else {
                     new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader_" + BLEType + ".bin", "BLEUpdate");
                 }
 
             } else {
                 Log.e(TAG, "BLE reader upgrade File path null");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BLE reader upgrade File path null");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BLE reader upgrade File path null");
             }
 
 
@@ -315,12 +315,12 @@ public class ServiceMagV2 extends Service {
 
     private void readFobKey() {
 
-        if (AppConstants.RebootQR_reader) {
+        if (AppConstants.REBOOT_QR_READER) {
             System.out.println("ACTION_GATT_QR_Reboot cmd");
             mBluetoothLeService.writeRebootCharacteristic();
-            AppConstants.RebootQR_reader = false;
+            AppConstants.REBOOT_QR_READER = false;
         } else {
-            AppConstants.RebootQR_reader = false;
+            AppConstants.REBOOT_QR_READER = false;
             mBluetoothLeService.readCustomCharacteristic(false);
         }
     }

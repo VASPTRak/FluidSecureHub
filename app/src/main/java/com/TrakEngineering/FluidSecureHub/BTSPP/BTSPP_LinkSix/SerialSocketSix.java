@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 public class SerialSocketSix implements Runnable {
 
+    static final String INTENT_ACTION_DISCONNECT = BuildConfig.APPLICATION_ID + ".Disconnect";
     private static final UUID BLUETOOTH_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private final BroadcastReceiver disconnectBroadcastReceiver;
     private static final String TAG = SerialSocketSix.class.getSimpleName();
@@ -30,10 +31,6 @@ public class SerialSocketSix implements Runnable {
     private BluetoothDevice device;
     private BluetoothSocket socket;
     private boolean connected;
-
-    static final String INTENT_ACTION_DISCONNECT = BuildConfig.APPLICATION_ID + ".Disconnect";
-    static final String NOTIFICATION_CHANNEL = BuildConfig.APPLICATION_ID + ".Channel";
-    static final String INTENT_CLASS_MAIN_ACTIVITY = BuildConfig.APPLICATION_ID + ".MainActivity";
 
     public SerialSocketSix(Context context, BluetoothDevice device) {
         if (context instanceof Activity)
@@ -106,21 +103,21 @@ public class SerialSocketSix implements Runnable {
                         if (listener != null)
                             listener.onSerialReadSix(data);
                         Log.i(TAG, "BTLink_6:InreadPulse data: " + data.toString());
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_6:InreadPulse data: " + data.toString());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_6:InreadPulse data: " + data.toString());
                     }
 
                 } else {
                     Log.i(TAG, "BTLink_6:InreadPulse socketInputStream not avilable ");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_6:InreadPulse socketInputStream not avilable ");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_6:InreadPulse socketInputStream not avilable ");
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i(TAG, "BTLink_6:InreadPulse:Exception:" + e.toString());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_6:InreadPulse:Exception:" + e.toString());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_6:InreadPulse:Exception:" + e.toString());
             }
 
         } catch (Exception e) {
@@ -140,8 +137,8 @@ public class SerialSocketSix implements Runnable {
             if (listener != null) {
                 listener.onSerialConnectErrorSix(e);
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("<" + TAG + " Connect Exception: " + e.getMessage() + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile("<" + TAG + " Connect Exception: " + e.getMessage() + ">");
             }
             try {
                 socket.close();
@@ -166,8 +163,8 @@ public class SerialSocketSix implements Runnable {
             if (listener != null) {
                 listener.onSerialIoErrorSix(e, 6);
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile("<" + TAG + " Serial IO Exception: " + e.getMessage() + ">");
             }
             try {
                 socket.close();

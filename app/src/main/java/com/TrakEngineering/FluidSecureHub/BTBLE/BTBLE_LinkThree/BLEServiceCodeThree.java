@@ -40,7 +40,7 @@ public class BLEServiceCodeThree extends Service {
     StringBuilder sb3 = new StringBuilder();
     private int gt_notify_status = 0;
     BluetoothGatt gatt_notify;
-    public String UUID_service = "725e0bc8-6f00-4d2d-a4af-96138ce599b6";
+    public String UUID_SERVICE = "725e0bc8-6f00-4d2d-a4af-96138ce599b6";
     private int mConnectionState = STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -61,14 +61,14 @@ public class BLEServiceCodeThree extends Service {
             String intentAction;
             gt_notify_status = status;
             gatt_notify = gatt;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " <onConnectionStateChange: status => " + status + "; newState => " + newState + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " <onConnectionStateChange: status => " + status + "; newState => " + newState + ">");
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 gatt.requestMtu(512);
                 intentAction = ACTION_GATT_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
-                BT_BLE_Constants.BTBLELinkThreeStatus = true;
-                BT_BLE_Constants.BTBLEStatusStrThree = "Connected";
+                BT_BLE_Constants.BT_BLE_LINK_THREE_STATUS = true;
+                BT_BLE_Constants.BT_BLE_STATUS_STR_THREE = "Connected";
                 //broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
@@ -77,8 +77,8 @@ public class BLEServiceCodeThree extends Service {
                 intentAction = ACTION_GATT_DISCONNECTED;
                 mConnectionState = STATE_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
-                BT_BLE_Constants.BTBLELinkThreeStatus = false;
-                BT_BLE_Constants.BTBLEStatusStrThree = "Disconnect";
+                BT_BLE_Constants.BT_BLE_LINK_THREE_STATUS = false;
+                BT_BLE_Constants.BT_BLE_STATUS_STR_THREE = "Disconnect";
                 //broadcastUpdate(intentAction);
 
             }
@@ -97,27 +97,27 @@ public class BLEServiceCodeThree extends Service {
 
             try {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " <Finding BT service " + BT_BLE_Constants.UUID_service + " OR " + BT_BLE_Constants.UUID_service_BT + ">");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " <Finding BT service " + BT_BLE_Constants.UUID_SERVICE + " OR " + BT_BLE_Constants.UUID_SERVICE_BT + ">");
                     List<BluetoothGattService> services = gatt.getServices();
                     if (services != null) {
                         for (BluetoothGattService service : services) {
                             String suuid = String.valueOf(service.getUuid());
-                            //AppConstants.WriteinFile(BTLinkLeServiceCode.this, "Service -> " + suuid );
-                            if (!suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service) && !suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_BT) && suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_file))
+                            //AppConstants.writeInFile(BTLinkLeServiceCode.this, "Service -> " + suuid );
+                            if (!suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_SERVICE) && !suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_SERVICE_BT) && suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_SERVICE_FILE))
                                 continue;
 
-                            if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service)) {
-                                UUID_service = BT_BLE_Constants.UUID_service;
-                                //BT_BLE_Constants.isNewVersionLinkThree = false;
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " <Found BT LINK (OLD)>");
+                            if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_SERVICE)) {
+                                UUID_SERVICE = BT_BLE_Constants.UUID_SERVICE;
+                                //BT_BLE_Constants.IS_NEW_VERSION_LINK_THREE = false;
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " <Found BT LINK (OLD)>");
                             }
-                            if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_service_BT)) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " <Found BT LINK (New)>");
-                                UUID_service = BT_BLE_Constants.UUID_service_BT;
-                                //BT_BLE_Constants.isNewVersionLinkThree = true;
+                            if (suuid.equalsIgnoreCase(BT_BLE_Constants.UUID_SERVICE_BT)) {
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " <Found BT LINK (New)>");
+                                UUID_SERVICE = BT_BLE_Constants.UUID_SERVICE_BT;
+                                //BT_BLE_Constants.IS_NEW_VERSION_LINK_THREE = true;
                             }
                             List<BluetoothGattCharacteristic> gattCharacteristics =
                                     service.getCharacteristics();
@@ -126,7 +126,7 @@ public class BLEServiceCodeThree extends Service {
                                 // Loops through available Characteristics.
                                 for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                                     String cuuid = String.valueOf(gattCharacteristic.getUuid());
-                                    if (!cuuid.equals(BT_BLE_Constants.UUID_char) && !cuuid.equals(BT_BLE_Constants.UUID_char_file))
+                                    if (!cuuid.equals(BT_BLE_Constants.UUID_CHAR) && !cuuid.equals(BT_BLE_Constants.UUID_CHAR_FILE))
                                         continue;
 
                                     final int charaProp = gattCharacteristic.getProperties();
@@ -134,7 +134,7 @@ public class BLEServiceCodeThree extends Service {
                                     if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                                         setCharacteristicNotification(gattCharacteristic, true);
 
-                                        BluetoothGattCharacteristic init_gatt = gatt.getService(UUID.fromString(UUID_service)).getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char));
+                                        BluetoothGattCharacteristic init_gatt = gatt.getService(UUID.fromString(UUID_SERVICE)).getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_CHAR));
                                         for (BluetoothGattDescriptor descriptor : init_gatt.getDescriptors()) {
                                             Log.e(TAG, "BluetoothGattDescriptor 1: " + descriptor.getUuid().toString());
                                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -183,8 +183,8 @@ public class BLEServiceCodeThree extends Service {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " <RSSI: " + rssi + " dBm>");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " <RSSI: " + rssi + " dBm>");
         }
 
         @Override
@@ -242,7 +242,7 @@ public class BLEServiceCodeThree extends Service {
                 sendBroadcast(intent);
                 sb3.setLength(0);
             } else {
-                if (BT_BLE_Constants.isNewVersionLinkThree || BTConstants.forOscilloscope || BT_BLE_Constants.CurrentCommand_LinkThree.contains(BTConstants.p_type_command)) {
+                if (BT_BLE_Constants.IS_NEW_VERSION_LINK_THREE || BTConstants.FOR_OSCILLOSCOPE || BT_BLE_Constants.CURRENT_COMMAND_LINK_THREE.contains(BTConstants.P_TYPE_COMMAND)) {
                     sb3.append(Response);
                 } else {
                     // For old version Link response
@@ -367,8 +367,8 @@ public class BLEServiceCodeThree extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            BT_BLE_Constants.BTBLELinkThreeStatus = false;
-            BT_BLE_Constants.BTBLEStatusStrThree = "Disconnect";
+            BT_BLE_Constants.BT_BLE_LINK_THREE_STATUS = false;
+            BT_BLE_Constants.BT_BLE_STATUS_STR_THREE = "Disconnect";
             return false;
         }
         return true;
@@ -444,33 +444,33 @@ public class BLEServiceCodeThree extends Service {
 
     public void writeCustomCharacteristic(String bleCommand) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            BT_BLE_Constants.CurrentCommand_LinkThree = "";
+            BT_BLE_Constants.CURRENT_COMMAND_LINK_THREE = "";
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(UUID_service));
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(UUID_SERVICE));
 
         if (mCustomService == null) {
-            BT_BLE_Constants.CurrentCommand_LinkThree = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " LeServiceCode ~~~~~~~~~" + bleCommand + " writeCustomCharacteristic Char Not found:" + BT_BLE_Constants.UUID_char);
+            BT_BLE_Constants.CURRENT_COMMAND_LINK_THREE = "";
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " LeServiceCode ~~~~~~~~~" + bleCommand + " writeCustomCharacteristic Char Not found:" + BT_BLE_Constants.UUID_CHAR);
             return;
         }
-        /*if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " writeCustomCharacteristic ~~~~~~~~~ " + bleCommand);*/
-        if (!bleCommand.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-            BT_BLE_Constants.CurrentCommand_LinkThree = bleCommand;
+        /*if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + " writeCustomCharacteristic ~~~~~~~~~ " + bleCommand);*/
+        if (!bleCommand.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+            BT_BLE_Constants.CURRENT_COMMAND_LINK_THREE = bleCommand;
         }
         byte[] strBytes = bleCommand.getBytes();
 
         BluetoothGattCharacteristic mWriteCharacteristic = null;
-        mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char));
+        mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_CHAR));
         mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
         mWriteCharacteristic.setValue(strBytes);
 
         if (mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-            //AppConstants.WriteinFile(BTLinkLeServiceCode.this,"LeServiceCode ~~~~~~~~~"+bleCommand  + " Write Characteristics successfully!");
+            //AppConstants.writeInFile(BTLinkLeServiceCode.this,"LeServiceCode ~~~~~~~~~"+bleCommand  + " Write Characteristics successfully!");
 
             if (bleCommand.contains("OFF")) {
                 //BTLinkLeServiceCode.count_relayOff=0;
@@ -481,8 +481,8 @@ public class BLEServiceCodeThree extends Service {
             }
 
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " LeServiceCode ~~~~~~~~~" + bleCommand + " Failed to write Characteristics");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " LeServiceCode ~~~~~~~~~" + bleCommand + " Failed to write Characteristics");
 
             if(bleCommand.contains("OFF"))
             {
@@ -507,24 +507,24 @@ public class BLEServiceCodeThree extends Service {
             return false;
         }
 
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(BT_BLE_Constants.UUID_service_file));
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(BT_BLE_Constants.UUID_SERVICE_FILE));
 
         if (mCustomService == null) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " getService Not found: " + BT_BLE_Constants.UUID_service_file);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " getService Not found: " + BT_BLE_Constants.UUID_SERVICE_FILE);
             return false;
         }
 
         try {
-            String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+            String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_UPGRADE_FILE_NAME;
 
             File file = new File(LocalPath);
 
             long file_size = file.length();
             long tempFileSize = file_size;
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " <File Size: " + file_size + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " <File Size: " + file_size + ">");
 
             InputStream inputStream = new FileInputStream(file);
             byte[] bufferBytes = new byte[BUFFER_SIZE];
@@ -535,17 +535,17 @@ public class BLEServiceCodeThree extends Service {
                 long bytesWritten = 0;
                 int amountOfBytesRead;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " Upload (" + AppConstants.UP_Upgrade_File_name + ") started...");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " Upload (" + AppConstants.UP_UPGRADE_FILE_NAME + ") started...");
 
                 while ((amountOfBytesRead = inputStream.read(bufferBytes)) != -1) {
 
                     bytesWritten += amountOfBytesRead;
                     int progressValue = (int) (100 * ((double) bytesWritten) / ((double) file_size));
-                    BT_BLE_Constants.BTBLEUpgradeProgressValue = String.valueOf(progressValue);
+                    BT_BLE_Constants.BT_BLE_UPGRADE_PROGRESS_VALUE = String.valueOf(progressValue);
 
                     BluetoothGattCharacteristic mWriteCharacteristic = null;
-                    mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_char_file));
+                    mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BT_BLE_Constants.UUID_CHAR_FILE));
                     mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
                     mWriteCharacteristic.setValue(bufferBytes);
 
@@ -567,15 +567,15 @@ public class BLEServiceCodeThree extends Service {
                     try {
                         Thread.sleep(10);
                     } catch (Exception e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " Thread exception: " + e.getMessage() + " (Progress: " + progressValue + ")");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " Thread exception: " + e.getMessage() + " (Progress: " + progressValue + ")");
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " writeFileCharacteristic Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_UPGRADE_BT_BLE + "-" + TAG + " writeFileCharacteristic Exception: " + e.getMessage());
         }
         return result;
     }

@@ -48,7 +48,7 @@ public class AlertDialogUtil {
                     for (int i = 0; i < (spaceCount - dotsCount); i++) {
                         updateValue.append(' ');
                     }
-                    updateValue.append(AppConstants.HSConnectionTimeout);
+                    updateValue.append(AppConstants.HS_CONNECTION_TIMEOUT);
                 }
 
                 activity.runOnUiThread(new Runnable() {

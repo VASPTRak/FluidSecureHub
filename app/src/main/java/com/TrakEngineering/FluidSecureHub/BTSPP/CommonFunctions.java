@@ -25,15 +25,14 @@ public static boolean CheckIfPresentInPairedDeviceList(String SelMac){
             String deviceName = device.getName();
             String deviceHardwareAddress = device.getAddress(); // MAC address
             if (deviceHardwareAddress.equalsIgnoreCase(SelMac)){
-                //BTConstants.deviceAddress1 = deviceHardwareAddress;
-                Log.d(TAG, "BTKeepAlive: calling createBond");
+                //BTConstants.DEVICE_ADDRESS_1 = deviceHardwareAddress;
                 device.createBond();
                 return true;
             }
         }
     }
     Log.i(TAG,"Selected link not in bluetooth pair devices list. HardwareAddress:"+SelMac);
-    if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG+ " Selected link not in bluetooth pair devices list. HardwareAddress:"+SelMac);
+    if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG+ " Selected link not in bluetooth pair devices list. HardwareAddress:"+SelMac);
     return false;
 }
 
@@ -73,8 +72,8 @@ public static boolean CheckIfPresentInPairedDeviceList(String SelMac){
 
     }catch (Exception e){
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG+" ShiftMacAddress Exception:"+e.toString());
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG+" ShiftMacAddress Exception:"+e.toString());
     }
     return  fhex;
 }

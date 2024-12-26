@@ -49,11 +49,11 @@ public class ClientSendAndListenUDPThree implements Runnable {
                     String Response = new String(message, 0, p.getLength());
                     //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
                     Log.d("Received text", Response);
-                    //AppConstants.WriteinFile(TAG + " Link 3: Received text: " + Response);
+                    //AppConstants.writeInFile(TAG + " Link 3: Received text: " + Response);
                     //run = false;
 
-                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
-                        BTConstants.isNewVersionLinkThree = true;
+                    if (strcmd.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("records")) {
+                        BTConstants.IS_NEW_VERSION_LINK_THREE = true;
                     }
 
                     if (Response.contains("$$")) {
@@ -67,7 +67,7 @@ public class ClientSendAndListenUDPThree implements Runnable {
                         sendBroadcastIntentFromLinkThree(sb3.toString());
                         sb3.setLength(0);
                     } else {
-                        if (BTConstants.isNewVersionLinkThree) {
+                        if (BTConstants.IS_NEW_VERSION_LINK_THREE) {
                             sb3.append(Response);
                         } else {
                             // For old version Link response
@@ -90,7 +90,7 @@ public class ClientSendAndListenUDPThree implements Runnable {
     }
 
     public void sendBroadcastIntentFromLinkThree(String resp) {
-        //AppConstants.WriteinFile(TAG + " Link 3: Final Response: " + resp);
+        //AppConstants.writeInFile(TAG + " Link 3: Final Response: " + resp);
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkThreeData");
         broadcastIntent.putExtra("Request", strcmd);

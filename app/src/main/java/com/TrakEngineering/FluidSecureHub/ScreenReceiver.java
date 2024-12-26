@@ -46,7 +46,7 @@ public class ScreenReceiver extends BroadcastReceiver {
 
         }
 
-        if (AppConstants.DisableAllRebootOptions.equalsIgnoreCase("N")) {
+        if (AppConstants.DISABLE_ALL_REBOOT_OPTIONS.equalsIgnoreCase("N")) {
             Intent i = new Intent(context, BackgroundServiceHotspotCheck.class);
             i.putExtra("screen_state", screenOff);
             context.startService(i);

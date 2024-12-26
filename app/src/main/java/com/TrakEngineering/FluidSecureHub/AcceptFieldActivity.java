@@ -57,10 +57,10 @@ public class AcceptFieldActivity extends AppCompatActivity {
 
 
         SharedPreferences sharedPrefODO = AcceptFieldActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
 
         if (IsOdoMeterRequire.equalsIgnoreCase("True")) {
@@ -109,8 +109,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etOdometer.getText().toString().trim().isEmpty()) {
 
                             odo=false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Please enter odometer.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Please enter odometer.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter odometer.");
                         }
 
@@ -119,8 +119,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etDeptNumber.getText().toString().trim().isEmpty()) {
 
                             dept=false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Please enter Department Number.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Please enter Department Number.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter Department Number.");
                         }
 
@@ -129,8 +129,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etPersonnelPin.getText().toString().trim().isEmpty()) {
 
                             pin=false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Please enter Personnel Pin.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Please enter Personnel Pin.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter Personnel Pin.");
                         }
 
@@ -139,8 +139,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                         if (etOther.getText().toString().trim().isEmpty()) {
 
                             oth=false;
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Please enter Other.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Please enter Other.");
                             CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Error Message", "Please enter Other.");
                         }
                     }
@@ -187,7 +187,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                 if (ResponceMessage.equalsIgnoreCase("success")) {
 
 
-                                    if (Constants.CurrentSelectedHose.equals("FS1")) {
+                                    if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
 
                                         String ResponceData = jsonObject.getString("ResponceData");
 
@@ -235,8 +235,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                         intent.putExtra(Constants.VEHICLE_NUMBER, vehicleNumber);
                                         intent.putExtra(Constants.ODO_METER, etOdometer.getText().toString().trim());
                                         intent.putExtra(Constants.DEPT, etDeptNumber.getText().toString().trim());
-                                        intent.putExtra(Constants.PPIN, etPersonnelPin.getText().toString().trim());
-                                        intent.putExtra(Constants.OTHERR, etOther.getText().toString().trim());
+                                        intent.putExtra(Constants.PERSON_PIN, etPersonnelPin.getText().toString().trim());
+                                        intent.putExtra(Constants.OTHER, etOther.getText().toString().trim());
 
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
@@ -288,8 +288,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
                                         intent.putExtra(Constants.VEHICLE_NUMBER, vehicleNumber);
                                         intent.putExtra(Constants.ODO_METER, etOdometer.getText().toString().trim());
                                         intent.putExtra(Constants.DEPT, etDeptNumber.getText().toString().trim());
-                                        intent.putExtra(Constants.PPIN, etPersonnelPin.getText().toString().trim());
-                                        intent.putExtra(Constants.OTHERR, etOther.getText().toString().trim());
+                                        intent.putExtra(Constants.PERSON_PIN, etPersonnelPin.getText().toString().trim());
+                                        intent.putExtra(Constants.OTHER, etOther.getText().toString().trim());
 
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
@@ -298,8 +298,8 @@ public class AcceptFieldActivity extends AppCompatActivity {
 
                                 } else if (ResponceMessage.equalsIgnoreCase("fail")) {
                                     String ResponceText = jsonObject.getString("ResponceText");
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Error: " + ResponceText);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "Error: " + ResponceText);
                                     CommonUtils.showMessageDilaog(AcceptFieldActivity.this, "Message", ResponceText);
                                 }
 
@@ -344,7 +344,7 @@ public class AcceptFieldActivity extends AppCompatActivity {
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptFieldActivity.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptFieldActivity.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {

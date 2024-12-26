@@ -23,7 +23,7 @@ public class JobSchedulerService extends JobService {
                 Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
                 if (intent != null) {
 
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Application started by job scheduler.");
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "Application started by job scheduler.");
 
                     // We found the activity now start the activity
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

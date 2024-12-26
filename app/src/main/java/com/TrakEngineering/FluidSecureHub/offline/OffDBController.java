@@ -64,7 +64,7 @@ public class OffDBController extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, int version_old, int current_version) {
 
         Log.i(TAG,"InOnUpgrade.");
-        AppConstants.WriteinFile(TAG + "<onUpgrade called.>");
+        AppConstants.writeInFile(TAG + "<onUpgrade called.>");
         // If you need to add a column
         if (current_version > version_old) {
             try {
@@ -210,8 +210,8 @@ public class OffDBController extends SQLiteOpenHelper {
             editor.apply();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "storeOfflineHubDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "storeOfflineHubDetails Exception: " + e.getMessage());
         }
     }
 
@@ -252,8 +252,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getOfflineHubDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getOfflineHubDetails Exception: " + e.getMessage());
         }
         return hub;
     }
@@ -282,8 +282,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertTLDReadings Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertTLDReadings Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -315,8 +315,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertLinkDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertLinkDetails Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -360,8 +360,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertVehicleDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertVehicleDetails Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -390,8 +390,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertPersonnelPinDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertPersonnelPinDetails Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -412,8 +412,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertDepartmentDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertDepartmentDetails Exception: " + e.getMessage());
         }
         return insertedDD;
     }
@@ -435,8 +435,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertFuelTimings Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertFuelTimings Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -468,8 +468,8 @@ public class OffDBController extends SQLiteOpenHelper {
             insertedID = database.insert(TBL_TRANSACTION, null, values);
             database.close();
             if (LinkCommunicationType.isEmpty()) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Transaction saved in local DB.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Transaction saved in local DB.>");
             } else {
 
                 String txtnTypeForLog = "";
@@ -479,13 +479,13 @@ public class OffDBController extends SQLiteOpenHelper {
                     txtnTypeForLog = AppConstants.LOG_TXTN_HTTP;
                 }
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(txtnTypeForLog + "- <Transaction saved in local DB.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(txtnTypeForLog + "- <Transaction saved in local DB.>");
             }
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "insertOfflineTransactions Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "insertOfflineTransactions Exception: " + e.getMessage());
         }
         return insertedID;
     }
@@ -604,8 +604,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getAllLinks Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getAllLinks Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -638,8 +638,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getLinksDetailsBySiteId Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getLinksDetailsBySiteId Exception: " + e.getMessage());
         }
         return hmObj;
     }
@@ -672,8 +672,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getAllLinksDetails Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getAllLinksDetails Exception: " + e.getMessage());
         }
         return hmObj;
     }
@@ -710,8 +710,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getTransactionDetailsBySqliteId Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getTransactionDetailsBySqliteId Exception: " + e.getMessage());
         }
         return hmObj;
     }
@@ -765,8 +765,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getAllOfflineTransactionJSON Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getAllOfflineTransactionJSON Exception: " + e.getMessage());
         }
         return apiJSON;
     }
@@ -834,8 +834,8 @@ public class OffDBController extends SQLiteOpenHelper {
             System.out.println("OfflineJSON-" + apiJSON);
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getTop10OfflineTransactionJSON Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getTop10OfflineTransactionJSON Exception: " + e.getMessage());
         }
         return apiJSON;
     }
@@ -880,8 +880,8 @@ public class OffDBController extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getTLDOfflineTransactionJSON Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getTLDOfflineTransactionJSON Exception: " + e.getMessage());
         }
         return apiJSON;
     }
@@ -936,8 +936,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getVehicleDetailsByBarcodeNumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getVehicleDetailsByBarcodeNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -985,8 +985,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getVehicleDetailsByVehicleNumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getVehicleDetailsByVehicleNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1044,8 +1044,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getVehicleDetailsByFOBNumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getVehicleDetailsByFOBNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1103,8 +1103,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getVehicleDetailsByMagNumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getVehicleDetailsByMagNumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1141,8 +1141,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByPIN Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getPersonnelDetailsByPIN Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1188,8 +1188,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByFOBnumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getPersonnelDetailsByFOBnumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1235,8 +1235,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getPersonnelDetailsByMagCardnumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getPersonnelDetailsByMagCardnumber Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1272,8 +1272,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getPersonnelDetailsALLL Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getPersonnelDetailsALLL Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1302,8 +1302,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getFuelTimingsBySiteId Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getFuelTimingsBySiteId Exception: " + e.getMessage());
         }
         return wordList;
     }
@@ -1345,8 +1345,8 @@ public class OffDBController extends SQLiteOpenHelper {
                 rowDetails += "Department:" + rowCount + " ";
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "selectRowCountOfDatabase Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "selectRowCountOfDatabase Exception: " + e.getMessage());
         } finally {
             if (cursorLink != null) {
                 cursorLink.close();
@@ -1406,8 +1406,8 @@ public class OffDBController extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getDepartmentDetailsByDepartmentNumber Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getDepartmentDetailsByDepartmentNumber Exception: " + e.getMessage());
         }
         return deptList;
     }

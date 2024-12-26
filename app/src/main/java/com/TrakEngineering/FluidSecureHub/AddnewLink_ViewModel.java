@@ -139,9 +139,9 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
         //Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT).show();
         // You can now create a LatLng Object for use with maps
         Latitude = String.valueOf(location.getLatitude());
-        AppConstants.Latitude = String.valueOf(location.getLatitude());
+        AppConstants.LATITUDE = String.valueOf(location.getLatitude());
         Longitude = String.valueOf(location.getLongitude());
-        AppConstants.Longitude = String.valueOf(location.getLongitude());
+        AppConstants.LONGITUDE = String.valueOf(location.getLongitude());
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         Log.i(TAG, "latLng" + latLng);
     }
@@ -246,8 +246,8 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
         try {
             SaveLinkFromAPP_entity obj = new SaveLinkFromAPP_entity();
             obj.wifissid = linkName;
-            obj.latitude = AppConstants.Latitude;
-            obj.longitude = AppConstants.Longitude;
+            obj.latitude = AppConstants.LATITUDE;
+            obj.longitude = AppConstants.LONGITUDE;
             obj.pumpOffTime = pOff;
             obj.pumpOnTime = pOn;
             obj.fuelTypeId = getfuelTypeId();
@@ -289,7 +289,7 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
 
                 RequestBody body = RequestBody.create(TEXT, params[0]);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -300,8 +300,8 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
 
             } catch (IOException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "SaveLinkFromAPP InBackGround Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "SaveLinkFromAPP InBackGround Exception: " + e.getMessage());
                 IsUpdating.postValue(false);
             }
             return resp;
@@ -319,15 +319,15 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
                     JSONObject jsonObject = new JSONObject(serverRes);
                     String ResponseMessage = jsonObject.getString("ResponseMessage");
                     String ResponseText = jsonObject.getString("ResponseText");
-                    AppConstants.NewlyAddedSiteId = jsonObject.getString("SiteId");
+                    AppConstants.NEWLY_ADDED_SITE_ID = jsonObject.getString("SiteId");
                     myRandomNumber.setValue(ResponseText);
                     if (ResponseMessage.equalsIgnoreCase("success")) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "LINK saved successfully.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "LINK saved successfully.");
                     } else {
                         Log.i(TAG, "Something went wrong in server call");
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "SaveLinkFromAPP Response: " + ResponseText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "SaveLinkFromAPP Response: " + ResponseText);
                     }
                 } else {
                     Log.i(TAG, "Something went wrong in server call");
@@ -335,8 +335,8 @@ public class AddnewLink_ViewModel extends AndroidViewModel implements LifecycleO
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "SaveLinkFromAPP onPostExecute Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "SaveLinkFromAPP onPostExecute Exception: " + e.getMessage());
             }
         }
 

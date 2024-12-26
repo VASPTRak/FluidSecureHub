@@ -2,10 +2,8 @@ package com.TrakEngineering.FluidSecureHub.BTSPP;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
 
-import com.TrakEngineering.FluidSecureHub.AppConstants;
 import com.TrakEngineering.FluidSecureHub.Constants;
 
 import java.io.IOException;
@@ -51,11 +49,11 @@ public class ClientSendAndListenUDPOne implements Runnable {
                     String Response = new String(message, 0, p.getLength());
                     //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
                     Log.d("Received text", Response);
-                    //AppConstants.WriteinFile(TAG + " Link 1: Received text: " + Response);
+                    //AppConstants.writeInFile(TAG + " Link 1: Received text: " + Response);
                     //run = false;
 
-                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
-                        BTConstants.isNewVersionLinkOne = true;
+                    if (strcmd.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("records")) {
+                        BTConstants.IS_NEW_VERSION_LINK_ONE = true;
                     }
 
                     if (Response.contains("$$")) {
@@ -69,7 +67,7 @@ public class ClientSendAndListenUDPOne implements Runnable {
                         sendBroadcastIntentFromLinkOne(sb1.toString());
                         sb1.setLength(0);
                     } else {
-                        if (BTConstants.isNewVersionLinkOne) {
+                        if (BTConstants.IS_NEW_VERSION_LINK_ONE) {
                             sb1.append(Response);
                         } else {
                             // For old version Link response
@@ -92,7 +90,7 @@ public class ClientSendAndListenUDPOne implements Runnable {
     }
 
     public void sendBroadcastIntentFromLinkOne(String resp) {
-        //AppConstants.WriteinFile(TAG + " Link 1: Final Response: " + resp);
+        //AppConstants.writeInFile(TAG + " Link 1: Final Response: " + resp);
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkOneData");
         broadcastIntent.putExtra("Request", strcmd);

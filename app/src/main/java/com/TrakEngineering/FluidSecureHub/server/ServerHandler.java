@@ -101,7 +101,7 @@ public class ServerHandler {
                 .addPart(Headers.of("Content-Disposition", sContent), RequestBody.create(MEDIA_TYPE_FILE, new File(path)))
                 .build();
         Request request = new Request.Builder()
-                .url(AppConstants.webURL)
+                .url(AppConstants.WEB_URL)
                 .post(requestBody)
                 .addHeader("Authorization", authBas64String)
                 .addHeader("Serial", SerialNo)

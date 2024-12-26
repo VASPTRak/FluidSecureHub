@@ -287,8 +287,8 @@ public class LeServiceQRCode extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception:" + e.toString());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Exception:" + e.toString());
             return false;
         }
         return true;
@@ -380,7 +380,7 @@ public class LeServiceQRCode extends Service {
             }
             if (mCustomService == null) {
                 Log.w(TAG, "Custom BLE Service not found");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "readCustomCharacteristic Custom BLE Service not found. bleLFUpdateFlag"+bleLFUpdateFlag);
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "readCustomCharacteristic Custom BLE Service not found. bleLFUpdateFlag"+bleLFUpdateFlag);
                 //  Toast.makeText(getApplicationContext(),"Not found: "+bolong_UUID_char, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -392,19 +392,19 @@ public class LeServiceQRCode extends Service {
                 mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BLE_char));
             if (mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false) {
                 Log.w(TAG, "Failed to read characteristic");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
                 // Toast.makeText(getApplicationContext(),"Failed to Read Characteristics: ", Toast.LENGTH_LONG).show();
 
 
             } else {
                 Log.w(TAG, "Read Characteristics successfully");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "Read Characteristics successfully");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "Read Characteristics successfully");
                 //  Toast.makeText(getApplicationContext(),"Read Characteristics successfully!", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile("LeServiceQRCard_Vehicle ~~~~~~~~~" + "Read Characteristics Ex-" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile("LeServiceQRCard_Vehicle ~~~~~~~~~" + "Read Characteristics Ex-" + e.getMessage());
 
         }
     }
@@ -420,7 +420,7 @@ public class LeServiceQRCode extends Service {
         mCustomService = mBluetoothGatt.getService(UUID.fromString(bolong_UUID_service));//"00001110-0000-1000-8000-00805f9b34fb"
 
         if (mCustomService == null) {
-            if (AppConstants.GenerateLogs) AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
+            if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
             return;
         }
 
@@ -430,10 +430,10 @@ public class LeServiceQRCode extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             Log.w(TAG, "Write Characteristics successfully!");
-           // if (AppConstants.GenerateLogs) AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "Write Characteristics successfully!");
+           // if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "Write Characteristics successfully!");
         } else {
             Log.w(TAG, "Failed to write Characteristics");
-            //if (AppConstants.GenerateLogs) AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "Failed to write Characteristics");
         }
     }
 
@@ -464,7 +464,7 @@ public class LeServiceQRCode extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "Write Characteristics successfully!");
             //Toast.makeText(getApplicationContext(), "Reboot success", Toast.LENGTH_SHORT).show();
 
 
@@ -480,7 +480,7 @@ public class LeServiceQRCode extends Service {
 
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "Failed to write Characteristics");
             //Toast.makeText(getApplicationContext(), "Reboot fail", Toast.LENGTH_SHORT).show();
         }
     }
@@ -538,7 +538,7 @@ public class LeServiceQRCode extends Service {
         mCustomService = mBluetoothGatt.getService(UUID.fromString(bolong_UUID_service));
 
         if (mCustomService == null) {
-            if (AppConstants.GenerateLogs) AppConstants.WriteinFile("LeServiceQRCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
+            if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile("LeServiceQRCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
             return;
         }
 

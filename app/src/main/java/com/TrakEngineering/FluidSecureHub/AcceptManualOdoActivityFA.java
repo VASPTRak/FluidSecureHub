@@ -95,7 +95,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                     String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(AcceptManualOdoActivityFA.this) + ":" + userEmail + ":" + "SaveManualVehicleOdometer");
 
                     System.out.println(TAG + "Response" + jsonData);
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +"Response" + jsonData);
+                    //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG +"Response" + jsonData);
 
                     try {
                         String serverRes = new SaveOdometerManually().execute(jsonData, authString).get();
@@ -119,8 +119,8 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
                     int C_AccOdoMeter = Integer.parseInt(editOdoManually.getText().toString().trim());
                     CommonUtils.LogMessage(TAG, TAG + "Odo Entered : " + C_AccOdoMeter, null);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile( TAG+" Odo Entered : " + C_AccOdoMeter);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile( TAG+" Odo Entered : " + C_AccOdoMeter);
 
                     //allValid();
 
@@ -142,7 +142,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                                     allValid();
                                 } else {
 
-                                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not within the reasonability");
+                                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not within the reasonability");
                                     editOdoManually.setText("");
                                     AppConstants.colorToastBigFont(AcceptManualOdoActivityFA.this, "The odometer entered is not in reasonability.", Color.BLUE);//Bad odometer! Please try again.
                                 }
@@ -152,18 +152,18 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
 
                             if (C_AccOdoMeter >= PO && C_AccOdoMeter <= OL) {
-                                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
+                                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+" Odo Entered" + C_AccOdoMeter);
                                 ///gooooo
                                 allValid();
                             } else {
                                 editOdoManually.setText("");
-                                if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not in the reasonability");
+                                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+" Odo Entered" + C_AccOdoMeter+" is not in the reasonability");
                                 AppConstants.colorToastBigFont(AcceptManualOdoActivityFA.this, "The odometer entered is not in the reasonability", Color.BLUE);
                             }
                         }
                     } else {
 
-                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+" Odo Entered" + C_AccOdoMeter);
+                        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+" Odo Entered" + C_AccOdoMeter);
                         //comment By JB -it  must take ANY number they enter on the 4th try
                         allValid();
                     }
@@ -200,7 +200,7 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
         String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(AcceptManualOdoActivityFA.this) + ":" + userEmail + ":" + "SaveManualVehicleOdometer" + AppConstants.LANG_PARAM);
 
         System.out.println(TAG + "Response" + jsonData);
-        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +"Response" + jsonData);
+        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG +"Response" + jsonData);
         try {
             String serverRes = new SaveOdometerManually().execute(jsonData, authString).get();
 
@@ -225,13 +225,13 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
 
     public void ClearOdometerScreenFlag(){
 
-        Constants.ManualOdoScreenFree = "Yes";
-        Constants.FS_1OdoScreen = "FREE";
-        Constants.FS_2OdoScreen = "FREE";
-        Constants.FS_3OdoScreen = "FREE";
-        Constants.FS_4OdoScreen = "FREE";
-        Constants.FS_5OdoScreen = "FREE";
-        Constants.FS_6OdoScreen = "FREE";
+        Constants.MANUAL_ODO_SCREEN_FREE = "Yes";
+        Constants.FS_1_ODO_SCREEN = "FREE";
+        Constants.FS_2_ODO_SCREEN = "FREE";
+        Constants.FS_3_ODO_SCREEN = "FREE";
+        Constants.FS_4_ODO_SCREEN = "FREE";
+        Constants.FS_5_ODO_SCREEN = "FREE";
+        Constants.FS_6_ODO_SCREEN = "FREE";
 
 
     }
@@ -272,13 +272,13 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                 System.out.println("authString--" + authString);
 
 
-                response = serverHandler.PostTextData(AcceptManualOdoActivityFA.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptManualOdoActivityFA.this, AppConstants.WEB_URL, jsonData, authString);
 
                 System.out.println("Id..." + jsonData);
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  SaveOdometerManually DoInBG Ex-"+e);
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  SaveOdometerManually DoInBG Ex-"+e);
 
             }
 
@@ -295,13 +295,13 @@ public class AcceptManualOdoActivityFA extends AppCompatActivity {
                 String ResponceMessage = jsonObj.getString(AppConstants.RES_MESSAGE);
                 String ResponceText = jsonObj.getString(AppConstants.RES_TEXT);
                 Log.i(TAG ,"  SaveOdometerManually ResponceMessage:"+ResponceMessage+" ResponceText"+ResponceText);
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  SaveOdometerManually ResponceMessage:"+ResponceMessage+" ResponceText"+ResponceText);
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  SaveOdometerManually ResponceMessage:"+ResponceMessage+" ResponceText"+ResponceText);
 
 
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  SaveOdometerManually OnPost Ex-");
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  SaveOdometerManually OnPost Ex-");
 
             }
         }

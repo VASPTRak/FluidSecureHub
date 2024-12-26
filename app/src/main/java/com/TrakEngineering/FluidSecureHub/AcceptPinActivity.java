@@ -68,14 +68,14 @@ public class AcceptPinActivity extends AppCompatActivity {
         btnSave.setClickable(true);
 
         //Set/Reset EnterPin text
-        if (Constants.CurrentSelectedHose.equals("FS1")) {
-            etPersonnelPin.setText(Constants.AccPersonnelPIN_FS1);
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            etPersonnelPin.setText(Constants.AccPersonnelPIN);
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            etPersonnelPin.setText(Constants.AccPersonnelPIN_FS3);
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            etPersonnelPin.setText(Constants.AccPersonnelPIN_FS4);
+        if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
+            etPersonnelPin.setText(Constants.PERSONNEL_PIN_FS1);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS2")) {
+            etPersonnelPin.setText(Constants.PERSONNEL_PIN_FS2);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS3")) {
+            etPersonnelPin.setText(Constants.PERSONNEL_PIN_FS3);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS4")) {
+            etPersonnelPin.setText(Constants.PERSONNEL_PIN_FS4);
         }
 
         DisplayScreenInit();
@@ -207,8 +207,8 @@ public class AcceptPinActivity extends AppCompatActivity {
                 String pin = etPersonnelPin.getText().toString().trim();
                 String FKey = AppConstants.APDU_FOB_KEY;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Entered Pin: " + etPersonnelPin.getText());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Entered Pin: " + etPersonnelPin.getText());
 
                 if (FKey.equalsIgnoreCase("")) {
 
@@ -263,7 +263,7 @@ public class AcceptPinActivity extends AppCompatActivity {
         // ActivityHandler.removeActivity(3);
         Istimeout_Sec = false;
         ScreenOutTime.cancel();//Stop screenout
-        //AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity.this); //Clear EditText on move to welcome activity.
+        //AppConstants.clearEditTextFieldsOnBack(AcceptPinActivity.this); //Clear EditText on move to welcome activity.
         finish();
     }
 
@@ -350,8 +350,8 @@ public class AcceptPinActivity extends AppCompatActivity {
 
                 } else {
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceMessage);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "PIN rejected. Error: " + ResponceMessage);
 
                     Istimeout_Sec = true;
                     TimeoutPinScreen();
@@ -410,7 +410,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                 System.out.println("jsonData123" + jsonData);
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckValidPinOrFOBNUmber" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptPinActivity.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptPinActivity.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
                 System.out.println("jsonData1234" + response);
             } catch (Exception ex) {
@@ -430,23 +430,23 @@ public class AcceptPinActivity extends AppCompatActivity {
 
         if (!etPersonnelPin.getText().toString().trim().isEmpty()) {
 
-            if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                Constants.AccPersonnelPIN_FS1 = etPersonnelPin.getText().toString().trim();
+            if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                Constants.PERSONNEL_PIN_FS1 = etPersonnelPin.getText().toString().trim();
 
-                vehicleNumber = Constants.AccVehicleNumber_FS1;
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS1;
 
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                Constants.AccPersonnelPIN = etPersonnelPin.getText().toString().trim();
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                Constants.PERSONNEL_PIN_FS2 = etPersonnelPin.getText().toString().trim();
 
-                vehicleNumber = Constants.AccVehicleNumber;
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS2;
 
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                Constants.AccPersonnelPIN_FS3 = etPersonnelPin.getText().toString().trim();
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                Constants.PERSONNEL_PIN_FS3 = etPersonnelPin.getText().toString().trim();
 
-                vehicleNumber = Constants.AccVehicleNumber_FS3;
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS3;
             } else {
-                Constants.AccPersonnelPIN_FS4 = etPersonnelPin.getText().toString().trim();
-                vehicleNumber = Constants.AccVehicleNumber_FS4;
+                Constants.PERSONNEL_PIN_FS4 = etPersonnelPin.getText().toString().trim();
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS4;
             }
 
             Istimeout_Sec = false;
@@ -483,10 +483,10 @@ public class AcceptPinActivity extends AppCompatActivity {
                         btnSave.setClickable(false);
 
                         SharedPreferences sharedPrefODO = AcceptPinActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-                        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+                        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+                        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IS_HOURS_REQUIRE, "");
+                        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
                         if (IsDepartmentRequire.equalsIgnoreCase("True")) {
 
@@ -508,8 +508,8 @@ public class AcceptPinActivity extends AppCompatActivity {
                     } else {
                         String ResponceText = jsonObject.getString("ResponceText");
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "PIN rejected. Error: " + ResponceText);
 
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 
@@ -545,8 +545,8 @@ public class AcceptPinActivity extends AppCompatActivity {
                         asc.checkAllFields();
                     }*/
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Please enter Personnel Pin, and try again.");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Please enter Personnel Pin, and try again.");
             CommonUtils.showMessageDilaog(AcceptPinActivity.this, "Error Message", "Please enter Personnel Pin, and try again.");
         }
 
@@ -576,7 +576,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckVehicleRequireOdometerEntryAndRequireHourEntry" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptPinActivity.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptPinActivity.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -592,13 +592,13 @@ public class AcceptPinActivity extends AppCompatActivity {
     public void TimeoutPinScreen() {
 
         SharedPreferences sharedPrefODO = AcceptPinActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HubId, "");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HUBID, "");
 
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
         //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
 
@@ -617,7 +617,7 @@ public class AcceptPinActivity extends AppCompatActivity {
                             public void run() {
                                 CommonUtils.hideKeyboard(AcceptPinActivity.this);
                                 Istimeout_Sec = false;
-                                AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity.this);
+                                AppConstants.clearEditTextFieldsOnBack(AcceptPinActivity.this);
                                 // ActivityHandler.GetBacktoWelcomeActivity();
 
                                 Intent i = new Intent(AcceptPinActivity.this, WelcomeActivity.class);

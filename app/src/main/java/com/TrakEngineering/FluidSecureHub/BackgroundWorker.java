@@ -53,22 +53,22 @@ public class BackgroundWorker extends Worker {
             if (checkLastOfflineBSStartDateTime()) { // (CurrDateTime - LastOfflineBSStartDateTime) > 10 min [To reduce repetitive calls]
                 // Checking if the HUB app is running or not
                 boolean isForeground = new ForegroundCheckTask().execute(context).get();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<The HUB App is running: " + ((isForeground) ? "Yes" : "No") + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<The HUB App is running: " + ((isForeground) ? "Yes" : "No") + ">");
                 if (isForeground) {
                     saveLastOfflineBSStartDateTimeInSharedPref();
                     boolean isBSRunning = CommonUtils.checkServiceRunning(context, AppConstants.PACKAGE_BS_OffDataDownload);
                     if (!isBSRunning) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "<Starting the Offline Background Service.>");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "<Starting the Offline Background Service.>");
                         context.startService(new Intent(context, OffBackgroundService.class));
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "<Offline Background Service is running.>");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "<Offline Background Service is running.>");
                     }
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<The HUB App is in the background. Launching the HUB App.>");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "<The HUB App is in the background. Launching the HUB App.>");
                     Intent activity = new Intent(context, SplashActivity.class);
                     activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     context.startActivity(activity);
@@ -77,8 +77,8 @@ public class BackgroundWorker extends Worker {
                 Log.d(TAG, "startProcess: Skipped.");
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception in startProcess. Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception in startProcess. Exception: " + e.getMessage());
         }
     }
 
@@ -124,8 +124,8 @@ public class BackgroundWorker extends Worker {
     @Override
     public void onStopped() {
         super.onStopped();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "<Worker has been cancelled.>");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "<Worker has been cancelled.>");
     }
 
     public class ForegroundCheckTask extends AsyncTask<Context, Void, Boolean> {

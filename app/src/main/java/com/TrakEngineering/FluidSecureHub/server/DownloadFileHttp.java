@@ -22,7 +22,7 @@ public class DownloadFileHttp extends NanoHTTPD {
     public DownloadFileHttp() throws IOException {
         super(PORT);
         start();
-        AppConstants.DownloadFileHttpServer = "Started";
+        AppConstants.DOWNLOAD_FILE_HTTP_SERVER = "Started";
 
     }
 
@@ -33,7 +33,7 @@ public class DownloadFileHttp extends NanoHTTPD {
             session.parseBody(new HashMap<String, String>());
         } catch (ResponseException | IOException r) {
             r.printStackTrace();
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Response serve 1 --Exception " + r);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Response serve 1 --Exception " + r);
         }
 
         String filenamefromUrl = uri;
@@ -58,12 +58,12 @@ public class DownloadFileHttp extends NanoHTTPD {
 
             } else{
                 Log.d("FOF :", "File Not exists:Path>>/www" + filenamefromUrl);
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  FOF File Not exists:Path>>/www" + filenamefromUrl);
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  FOF File Not exists:Path>>/www" + filenamefromUrl);
             }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Response serve 2 --Exception " + e);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Response serve 2 --Exception " + e);
         }
 
 

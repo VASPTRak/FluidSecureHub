@@ -28,8 +28,8 @@ public class LeServiceHFCard extends Service {
     public int cnt123 = 0;
 
 
-//    private String UUID_service  = "000000ff-0000-1000-8000-00805f9b34fb"; //bolong_UUID_service
-//    private String UUID_char = "0000ff01-0000-1000-8000-00805f9b34fb"; //bolong_UUID_char
+//    private String UUID_SERVICE  = "000000ff-0000-1000-8000-00805f9b34fb"; //bolong_UUID_service
+//    private String UUID_CHAR = "0000ff01-0000-1000-8000-00805f9b34fb"; //bolong_UUID_char
 
     private String bolong_UUID_service = "000000ff-0000-1000-8000-00805f9b34fb"; //bolong_UUID_service
     private String bolong_UUID_char = "0000ff01-0000-1000-8000-00805f9b34fb"; //bolong_UUID_char
@@ -244,8 +244,8 @@ public class LeServiceHFCard extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception:" + e.toString());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Exception:" + e.toString());
             return false;
         }
         return true;
@@ -338,7 +338,7 @@ public class LeServiceHFCard extends Service {
             }
             if (mCustomService == null) {
                 Log.w(TAG, "Custom BLE Service not found");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "readCustomCharacteristic Custom BLE Service not found. bleLFUpdateFlag"+bleLFUpdateFlag);
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "readCustomCharacteristic Custom BLE Service not found. bleLFUpdateFlag"+bleLFUpdateFlag);
                 //  Toast.makeText(getApplicationContext(),"Not found: "+bolong_UUID_char, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -354,19 +354,19 @@ public class LeServiceHFCard extends Service {
 
             if (mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false) {
                 Log.w(TAG, "Failed to read characteristic");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
                 // Toast.makeText(getApplicationContext(),"Failed to Read Characteristics: ", Toast.LENGTH_LONG).show();
 
 
             } else {
                 Log.w(TAG, "Read Characteristics successfully");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Read Characteristics successfully");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Read Characteristics successfully");
                 //  Toast.makeText(getApplicationContext(),"Read Characteristics successfully!", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile("LeServiceHFCard_Vehicle ~~~~~~~~~" + "Read Characteristics Ex-" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile("LeServiceHFCard_Vehicle ~~~~~~~~~" + "Read Characteristics Ex-" + e.getMessage());
 
         }
     }
@@ -384,7 +384,7 @@ public class LeServiceHFCard extends Service {
             mCustomService = mBluetoothGatt.getService(UUID.fromString(BLE_Service));
         if (mCustomService == null) {
             //Toast.makeText(getApplicationContext(), "WRT Not found: " + bolong_UUID_char, Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
             return;
         }
 
@@ -405,10 +405,10 @@ public class LeServiceHFCard extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Write Characteristics successfully!");
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Failed to write Characteristics");
         }
     }
 
@@ -439,7 +439,7 @@ public class LeServiceHFCard extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Write Characteristics successfully!");
             //Toast.makeText(getApplicationContext(), "Reboot success", Toast.LENGTH_SHORT).show();
 
 
@@ -455,7 +455,7 @@ public class LeServiceHFCard extends Service {
 
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Failed to write Characteristics");
             //Toast.makeText(getApplicationContext(), "Reboot fail", Toast.LENGTH_SHORT).show();
         }
     }

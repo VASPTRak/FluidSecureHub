@@ -79,7 +79,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_pin_fob);
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         KeyboardType = myPrefkb.getString("KeyboardTypePerson", "2");
         ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Personnel");
         ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
@@ -145,16 +145,16 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     objEntityClass.Barcode = Barcode_val;
                     objEntityClass.ReplaceAccessDevice = "n";
 
-                    AppConstants.AddPin = editpinNumber.getText().toString().trim();
-                    AppConstants.AddFobKey = FobKey;
-                    AppConstants.AddMagCard_FobKey = MagCard_FobKey;
-                    AppConstants.AddBarcode_val = Barcode_val;
+                    AppConstants.ADD_PIN = editpinNumber.getText().toString().trim();
+                    AppConstants.ADD_FOB_KEY = FobKey;
+                    AppConstants.ADD_MAG_CARD_FOB_KEY = MagCard_FobKey;
+                    AppConstants.ADD_BARCODE_VAL = Barcode_val;
 
                     if (cd.isConnectingToInternet()) {
                         new CheckPersonFobOnly(objEntityClass).execute();
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " No Internet please check.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " No Internet please check.");
                         CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                     }
 
@@ -207,7 +207,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
             InitScreen();
         }
         resetReaderStatus();//BLE reader status reset
-        RegisterBroadcastForReader();//BroadcastReciver for MagCard,HF and LF Readers
+        RegisterBroadcastForReader();//BroadcastReceiver for MagCard,HF and LF Readers
 
         //fob_number.setText("Access Device No: ");
         AppConstants.PinLocal_FOB_KEY = "";
@@ -219,7 +219,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
                 if (!AppConstants.PinLocal_FOB_KEY.equalsIgnoreCase("")) {
 
-                    //CancelTimer();
+                    //cancelTimer();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -245,7 +245,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         AppConstants.PinLocal_FOB_KEY = "";
-        CancelTimer();
+        cancelTimer();
         UnRegisterBroadcastForReader();
     }
 
@@ -253,7 +253,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         AppConstants.PinLocal_FOB_KEY = "";
-        CancelTimer();
+        cancelTimer();
     }
 
     public void FobreadSuccess(){
@@ -265,21 +265,21 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
         } else if (FobKey != null && !FobKey.isEmpty()) {
             Log.i(TAG, "FobreadSuccess FobKey" + FobKey);
         } else {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Access Device not found");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Access Device not found");
         }
     }
 
     public void resetReaderStatus() {
 
-        Constants.QR_ReaderStatus = "QR Waiting..";
-        Constants.HF_ReaderStatus = "HF Waiting..";
-        Constants.LF_ReaderStatus = "LF Waiting..";
-        Constants.Mag_ReaderStatus = "Mag Waiting..";
+        Constants.QR_READER_STATUS = "QR Waiting..";
+        Constants.HF_READER_STATUS = "HF Waiting..";
+        Constants.LF_READER_STATUS = "LF Waiting..";
+        Constants.MAG_READER_STATUS = "Mag Waiting..";
 
     }
 
-    private void CancelTimer() {
+    private void cancelTimer() {
 
         for (int i = 0; i < Timerlist.size(); i++) {
             Timerlist.get(i).cancel();
@@ -307,8 +307,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "UnRegisterBroadcastForReader Exception:" + e.toString());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "UnRegisterBroadcastForReader Exception:" + e.toString());
         }
 
 
@@ -324,18 +324,18 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 registerReceiver(ServiceCardReader_vehicle, intentSFilterVEHICLE);
 
                 if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")){
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register LFReader:"+mDeviceAddress);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Register LFReader:"+mDeviceAddress);
                     startService(new Intent(AcceptPinActivity_FOB.this, ServiceLFCard.class));
                 }
 
                 if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")){
                     startService(new Intent(AcceptPinActivity_FOB.this, ServiceHFCard.class));
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register HFReader:"+HFDeviceAddress);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Register HFReader:"+HFDeviceAddress);
                 }
 
                 if (mMagCardDeviceAddress.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForVehicle.equalsIgnoreCase("N")) {
                     startService(new Intent(AcceptPinActivity_FOB.this, ServiceMagCard.class));
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Register MagReader:"+mMagCardDeviceAddress);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Register MagReader:"+mMagCardDeviceAddress);
                 }
             }
 
@@ -356,28 +356,28 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
                     String newData = notificationData.getString("HFCardValue");
                     System.out.println("HFCard data 001 veh----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     displayData_FOB(newData);
 
                 } else if (Action.equals("LFReader")) {
 
                     String newData = notificationData.getString("LFCardValue");
                     System.out.println("LFCard data 001 veH----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     displayData_FOB(newData);
 
                 } else if (Action.equals("MagReader")) {
 
                     String newData = notificationData.getString("MagCardValue");
                     System.out.println("MagCard data 002~----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     MagCard_FobKey = "";
                     displayData_MagCard(newData);
 
                 } else if (Action.equals("QRReader")) {
                     String newData = notificationData.getString("QRCodeValue");
                     System.out.println("QRCode data 002~----" + newData);
-                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     //Barcode_val = "";
                     if (newData != null) {
                         //Barcode_val = newData.trim();
@@ -393,19 +393,19 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
     private void displayData_FOB(String data) {
 
         //print raw reader data in log file
-        //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "  BroadcastReceiver HF displayData_HF " + data);
+        //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + "  BroadcastReceiver HF displayData_HF " + data);
 
         if (data != null && !data.isEmpty()) {
 
             String Str_data = data.toString().trim();
             Log.i(TAG, "Response Fob:" + Str_data);
-            // if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + "Response HF: " + Str_data);
+            // if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + "Response HF: " + Str_data);
             String Str_check = Str_data.replace(" ", "");
 
             if (Str_check.contains("FFFFFFFFFFFFFFFFFFFF") || Str_check.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Unable to read fob: " + Str_check);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Unable to read fob: " + Str_check);
                 CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_FOB.this, "Message", "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
@@ -430,7 +430,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                         //  tv_fob_number.setText("Access Device No: " + FobKey);
                         AppConstants.PinLocal_FOB_KEY = FobKey;
                         Log.i(TAG, "pin FOB:" +  AppConstants.PinLocal_FOB_KEY);
-                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Local_HF_KEY" + AppConstants.PinLocal_FOB_KEY);
+                        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Local_HF_KEY" + AppConstants.PinLocal_FOB_KEY);
                         tv_Display_msg.setText(R.string.AccessDeviceReadSuccess);
                         //SuccessUi(); //Commented as per #1818 > #6
 
@@ -444,8 +444,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                         if (cd.isConnectingToInternet()) {
                             new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " No Internet please check.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " No Internet please check.");
                             CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                         }
                         ///==================================================
@@ -453,8 +453,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
                 } catch (Exception ex) {
                     System.out.println(ex);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData  --Exception " + ex);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  displayData  --Exception " + ex);
                 }
 
             }
@@ -463,20 +463,20 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
     private void displayData_MagCard(String data) {
 
-        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " displayData_MagCard " + data);
+        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " displayData_MagCard " + data);
 
         if (data != null && !data.isEmpty()) {
 
             String Str_data = data.toString().trim();
             Log.i(TAG, "displayData MagCard:" + Str_data);
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  displayData MagCard: " + Str_data);
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  displayData MagCard: " + Str_data);
 
             String Str_check = Str_data.replace(" ", "");
             if (!CommonUtils.ValidateFobkey(Str_check) || Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
                 MagCard_FobKey = "";
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Unable to read MagCard: " + Str_data);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Unable to read MagCard: " + Str_data);
                 CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_FOB.this, "Message", "Unable to read MagCard.  Please Try again..");
 
             } else if (Str_check.length() > 5) {
@@ -487,7 +487,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     //tv_fobkey.setText(Str_check.replace(" ", ""));
                     //  tv_fob_number.setText("Access Device No: " + MagCard_FobKey);
                     AppConstants.VehicleLocal_FOB_KEY = MagCard_FobKey;
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Local_MagCard_KEY" + AppConstants.VehicleLocal_FOB_KEY);
+                    //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Local_MagCard_KEY" + AppConstants.VehicleLocal_FOB_KEY);
                     //On Magnatic Fob read success
                     tv_Display_msg.setText(R.string.AccessDeviceReadSuccess);
                     //SuccessUi(); //Commented as per #1818 > #6
@@ -502,8 +502,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     if (cd.isConnectingToInternet()) {
                         new RecognizeVehicleORPersonnelAccessDevice(objEntityClass).execute();
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " No Internet please check.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " No Internet please check.");
                         CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                     }
                     ///==================================================
@@ -511,8 +511,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 } catch (Exception ex) {
                     MagCard_FobKey = "";
                     System.out.println(ex);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData Split MagCard  --Exception " + ex);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  displayData Split MagCard  --Exception " + ex);
                 }
 
             }
@@ -538,8 +538,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.ServerCallLogs)
-                    AppConstants.WriteinFile(TAG + " ReconnectBleReaders Exception: " + e.toString());
+                if (AppConstants.SERVER_CALL_LOGS)
+                    AppConstants.writeInFile(TAG + " ReconnectBleReaders Exception: " + e.toString());
             }
 
             return null;
@@ -619,8 +619,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                         Barcode_val = data.getStringExtra("Barcode").trim();
                         AppConstants.colorToast(AcceptPinActivity_FOB.this, "Barcode Read: " + Barcode_val, Color.BLACK);
                         Log.d(TAG, "Barcode read: " + data.getStringExtra("Barcode").trim());
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile("Vehicle Barcode read success: " + Barcode_val);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile("Vehicle Barcode read success: " + Barcode_val);
                         tv_Display_msg.setText(getResources().getString(R.string.BarcodeReadSuccessMessage) + ": " + Barcode_val);
                     } else {
 
@@ -675,12 +675,12 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(vfentity.IMEIUDID + ":" + userEmail + ":" + "CheckPersonFobOnly" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptPinActivity_FOB.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptPinActivity_FOB.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " CheckPersonFobOnly Exception: "+ex.getMessage());
+                if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " CheckPersonFobOnly Exception: "+ex.getMessage());
             }
             return response;
         }
@@ -704,13 +704,13 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         InitScreen();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " " + ResponceText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " " + ResponceText);
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_FOB.this, "Message", ResponceText);
                     } else if (ResponceText.equalsIgnoreCase("success")) {
                         InitScreen();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " " + ResponceMessage);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " " + ResponceMessage);
                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceMessage);
                     } else {
 
@@ -723,12 +723,12 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                                 InitScreen();
                                 //String msg = "The " + ScreenNameForPersonnel + " you have entered already has an Access Device assigned. Would you like to remove the existing device we have on file and use this as a replacement.";
                                 String msg = getResources().getString(R.string.ExistingAccessDeviceReplace).replace("PERSONNEL", ScreenNameForPersonnel);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + msg);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " Access device rejected. Error: " + msg);
                                 CustomMessage2Input(AcceptPinActivity_FOB.this, "Message", msg);
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + ResponceText);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " Access device rejected. Error: " + ResponceText);
                                 if (ResponceText.toLowerCase().contains("invalid")) {
                                     ResponceText = ResponceText + getResources().getString(R.string.TryAgain);
                                     CustomMessageInvalidPINInput(AcceptPinActivity_FOB.this, "Message", ResponceText);
@@ -739,8 +739,8 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                             }
                         } else {
                             InitScreen();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Access device rejected. Error: " + ResponceMessage);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " Access device rejected. Error: " + ResponceMessage);
                             CommonUtils.showCustomMessageDilaog(AcceptPinActivity_FOB.this, "Message", ResponceMessage);
                         }
 
@@ -783,17 +783,17 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                         //save to cloud call
                         CheckPinFobEntity objEntityClass = new CheckPinFobEntity();
                         objEntityClass.IMEIUDID = AppConstants.getIMEI(AcceptPinActivity_FOB.this);
-                        objEntityClass.PersonnelPIN = AppConstants.AddPin;
-                        objEntityClass.FOBNumber = AppConstants.AddFobKey;
-                        objEntityClass.MagneticCardNumber = AppConstants.AddMagCard_FobKey;
-                        objEntityClass.Barcode = AppConstants.AddBarcode_val;
+                        objEntityClass.PersonnelPIN = AppConstants.ADD_PIN;
+                        objEntityClass.FOBNumber = AppConstants.ADD_FOB_KEY;
+                        objEntityClass.MagneticCardNumber = AppConstants.ADD_MAG_CARD_FOB_KEY;
+                        objEntityClass.Barcode = AppConstants.ADD_BARCODE_VAL;
                         objEntityClass.ReplaceAccessDevice = "y";
 
                         if (cd.isConnectingToInternet()) {
                             new CheckPersonFobOnly(objEntityClass).execute();
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " No Internet please check.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " No Internet please check.");
                             CommonUtils.showNoInternetDialog(AcceptPinActivity_FOB.this);
                         }
                     }
@@ -912,12 +912,12 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(vfentity.IMEIUDID + ":" + userEmail + ":" + "RecognizeVehicleORPersonnelAccessDevice" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptPinActivity_FOB.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptPinActivity_FOB.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
                 ex.printStackTrace();
-                AppConstants.WriteinFile(TAG + " RecognizeVehicleORPersonnelAccessDevice Exception: "+ex.getMessage());
+                AppConstants.writeInFile(TAG + " RecognizeVehicleORPersonnelAccessDevice Exception: "+ex.getMessage());
             }
             return response;
         }
@@ -940,7 +940,7 @@ public class AcceptPinActivity_FOB extends AppCompatActivity {
                     System.out.println("ResponceMessage.." + ResponceMessage);
 
                     //InitScreen();
-                    AppConstants.WriteinFile(TAG + " RecognizeVehicleORPersonnelAccessDevice Response: "+ResponceText);
+                    AppConstants.writeInFile(TAG + " RecognizeVehicleORPersonnelAccessDevice Response: "+ResponceText);
                     if (ResponceMessage.equalsIgnoreCase("success")) {
                         if (VehicleNumber.trim().isEmpty() && PersonPin.trim().isEmpty()) {
                             SuccessUi();

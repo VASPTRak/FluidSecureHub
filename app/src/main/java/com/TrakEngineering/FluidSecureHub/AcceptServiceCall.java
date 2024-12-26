@@ -74,16 +74,16 @@ public class AcceptServiceCall {
 
     public void checkAllFields() {
 
-        if (!activity.isFinishing() && !AppConstants.serverCallInProgress) {
-               AppConstants.serverCallInProgress = true;
+        if (!activity.isFinishing() && !AppConstants.SERVER_CALL_IN_PROGRESS) {
+               AppConstants.SERVER_CALL_IN_PROGRESS = true;
                AppConstants.AUTH_CALL_SUCCESS = false;
-               AppConstants.IsFirstTimeUse = "False";
+               AppConstants.IS_FIRST_TIME_USE = "False";
                Log.e(TAG,"Activity started");
                new ServerCall().execute();
         }else{
             Log.e(TAG,"Activity skip call..");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  ServerCall skip..");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  ServerCall skip..");
         }
     }
 
@@ -124,120 +124,120 @@ public class AcceptServiceCall {
 
                 SharedPreferences sharedPrefODO = activity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
-                IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-                IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
-                IsGateHub = sharedPrefODO.getString(AppConstants.IsGateHub, "false");
+                IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+                IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+                IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+                IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IS_VEHICLE_NUMBER_REQUIRE, "");
+                IsGateHub = sharedPrefODO.getString(AppConstants.IS_GATE_HUB, "false");
 
                 SharedPreferences sharedPrefGatehub = activity.getSharedPreferences(Constants.PREF_COLUMN_GATE_HUB, Context.MODE_PRIVATE);
-                IsGateHub = sharedPrefGatehub.getString(AppConstants.IsGateHub, "false");
-                IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IsStayOpenGate, "");
+                IsGateHub = sharedPrefGatehub.getString(AppConstants.IS_GATE_HUB, "false");
+                IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IS_STAY_OPEN_GATE, "");
 
                 if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True")){
 
-                    //&& (Constants.GateHubPinNo.equalsIgnoreCase("") || Constants.GateHubvehicleNo.equalsIgnoreCase(""))
+                    //&& (Constants.GATE_HUB_PIN_NUM.equalsIgnoreCase("") || Constants.GATE_HUB_VEHICLE_NUM.equalsIgnoreCase(""))
                     try {
-                        if (IsPersonnelPINRequire.equalsIgnoreCase("True") && Constants.GateHubPinNo.equalsIgnoreCase("")) {
+                        if (IsPersonnelPINRequire.equalsIgnoreCase("True") && Constants.GATE_HUB_PIN_NUM.equalsIgnoreCase("")) {
 
-                            if (Constants.AccPersonnelPIN_FS1 == null) {
-                                Constants.GateHubPinNo = "";
-                            } else if (Constants.AccPersonnelPIN_FS1.equals("")) {
+                            if (Constants.PERSONNEL_PIN_FS1 == null) {
+                                Constants.GATE_HUB_PIN_NUM = "";
+                            } else if (Constants.PERSONNEL_PIN_FS1.equals("")) {
                                 //Do nothing
                             } else {
-                                Constants.GateHubPinNo = Constants.AccPersonnelPIN_FS1;
+                                Constants.GATE_HUB_PIN_NUM = Constants.PERSONNEL_PIN_FS1;
                             }
 
                         } else {
-                            Constants.AccPersonnelPIN_FS1 = Constants.GateHubPinNo;
+                            Constants.PERSONNEL_PIN_FS1 = Constants.GATE_HUB_PIN_NUM;
                         }
 
                         //----------------------
 
-                        if (IsVehicleNumberRequire.equalsIgnoreCase("True") && Constants.GateHubvehicleNo.equalsIgnoreCase("")) {
+                        if (IsVehicleNumberRequire.equalsIgnoreCase("True") && Constants.GATE_HUB_VEHICLE_NUM.equalsIgnoreCase("")) {
 
-                            if (Constants.AccVehicleNumber_FS1 == null) {
-                                Constants.GateHubvehicleNo = "";
-                            } else if (Constants.AccVehicleNumber_FS1.equals("")) {
+                            if (Constants.VEHICLE_NUMBER_FS1 == null) {
+                                Constants.GATE_HUB_VEHICLE_NUM = "";
+                            } else if (Constants.VEHICLE_NUMBER_FS1.equals("")) {
                                 //Do nothing
                             } else {
-                                Constants.GateHubvehicleNo = Constants.AccVehicleNumber_FS1;
+                                Constants.GATE_HUB_VEHICLE_NUM = Constants.VEHICLE_NUMBER_FS1;
                             }
 
                         } else {
-                            Constants.AccVehicleNumber_FS1 = Constants.GateHubvehicleNo;
+                            Constants.VEHICLE_NUMBER_FS1 = Constants.GATE_HUB_VEHICLE_NUM;
                         }
 
                     }catch (NullPointerException e){
                         e.printStackTrace();
                     }
 
-                } else if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True") && (!Constants.GateHubPinNo.equalsIgnoreCase("") || !Constants.GateHubvehicleNo.equalsIgnoreCase(""))) {
+                } else if (IsGateHub.equalsIgnoreCase("True") && IsStayOpenGate.equalsIgnoreCase("True") && (!Constants.GATE_HUB_PIN_NUM.equalsIgnoreCase("") || !Constants.GATE_HUB_VEHICLE_NUM.equalsIgnoreCase(""))) {
 
-                    Constants.AccPersonnelPIN_FS1 = Constants.GateHubPinNo;
-                    Constants.AccVehicleNumber_FS1 = Constants.GateHubvehicleNo;
+                    Constants.PERSONNEL_PIN_FS1 = Constants.GATE_HUB_PIN_NUM;
+                    Constants.VEHICLE_NUMBER_FS1 = Constants.GATE_HUB_VEHICLE_NUM;
 
                 } else if (!IsGateHub.equalsIgnoreCase("True") && !IsStayOpenGate.equalsIgnoreCase("True")) {
 
-                    Constants.GateHubPinNo = "";
-                    Constants.GateHubvehicleNo = "";
+                    Constants.GATE_HUB_PIN_NUM = "";
+                    Constants.GATE_HUB_VEHICLE_NUM = "";
                 }
 
-                if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                    pinNumber = Constants.AccPersonnelPIN_FS1;
-                    vehicleNumber = Constants.AccVehicleNumber_FS1;
-                    DeptNumber = Constants.AccDepartmentNumber_FS1;
-                    accVehOther = Constants.AccVehicleOther_FS1;
-                    accOther = Constants.AccOther_FS1;
-                    accOdoMeter = Constants.AccOdoMeter_FS1;
-                    accHours = Constants.AccHours_FS1;
+                if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                    pinNumber = Constants.PERSONNEL_PIN_FS1;
+                    vehicleNumber = Constants.VEHICLE_NUMBER_FS1;
+                    DeptNumber = Constants.DEPARTMENT_NUMBER_FS1;
+                    accVehOther = Constants.VEHICLE_OTHER_FS1;
+                    accOther = Constants.OTHER_FS1;
+                    accOdoMeter = Constants.ODO_METER_FS1;
+                    accHours = Constants.HOURS_FS1;
                     CONNECTED_SSID = AppConstants.FS1_CONNECTED_SSID;
 
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                    pinNumber = Constants.AccPersonnelPIN;
-                    vehicleNumber = Constants.AccVehicleNumber;
-                    DeptNumber = Constants.AccDepartmentNumber;
-                    accVehOther = Constants.AccVehicleOther;
-                    accOther = Constants.AccOther;
-                    accOdoMeter = Constants.AccOdoMeter;
-                    accHours = Constants.AccHours;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                    pinNumber = Constants.PERSONNEL_PIN_FS2;
+                    vehicleNumber = Constants.VEHICLE_NUMBER_FS2;
+                    DeptNumber = Constants.DEPARTMENT_NUMBER_FS2;
+                    accVehOther = Constants.VEHICLE_OTHER_FS2;
+                    accOther = Constants.OTHER_FS2;
+                    accOdoMeter = Constants.ODO_METER_FS2;
+                    accHours = Constants.HOURS_FS2;
                     CONNECTED_SSID = AppConstants.FS2_CONNECTED_SSID;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                    pinNumber = Constants.AccPersonnelPIN_FS3;
-                    vehicleNumber = Constants.AccVehicleNumber_FS3;
-                    DeptNumber = Constants.AccDepartmentNumber_FS3;
-                    accVehOther = Constants.AccVehicleOther_FS3;
-                    accOther = Constants.AccOther_FS3;
-                    accOdoMeter = Constants.AccOdoMeter_FS3;
-                    accHours = Constants.AccHours_FS3;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                    pinNumber = Constants.PERSONNEL_PIN_FS3;
+                    vehicleNumber = Constants.VEHICLE_NUMBER_FS3;
+                    DeptNumber = Constants.DEPARTMENT_NUMBER_FS3;
+                    accVehOther = Constants.VEHICLE_OTHER_FS3;
+                    accOther = Constants.OTHER_FS3;
+                    accOdoMeter = Constants.ODO_METER_FS3;
+                    accHours = Constants.HOURS_FS3;
                     CONNECTED_SSID = AppConstants.FS3_CONNECTED_SSID;
                     Log.i("ps_Vechile no","Step 4:"+vehicleNumber);
-                }  else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4"))  {
-                    pinNumber = Constants.AccPersonnelPIN_FS4;
-                    vehicleNumber = Constants.AccVehicleNumber_FS4;
-                    DeptNumber = Constants.AccDepartmentNumber_FS4;
-                    accVehOther = Constants.AccVehicleOther_FS4;
-                    accOther = Constants.AccOther_FS4;
-                    accOdoMeter = Constants.AccOdoMeter_FS4;
-                    accHours = Constants.AccHours_FS4;
+                }  else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4"))  {
+                    pinNumber = Constants.PERSONNEL_PIN_FS4;
+                    vehicleNumber = Constants.VEHICLE_NUMBER_FS4;
+                    DeptNumber = Constants.DEPARTMENT_NUMBER_FS4;
+                    accVehOther = Constants.VEHICLE_OTHER_FS4;
+                    accOther = Constants.OTHER_FS4;
+                    accOdoMeter = Constants.ODO_METER_FS4;
+                    accHours = Constants.HOURS_FS4;
                     CONNECTED_SSID = AppConstants.FS4_CONNECTED_SSID;
-                }  else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5"))  {
-                    pinNumber = Constants.AccPersonnelPIN_FS5;
-                    vehicleNumber = Constants.AccVehicleNumber_FS5;
-                    DeptNumber = Constants.AccDepartmentNumber_FS5;
-                    accVehOther = Constants.AccVehicleOther_FS5;
-                    accOther = Constants.AccOther_FS5;
-                    accOdoMeter = Constants.AccOdoMeter_FS5;
-                    accHours = Constants.AccHours_FS5;
+                }  else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5"))  {
+                    pinNumber = Constants.PERSONNEL_PIN_FS5;
+                    vehicleNumber = Constants.VEHICLE_NUMBER_FS5;
+                    DeptNumber = Constants.DEPARTMENT_NUMBER_FS5;
+                    accVehOther = Constants.VEHICLE_OTHER_FS5;
+                    accOther = Constants.OTHER_FS5;
+                    accOdoMeter = Constants.ODO_METER_FS5;
+                    accHours = Constants.HOURS_FS5;
                     CONNECTED_SSID = AppConstants.FS5_CONNECTED_SSID;
-                }  else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6"))  {
-                    pinNumber = Constants.AccPersonnelPIN_FS6;
-                    vehicleNumber = Constants.AccVehicleNumber_FS6;
-                    DeptNumber = Constants.AccDepartmentNumber_FS6;
-                    accVehOther = Constants.AccVehicleOther_FS6;
-                    accOther = Constants.AccOther_FS6;
-                    accOdoMeter = Constants.AccOdoMeter_FS6;
-                    accHours = Constants.AccHours_FS6;
+                }  else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6"))  {
+                    pinNumber = Constants.PERSONNEL_PIN_FS6;
+                    vehicleNumber = Constants.VEHICLE_NUMBER_FS6;
+                    DeptNumber = Constants.DEPARTMENT_NUMBER_FS6;
+                    accVehOther = Constants.VEHICLE_OTHER_FS6;
+                    accOther = Constants.OTHER_FS6;
+                    accOdoMeter = Constants.ODO_METER_FS6;
+                    accHours = Constants.HOURS_FS6;
                     CONNECTED_SSID = AppConstants.FS6_CONNECTED_SSID;
                 }
 
@@ -250,11 +250,11 @@ public class AcceptServiceCall {
                 authEntityClass.WifiSSId = CONNECTED_SSID;
                 authEntityClass.SiteId = Integer.parseInt(AppConstants.SITE_ID);
 
-                authEntityClass.ErrorCode = AppConstants.OdoErrorCode;
+                authEntityClass.ErrorCode = AppConstants.ODO_ERROR_CODE;
                 authEntityClass.OdoMeter = accOdoMeter;
                 authEntityClass.Hours = accHours;
                 authEntityClass.DepartmentNumber = DeptNumber;
-                authEntityClass.PersonnelPIN = pinNumber; //Constants.AccPersonnelPIN //Check which Fs is selected
+                authEntityClass.PersonnelPIN = pinNumber; //Constants.PERSONNEL_PIN_FS2 //Check which Fs is selected
                 authEntityClass.Other = accOther;
                 authEntityClass.VehicleExtraOther = accVehOther;
                 authEntityClass.RequestFrom = "A";
@@ -262,8 +262,8 @@ public class AcceptServiceCall {
                 authEntityClass.HubId = AppConstants.HUB_ID;
                 authEntityClass.IsVehicleNumberRequire = IsVehicleNumberRequire;
 
-                authEntityClass.CurrentLat = "" + Constants.Latitude;
-                authEntityClass.CurrentLng = "" + Constants.Longitude;
+                authEntityClass.CurrentLat = "" + Constants.LATITUDE;
+                authEntityClass.CurrentLng = "" + Constants.LONGITUDE;
 
                 authEntityClass.AppInfo = " Version " + CommonUtils.getVersionCode(activity) + " " + AppConstants.getDeviceName().toLowerCase() + " ";
                 authEntityClass.IsTestTransaction = IsTestTransaction;
@@ -273,7 +273,7 @@ public class AcceptServiceCall {
 
                 System.out.println("Service call data--"+jsonData);
 
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Authorization Sequence Data: " + jsonData);
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Authorization Sequence Data: " + jsonData);
 
                 String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + CommonUtils.getCustomerDetails(activity).Email + ":" + ServerCallName + AppConstants.LANG_PARAM);
 
@@ -284,7 +284,7 @@ public class AcceptServiceCall {
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -294,7 +294,7 @@ public class AcceptServiceCall {
                 resp = response.body().string();
 
             } catch (Exception e) {
-                AppConstants.serverCallInProgress =  false;
+                AppConstants.SERVER_CALL_IN_PROGRESS =  false;
                 e.printStackTrace();
                 if(OfflineConstants.isOfflineAccess(activity)){AppConstants.NETWORK_STRENGTH = false;}
             }
@@ -305,9 +305,9 @@ public class AcceptServiceCall {
         protected void onPostExecute(String serverRes) {
 
             try {
-                AppConstants.serverCallInProgress =  false;
-                AppConstants.serverCallInProgressForPin = false;
-                AppConstants.serverCallInProgressForVehicle = false;
+                AppConstants.SERVER_CALL_IN_PROGRESS =  false;
+                AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+                AppConstants.SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
                 Log.e(TAG,"Activity OnPostExecute");
 
                 String LinkCommType = "";
@@ -334,15 +334,15 @@ public class AcceptServiceCall {
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
                         AppConstants.AUTH_CALL_SUCCESS = true;
-                        AppConstants.serverAuthCallCompleted = true;
+                        AppConstants.SERVER_AUTH_CALL_COMPLETED = true;
                         //OnHose Selection
-                        if (Constants.CurrentSelectedHose.equals("FS1")) {
+                        if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
                             JSONObject jsonObjectRD = new JSONObject(ResponceData);
 
-                            AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
+                            AppConstants.IS_FIRST_TIME_USE = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId_FS1 = jsonObjectRD.getString("TransactionId");
                             GateHUBTransactionId = TransactionId_FS1;
                             String VehicleId_FS1 = jsonObjectRD.getString("VehicleId");
@@ -370,7 +370,7 @@ public class AcceptServiceCall {
                             String EnablePrinter_FS1 = jsonObjectRD.getString("EnablePrinter");
                             String OdoMeter_FS1 = jsonObjectRD.getString("OdoMeter");
                             String Hours_FS1 = jsonObjectRD.getString("Hours");
-                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS1;
+                            AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS1;
                             AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS1;
 
                             stopAutoFuelSecondstemp = Long.parseLong(IntervalToStopFuel_FS1);
@@ -384,8 +384,8 @@ public class AcceptServiceCall {
                             String SurchargeType_FS1 = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice_FS1 = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS1 + "; Limit: " + MinLimit_FS1);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS1 + "; Limit: " + MinLimit_FS1);
 
                             CommonUtils.SaveVehiFuelInPref_FS1(activity, TransactionId_FS1, VehicleId_FS1, PhoneNumber_FS1, PersonId_FS1,
                                     PulseRatio_FS1, MinLimit_FS1, FuelTypeId_FS1, ServerDate_FS1, IntervalToStopFuel_FS1, PrintDate_FS1,
@@ -398,7 +398,7 @@ public class AcceptServiceCall {
 
                                 Log.e("GateSoftwareDelayIssue"," IsGateHub true");
                                 //System.out.println("Gate hub true skip display meter ancivity and start transiction ");
-                                //String macaddress = AppConstants.SELECTED_MACADDRESS;
+                                //String macaddress = AppConstants.SELECTED_MAC_ADDRESS;
                                 //String HTTP_URL = "";
 
                                 if (WelcomeActivity.serverSSIDList != null && WelcomeActivity.serverSSIDList.size() == 1) {
@@ -413,14 +413,14 @@ public class AcceptServiceCall {
                                                 String selMacAddress = WelcomeActivity.serverSSIDList.get(0).get("MacAddress");
 
                                                 boolean isMacConnected = false;
-                                                if (AppConstants.DetailsListOfConnectedDevices != null) {
-                                                    for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                                        String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
+                                                if (AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES != null) {
+                                                    for (int i = 0; i < AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.size(); i++) {
+                                                        String MA_ConnectedDevices = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(i).get("macAddress");
 
                                                         if (selMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                                                            if (AppConstants.GenerateLogs)
-                                                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
-                                                            IpAddress = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                                            if (AppConstants.GENERATE_LOGS)
+                                                                AppConstants.writeInFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is connected to hotspot.");
+                                                            IpAddress = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(i).get("ipAddress");
                                                             isMacConnected = true;
                                                             break;
                                                         }
@@ -428,32 +428,32 @@ public class AcceptServiceCall {
                                                 }
 
                                                 if (!isMacConnected) {
-                                                    if (AppConstants.GenerateLogs)
-                                                        AppConstants.WriteinFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DetailsListOfConnectedDevices);
+                                                    if (AppConstants.GENERATE_LOGS)
+                                                        AppConstants.writeInFile(TAG + "Selected LINK (" + selSSID + " <==> " + selMacAddress + ") is not found in connected devices. " + AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES);
 
-                                                    if (AppConstants.DetailsListOfConnectedDevices != null) {
-                                                        for (int i = 0; i < AppConstants.DetailsListOfConnectedDevices.size(); i++) {
-                                                            String MA_ConnectedDevices = AppConstants.DetailsListOfConnectedDevices.get(i).get("macAddress");
-                                                            if (AppConstants.GenerateLogs)
-                                                                AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
+                                                    if (AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES != null) {
+                                                        for (int i = 0; i < AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.size(); i++) {
+                                                            String MA_ConnectedDevices = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(i).get("macAddress");
+                                                            if (AppConstants.GENERATE_LOGS)
+                                                                AppConstants.writeInFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Checking Mac Address using info command: (" + MA_ConnectedDevices + ")");
 
-                                                            String connectedIp = AppConstants.DetailsListOfConnectedDevices.get(i).get("ipAddress");
+                                                            String connectedIp = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(i).get("ipAddress");
 
                                                             IpAddress = GetAndCheckMacAddressFromInfoCommand(connectedIp, selMacAddress, MA_ConnectedDevices);
                                                             if (!IpAddress.trim().isEmpty()) {
-                                                                if (AppConstants.GenerateLogs)
-                                                                    AppConstants.WriteinFile("===================================================================");
+                                                                if (AppConstants.GENERATE_LOGS)
+                                                                    AppConstants.writeInFile("===================================================================");
                                                                 break;
                                                             }
-                                                            if (AppConstants.GenerateLogs)
-                                                                AppConstants.WriteinFile("===================================================================");
+                                                            if (AppConstants.GENERATE_LOGS)
+                                                                AppConstants.writeInFile("===================================================================");
                                                         }
                                                     }
                                                 }
                                             } catch (Exception e) {
                                                 IpAddress = "";
-                                                if (AppConstants.GenerateLogs)
-                                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DetailsListOfConnectedDevices);
+                                                if (AppConstants.GENERATE_LOGS)
+                                                    AppConstants.writeInFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + " Exception while checking HTTP link is connected to hotspot or not. " + e.getMessage() + "; Connected devices: " + AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES);
                                             }
 
                                             if (!IpAddress.trim().isEmpty()) {
@@ -476,9 +476,9 @@ public class AcceptServiceCall {
                                                 public void run() {
 
                                                     // check connection status of LINK
-                                                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Disconnect")) {
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink is Disconnected.");
+                                                    if (BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Disconnect")) {
+                                                        if (AppConstants.GENERATE_LOGS)
+                                                            AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink is Disconnected.");
                                                         RetryBTLinkConnection();
                                                     } else {
                                                         GateHubStartTransactionForBTLink();
@@ -488,33 +488,33 @@ public class AcceptServiceCall {
 
                                         }
                                     } catch (Exception e) {
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + " Exception while accessing serverSSIDList from GateHub. " + e.getMessage());
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + " Exception while accessing serverSSIDList from GateHub. " + e.getMessage());
                                     }
                                 }
 
                             } else {
 
                                 Intent intent = new Intent(activity, DisplayMeterActivity.class);
-                                intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS1);
-                                intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS1);
-                                intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS1);
-                                intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS1);
-                                intent.putExtra(Constants.OTHERR, Constants.AccOther_FS1);
-                                intent.putExtra(Constants.HOURSS, Constants.AccHours_FS1);
+                                intent.putExtra(Constants.VEHICLE_NUMBER, Constants.VEHICLE_NUMBER_FS1);
+                                intent.putExtra(Constants.ODO_METER, Constants.ODO_METER_FS1);
+                                intent.putExtra(Constants.DEPT, Constants.DEPARTMENT_NUMBER_FS1);
+                                intent.putExtra(Constants.PERSON_PIN, Constants.PERSONNEL_PIN_FS1);
+                                intent.putExtra(Constants.OTHER, Constants.OTHER_FS1);
+                                intent.putExtra(Constants.HOURS, Constants.HOURS_FS1);
                                 //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 activity.startActivity(intent);
 
                             }
 
 
-                        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS2")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
                             JSONObject jsonObjectRD = new JSONObject(ResponceData);
 
-                            AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
+                            AppConstants.IS_FIRST_TIME_USE = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId = jsonObjectRD.getString("TransactionId");
                             String VehicleId = jsonObjectRD.getString("VehicleId");
                             String VehicleNumber = jsonObjectRD.getString("VehicleNumber");
@@ -541,7 +541,7 @@ public class AcceptServiceCall {
                             String LimitReachedMessage = jsonObjectRD.getString("LimitReachedMessage");
                             String SiteId = jsonObjectRD.getString("SiteId");
                             AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName;
-                            AppConstants.PrinterMacAddress = PrinterMacAddress;
+                            AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress;
                             System.out.println("iiiiii" + IntervalToStopFuel);
 
                             //For Print Recipt
@@ -552,8 +552,8 @@ public class AcceptServiceCall {
                             String SurchargeType = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId + "; Limit: " + MinLimit);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId + "; Limit: " + MinLimit);
 
                             CommonUtils.SaveVehiFuelInPref(activity, TransactionId, VehicleId, PhoneNumber, PersonId, PulseRatio, MinLimit,
                                     FuelTypeId, ServerDate, IntervalToStopFuel, PrintDate, Company, Location, PersonName, PrinterMacAddress,
@@ -562,23 +562,23 @@ public class AcceptServiceCall {
                                     TransactionDateWithFormat, SiteId);
 
                             Intent intent = new Intent(activity, DisplayMeterActivity.class);
-                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber);
-                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter);
-                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber);
-                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN);
-                            intent.putExtra(Constants.OTHERR, Constants.AccOther);
-                            intent.putExtra(Constants.HOURSS, Constants.AccHours);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.VEHICLE_NUMBER_FS2);
+                            intent.putExtra(Constants.ODO_METER, Constants.ODO_METER_FS2);
+                            intent.putExtra(Constants.DEPT, Constants.DEPARTMENT_NUMBER_FS2);
+                            intent.putExtra(Constants.PERSON_PIN, Constants.PERSONNEL_PIN_FS2);
+                            intent.putExtra(Constants.OTHER, Constants.OTHER_FS2);
+                            intent.putExtra(Constants.HOURS, Constants.HOURS_FS2);
 
                             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             activity.startActivity(intent);
 
-                        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS3")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
                             JSONObject jsonObjectRD = new JSONObject(ResponceData);
 
-                            AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
+                            AppConstants.IS_FIRST_TIME_USE = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId_FS3 = jsonObjectRD.getString("TransactionId");
                             String VehicleId_FS3 = jsonObjectRD.getString("VehicleId");
                             String VehicleNumber_FS3 = jsonObjectRD.getString("VehicleNumber");
@@ -604,7 +604,7 @@ public class AcceptServiceCall {
                             String Hours_FS3 = jsonObjectRD.getString("Hours");
                             String LimitReachedMessage_FS3 = jsonObjectRD.getString("LimitReachedMessage");
                             String SiteId_FS3 = jsonObjectRD.getString("SiteId");
-                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS3;
+                            AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS3;
                             AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS3;
                             System.out.println("iiiiii" + IntervalToStopFuel_FS3);
 
@@ -616,8 +616,8 @@ public class AcceptServiceCall {
                             String SurchargeType_FS3 = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice_FS3 = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS3 + "; Limit: " + MinLimit_FS3);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS3 + "; Limit: " + MinLimit_FS3);
 
                             CommonUtils.SaveVehiFuelInPref_FS3(activity, TransactionId_FS3, VehicleId_FS3, PhoneNumber_FS3, PersonId_FS3,
                                     PulseRatio_FS3, MinLimit_FS3, FuelTypeId_FS3, ServerDate_FS3, IntervalToStopFuel_FS3, PrintDate_FS3,
@@ -627,23 +627,23 @@ public class AcceptServiceCall {
                                     LimitReachedMessage_FS3, VehicleNumber_FS3, TransactionDateWithFormat_FS3, SiteId_FS3);
 
                             Intent intent = new Intent(activity, DisplayMeterActivity.class);
-                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS3);
-                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS3);
-                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS3);
-                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS3);
-                            intent.putExtra(Constants.OTHERR, Constants.AccOther_FS3);
-                            intent.putExtra(Constants.HOURSS, Constants.AccHours_FS3);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.VEHICLE_NUMBER_FS3);
+                            intent.putExtra(Constants.ODO_METER, Constants.ODO_METER_FS3);
+                            intent.putExtra(Constants.DEPT, Constants.DEPARTMENT_NUMBER_FS3);
+                            intent.putExtra(Constants.PERSON_PIN, Constants.PERSONNEL_PIN_FS3);
+                            intent.putExtra(Constants.OTHER, Constants.OTHER_FS3);
+                            intent.putExtra(Constants.HOURS, Constants.HOURS_FS3);
 
                             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             activity.startActivity(intent);
 
-                        }  else if (Constants.CurrentSelectedHose.equals("FS4")) {
+                        }  else if (Constants.CURRENT_SELECTED_HOSE.equals("FS4")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
                             JSONObject jsonObjectRD = new JSONObject(ResponceData);
 
-                            AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
+                            AppConstants.IS_FIRST_TIME_USE = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId_FS4 = jsonObjectRD.getString("TransactionId");
                             String VehicleId_FS4 = jsonObjectRD.getString("VehicleId");
                             String VehicleNumber_FS4 = jsonObjectRD.getString("VehicleNumber");
@@ -669,7 +669,7 @@ public class AcceptServiceCall {
                             String Hours_FS4 = jsonObjectRD.getString("Hours");
                             String LimitReachedMessage_FS4 = jsonObjectRD.getString("LimitReachedMessage");
                             String SiteId_FS4 = jsonObjectRD.getString("SiteId");
-                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS4;
+                            AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS4;
                             AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS4;
                             System.out.println("iiiiii" + IntervalToStopFuel_FS4);
 
@@ -681,8 +681,8 @@ public class AcceptServiceCall {
                             String SurchargeType_FS4 = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice_FS4 = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS4 + "; Limit: " + MinLimit_FS4);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS4 + "; Limit: " + MinLimit_FS4);
 
                             CommonUtils.SaveVehiFuelInPref_FS4(activity, TransactionId_FS4, VehicleId_FS4, PhoneNumber_FS4, PersonId_FS4,
                                     PulseRatio_FS4, MinLimit_FS4, FuelTypeId_FS4, ServerDate_FS4, IntervalToStopFuel_FS4, PrintDate_FS4,
@@ -692,23 +692,23 @@ public class AcceptServiceCall {
                                     LimitReachedMessage_FS4, VehicleNumber_FS4, TransactionDateWithFormat_FS4, SiteId_FS4);
 
                             Intent intent = new Intent(activity, DisplayMeterActivity.class);
-                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS4);
-                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS4);
-                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS4);
-                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS4);
-                            intent.putExtra(Constants.OTHERR, Constants.AccOther_FS4);
-                            intent.putExtra(Constants.HOURSS, Constants.AccHours_FS4);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.VEHICLE_NUMBER_FS4);
+                            intent.putExtra(Constants.ODO_METER, Constants.ODO_METER_FS4);
+                            intent.putExtra(Constants.DEPT, Constants.DEPARTMENT_NUMBER_FS4);
+                            intent.putExtra(Constants.PERSON_PIN, Constants.PERSONNEL_PIN_FS4);
+                            intent.putExtra(Constants.OTHER, Constants.OTHER_FS4);
+                            intent.putExtra(Constants.HOURS, Constants.HOURS_FS4);
 
                             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             activity.startActivity(intent);
 
-                        } else if (Constants.CurrentSelectedHose.equals("FS5")) {
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS5")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
                             JSONObject jsonObjectRD = new JSONObject(ResponceData);
 
-                            AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
+                            AppConstants.IS_FIRST_TIME_USE = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId_FS5 = jsonObjectRD.getString("TransactionId");
                             String VehicleId_FS5 = jsonObjectRD.getString("VehicleId");
                             String VehicleNumber_FS5 = jsonObjectRD.getString("VehicleNumber");
@@ -734,7 +734,7 @@ public class AcceptServiceCall {
                             String Hours_FS5 = jsonObjectRD.getString("Hours");
                             String LimitReachedMessage_FS5 = jsonObjectRD.getString("LimitReachedMessage");
                             String SiteId_FS5 = jsonObjectRD.getString("SiteId");
-                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS5;
+                            AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS5;
                             AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS5;
                             System.out.println("iiiiii" + IntervalToStopFuel_FS5);
 
@@ -746,8 +746,8 @@ public class AcceptServiceCall {
                             String SurchargeType_FS5 = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice_FS5 = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS5 + "; Limit: " + MinLimit_FS5);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS5 + "; Limit: " + MinLimit_FS5);
 
                             CommonUtils.SaveVehiFuelInPref_FS5(activity, TransactionId_FS5, VehicleId_FS5, PhoneNumber_FS5, PersonId_FS5,
                                     PulseRatio_FS5, MinLimit_FS5, FuelTypeId_FS5, ServerDate_FS5, IntervalToStopFuel_FS5, PrintDate_FS5,
@@ -757,22 +757,22 @@ public class AcceptServiceCall {
                                     LimitReachedMessage_FS5, VehicleNumber_FS5, TransactionDateWithFormat_FS5, SiteId_FS5);
 
                             Intent intent = new Intent(activity, DisplayMeterActivity.class);
-                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS5);
-                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS5);
-                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS5);
-                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS5);
-                            intent.putExtra(Constants.OTHERR, Constants.AccOther_FS5);
-                            intent.putExtra(Constants.HOURSS, Constants.AccHours_FS5);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.VEHICLE_NUMBER_FS5);
+                            intent.putExtra(Constants.ODO_METER, Constants.ODO_METER_FS5);
+                            intent.putExtra(Constants.DEPT, Constants.DEPARTMENT_NUMBER_FS5);
+                            intent.putExtra(Constants.PERSON_PIN, Constants.PERSONNEL_PIN_FS5);
+                            intent.putExtra(Constants.OTHER, Constants.OTHER_FS5);
+                            intent.putExtra(Constants.HOURS, Constants.HOURS_FS5);
 
                             activity.startActivity(intent);
 
-                        } else if (Constants.CurrentSelectedHose.equals("FS6")) {
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS6")) {
 
                             String ResponceData = jsonObject.getString("ResponceData");
 
                             JSONObject jsonObjectRD = new JSONObject(ResponceData);
 
-                            AppConstants.IsFirstTimeUse = jsonObjectRD.getString("IsFirstTimeUse");
+                            AppConstants.IS_FIRST_TIME_USE = jsonObjectRD.getString("IsFirstTimeUse");
                             String TransactionId_FS6 = jsonObjectRD.getString("TransactionId");
                             String VehicleId_FS6 = jsonObjectRD.getString("VehicleId");
                             String VehicleNumber_FS6 = jsonObjectRD.getString("VehicleNumber");
@@ -798,7 +798,7 @@ public class AcceptServiceCall {
                             String Hours_FS6 = jsonObjectRD.getString("Hours");
                             String LimitReachedMessage_FS6 = jsonObjectRD.getString("LimitReachedMessage");
                             String SiteId_FS6 = jsonObjectRD.getString("SiteId");
-                            AppConstants.PrinterMacAddress = PrinterMacAddress_FS6;
+                            AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS6;
                             AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS6;
                             System.out.println("iiiiii" + IntervalToStopFuel_FS6);
 
@@ -810,8 +810,8 @@ public class AcceptServiceCall {
                             String SurchargeType_FS6 = jsonObjectRD.getString("SurchargeType");
                             String ProductPrice_FS6 = jsonObjectRD.getString("ProductPrice");
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS6 + "; Limit: " + MinLimit_FS6);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(txtnTypeForLog + "-" + " " + ServerCallName + ">> TransactionId: " + TransactionId_FS6 + "; Limit: " + MinLimit_FS6);
 
                             CommonUtils.SaveVehiFuelInPref_FS6(activity, TransactionId_FS6, VehicleId_FS6, PhoneNumber_FS6, PersonId_FS6,
                                     PulseRatio_FS6, MinLimit_FS6, FuelTypeId_FS6, ServerDate_FS6, IntervalToStopFuel_FS6, PrintDate_FS6,
@@ -821,12 +821,12 @@ public class AcceptServiceCall {
                                     LimitReachedMessage_FS6, VehicleNumber_FS6, TransactionDateWithFormat_FS6, SiteId_FS6);
 
                             Intent intent = new Intent(activity, DisplayMeterActivity.class);
-                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.AccVehicleNumber_FS6);
-                            intent.putExtra(Constants.ODO_METER, Constants.AccOdoMeter_FS6);
-                            intent.putExtra(Constants.DEPT, Constants.AccDepartmentNumber_FS6);
-                            intent.putExtra(Constants.PPIN, Constants.AccPersonnelPIN_FS6);
-                            intent.putExtra(Constants.OTHERR, Constants.AccOther_FS6);
-                            intent.putExtra(Constants.HOURSS, Constants.AccHours_FS6);
+                            intent.putExtra(Constants.VEHICLE_NUMBER, Constants.VEHICLE_NUMBER_FS6);
+                            intent.putExtra(Constants.ODO_METER, Constants.ODO_METER_FS6);
+                            intent.putExtra(Constants.DEPT, Constants.DEPARTMENT_NUMBER_FS6);
+                            intent.putExtra(Constants.PERSON_PIN, Constants.PERSONNEL_PIN_FS6);
+                            intent.putExtra(Constants.OTHER, Constants.OTHER_FS6);
+                            intent.putExtra(Constants.HOURS, Constants.HOURS_FS6);
 
                             activity.startActivity(intent);
 
@@ -839,8 +839,8 @@ public class AcceptServiceCall {
 
                         AppConstants.AUTH_CALL_SUCCESS = false;
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " ServerCall ValidationFailFor " + ValidationFailFor + " ResponceText:" + ResponceText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " ServerCall ValidationFailFor " + ValidationFailFor + " ResponceText:" + ResponceText);
                         AppConstants.colorToastBigFont(activity, ResponceText, Color.BLUE);
 
                         if (ValidationFailFor.equalsIgnoreCase("Vehicle")) {
@@ -883,15 +883,15 @@ public class AcceptServiceCall {
                     if (OfflineConstants.isOfflineAccess(activity)) {
                         AppConstants.NETWORK_STRENGTH = false;
                         Log.i(TAG, "ServerCall Server Response Empty!");
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "ServerCall Response is Empty!");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "ServerCall Response is Empty!");
                         Intent i = new Intent(activity, DisplayMeterActivity.class);
                         activity.startActivity(i);
                     } else {
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "ServerCall Response is Empty!");
-                        AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "ServerCall Response is Empty!");
+                        AppConstants.clearEditTextFieldsOnBack(activity); //Clear EditText on move to welcome activity.
                         Intent intent = new Intent(activity, WelcomeActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         activity.startActivity(intent);
@@ -904,7 +904,7 @@ public class AcceptServiceCall {
                 }
 
             }catch (Exception e){
-                AppConstants.serverCallInProgress =  false;
+                AppConstants.SERVER_CALL_IN_PROGRESS =  false;
                 e.printStackTrace();
                 if(OfflineConstants.isOfflineAccess(activity)){AppConstants.NETWORK_STRENGTH = false;}
 
@@ -982,14 +982,14 @@ public class AcceptServiceCall {
                         JSONObject jsonObject = new JSONObject(userData);
                         String status = jsonObject.getString("status");
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  Relay_result " + " Status: " + status);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "  Relay_result " + " Status: " + status);
 
                         //IF relay status zero go back to dashboard
                         if (status.equalsIgnoreCase("1")) {
 
                             AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.BLUE);
-                            AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
+                            AppConstants.clearEditTextFieldsOnBack(activity); //Clear EditText on move to welcome activity.
                             Intent intent = new Intent(activity, WelcomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             activity.startActivity(intent);
@@ -1041,10 +1041,10 @@ public class AcceptServiceCall {
                 } else {
 
                     //Relay command else commented
-                    if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  Link is unavailable relay");
+                    if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  Link is unavailable relay");
                     AppConstants.colorToastBigFont(activity, " Link is unavailable", Color.BLUE);
-                    AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
+                    AppConstants.clearEditTextFieldsOnBack(activity); //Clear EditText on move to welcome activity.
                     BackgroundServiceKeepDataTransferAlive.IstoggleRequired_DA = true;
                     Intent intent = new Intent(activity, WelcomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1070,7 +1070,7 @@ public class AcceptServiceCall {
 
             Log.e("GateSoftwareDelayIssue","   LastTXNid respp");
 
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  LAST TRANS RawData " + " LastTXNid" + LastTXNid + "Resp " + respp);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  LAST TRANS RawData " + " LastTXNid" + LastTXNid + "Resp " + respp);
 
             if (LastTXNid.equals("-1")) {
                 System.out.println(LastTXNid);
@@ -1110,7 +1110,7 @@ public class AcceptServiceCall {
                         String jsonData = gson.toJson(authEntityClass);
 
                         System.out.println("TrazComp......" + jsonData);
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  LAST TRANS jsonData " + jsonData);
+                        if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  LAST TRANS jsonData " + jsonData);
 
                         String userEmail = CommonUtils.getCustomerDetails(activity).PersonEmail;
 
@@ -1137,14 +1137,14 @@ public class AcceptServiceCall {
                         if (isInsert && Lastqty > 0) {
                             controller.insertTransactions(imap);
 
-                            if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  LAST TRANS SAVED in sqlite");
+                            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  LAST TRANS SAVED in sqlite");
                             Log.e("GateSoftwareDelayIssue","   LastTXNid saved");
                         }
 
 
                     } catch (Exception ex) {
 
-                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  LAST TRANS Exception " + ex.getMessage());
+                        if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  LAST TRANS Exception " + ex.getMessage());
                     }
 
 
@@ -1152,7 +1152,7 @@ public class AcceptServiceCall {
             }
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  LastTXNid Ex:" + e.getMessage() + " ");
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  LastTXNid Ex:" + e.getMessage() + " ");
         }
 
 
@@ -1232,12 +1232,12 @@ public class AcceptServiceCall {
                 } else {
 
                     AppConstants.colorToastBigFont(activity, "The link is busy, please try after some time.", Color.BLUE);
-                    AppConstants.ClearEdittextFielsOnBack(activity); //Clear EditText on move to welcome activity.
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " CommandsGET_Info: info command response is empty. Redirecting to welcome activity.");
+                    AppConstants.clearEditTextFieldsOnBack(activity); //Clear EditText on move to welcome activity.
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " CommandsGET_Info: info command response is empty. Redirecting to welcome activity.");
 
                     if (IsGateHub.equalsIgnoreCase("True")) {
-                        CommonUtils.UpgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
+                        CommonUtils.upgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
                     }
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
@@ -1392,8 +1392,8 @@ public class AcceptServiceCall {
             try {
                 result = new Command_GET_INFO().execute(URL_INFO).get();
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Error occurred while getting mac address from info command. >> " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Error occurred while getting mac address from info command. >> " + e.getMessage());
                 result = "";
                 e.printStackTrace();
             }
@@ -1401,14 +1401,14 @@ public class AcceptServiceCall {
             if (!result.trim().isEmpty()) {
                 validIpAddress = CommonUtils.CheckMacAddressFromInfoCommand(TAG, result, connectedIp, selMacAddress, MA_ConnectedDevices);
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Info command response is empty. (IP: " + connectedIp + "; MAC Address: " + MA_ConnectedDevices + ")");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Info command response is empty. (IP: " + connectedIp + "; MAC Address: " + MA_ConnectedDevices + ")");
             }
 
         } catch (Exception e) {
             validIpAddress = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
             Log.d("Ex", e.getMessage());
         }
         return validIpAddress;
@@ -1442,8 +1442,8 @@ public class AcceptServiceCall {
             try {
                 System.out.println("APFS_PIPE OUTPUT" + result);
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsGET onPostExecute Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  CommandsGET onPostExecute Exception " + e.getMessage());
                 System.out.println(e);
             }
         }
@@ -1475,9 +1475,9 @@ public class AcceptServiceCall {
                                 handler.postDelayed(this, delay);
                             } else {
                                 BTConnectionCounter = 0;
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink is Unavailable. Redirecting to welcome activity.");
-                                CommonUtils.UpgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + "BTLink is Unavailable. Redirecting to welcome activity.");
+                                CommonUtils.upgradeTransactionStatusToSqlite(GateHUBTransactionId, "6", activity);
                                 /*Intent intent = new Intent(activity, WelcomeActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 activity.startActivity(intent);*/
@@ -1489,64 +1489,64 @@ public class AcceptServiceCall {
             }, delay);
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " RetryBTLinkConnection Exception " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " RetryBTLinkConnection Exception " + e.getMessage());
         }
     }
 
     public void RetryConnect() {
         try {
-            if (!BTConstants.BTStatusStrOne.equalsIgnoreCase("Connecting...")) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Retrying to Connect to LINK");
+            if (!BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Connecting...")) {
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Retrying to Connect to LINK");
                 //Retrying to connect to link
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.activity = activity;
                 btspp.connect1();
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink: RetryConnect Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink: RetryConnect Exception:>>" + e.getMessage());
         }
     }
 
     private boolean CheckBTLinkStatus() {
         boolean isConnected = false;
         try {
-            if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+            if (BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Connected")) {
                 isConnected = true;
             } else {
                 Thread.sleep(1000);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
-                if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
+                if (BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Connected")) {
                     isConnected = true;
                 } else {
                     Thread.sleep(2000);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
-                    if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
+                    if (BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Connected")) {
                         isConnected = true;
                     } else {
                         Thread.sleep(2000);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
-                        if (BTConstants.BTStatusStrOne.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : Checking Connection Status...");
+                        if (BTConstants.BT_STATUS_STR_ONE.equalsIgnoreCase("Connected")) {
                             isConnected = true;
                         }
                     }
                 }
             }
             if (isConnected) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Link is connected.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " Link is connected.");
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : STATUS: " + BTConstants.BTStatusStrOne);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " BTLink : STATUS: " + BTConstants.BT_STATUS_STR_ONE);
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " CheckBTLinkStatus Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " CheckBTLinkStatus Exception:>>" + e.getMessage());
         }
         return isConnected;
     }
@@ -1564,8 +1564,8 @@ public class AcceptServiceCall {
             BackToWelcomeActivity();
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " GateHubStartTransactionForBTLink Exception " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_TXTN_BT + "-" + TAG + " GateHubStartTransactionForBTLink Exception " + e.getMessage());
         }
     }
 

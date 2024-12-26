@@ -53,10 +53,10 @@ import static com.TrakEngineering.FluidSecureHub.CommonUtils.GetDateString;
  */
 public class AppConstants {
 
-    public static String AddVehicle = "", AddPin = "",AddFobKey = "", AddMagCard_FobKey = "", AddBarcode_val = ""; //Additional value
+    public static String ADD_VEHICLE = "", ADD_PIN = "", ADD_FOB_KEY = "", ADD_MAG_CARD_FOB_KEY = "", ADD_BARCODE_VAL = ""; //Additional value
 
-    public static boolean selectHosePressed;
-    public static ArrayList<String> offlineDownloadIds = new ArrayList<>();
+    public static boolean SELECT_HOSE_PRESSED;
+    public static ArrayList<String> OFFLINE_DOWNLOAD_IDS = new ArrayList<>();
     public static int CONNECTION_TIMEOUT_SEC = 4; //2 (refer #1935)
     public static int READ_TIMEOUT_SEC = 4; //2
     public static int WRITE_TIMEOUT_SEC = 4; //2
@@ -70,112 +70,112 @@ public class AppConstants {
     public static final String LOG_UPGRADE_BT_BLE = "[UPGRADE-BT_BLE]";
     public static final String LOG_UPGRADE_HTTP = "[UPGRADE-HTTP]";
 
-    public static int ScreenResolutionYOffSet = 0;
+    public static int SCREEN_RESOLUTION_Y_OFFSET = 0;
     public static int COUNT_HOTSPOT_MAIL;
-    public static String sharedPref_AzureQueueDetails = "AzureQueueDetails";
-    public static String sharedPref_KeyboardType = "KeyboardType";
-    public static String sharedPref_HotSpotEmail = "HotSpotEmail";
-    public static String sharedPref_OfflineAzureSync = "OfflineAzureSync";
-    public static String sharedPref_AzureMapDetails = "AzureMapDetails";
-    public static String IsFirstTimeUse = "false";
-    public static boolean enableHotspotManuallyWindow = false;
+    public static String PREF_AZURE_QUEUE_DETAILS = "AzureQueueDetails";
+    public static String PREF_KEYBOARD_TYPE = "KeyboardType";
+    public static String PREF_HOTSPOT_EMAIL = "HotSpotEmail";
+    public static String PREF_OFFLINE_AZURE_SYNC = "OfflineAzureSync";
+    public static String PREF_AZURE_MAP_DETAILS = "AzureMapDetails";
+    public static String IS_FIRST_TIME_USE = "false";
+    public static boolean ENABLE_HOTSPOT_MANUALLY_WINDOW = false;
     public static boolean busyWithHotspotToggle = false;
-    public static boolean showReaderStatus = false;
-    public static boolean IsBTLinkSelectedCurrently = false;
-    public static boolean IsProblemWhileEnableHotspot = false;
+    public static boolean SHOW_READER_STATUS = false;
+    public static boolean IS_BT_LINK_SELECTED_CURRENTLY = false;
+    public static boolean IS_PROBLEM_WHILE_ENABLE_HOTSPOT = false;
 
     public static final String DEVICE_TYPE = "A";
     public static final String USER_NAME = "userName";
     public static final String USER_MOBILE = "userMobile";
     public static final String USER_EMAIL = "userEmail";
-    public static final String IsOdoMeterRequire = "IsOdoMeterRequire";
-    public static final String IsDepartmentRequire = "IsDepartmentRequire";
-    public static final String IsPersonnelPINRequire = "IsPersonnelPINRequire";
-    public static final String IsPersonnelPINRequireForHub = "IsPersonnelPINRequireForHub";
-    public static final String FluidSecureSiteName = "FluidSecureSiteName";
-    public static final String ISVehicleHasFob = "ISVehicleHasFob";
-    public static final String IsPersonHasFob = "IsPersonHasFob";
-    public static final String IsPersonPinAndFOBRequire = "IsPersonPinAndFOBRequire";
-    public static final String AllowAccessDeviceORManualEntry = "AllowAccessDeviceORManualEntry";
-    public static final String AllowAccessDeviceORManualEntryForVehicle = "AllowAccessDeviceORManualEntryForVehicle";
-    public static final String IsOtherRequire = "IsOtherRequire";
-    public static final String IsHoursRequire = "IsHoursRequire";
-    public static final String ExtraOtherLabel = "ExtraOtherLabel";
-    public static final String IsExtraOther = "IsExtraOther";
-    public static final String OtherLabel = "OtherLabel";
-    public static final String TimeOut = "TimeOut";
-    public static final String HubId = "HubId";
-    public static final String HubType = "HubType";
-    public static final String IsNonValidateVehicle = "IsNonValidateVehicle";
-    public static final String IsNonValidatePerson = "IsNonValidatePerson";
-    public static final String IsVehicleNumberRequire = "IsVehicleNumberRequire";
-    public static final String WifiChannelToUse = "0";
+    public static final String IS_ODO_METER_REQUIRE = "IsOdoMeterRequire";
+    public static final String IS_DEPARTMENT_REQUIRE = "IsDepartmentRequire";
+    public static final String IS_PERSONNEL_PIN_REQUIRE = "IsPersonnelPINRequire";
+    public static final String IS_PERSONNEL_PIN_REQUIRE_FOR_HUB = "IsPersonnelPINRequireForHub";
+    public static final String FS_SITE_NAME = "FluidSecureSiteName";
+    public static final String IS_VEHICLE_HAS_FOB = "ISVehicleHasFob";
+    public static final String IS_PERSON_HAS_FOB = "IsPersonHasFob";
+    public static final String IS_PERSON_PIN_AND_FOB_REQUIRE = "IsPersonPinAndFOBRequire";
+    public static final String ALLOW_ACCESS_DEVICE_OR_MANUAL_ENTRY = "AllowAccessDeviceORManualEntry";
+    public static final String ALLOW_ACCESS_DEVICE_OR_MANUAL_ENTRY_FOR_VEHICLE = "AllowAccessDeviceORManualEntryForVehicle";
+    public static final String IS_OTHER_REQUIRE = "IsOtherRequire";
+    public static final String IS_HOURS_REQUIRE = "IsHoursRequire";
+    public static final String EXTRA_OTHER_LABEL = "ExtraOtherLabel";
+    public static final String IS_EXTRA_OTHER = "IsExtraOther";
+    public static final String OTHER_LABEL = "OtherLabel";
+    public static final String TIMEOUT = "TimeOut";
+    public static final String HUBID = "HubId";
+    public static final String HUB_TYPE = "HubType";
+    public static final String IS_NON_VALIDATE_VEHICLE = "IsNonValidateVehicle";
+    public static final String IS_NON_VALIDATE_PERSON = "IsNonValidatePerson";
+    public static final String IS_VEHICLE_NUMBER_REQUIRE = "IsVehicleNumberRequire";
+    public static final String WIFI_CHANNEL_TO_USE = "0";
 
-    public static boolean isRelayON_fs1 = false;
-    public static boolean isRelayON_fs2 = false;
-    public static boolean isRelayON_fs3 = false;
-    public static boolean isRelayON_fs4 = false;
-    public static boolean isRelayON_fs5 = false;
-    public static boolean isRelayON_fs6 = false;
+    public static boolean IS_RELAY_ON_FS1 = false;
+    public static boolean IS_RELAY_ON_FS2 = false;
+    public static boolean IS_RELAY_ON_FS3 = false;
+    public static boolean IS_RELAY_ON_FS4 = false;
+    public static boolean IS_RELAY_ON_FS5 = false;
+    public static boolean IS_RELAY_ON_FS6 = false;
 
-    public static boolean isInfoCommandSuccess_fs1 = false;
-    public static boolean isInfoCommandSuccess_fs2 = false;
-    public static boolean isInfoCommandSuccess_fs3 = false;
-    public static boolean isInfoCommandSuccess_fs4 = false;
-    public static boolean isInfoCommandSuccess_fs5 = false;
-    public static boolean isInfoCommandSuccess_fs6 = false;
+    public static boolean IS_FIRST_COMMAND_SUCCESS_FS1 = false;
+    public static boolean IS_FIRST_COMMAND_SUCCESS_FS2 = false;
+    public static boolean IS_FIRST_COMMAND_SUCCESS_FS3 = false;
+    public static boolean IS_FIRST_COMMAND_SUCCESS_FS4 = false;
+    public static boolean IS_FIRST_COMMAND_SUCCESS_FS5 = false;
+    public static boolean IS_FIRST_COMMAND_SUCCESS_FS6 = false;
 
-    public static final String LinkConnectionIssuePref = "LinkConnectionIssuePref";
+    public static final String PREF_LINK_CONNECTION_ISSUE = "LinkConnectionIssuePref";
 
-    public static String HSConnectionTimeout = "";
+    public static String HS_CONNECTION_TIMEOUT = "";
 
-    public static final String IsGateHub = "IsGateHub";
-    public static final String IsStayOpenGate = "IsStayOpenGate";
+    public static final String IS_GATE_HUB = "IsGateHub";
+    public static final String IS_STAY_OPEN_GATE = "IsStayOpenGate";
 
     //public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/FSBin/";
     public static String FOLDER_BIN = "FSBin";
-    public static String UP_Upgrade_File_name = "user1.2048.new.5.bin";
+    public static String UP_UPGRADE_FILE_NAME = "user1.2048.new.5.bin";
 
-    public static String OfflineDataFolderName = "FSdata";
+    public static String OFFLINE_DATA_FOLDER_NAME = "FSdata";
 
-    public static final String OfflineDataBaseSize = "OfflineDataBaseSize";
-    public static final String DbUpdateTime = "DbUpdateTime";
+    public static final String OFFLINE_DATABASE_SIZE = "OfflineDataBaseSize";
+    public static final String DB_UPDATE_TIME = "DbUpdateTime";
 
-    public static final String IsEnableServerForTLD = "IsEnableServerForTLD";
-    public static final String FAData = "FAData";
-    public static final String UseBarcode = "UseBarcode";
-    public static final String UseBarcodeForPersonnel = "UseBarcodeForPersonnel";
+    public static final String IS_ENABLE_SERVER_FOR_TLD = "IsEnableServerForTLD";
+    public static final String FA_DATA = "FAData";
+    public static final String USE_BARCODE = "UseBarcode";
+    public static final String USE_BARCODE_FOR_PERSONNEL = "UseBarcodeForPersonnel";
     public static final String CAMERA_FACING = "CAMERA_FACING";
 
-    public static final String LogRequiredFlag = "LogRequiredFlag";
-    public static final String CompanyBrandName = "CompanyBrandName";
-    public static final String CompanyBrandLogoLink = "CompanyBrandLogoLink";
-    public static final String SupportEmail = "SupportEmail";
-    public static final String SupportPhonenumber = "SupportPhonenumber";
-    public static String BrandName = "FluidSecure";
+    public static final String LOG_REQUIRED_FLAG = "LogRequiredFlag";
+    public static final String COMPANY_BRAND_NAME = "CompanyBrandName";
+    public static final String COMPANY_BRAND_LOGO_LINK = "CompanyBrandLogoLink";
+    public static final String SUPPORT_EMAIL = "SupportEmail";
+    public static final String SUPPORT_PHONE_NUMBER = "SupportPhonenumber";
+    public static String BRAND_NAME = "FluidSecure";
     public static String LANG_PARAM = "";
 
     public static final String PACKAGE_BACKGROUND_SERVICE = BuildConfig.APPLICATION_ID + ".BackgroundService";
     public static final String PACKAGE_BS_OffTransSync = BuildConfig.APPLICATION_ID + ".offline.OffTranzSyncService";
     public static final String PACKAGE_BS_OffDataDownload = BuildConfig.APPLICATION_ID + ".offline.OffBackgroundService";
 
-    public static ArrayList<HashMap<String, String>> temp_serverSSIDList;
+    public static ArrayList<HashMap<String, String>> TEMP_SERVER_SSID_LIST;
 
-    //public static String webIP = "http://fluidsecuretest.eastus.cloudapp.azure.com/"; // OLD URL => http://sierravistatest.cloudapp.net/";
-    public static String webIP = "https://www.fluidsecure.net/";
+    //public static String SERVER_BASE_URL = "http://fluidsecuretest.eastus.cloudapp.azure.com/"; // OLD URL => http://sierravistatest.cloudapp.net/";
+    public static String SERVER_BASE_URL = "https://www.fluidsecure.net/";
 
 
-    public static String webURL = webIP + "HandlerTrak.ashx";
-    public static String LoginURL = webIP + "LoginHandler.ashx";
+    public static String WEB_URL = SERVER_BASE_URL + "HandlerTrak.ashx";
+    public static String LOGIN_URL = SERVER_BASE_URL + "LoginHandler.ashx";
 
-    public static String API_URL_TOKEN = webIP + "token";
-    public static String API_URL_HUB = webIP + "api/Offline/GetHub";
-    public static String API_URL_GENERATEFILES = webIP + "api/Offline/GenerateFiles";
-    public static String API_URL_LINK = webIP + "api/Offline/GetLinks";
-    public static String API_URL_VEHICLE = webIP + "api/Offline/GetVehicles";
-    public static String API_URL_PERSONNEL = webIP + "api/Offline/GetPersonnel";
-    public static String API_URL_SYNC_TRANS = webIP + "api/Offline/OFFLineImportTransactions";
-    public static String API_URL_DEPT = webIP + "api/Offline/GetDepartments";
+    public static String API_URL_TOKEN = SERVER_BASE_URL + "token";
+    public static String API_URL_HUB = SERVER_BASE_URL + "api/Offline/GetHub";
+    public static String API_URL_GENERATEFILES = SERVER_BASE_URL + "api/Offline/GenerateFiles";
+    public static String API_URL_LINK = SERVER_BASE_URL + "api/Offline/GetLinks";
+    public static String API_URL_VEHICLE = SERVER_BASE_URL + "api/Offline/GetVehicles";
+    public static String API_URL_PERSONNEL = SERVER_BASE_URL + "api/Offline/GetPersonnel";
+    public static String API_URL_SYNC_TRANS = SERVER_BASE_URL + "api/Offline/OFFLineImportTransactions";
+    public static String API_URL_DEPT = SERVER_BASE_URL + "api/Offline/GetDepartments";
 
     public static String BASE_URL_AZURE_MAP = "https://atlas.microsoft.com/";
 
@@ -185,125 +185,122 @@ public class AppConstants {
     public static String OFF_HOUR_REQUIRED;
     public static String OFF_CURRENT_ODO;
     public static String OFF_CURRENT_HOUR;
-    public static String OFF_ODO_Reasonable;
-    public static String OFF_ODO_Conditions;
-    public static String OFF_ODO_Limit;
-    public static String OFF_HRS_Limit;
+    public static String OFF_ODO_REASONABLE;
+    public static String OFF_ODO_CONDITIONS;
+    public static String OFF_ODO_LIMIT;
+    public static String OFF_HRS_LIMIT;
 
     public static String ESP32_update = "NO";
     public static String PIC_update = "NO";
-    public static boolean GenerateLogs;
-    public static boolean ServerCallLogs;
-    public static boolean EnableFA;
-    public static boolean EnableServerForTLD;
-    public static boolean RebootHF_reader = false;
-    public static boolean RebootQR_reader = false;
+    public static boolean GENERATE_LOGS;
+    public static boolean SERVER_CALL_LOGS;
+    public static boolean ENABLE_FA;
+    public static boolean Enable_Server_For_TLD;
+    public static boolean REBOOT_HF_READER = false;
+    public static boolean REBOOT_QR_READER = false;
 
     public static String OFF1 = "Please check your Internet Data";
     public static String error_msg = "Something went wrong. Please try again.";
 
-    public static boolean excption_caught = false;
+    public static boolean EXCEPTION_CAUGHT = false;
     public static boolean NETWORK_STRENGTH;
     public static boolean IS_MOBILE_ON;
     public static boolean IS_MOBILE_MSG;
-    public static boolean PRE_STATE_MOBILEDATA;
-    public static boolean CURRENT_STATE_MOBILEDATA;
+    public static boolean PRE_STATE_MOBILE_DATA;
+    public static boolean CURRENT_STATE_MOBILE_DATA;
     public static boolean AUTH_CALL_SUCCESS = false;
-    public static boolean serverCallInProgress;
-    public static boolean serverCallInProgressForPin = false;
-    public static boolean serverCallInProgressForVehicle = false;
-    public static boolean serverAuthCallCompleted = false;
+    public static boolean SERVER_CALL_IN_PROGRESS;
+    public static boolean SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+    public static boolean SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
+    public static boolean SERVER_AUTH_CALL_COMPLETED = false;
 
-    public static boolean showWelcomeDialogForAddNewLink = true;
-    public static ArrayList<HashMap<String, String>> newlyAddedLinks = new ArrayList<>();
-    public static String NewlyAddedSiteId = "0";
+    public static boolean SHOW_WELCOME_DIALOG_FOR_ADD_NEW_LINK = true;
+    public static ArrayList<HashMap<String, String>> NEWLY_ADDED_LINKS = new ArrayList<>();
+    public static String NEWLY_ADDED_SITE_ID = "0";
     //public static boolean enableHotspotAfterNewLinkConfigure = false;
 
     public static String LOG_FluidSecure_Auto = "";
-    public static String Server_mesage = "Server Not Connected..!!!";
-    public static String Server_Request;
-    public static String Server_Response;
-    public static String Header_data;
-    public static String OdoErrorCode = "0";
+    public static String SERVER_MESSAGE = "Server Not Connected..!!!";
+    public static String SERVER_REQUEST;
+    public static String SERVER_RESPONSE;
+    public static String HEADER_DATA;
+    public static String ODO_ERROR_CODE = "0";
 
-    public static boolean RefreshSingleHose = false;
-    public static boolean DisplayToastmaxlimit = false;
-    public static String MaxlimitMessage = "";
-    public static boolean IsSingleLink = false;
-    public static boolean GoButtonAlreadyClicked = false;
+    public static boolean REFRESH_SINGLE_HOSE = false;
+    public static boolean DISPLAY_TOAST_MAX_LIMIT = false;
+    public static String MAX_LIMIT_MESSAGE = "";
+    public static boolean IS_SINGLE_LINK = false;
+    public static boolean GO_BUTTON_ALREADY_CLICKED = false;
 
-    public static boolean IsTransactionCompleted1 = true;
-    public static boolean IsTransactionCompleted2 = true;
-    public static boolean IsTransactionCompleted3 = true;
-    public static boolean IsTransactionCompleted4 = true;
-    public static boolean IsTransactionCompleted5 = true;
-    public static boolean IsTransactionCompleted6 = true;
+    public static boolean IS_TRANSACTION_COMPLETED_1 = true;
+    public static boolean IS_TRANSACTION_COMPLETED_2 = true;
+    public static boolean IS_TRANSACTION_COMPLETED_3 = true;
+    public static boolean IS_TRANSACTION_COMPLETED_4 = true;
+    public static boolean IS_TRANSACTION_COMPLETED_5 = true;
+    public static boolean IS_TRANSACTION_COMPLETED_6 = true;
 
-    public static boolean IsTransactionFailed1 = false;
-    public static boolean IsTransactionFailed2 = false;
-    public static boolean IsTransactionFailed3 = false;
-    public static boolean IsTransactionFailed4 = false;
-    public static boolean IsTransactionFailed5 = false;
-    public static boolean IsTransactionFailed6 = false;
+    public static boolean IS_TRANSACTION_FAILED_1 = false;
+    public static boolean IS_TRANSACTION_FAILED_2 = false;
+    public static boolean IS_TRANSACTION_FAILED_3 = false;
+    public static boolean IS_TRANSACTION_FAILED_4 = false;
+    public static boolean IS_TRANSACTION_FAILED_5 = false;
+    public static boolean IS_TRANSACTION_FAILED_6 = false;
 
-    public static int TxnFailedCount1 = 0;
-    public static int TxnFailedCount2 = 0;
-    public static int TxnFailedCount3 = 0;
-    public static int TxnFailedCount4 = 0;
-    public static int TxnFailedCount5 = 0;
-    public static int TxnFailedCount6 = 0;
+    public static int TRANSACTION_FAILED_COUNT_1 = 0;
+    public static int TRANSACTION_FAILED_COUNT_2 = 0;
+    public static int TRANSACTION_FAILED_COUNT_3 = 0;
+    public static int TRANSACTION_FAILED_COUNT_4 = 0;
+    public static int TRANSACTION_FAILED_COUNT_5 = 0;
+    public static int TRANSACTION_FAILED_COUNT_6 = 0;
 
-    public static boolean FlickeringScreenOff;
-    public static String NoSleepRespTime = "";
-    public static String NoSleepCurrentTime = "";
+    public static boolean FLICKERING_SCREEN_OFF;
+    public static String NO_SLEEP_RESP_TIME = "";
+    public static String NO_SLEEP_CURRENT_TIME = "";
 
     public static String APDU_FOB_KEY = "";
     public static String NonValidateVehicle_FOB_KEY = "";
     public static String VehicleLocal_FOB_KEY = "";
     public static String PinLocal_FOB_KEY = "";
-    public static String FS_selected;
+    public static String FS_SELECTED;
     public static String LastSelectedHose;
     public static String BLUETOOTH_PRINTER_NAME;
-    public static String PrinterMacAddress;
+    public static String PRINTER_MAC_ADDRESS;
     public static String BT_READER_NAME;
     //public static String PulserTimingAdjust;
     //public static String IsResetSwitchTimeBounce;
 
-    public static String UP_FirmwareVersion;
-    public static String UP_FilePath;
-    public static boolean UP_Upgrade;
-    public static boolean UP_Upgrade_fs1;
-    public static boolean UP_Upgrade_fs2;
-    public static boolean UP_Upgrade_fs3;
-    public static boolean UP_Upgrade_fs4;
-    public static boolean UP_Upgrade_fs5;
-    public static boolean UP_Upgrade_fs6;
+    public static String UP_FIRMWARE_VERSION;
+    public static String UP_FILE_PATH;
+    public static boolean UP_UPGRADE;
+    public static boolean UP_UPGRADE_FS1;
+    public static boolean UP_UPGRADE_FS2;
+    public static boolean UP_UPGRADE_FS3;
+    public static boolean UP_UPGRADE_FS4;
+    public static boolean UP_UPGRADE_FS5;
+    public static boolean UP_UPGRADE_FS6;
 
+    public static String UP_HOSE_ID_FS1;
+    public static String UP_HOSE_ID_FS2;
+    public static String UP_HOSE_ID_FS3;
+    public static String UP_HOSE_ID_FS4;
+    public static String UP_HOSE_ID_FS5;
+    public static String UP_HOSE_ID_FS6;
 
-    public static String UP_HoseId_fs1;
-    public static String UP_HoseId_fs2;
-    public static String UP_HoseId_fs3;
-    public static String UP_HoseId_fs4;
-    public static String UP_HoseId_fs5;
-    public static String UP_HoseId_fs6;
+    public static String UP_SITE_ID_FS1;
+    public static String UP_SITE_ID_FS2;
+    public static String UP_SITE_ID_FS3;
+    public static String UP_SITE_ID_FS4;
+    public static String UP_SITE_ID_FS5;
+    public static String UP_SITE_ID_FS6;
 
-
-    public static String UP_SiteId_fs1;
-    public static String UP_SiteId_fs2;
-    public static String UP_SiteId_fs3;
-    public static String UP_SiteId_fs4;
-    public static String UP_SiteId_fs5;
-    public static String UP_SiteId_fs6;
-
-
-    public static String Title = "";
-    public static String SiteName = "";
-    public static String HubName;
-    public static String HubGeneratedpassword;
-    public static String Login_Email;
-    public static String Login_IMEI;
-    public static String AccessCode = "2901";
-    public static String DisableAllRebootOptions = "";
+    public static String TITLE = "";
+    public static String SITE_NAME = "";
+    public static String HUB_NAME;
+    public static String HUB_GENERATED_PASSWORD;
+    public static String LOGIN_EMAIL;
+    public static String LOGIN_IMEI;
+    public static String ACCESS_CODE = "2901";
+    public static String DISABLE_ALL_REBOOT_OPTIONS = "";
 
     public static String RES_MESSAGE = "ResponceMessage";
     public static String RES_DATA = "ResponceData";
@@ -318,7 +315,7 @@ public class AppConstants {
     public static String FOB_KEY_VEHICLE = "";
     public static String HUB_ID = "";
 
-    public static boolean isTestTransaction = false;
+    public static boolean IS_TEST_TRANSACTION = false;
 
     public static String FS1_CONNECTED_SSID;
     public static String FS2_CONNECTED_SSID;
@@ -327,34 +324,34 @@ public class AppConstants {
     public static String FS5_CONNECTED_SSID;
     public static String FS6_CONNECTED_SSID;
 
-    public static String REPLACEBLE_WIFI_NAME_FS_ON_UPDATE_MAC;
-    public static String REPLACEBLE_WIFI_NAME_FS1;
-    public static String REPLACEBLE_WIFI_NAME_FS2;
-    public static String REPLACEBLE_WIFI_NAME_FS3;
-    public static String REPLACEBLE_WIFI_NAME_FS4;
-    public static String REPLACEBLE_WIFI_NAME_FS5;
-    public static String REPLACEBLE_WIFI_NAME_FS6;
+    public static String REPLACEABLE_WIFI_NAME_FS_ON_UPDATE_MAC;
+    public static String REPLACEABLE_WIFI_NAME_FS1;
+    public static String REPLACEABLE_WIFI_NAME_FS2;
+    public static String REPLACEABLE_WIFI_NAME_FS3;
+    public static String REPLACEABLE_WIFI_NAME_FS4;
+    public static String REPLACEABLE_WIFI_NAME_FS5;
+    public static String REPLACEABLE_WIFI_NAME_FS6;
 
-    public static boolean NeedToRenameFS_ON_UPDATE_MAC;
-    public static boolean NeedToRenameFS1;
-    public static boolean NeedToRenameFS2;
-    public static boolean NeedToRenameFS3;
-    public static boolean NeedToRenameFS4;
-    public static boolean NeedToRenameFS5;
-    public static boolean NeedToRenameFS6;
+    public static boolean NEED_TO_RENAME_FS_ON_UPDATE_MAC;
+    public static boolean NEED_TO_RENAME_FS1;
+    public static boolean NEED_TO_RENAME_FS2;
+    public static boolean NEED_TO_RENAME_FS3;
+    public static boolean NEED_TO_RENAME_FS4;
+    public static boolean NEED_TO_RENAME_FS5;
+    public static boolean NEED_TO_RENAME_FS6;
 
-    public static String DownloadFileHttpServer = "";
-    public static boolean ManuallReconfigure;
-    public static String SELECTED_SSID_FOR_MANUALL;
+    public static String DOWNLOAD_FILE_HTTP_SERVER = "";
+    public static boolean MANUAL_RECONFIGURE;
+    public static String SELECTED_SSID_FOR_MANUAL;
 
-    public static String REPLACEBLE_WIFI_NAME;
+    public static String REPLACEABLE_WIFI_NAME;
     public static String LAST_CONNECTED_SSID;
-    public static String SELECTED_MACADDRESS;
+    public static String SELECTED_MAC_ADDRESS;
     public static String CURRENT_SELECTED_SSID;
     public static String CURRENT_SELECTED_SSID_ReqTLDCall;
     public static String CURRENT_HOSE_SSID;
-    public static String CURRENT_SELECTED_SITEID;
-    public static String UPDATE_MACADDRESS;
+    public static String CURRENT_SELECTED_SITE_ID;
+    public static String UPDATE_MAC_ADDRESS;
     public static String R_HOSE_ID;
     public static String R_SITE_ID;
     public static String SITE_ID;
@@ -364,7 +361,7 @@ public class AppConstants {
 
     public static String WIFI_PASSWORD = "";
 
-    public static boolean NeedToRename;
+    public static boolean NEED_TO_RENAME;
     public static boolean BUSY_STATUS;
 
     public static boolean ACS_READER;
@@ -372,28 +369,27 @@ public class AppConstants {
     public static boolean IS_DATA_ON;
     public static boolean IS_HOTSPOT_ON;
 
-    public static String Latitude = "0.00";
-    public static String Longitude = "0.00";
+    public static String LATITUDE = "0.00";
+    public static String LONGITUDE = "0.00";
 
-    public static ArrayList<HashMap<String, String>> DetailsServerSSIDList;
-    public static ArrayList<HashMap<String, String>> DetailsListOfConnectedDevices;
-    public static ArrayList<HashMap<String, String>> test;
+    public static ArrayList<HashMap<String, String>> DETAILS_SERVER_SSID_LIST;
+    public static ArrayList<HashMap<String, String>> DETAILS_LIST_OF_CONNECTED_DEVICES;
 
-    public static boolean isAllLinksAreBTLinks = true;
-    public static boolean isHTTPTxnRunningFS1 = false;
-    public static boolean isHTTPTxnRunningFS2 = false;
-    public static boolean isHTTPTxnRunningFS3 = false;
-    public static boolean isHTTPTxnRunningFS4 = false;
-    public static boolean isHTTPTxnRunningFS5 = false;
-    public static boolean isHTTPTxnRunningFS6 = false;
+    public static boolean IS_ALL_LINKS_ARE_BT_LINKS = true;
+    public static boolean IS_HTTP_TXN_RUNNING_FS1 = false;
+    public static boolean IS_HTTP_TXN_RUNNING_FS2 = false;
+    public static boolean IS_HTTP_TXN_RUNNING_FS3 = false;
+    public static boolean IS_HTTP_TXN_RUNNING_FS4 = false;
+    public static boolean IS_HTTP_TXN_RUNNING_FS5 = false;
+    public static boolean IS_HTTP_TXN_RUNNING_FS6 = false;
 
-    public static ArrayList<String> ListOfRunningTransactions = new ArrayList<>();
-    public static ArrayList<String> ListOfUploadingTransactions = new ArrayList<String>();
+    public static ArrayList<String> LIST_OF_RUNNING_TRANSACTIONS = new ArrayList<>();
+    public static ArrayList<String> List_Of_Uploading_Transactions = new ArrayList<String>();
 
-    public static boolean languageChanged = false;
-    public static boolean isOfflineDownloadStarted = false;
-    public static boolean forceDownloadOfflineData = false;
-    public static boolean isBTLinkUpgradeInProgress = false;
+    public static boolean LANGUAGE_CHANGED = false;
+    public static boolean IS_OFFLINE_DOWNLOAD_STARTED = false;
+    public static boolean FORCE_DOWNLOAD_OFFLINE_DATA = false;
+    public static boolean IS_BT_LINK_UPGRADE_IN_PROGRESS = false;
 
     public static double roundNumber(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
@@ -420,22 +416,17 @@ public class AppConstants {
     public static String getIMEI(Context ctx) {
         String storedUUIDIMEI = "";
         try {
-
             String encryptedIMEI = SplashActivity.readIMEIMobileNumFromFile(ctx).trim();
             storedUUIDIMEI = AES.decrypt(encryptedIMEI, AES.credential);
             if (storedUUIDIMEI == null || storedUUIDIMEI.isEmpty() || storedUUIDIMEI.equalsIgnoreCase("null")) {
                 storedUUIDIMEI = "";
             }
-
         } catch (Exception e) {
-
         }
         return storedUUIDIMEI;
     }
 
     public static void disconnectWiFi(Context ctx) {
-
-
         WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
 
         if (wifiManager.isWifiEnabled()) {
@@ -444,26 +435,18 @@ public class AppConstants {
 
             wifiManager.setWifiEnabled(false);
         }
-
     }
 
-
-    public static void dontConnectWiFi(Context ctx) {
-
-
+    /*public static void dontConnectWiFi(Context ctx) {
         WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
 
         if (wifiManager.isWifiEnabled()) {
-
             wifiManager.disconnect();
-
             wifiManager.setWifiEnabled(true);
-
         }
+    }*/
 
-    }
-
-    public static void forgetWiFi(Context ctx) {
+    /*public static void forgetWiFi(Context ctx) {
         WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
 
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
@@ -478,12 +461,11 @@ public class AppConstants {
             if (AppConstants.LAST_CONNECTED_SSID.equalsIgnoreCase(ssID)) {
                 wifiManager.removeNetwork(nwID);
                 wifiManager.saveConfiguration();
-
             }
         }
-    }
+    }*/
 
-    public static String getConnectedWifiName(Context context) {
+    /*public static String getConnectedWifiName(Context context) {
         String name = "";
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -492,10 +474,9 @@ public class AppConstants {
         System.out.println("connected ssid--" + name);
 
         return name;
-    }
+    }*/
 
-
-    public static void AlertDialogBox(final Context ctx, String message) {
+    public static void alertDialogBox(final Context ctx, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setMessage(message);
 
@@ -513,7 +494,7 @@ public class AppConstants {
         textView.setTextSize(35);
     }
 
-    public static void AlertDialogBoxCanecl(final Context ctx, int message) {
+    /*public static void AlertDialogBoxCanecl(final Context ctx, int message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setMessage(message);
 
@@ -521,19 +502,15 @@ public class AppConstants {
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         dialog.dismiss();
-
-
                     }
                 }
-
-
         );
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
         TextView textView = (TextView) alertDialog.findViewById(android.R.id.message);
         textView.setTextSize(35);
-    }
+    }*/
 
     public static void alertBigFinishActivity(final Activity ctx, String msg) {
         Dialog dialogObj;
@@ -545,7 +522,6 @@ public class AppConstants {
         TextView tvAlertMsg = (TextView) dialogObj.findViewById(R.id.tvAlertMsg);
         Button btnDialogOk = (Button) dialogObj.findViewById(R.id.btnDailogOk);
 
-
         tvAlertMsg.setText(msg);
 
         btnDialogOk.setOnClickListener(new View.OnClickListener() {
@@ -554,7 +530,6 @@ public class AppConstants {
                 ctx.finish();
             }
         });
-
 
         dialogObj.show();
     }
@@ -574,10 +549,8 @@ public class AppConstants {
         window.setAttributes(param);
         window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-
         TextView tvAlertMsg = (TextView) dialogObj.findViewById(R.id.tvAlertMsg);
         Button btnDialogOk = (Button) dialogObj.findViewById(R.id.btnDailogOk);
-
 
         tvAlertMsg.setText(msg);
 
@@ -588,12 +561,11 @@ public class AppConstants {
             }
         });
 
-
         dialogObj.show();
     }
 
 
-    public static void AlertDialogFinish(final Activity ctx, String message) {
+    public static void alertDialogFinish(final Activity ctx, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setCancelable(true);
@@ -606,15 +578,13 @@ public class AppConstants {
 
                     }
                 }
-
         );
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
 
-
-    public static void AlertDialogFinishWithTitle(final Activity ctx, String title, String message) {
+    public static void alertDialogFinishWithTitle(final Activity ctx, String title, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(message);
@@ -625,10 +595,8 @@ public class AppConstants {
                     public void onClick(DialogInterface dialog, int arg1) {
                         dialog.dismiss();
                         ctx.finish();
-
                     }
                 }
-
         );
 
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -672,7 +640,6 @@ public class AppConstants {
         cTimer.start();
         dialog.show();
     }
-
 
     public static Dialog colorToastBigFont(Context ctx, String msg, int colr) {
         /*Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_LONG);
@@ -722,7 +689,7 @@ public class AppConstants {
 
         Toast toast = Toast.makeText(ctx, " " + msg + " ", Toast.LENGTH_SHORT);
         toast.getView().setBackgroundColor(backColor);
-        toast.setGravity(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK | Gravity.TOP, 0, AppConstants.ScreenResolutionYOffSet);
+        toast.setGravity(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK | Gravity.TOP, 0, AppConstants.SCREEN_RESOLUTION_Y_OFFSET);
         ViewGroup group = (ViewGroup) toast.getView();
         TextView messageTextView = (TextView) group.getChildAt(0);
         messageTextView.setShadowLayer(1, 1, 1, backColor);
@@ -731,11 +698,8 @@ public class AppConstants {
         toast.show();
     }
 
-
-    public static int GetYOffsetFromScreenResolution(final Activity ctx) {
-
+    public static int getYOffsetFromScreenResolution(final Activity ctx) {
         try {
-
             Rect r = new Rect();
             ctx.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(r);
             int screenHeight = r.bottom - r.top;
@@ -747,9 +711,7 @@ public class AppConstants {
         }
     }
 
-
-    public static void notificationAlert(Context context) {
-
+    /*public static void notificationAlert(Context context) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         String message = "Successfully completed Transaction.";
@@ -771,9 +733,7 @@ public class AppConstants {
         notification.defaults |= Notification.DEFAULT_SOUND;
         notification.defaults |= Notification.DEFAULT_VIBRATE;
         notificationManager.notify(0, notification);
-
-
-    }
+    }*/
 
     public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
@@ -824,7 +784,7 @@ public class AppConstants {
         return wifiname;
     }*/
 
-    public static void WriteTimeStamp(String str) {
+    public static void writeTimeStamp(String str) {
         try {
             //File file = new File(Environment.getExternalStorageDirectory() + "/FSTimeStamp");
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/FSTimeStamp");
@@ -843,21 +803,18 @@ public class AppConstants {
                 gpxfile.createNewFile();
             }
 
-
             FileWriter fileWritter = new FileWriter(gpxfile, false);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
             bufferWritter.write(Calendar.getInstance().getTime() + "--" + str + " ");
             bufferWritter.close();
 
         } catch (IOException e) {
-            WriteinFile("WriteTimeStamp Exception" + e);
-
+            writeInFile("WriteTimeStamp Exception" + e);
         }
     }
 
-    public static void WriteinFile(String str) {
+    public static void writeInFile(String str) {
         try {
-
             if (str.contains("Responce"))
                 str = str.replace("Responce", "Response");
 
@@ -890,8 +847,8 @@ public class AppConstants {
             bufferWritter.close();
 
         } catch (IOException e) {
-            //WriteinFile("WriteinFile Exception: " + e);
-            System.out.println("WriteinFile Exception: " + e);
+            //writeInFile("writeInFile Exception: " + e);
+            System.out.println("writeInFile Exception: " + e);
         }
     }
 
@@ -923,14 +880,10 @@ public class AppConstants {
                             //file is older than a week
                             aFileList.delete();
                         }
-
                     } else {
                         files.add(aFileList);
                     }
-
-
                 }
-
             }
         }
 
@@ -943,76 +896,75 @@ public class AppConstants {
         ctx.startActivity(i);
     }
 
+    public static void clearEditTextFieldsOnBack(Context ctx) {
+        if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
+            Constants.VEHICLE_NUMBER_FS1 = "";
+            Constants.ODO_METER_FS1 = 0;
+            Constants.DEPARTMENT_NUMBER_FS1 = "";
+            Constants.PERSONNEL_PIN_FS1 = "";
+            Constants.OTHER_FS1 = "";
+            Constants.VEHICLE_OTHER_FS1 = "";
+            Constants.HOURS_FS1 = 0;
 
-    public static void ClearEdittextFielsOnBack(Context ctx) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS2")) {
 
-        if (Constants.CurrentSelectedHose.equals("FS1")) {
-            Constants.AccVehicleNumber_FS1 = "";
-            Constants.AccOdoMeter_FS1 = 0;
-            Constants.AccDepartmentNumber_FS1 = "";
-            Constants.AccPersonnelPIN_FS1 = "";
-            Constants.AccOther_FS1 = "";
-            Constants.AccVehicleOther_FS1 = "";
-            Constants.AccHours_FS1 = 0;
+            Constants.VEHICLE_NUMBER_FS2 = "";
+            Constants.ODO_METER_FS2 = 0;
+            Constants.DEPARTMENT_NUMBER_FS2 = "";
+            Constants.PERSONNEL_PIN_FS2 = "";
+            Constants.OTHER_FS2 = "";
+            Constants.VEHICLE_OTHER_FS2 = "";
+            Constants.HOURS_FS2 = 0;
 
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS3")) {
 
-            Constants.AccVehicleNumber = "";
-            Constants.AccOdoMeter = 0;
-            Constants.AccDepartmentNumber = "";
-            Constants.AccPersonnelPIN = "";
-            Constants.AccOther = "";
-            Constants.AccVehicleOther = "";
-            Constants.AccHours = 0;
+            Constants.VEHICLE_NUMBER_FS3 = "";
+            Constants.ODO_METER_FS3 = 0;
+            Constants.DEPARTMENT_NUMBER_FS3 = "";
+            Constants.PERSONNEL_PIN_FS3 = "";
+            Constants.OTHER_FS3 = "";
+            Constants.VEHICLE_OTHER_FS3 = "";
+            Constants.HOURS_FS3 = 0;
 
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS4")) {
 
-            Constants.AccVehicleNumber_FS3 = "";
-            Constants.AccOdoMeter_FS3 = 0;
-            Constants.AccDepartmentNumber_FS3 = "";
-            Constants.AccPersonnelPIN_FS3 = "";
-            Constants.AccVehicleOther_FS3 = "";
-            Constants.AccHours_FS3 = 0;
+            Constants.VEHICLE_NUMBER_FS4 = "";
+            Constants.ODO_METER_FS4 = 0;
+            Constants.DEPARTMENT_NUMBER_FS4 = "";
+            Constants.PERSONNEL_PIN_FS4 = "";
+            Constants.OTHER_FS4 = "";
+            Constants.VEHICLE_OTHER_FS4 = "";
+            Constants.HOURS_FS4 = 0;
 
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS5")) {
 
-            Constants.AccVehicleNumber_FS4 = "";
-            Constants.AccOdoMeter_FS4 = 0;
-            Constants.AccDepartmentNumber_FS4 = "";
-            Constants.AccPersonnelPIN_FS4 = "";
-            Constants.AccOther_FS4 = "";
-            Constants.AccVehicleOther_FS4 = "";
-            Constants.AccHours_FS4 = 0;
+            Constants.VEHICLE_NUMBER_FS5 = "";
+            Constants.ODO_METER_FS5 = 0;
+            Constants.DEPARTMENT_NUMBER_FS5 = "";
+            Constants.PERSONNEL_PIN_FS5 = "";
+            Constants.OTHER_FS5 = "";
+            Constants.VEHICLE_OTHER_FS5 = "";
+            Constants.HOURS_FS5 = 0;
 
-        } else if (Constants.CurrentSelectedHose.equals("FS5")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS6")) {
 
-            Constants.AccVehicleNumber_FS5 = "";
-            Constants.AccOdoMeter_FS5 = 0;
-            Constants.AccDepartmentNumber_FS5 = "";
-            Constants.AccPersonnelPIN_FS5 = "";
-            Constants.AccOther_FS5 = "";
-            Constants.AccVehicleOther_FS5 = "";
-            Constants.AccHours_FS5 = 0;
-
-        } else if (Constants.CurrentSelectedHose.equals("FS6")) {
-
-            Constants.AccVehicleNumber_FS6 = "";
-            Constants.AccOdoMeter_FS6 = 0;
-            Constants.AccDepartmentNumber_FS6 = "";
-            Constants.AccPersonnelPIN_FS6 = "";
-            Constants.AccOther_FS6 = "";
-            Constants.AccVehicleOther_FS6 = "";
-            Constants.AccHours_FS6 = 0;
+            Constants.VEHICLE_NUMBER_FS6 = "";
+            Constants.ODO_METER_FS6 = 0;
+            Constants.DEPARTMENT_NUMBER_FS6 = "";
+            Constants.PERSONNEL_PIN_FS6 = "";
+            Constants.OTHER_FS6 = "";
+            Constants.VEHICLE_OTHER_FS6 = "";
+            Constants.HOURS_FS6 = 0;
 
         }
     }
 
-    public static void showHideActivityBySharedPref(Activity actctx) {
+    /*public static void showHideActivityBySharedPref(Activity actctx) {
         SharedPreferences sharedPrefODO = actctx.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IS_HOURS_REQUIRE, "");
+        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
         if (IsPersonnelPINRequire.equalsIgnoreCase("True")) {
             if (actctx instanceof AcceptPinActivity) {
@@ -1053,13 +1005,11 @@ public class AppConstants {
                 actctx.startActivity(intent);
             }
         } else {
-
             AcceptServiceCall asc = new AcceptServiceCall();
             asc.activity = actctx;
             asc.checkAllFields();
         }
-
-    }
+    }*/
 
     public static void clearSharedPrefByName(Context ctx, String spName) {
         SharedPreferences preferences = ctx.getSharedPreferences(spName, Context.MODE_PRIVATE);
@@ -1082,7 +1032,6 @@ public class AppConstants {
             TelephonyManager telephonyManager = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
             storedIMEI = telephonyManager.getDeviceId();
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1090,14 +1039,14 @@ public class AppConstants {
         return storedIMEI;
     }
 
-    public static boolean IsAllHosesAreFree() {
+    public static boolean isAllHosesAreFree() {
 
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted1 &&
-                Constants.FS_2STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted2 &&
-                Constants.FS_3STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted3 &&
-                Constants.FS_4STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted4 &&
-                Constants.FS_5STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted5 &&
-                Constants.FS_6STATUS.equalsIgnoreCase("FREE") && AppConstants.IsTransactionCompleted6) {
+        if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_1 &&
+                Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_2 &&
+                Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_3 &&
+                Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_4 &&
+                Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_5 &&
+                Constants.FS_6_STATUS.equalsIgnoreCase("FREE") && AppConstants.IS_TRANSACTION_COMPLETED_6) {
             return true;
         } else {
             return false;

@@ -76,9 +76,6 @@ import java.util.TimerTask;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
-import static com.TrakEngineering.FluidSecureHub.AppConstants.FluidSecureSiteName;
-import static com.TrakEngineering.FluidSecureHub.AppConstants.ISVehicleHasFob;
-import static com.TrakEngineering.FluidSecureHub.AppConstants.IsPersonHasFob;
 import static com.TrakEngineering.FluidSecureHub.Constants.PREF_COLUMN_SITE;
 import static com.TrakEngineering.FluidSecureHub.Constants.PREF_OFF_DB_SIZE;
 import static com.TrakEngineering.FluidSecureHub.WelcomeActivity.wifiApManager;
@@ -108,7 +105,7 @@ public class CommonUtils {
     public static void LogMessage(String TAG, String TheMessage, Exception ex) {
         String logmessage = getTodaysDateInString();
         try {
-            File logFileFolder = new File(Constants.LogPath);
+            File logFileFolder = new File(Constants.LOG_PATH);
             if (!logFileFolder.exists()) logFileFolder.mkdirs(); /*Delete file if it is more than 7 days old*/
             String OldFileToDelete = logFileFolder + "/Log_" + GetDateString(System.currentTimeMillis() - 604800000) + ".txt";
             File fd = new File(OldFileToDelete);
@@ -588,8 +585,8 @@ public class CommonUtils {
             HoseUnavailableMessage = context.getResources().getString(R.string.HoseUnavailableMessage);
         } catch (Exception ex) {
             HoseUnavailableMessage = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception in showCustomMessageDilaog: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception in showCustomMessageDilaog: " + ex.getMessage());
         }
 
         /*final Dialog dialogBus = new Dialog(context);
@@ -613,7 +610,7 @@ public class CommonUtils {
                 dialogBus.dismiss();
 
                 if (message.equalsIgnoreCase(finalHoseUnavailableMessage)) {
-                    AppConstants.GoButtonAlreadyClicked = false;
+                    AppConstants.GO_BUTTON_ALREADY_CLICKED = false;
                 }
 
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
@@ -636,7 +633,7 @@ public class CommonUtils {
                         dialog.dismiss();
 
                         if (message.equalsIgnoreCase(finalHoseUnavailableMessage)) {
-                            AppConstants.GoButtonAlreadyClicked = false;
+                            AppConstants.GO_BUTTON_ALREADY_CLICKED = false;
                         }
 
                         /*if (!title.isEmpty()) {
@@ -801,13 +798,13 @@ public class CommonUtils {
 
     public static void SaveLogFlagInPref(Activity activity, String data, String CompanyBrandName, String CompanyBrandLogoLink, String SupportEmail, String SupportPhonenumber) {
 
-        SharedPreferences pref = activity.getSharedPreferences(Constants.PREF_Log_Data, Context.MODE_PRIVATE);
+        SharedPreferences pref = activity.getSharedPreferences(Constants.PREF_LOG_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString(AppConstants.LogRequiredFlag, data);
-        editor.putString(AppConstants.CompanyBrandName, CompanyBrandName);
-        editor.putString(AppConstants.CompanyBrandLogoLink, CompanyBrandLogoLink);
-        editor.putString(AppConstants.SupportEmail, SupportEmail);
-        editor.putString(AppConstants.SupportPhonenumber, SupportPhonenumber);
+        editor.putString(AppConstants.LOG_REQUIRED_FLAG, data);
+        editor.putString(AppConstants.COMPANY_BRAND_NAME, CompanyBrandName);
+        editor.putString(AppConstants.COMPANY_BRAND_LOGO_LINK, CompanyBrandLogoLink);
+        editor.putString(AppConstants.SUPPORT_EMAIL, SupportEmail);
+        editor.putString(AppConstants.SUPPORT_PHONE_NUMBER, SupportPhonenumber);
         editor.commit();
 
 
@@ -815,12 +812,12 @@ public class CommonUtils {
 
     public static void FA_FlagSavePref(Activity activity, boolean data,boolean barcodedata,boolean IsEnableServerForTLD,boolean UseBarcodeForPersonnel ) {
 
-        SharedPreferences pref = activity.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+        SharedPreferences pref = activity.getSharedPreferences(Constants.PREF_FA_DATA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean(AppConstants.FAData, data);
-        editor.putBoolean(AppConstants.IsEnableServerForTLD, IsEnableServerForTLD);
-        editor.putBoolean(AppConstants.UseBarcode, barcodedata);
-        editor.putBoolean(AppConstants.UseBarcodeForPersonnel , UseBarcodeForPersonnel );
+        editor.putBoolean(AppConstants.FA_DATA, data);
+        editor.putBoolean(AppConstants.IS_ENABLE_SERVER_FOR_TLD, IsEnableServerForTLD);
+        editor.putBoolean(AppConstants.USE_BARCODE, barcodedata);
+        editor.putBoolean(AppConstants.USE_BARCODE_FOR_PERSONNEL , UseBarcodeForPersonnel );
         editor.commit();
 
     }
@@ -829,8 +826,8 @@ public class CommonUtils {
 
         SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_COLUMN_GATE_HUB, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(AppConstants.IsGateHub, IsGateHub);
-        editor.putString(AppConstants.IsStayOpenGate, IsStayOpenGate);
+        editor.putString(AppConstants.IS_GATE_HUB, IsGateHub);
+        editor.putString(AppConstants.IS_STAY_OPEN_GATE, IsStayOpenGate);
         editor.commit();
     }
 
@@ -858,7 +855,7 @@ public class CommonUtils {
 
         SharedPreferences sharedPref = context.getSharedPreferences(PREF_OFF_DB_SIZE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(AppConstants.DbUpdateTime, SaveDate);
+        editor.putString(AppConstants.DB_UPDATE_TIME, SaveDate);
         editor.commit();
     }
 
@@ -874,27 +871,27 @@ public class CommonUtils {
         editor.putString(AppConstants.USER_NAME, userName);
         editor.putString(AppConstants.USER_MOBILE, userMobile);
         editor.putString(AppConstants.USER_EMAIL, userEmail);
-        editor.putString(AppConstants.IsOdoMeterRequire, IsOdoMeterRequire);
-        editor.putString(AppConstants.IsDepartmentRequire, IsDepartmentRequire);
-        editor.putString(AppConstants.IsPersonnelPINRequire, IsPersonnelPINRequire);
-        //editor.putString(AppConstants.IsPersonnelPINRequireForHub, IsPersonnelPINRequireForHub);
-        editor.putString(AppConstants.IsOtherRequire, IsOtherRequire);
-        editor.putString(AppConstants.IsHoursRequire, IsHoursRequire);
-        editor.putString(AppConstants.OtherLabel, OtherLabel);
-        editor.putString(AppConstants.TimeOut, TimeOut);
-        editor.putString(AppConstants.HubId, HubId);
-        editor.putString(AppConstants.IsPersonnelPINRequireForHub, IsPersonnelPINRequireForHub);
-        editor.putString(ISVehicleHasFob,  IsVehicleHasFob);
-        editor.putString(IsPersonHasFob,  isPersonHasFob);
-        editor.putString(AppConstants.IsPersonPinAndFOBRequire,  IsPersonPinAndFOBRequire);
-        editor.putString(AppConstants.AllowAccessDeviceORManualEntry,  AllowAccessDeviceORManualEntry);
-        editor.putString(FluidSecureSiteName,  fluidSecureSiteName);
-        editor.putString(AppConstants.IsVehicleNumberRequire,  IsVehicleNumberRequire);
-        editor.putInt(AppConstants.WifiChannelToUse,  WifiChannelToUse);
-        editor.putString(AppConstants.IsNonValidateVehicle,  IsNonValidateVehicle);
-        editor.putString(AppConstants.IsNonValidatePerson,  IsNonValidatePerson);
-        editor.putString(AppConstants.HubType,  HubType);
-        editor.putString(AppConstants.AllowAccessDeviceORManualEntryForVehicle,  AllowAccessDeviceORManualEntryForVehicle);
+        editor.putString(AppConstants.IS_ODO_METER_REQUIRE, IsOdoMeterRequire);
+        editor.putString(AppConstants.IS_DEPARTMENT_REQUIRE, IsDepartmentRequire);
+        editor.putString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, IsPersonnelPINRequire);
+        //editor.putString(AppConstants.IS_PERSONNEL_PIN_REQUIRE_FOR_HUB, IsPersonnelPINRequireForHub);
+        editor.putString(AppConstants.IS_OTHER_REQUIRE, IsOtherRequire);
+        editor.putString(AppConstants.IS_HOURS_REQUIRE, IsHoursRequire);
+        editor.putString(AppConstants.OTHER_LABEL, OtherLabel);
+        editor.putString(AppConstants.TIMEOUT, TimeOut);
+        editor.putString(AppConstants.HUBID, HubId);
+        editor.putString(AppConstants.IS_PERSONNEL_PIN_REQUIRE_FOR_HUB, IsPersonnelPINRequireForHub);
+        editor.putString(AppConstants.IS_VEHICLE_HAS_FOB,  IsVehicleHasFob);
+        editor.putString(AppConstants.IS_PERSON_HAS_FOB,  isPersonHasFob);
+        editor.putString(AppConstants.IS_PERSON_PIN_AND_FOB_REQUIRE,  IsPersonPinAndFOBRequire);
+        editor.putString(AppConstants.ALLOW_ACCESS_DEVICE_OR_MANUAL_ENTRY,  AllowAccessDeviceORManualEntry);
+        editor.putString(AppConstants.FS_SITE_NAME,  fluidSecureSiteName);
+        editor.putString(AppConstants.IS_VEHICLE_NUMBER_REQUIRE,  IsVehicleNumberRequire);
+        editor.putInt(AppConstants.WIFI_CHANNEL_TO_USE,  WifiChannelToUse);
+        editor.putString(AppConstants.IS_NON_VALIDATE_VEHICLE,  IsNonValidateVehicle);
+        editor.putString(AppConstants.IS_NON_VALIDATE_PERSON,  IsNonValidatePerson);
+        editor.putString(AppConstants.HUB_TYPE,  HubType);
+        editor.putString(AppConstants.ALLOW_ACCESS_DEVICE_OR_MANUAL_ENTRY_FOR_VEHICLE,  AllowAccessDeviceORManualEntryForVehicle);
         editor.putString("CompanyName", CompanyName);
 
         editor.commit();
@@ -902,7 +899,7 @@ public class CommonUtils {
 
     public static void SaveTldDetailsInPref(Context activity, String IsTLDCall, String IsTLDFirmwareUpgrade, String TLDFirmwareFilePath, String TLDFIrmwareVersion, String PROBEMacAddress, String selMacAddress) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_TldDetails, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_TLD_DETAILS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("IsTLDCall", IsTLDCall);
@@ -925,7 +922,7 @@ public class CommonUtils {
                                               String Hours_FS1, String PumpOnTime_FS1, String LimitReachedMessage_FS1, String VehicleNumber_FS1,
                                               String TransactionDateWithFormat_FS1, String SiteId_FS1) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS1", TransactionId_FS1);
@@ -973,7 +970,7 @@ public class CommonUtils {
                                           String IsTLDCall1, String EnablePrinter, String OdoMeter, String Hours, String PumpOnTime,
                                           String LimitReachedMessage, String VehicleNumber, String TransactionDateWithFormat, String SiteId) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId", TransactionId);
@@ -1023,7 +1020,7 @@ public class CommonUtils {
                                               String Hours_FS3, String PumpOnTime_FS3, String LimitReachedMessage_FS3, String VehicleNumber_FS3,
                                               String TransactionDateWithFormat_FS3, String SiteId_FS3) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS3", TransactionId_FS3);
@@ -1072,7 +1069,7 @@ public class CommonUtils {
                                               String Hours_FS4, String PumpOnTime_FS4, String LimitReachedMessage_FS4, String VehicleNumber_FS4,
                                               String TransactionDateWithFormat_FS4, String SiteId_FS4) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS4", TransactionId_FS4);
@@ -1122,7 +1119,7 @@ public class CommonUtils {
                                               String Hours_FS5, String PumpOnTime_FS5, String LimitReachedMessage_FS5, String VehicleNumber_FS5,
                                               String TransactionDateWithFormat_FS5, String SiteId_FS5) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS5", TransactionId_FS5);
@@ -1172,7 +1169,7 @@ public class CommonUtils {
                                               String Hours_FS6, String PumpOnTime_FS6, String LimitReachedMessage_FS6, String VehicleNumber_FS6,
                                               String TransactionDateWithFormat_FS6, String SiteId_FS6) {
 
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         editor.putString("TransactionId_FS6", TransactionId_FS6);
@@ -1266,7 +1263,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
 
         return userInfoEntity;
@@ -1279,7 +1276,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
         return userInfoEntity;
     }
@@ -1293,7 +1290,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
 
         return userInfoEntity;
@@ -1308,7 +1305,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
 
         return userInfoEntity;
@@ -1323,7 +1320,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
 
         return userInfoEntity;
@@ -1338,7 +1335,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
 
         return userInfoEntity;
@@ -1353,7 +1350,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
         return userInfoEntity;
     }
@@ -1367,7 +1364,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
         return userInfoEntity;
     }
@@ -1379,7 +1376,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
         return userInfoEntity;
     }
@@ -1391,7 +1388,7 @@ public class CommonUtils {
         userInfoEntity.PersonName = sharedPref.getString(AppConstants.USER_NAME, "");
         userInfoEntity.PhoneNumber = sharedPref.getString(AppConstants.USER_MOBILE, "");
         userInfoEntity.PersonEmail = sharedPref.getString(AppConstants.USER_EMAIL, "");
-        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FluidSecureSiteName, "");
+        userInfoEntity.FluidSecureSiteName = sharedPref.getString(AppConstants.FS_SITE_NAME, "");
 
         return userInfoEntity;
     }
@@ -1646,14 +1643,14 @@ public class CommonUtils {
         return byteArray;
     }
 
-    public static void AddRemovecurrentTransactionList(boolean AddDel, String TxnId) {
+    public static void addRemoveCurrentTransactionList(boolean AddDel, String TxnId) {
         if (AddDel) {
-            if (!AppConstants.ListOfRunningTransactions.contains(TxnId)) {
-                AppConstants.ListOfRunningTransactions.add(TxnId);
+            if (!AppConstants.LIST_OF_RUNNING_TRANSACTIONS.contains(TxnId)) {
+                AppConstants.LIST_OF_RUNNING_TRANSACTIONS.add(TxnId);
             }
         } else {
-            if (AppConstants.ListOfRunningTransactions != null && AppConstants.ListOfRunningTransactions.contains(TxnId)) {
-                AppConstants.ListOfRunningTransactions.remove(TxnId);
+            if (AppConstants.LIST_OF_RUNNING_TRANSACTIONS != null && AppConstants.LIST_OF_RUNNING_TRANSACTIONS.contains(TxnId)) {
+                AppConstants.LIST_OF_RUNNING_TRANSACTIONS.remove(TxnId);
 
             }
         }
@@ -1736,26 +1733,26 @@ public class CommonUtils {
 
 
         if (AppConstants.ACS_READER) {
-            if (AppConstants.GenerateLogs && ACSDeviceAddress.contains(":"))
-                AppConstants.WriteinFile("ACSReader Name:" + ACSDeviceName + " MacAddress:" + ACSDeviceAddress);
+            if (AppConstants.GENERATE_LOGS && ACSDeviceAddress.contains(":"))
+                AppConstants.writeInFile("ACSReader Name:" + ACSDeviceName + " MacAddress:" + ACSDeviceAddress);
         } else {
-            if (AppConstants.GenerateLogs && mDeviceAddress_hf_trak.contains(":"))
-                AppConstants.WriteinFile("HFReader name:" + mDeviceName_hf_trak + " MacAddress: " + mDeviceAddress_hf_trak);
+            if (AppConstants.GENERATE_LOGS && mDeviceAddress_hf_trak.contains(":"))
+                AppConstants.writeInFile("HFReader name:" + mDeviceName_hf_trak + " MacAddress: " + mDeviceAddress_hf_trak);
         }
 
         //LfReader
-        if (AppConstants.GenerateLogs && mDeviceAddress.contains(":"))
-            AppConstants.WriteinFile("LFReader Name:" + mDeviceName + " MacAddress: " + mDeviceAddress);
+        if (AppConstants.GENERATE_LOGS && mDeviceAddress.contains(":"))
+            AppConstants.writeInFile("LFReader Name:" + mDeviceName + " MacAddress: " + mDeviceAddress);
 
-        if (AppConstants.GenerateLogs && mMagCardDeviceAddress.contains(":"))
-            AppConstants.WriteinFile("MagneticReader Name:" + mMagCardDeviceName + " MacAddress: " + mMagCardDeviceAddress);
+        if (AppConstants.GENERATE_LOGS && mMagCardDeviceAddress.contains(":"))
+            AppConstants.writeInFile("MagneticReader Name:" + mMagCardDeviceName + " MacAddress: " + mMagCardDeviceAddress);
 
-        if (AppConstants.GenerateLogs && QRCodeBluetoothMacAddressForBarcode.contains(":"))
-            AppConstants.WriteinFile("QRCodeReader Name:" + QRCodeReaderForBarcode + " MacAddress: " + QRCodeBluetoothMacAddressForBarcode);
+        if (AppConstants.GENERATE_LOGS && QRCodeBluetoothMacAddressForBarcode.contains(":"))
+            AppConstants.writeInFile("QRCodeReader Name:" + QRCodeReaderForBarcode + " MacAddress: " + QRCodeBluetoothMacAddressForBarcode);
 
     }
 
-    public static void UpgradeTransactionStatusToSqlite(String TransactionId, String status, Context ctx) {
+    public static void upgradeTransactionStatusToSqlite(String TransactionId, String status, Context ctx) {
 
         try {
             if (!TransactionId.isEmpty()) {
@@ -1787,8 +1784,8 @@ public class CommonUtils {
                 final boolean[] sendEmail = {true};
                 TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
                 String operatorName = telephonyManager.getNetworkOperatorName();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG +" Network Operator Name:"+operatorName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG +" Network Operator Name:"+operatorName);
 
                 if (operatorName.contains("AT&T") && isAppInstalled(context,"com.smartcom")){
 
@@ -1798,8 +1795,8 @@ public class CommonUtils {
 
                     }catch (Exception e){
                         e.printStackTrace();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG +" AT&T AllAccess app launch Exception "+operatorName);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG +" AT&T AllAccess app launch Exception "+operatorName);
                     }
 
                 }else{
@@ -1876,8 +1873,8 @@ public class CommonUtils {
             final boolean[] sendEmail = {true};
             TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
             String operatorName = telephonyManager.getNetworkOperatorName();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG +" Network Operator Name:"+operatorName);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG +" Network Operator Name:"+operatorName);
 
             if (operatorName.contains("AT&T") && isAppInstalled(context,"com.smartcom")){
 
@@ -1887,8 +1884,8 @@ public class CommonUtils {
 
                 }catch (Exception e){
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG +" AT&T AllAccess app launch Exception "+operatorName);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG +" AT&T AllAccess app launch Exception "+operatorName);
                 }
 
             }else{
@@ -1966,8 +1963,8 @@ public class CommonUtils {
 
             if (isHotspotEnabled(context)){
                 Log.i(TAG, "ToggleHotspot hotspot ON");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "ToggleHotspot hotspot Enabled");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "ToggleHotspot hotspot Enabled");
             }else{
                 Log.i(TAG, "ToggleHotspot failed to enable hotspot");
             }
@@ -1999,7 +1996,7 @@ public class CommonUtils {
         RequestBody body = RequestBody.create(TEXT, parm2);
         OkHttpClient httpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(AppConstants.webURL)
+                .url(AppConstants.WEB_URL)
                 .post(body)
                 .addHeader("Authorization", authString)
                 .build();
@@ -2009,8 +2006,8 @@ public class CommonUtils {
             @Override
             public void onFailure(Request request, IOException e) {
                 Log.e(TAG, "error in getting response");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " MobileHotspotErrorEmail Hotspot error in getting response");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " MobileHotspotErrorEmail Hotspot error in getting response");
             }
 
             @SuppressLint("LongLogTag")
@@ -2024,8 +2021,8 @@ public class CommonUtils {
 
                     String result = responseBody.string();
                     Log.e(TAG, "HOTSPOT-" + result);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " MobileHotspotErrorEmail ~Result\n" + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " MobileHotspotErrorEmail ~Result\n" + result);
 
                     try {
 
@@ -2063,18 +2060,16 @@ public class CommonUtils {
             return true;
         }
         catch (PackageManager.NameNotFoundException e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG +" It seems that AT&T AllAccess app not installed. please check.");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG +" It seems that AT&T AllAccess app not installed. please check.");
             return false;
         }
     }
 
-
-
-    public static void SaveTransactionInSharedPreff(Context activity, String LinkSeq,String TransactonPulses) {
+    /*public static void SaveTransactionInSharedPref(Context activity, String LinkSeq,String TransactonPulses) {
 
         Log.i(TAG,"LinkSeq:"+LinkSeq+" TransactonPulses:"+TransactonPulses);
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_TransactionDetails, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.PREF_TRANSACTION_DETAILS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         if (LinkSeq.equals("1")){
@@ -2092,16 +2087,16 @@ public class CommonUtils {
         }
 
         editor.commit();
-    }
+    }*/
 
     public static String getLinkName(int linkPosition){
 
         String LinkName = "";
             try {
-                LinkName = AppConstants.DetailsServerSSIDList.get(linkPosition).get("WifiSSId");
+                LinkName = AppConstants.DETAILS_SERVER_SSID_LIST.get(linkPosition).get("WifiSSId");
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG+ "Something went wrong please check Link name Ex:"+e.toString());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG+ "Something went wrong please check Link name Ex:"+e.toString());
                 e.printStackTrace();
             }
         return LinkName;
@@ -2112,7 +2107,7 @@ public class CommonUtils {
         //This code is to check the issue with the duplicate sqlite insert Qty
         //#1526  Winter Haven Time Issue
         Log.i(TAG, Fun);
-        if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + Fun);
+        if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + Fun);
 
     }
 
@@ -2187,8 +2182,8 @@ public class CommonUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred while getting HUB Number by Name.>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred while getting HUB Number by Name.>>" + e.getMessage());
             HUBNumber = hubName;
         }
         return HUBNumber.trim();
@@ -2203,8 +2198,8 @@ public class CommonUtils {
             HUBNumber = name + number.replaceAll(strPattern, "");   // "SPARE00000123" to "SPARE123"
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred while getting SPARE HUB Number by Name.>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred while getting SPARE HUB Number by Name.>>" + e.getMessage());
             HUBNumber = hubName;
         }
         return HUBNumber.trim();
@@ -2249,16 +2244,16 @@ public class CommonUtils {
                         AP_mac_address = jsonObject.getString("AP_mac_address");
                     }
                 } catch (JSONException e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Error occurred while parsing response of info command. >> " + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Error occurred while parsing response of info command. >> " + e.getMessage());
                     e.printStackTrace();
                 }
             }
 
             if (mac_address.equalsIgnoreCase(selMacAddress) || AP_mac_address.equalsIgnoreCase(selMacAddress)) { // compare with MAC saved in cloud.
                 if (mac_address.equalsIgnoreCase(MA_ConnectedDevices)) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Mac Address found from info command.\n [STA Mac Address (from info command) => " + mac_address + " <==> Connected Device Mac Address => " + MA_ConnectedDevices + "]");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Mac Address found from info command.\n [STA Mac Address (from info command) => " + mac_address + " <==> Connected Device Mac Address => " + MA_ConnectedDevices + "]");
                     validIpAddress = ipAddress;
                 } else {
                     String staMacAddressFromLink = "";
@@ -2270,20 +2265,20 @@ public class CommonUtils {
 
                     String APMacAddress = generateAPMacFromSTAMac(TAG, staMacAddressFromLink);
                     if (APMacAddress.equalsIgnoreCase(MA_ConnectedDevices)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Mac Address found from info command.\n [STA Mac Address (from info command) ==> " + staMacAddressFromLink + "; AP Mac Address (Generated from STA Mac) ==> " + APMacAddress + "]");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Mac Address found from info command.\n [STA Mac Address (from info command) ==> " + staMacAddressFromLink + "; AP Mac Address (Generated from STA Mac) ==> " + APMacAddress + "]");
                         validIpAddress = ipAddress;
                     }
                 }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Selected Mac Address (" + selMacAddress + ") is not found in info command response.\n [Version: " + iot_version + "; STA Mac Address (from info command) ==> " + mac_address + "; AP Mac Address (from info command) ==> " + AP_mac_address + "]");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Selected Mac Address (" + selMacAddress + ") is not found in info command response.\n [Version: " + iot_version + "; STA Mac Address (from info command) ==> " + mac_address + "; AP Mac Address (from info command) ==> " + AP_mac_address + "]");
             }
 
         } catch (Exception e) {
             validIpAddress = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "GetAndCheckMacAddressFromInfoCommand Exception >> " + e.getMessage());
             Log.d("Ex", e.getMessage());
         }
         return validIpAddress;
@@ -2305,12 +2300,12 @@ public class CommonUtils {
                     apMacAddress = selMacAddress;
                 }
             }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "(STA Mac Address: " + selMacAddress + "; AP Mac Address: " + apMacAddress + ")");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "(STA Mac Address: " + selMacAddress + "; AP Mac Address: " + apMacAddress + ")");
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in generateAPMacFromSTAMac: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred in generateAPMacFromSTAMac: " + e.getMessage());
             Log.e(TAG, "Exception occurred in generateAPMacFromSTAMac: " + e.getMessage());
             apMacAddress = selMacAddress;
         }
@@ -2346,27 +2341,27 @@ public class CommonUtils {
             if (isRecreate)
                 activity.recreate();
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
         }
     }*/
 
     public static boolean CheckAllHTTPLinksAreFree() {
         boolean flag = false;
         try {
-            if (!AppConstants.isHTTPTxnRunningFS1 && !AppConstants.isHTTPTxnRunningFS2 && !AppConstants.isHTTPTxnRunningFS3 && !AppConstants.isHTTPTxnRunningFS4 && !AppConstants.isHTTPTxnRunningFS5 && !AppConstants.isHTTPTxnRunningFS6) {
+            if (!AppConstants.IS_HTTP_TXN_RUNNING_FS1 && !AppConstants.IS_HTTP_TXN_RUNNING_FS2 && !AppConstants.IS_HTTP_TXN_RUNNING_FS3 && !AppConstants.IS_HTTP_TXN_RUNNING_FS4 && !AppConstants.IS_HTTP_TXN_RUNNING_FS5 && !AppConstants.IS_HTTP_TXN_RUNNING_FS6) {
                 flag = true;
             }
         } catch (Exception e) {
             flag = false;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in CheckAnyHTTPTxnIsRunning: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred in CheckAnyHTTPTxnIsRunning: " + e.getMessage());
         }
         return flag;
     }
 
     public static void saveLinkMacAddressForReconfigure(Context activity, String jsonData) {
-        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(Constants.MAC_ADDRESS_RECONFIGURE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("jsonData", jsonData);
         editor.commit();
@@ -2384,8 +2379,8 @@ public class CommonUtils {
                 isDataFound = true;
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in CheckDataStoredInSharedPref: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred in CheckDataStoredInSharedPref: " + ex.getMessage());
         }
         return isDataFound;
     }
@@ -2398,8 +2393,8 @@ public class CommonUtils {
             controller.deleteTableData(OffDBController.TBL_PERSONNEL); // Clear Personnel data after registration
             controller.deleteTableData(OffDBController.TBL_DEPARTMENT); // Clear Department data after registration
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred while deleting offline data: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred while deleting offline data: " + ex.getMessage());
         }
     }
 
@@ -2446,8 +2441,8 @@ public class CommonUtils {
                     }
                 }
             }
-            AppConstants.DetailsListOfConnectedDevices = ListOfConnectedDevices;
-            //AppConstants.WriteinFile(TAG + "GetDetailsFromARP Connected Devices: " + ListOfConnectedDevices);
+            AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES = ListOfConnectedDevices;
+            //AppConstants.writeInFile(TAG + "GetDetailsFromARP Connected Devices: " + ListOfConnectedDevices);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -2499,7 +2494,7 @@ public class CommonUtils {
     }
 
     public static boolean checkBTVersionCompatibility(String currentVersion, String compatibleVersion) {
-        // Checking currentVersion >= compatibleVersion (last1, last20, bypassPumpReset, p_type, MOStatus)
+        // Checking currentVersion >= compatibleVersion (last1, last20, p_type, MOStatus)
         if (currentVersion.isEmpty()) {
             currentVersion = "1";
         }
@@ -2536,8 +2531,8 @@ public class CommonUtils {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "hideKeyboard: Exception: " + ex.getMessage());
         }
 
     }

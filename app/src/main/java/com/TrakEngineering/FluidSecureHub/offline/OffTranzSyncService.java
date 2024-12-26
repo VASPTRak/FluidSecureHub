@@ -42,10 +42,10 @@ public class OffTranzSyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+        if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE")) {
 
             System.out.println("OffTranzSyncService started " + new Date());
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Started: " + new Date());
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Started: " + new Date());
             //if (cd.isConnectingToInternet())
             //    new GetAPIToken().execute();
 
@@ -57,7 +57,7 @@ public class OffTranzSyncService extends Service {
 
         }else{
             System.out.println("OffTranzSyncService Transaction In Progress, Skip " + new Date());
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("OffTranzSyncService Transaction In Progress, Skip" + new Date());
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("OffTranzSyncService Transaction In Progress, Skip" + new Date());
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -74,22 +74,22 @@ public class OffTranzSyncService extends Service {
                 String offtransactionArray = jobj.getString("TransactionsModelsObj");
                 JSONArray jarrsy = new JSONArray(offtransactionArray);
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Offline transaction count: " + jarrsy.length() + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " <Offline transaction count: " + jarrsy.length() + ">");
 
                 if (jarrsy.length() > 0) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " <Offline transaction json: " + jarrsy + ">");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " <Offline transaction json: " + jarrsy + ">");
                     new AzureCall().execute(off_json_10_trans, "OFF");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " azureQueueLogic Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " azureQueueLogic Exception: " + e.getMessage());
             }
         }else{
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SyncOffTrnx Offline data Sync AzureCall no internet: "+cd.isConnecting());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "SyncOffTrnx Offline data Sync AzureCall no internet: "+cd.isConnecting());
         }
     }
 
@@ -129,8 +129,8 @@ public class OffTranzSyncService extends Service {
 
             } catch (Exception e) {
                 System.out.println("Azure--" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " AzureCall-- Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " AzureCall-- Exception: " + e.getMessage());
             }
             return responseStr;
         }
@@ -172,8 +172,8 @@ public class OffTranzSyncService extends Service {
 
                     } catch (Exception e) {
                         System.out.println("deleteTransactionsByIDs---" + e.getMessage());
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " AzureCall-- onPostExecute Exception: " + e.getMessage());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " AzureCall-- onPostExecute Exception: " + e.getMessage());
                     }
                 }
             }
@@ -289,8 +289,8 @@ public class OffTranzSyncService extends Service {
             try {
 
                 System.out.println("Offline off_json data:" + param[0]);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile("Offline Transactioms: " + param[0]);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile("Offline Transactioms: " + param[0]);
                 String api_token = controller.getOfflineToken(OffTranzSyncService.this);
 
                 OkHttpClient client = new OkHttpClient();
@@ -308,8 +308,8 @@ public class OffTranzSyncService extends Service {
 
             } catch (Exception e) {
                 System.out.println("SendOfflineTransactions" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(" SendOfflineTransactions Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(" SendOfflineTransactions Exception: " + e.getMessage());
             }
             return resp;
         }
@@ -321,7 +321,7 @@ public class OffTranzSyncService extends Service {
 
             System.out.println(" Offline data sync result:" + result);
 
-            if (AppConstants.GenerateLogs) AppConstants.WriteinFile("Offline data sync-" + result);
+            if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile("Offline data sync-" + result);
 
             if (result != null && !result.isEmpty()) {
 

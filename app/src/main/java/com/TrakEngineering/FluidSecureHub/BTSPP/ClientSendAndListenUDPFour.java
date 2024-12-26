@@ -49,11 +49,11 @@ public class ClientSendAndListenUDPFour implements Runnable {
                     String Response = new String(message, 0, p.getLength());
                     //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
                     Log.d("Received text", Response);
-                    //AppConstants.WriteinFile(TAG + " Link 4: Received text: " + Response);
+                    //AppConstants.writeInFile(TAG + " Link 4: Received text: " + Response);
                     //run = false;
 
-                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
-                        BTConstants.isNewVersionLinkFour = true;
+                    if (strcmd.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("records")) {
+                        BTConstants.IS_NEW_VERSION_LINK_FOUR = true;
                     }
 
                     if (Response.contains("$$")) {
@@ -67,7 +67,7 @@ public class ClientSendAndListenUDPFour implements Runnable {
                         sendBroadcastIntentFromLinkFour(sb4.toString());
                         sb4.setLength(0);
                     } else {
-                        if (BTConstants.isNewVersionLinkFour) {
+                        if (BTConstants.IS_NEW_VERSION_LINK_FOUR) {
                             sb4.append(Response);
                         } else {
                             // For old version Link response
@@ -90,7 +90,7 @@ public class ClientSendAndListenUDPFour implements Runnable {
     }
 
     public void sendBroadcastIntentFromLinkFour(String resp) {
-        //AppConstants.WriteinFile(TAG + " Link 4: Final Response: " + resp);
+        //AppConstants.writeInFile(TAG + " Link 4: Final Response: " + resp);
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkFourData");
         broadcastIntent.putExtra("Request", strcmd);

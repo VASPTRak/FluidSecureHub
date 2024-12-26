@@ -29,7 +29,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
 
     TextView tv_otherlabel, tv_return, tv_swipekeybord;
     EditText etOther;
-    Button btnSave, btnCancel;//AppConstants.OtherLabel
+    Button btnSave, btnCancel;//AppConstants.OTHER_LABEL
     RelativeLayout footer_keybord;
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", OtherLabel = "";
     String TimeOutinMinute;
@@ -65,50 +65,50 @@ public class AcceptOtherActivity extends AppCompatActivity {
         tv_return = (TextView) findViewById(R.id.tv_return);
         tv_swipekeybord = (TextView) findViewById(R.id.tv_swipekeybord);
 
-        getSupportActionBar().setTitle(AppConstants.BrandName);
+        getSupportActionBar().setTitle(AppConstants.BRAND_NAME);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-            if (Constants.AccOther != null) {
-                etOther.setText(Constants.AccOther_FS1);
+        if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+            if (Constants.OTHER_FS2 != null) {
+                etOther.setText(Constants.OTHER_FS1);
             }
 
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
 
-            if (Constants.AccOther != null) {
-                etOther.setText(Constants.AccOther);
+            if (Constants.OTHER_FS2 != null) {
+                etOther.setText(Constants.OTHER_FS2);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
 
-            if (Constants.AccOther_FS3 != null) {
-                etOther.setText(Constants.AccOther_FS3);
+            if (Constants.OTHER_FS3 != null) {
+                etOther.setText(Constants.OTHER_FS3);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
 
-            if (Constants.AccOther_FS4 != null) {
-                etOther.setText(Constants.AccOther_FS4);
+            if (Constants.OTHER_FS4 != null) {
+                etOther.setText(Constants.OTHER_FS4);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
 
-            if (Constants.AccOther_FS5 != null) {
-                etOther.setText(Constants.AccOther_FS5);
+            if (Constants.OTHER_FS5 != null) {
+                etOther.setText(Constants.OTHER_FS5);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
 
-            if (Constants.AccOther_FS6 != null) {
-                etOther.setText(Constants.AccOther_FS6);
+            if (Constants.OTHER_FS6 != null) {
+                etOther.setText(Constants.OTHER_FS6);
             }
         }
 
         SharedPreferences sharedPrefODO = AcceptOtherActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-            OtherLabel = sharedPrefODO.getString(AppConstants.OtherLabel, "Other");
+            OtherLabel = sharedPrefODO.getString(AppConstants.OTHER_LABEL, "Other");
         } else {
 
             OtherLabel = controller.getOfflineHubDetails(AcceptOtherActivity.this).OtherLabel;
@@ -116,7 +116,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
 
         tv_otherlabel.setText(getResources().getString(R.string.EnterHeading) + " " + OtherLabel);
         etOther.setHint(getResources().getString(R.string.EnterHeading) + " " + OtherLabel);
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
@@ -125,7 +125,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
                 if (Istimeout_Sec) {
                     CommonUtils.hideKeyboard(AcceptOtherActivity.this);
                     Istimeout_Sec = false;
-                    AppConstants.ClearEdittextFielsOnBack(AcceptOtherActivity.this);
+                    AppConstants.clearEditTextFieldsOnBack(AcceptOtherActivity.this);
 
                     // ActivityHandler.GetBacktoWelcomeActivity();
 
@@ -137,11 +137,15 @@ public class AcceptOtherActivity extends AppCompatActivity {
             }
         }, screenTimeOut);
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         String KeyboardType = myPrefkb.getString("KeyboardTypeOther", "1");
 
         try {
-            etOther.setInputType(Integer.parseInt(KeyboardType));
+            if (KeyboardType.equals("2")) {
+                etOther.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
+            } else {
+                etOther.setInputType(Integer.parseInt(KeyboardType));
+            }
         } catch (Exception e) {
             System.out.println("keyboard exception");
             etOther.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -166,23 +170,23 @@ public class AcceptOtherActivity extends AppCompatActivity {
                 CommonUtils.hideKeyboard(AcceptOtherActivity.this);
                 Istimeout_Sec = false;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Entered " + OtherLabel + ": " + etOther.getText());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Entered " + OtherLabel + ": " + etOther.getText());
 
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
-                    if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                        Constants.AccOther_FS1 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                        Constants.AccOther = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                        Constants.AccOther_FS3 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                        Constants.AccOther_FS4 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                        Constants.AccOther_FS5 = etOther.getText().toString().trim();
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                        Constants.AccOther_FS6 = etOther.getText().toString().trim();
+                    if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                        Constants.OTHER_FS1 = etOther.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                        Constants.OTHER_FS2 = etOther.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                        Constants.OTHER_FS3 = etOther.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                        Constants.OTHER_FS4 = etOther.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                        Constants.OTHER_FS5 = etOther.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                        Constants.OTHER_FS6 = etOther.getText().toString().trim();
                     }
 
                     OfflineConstants.storeCurrentTransaction(AcceptOtherActivity.this, "", "", "", "", "", "", "", "", "", etOther.getText().toString().trim(), "", "");
@@ -197,8 +201,8 @@ public class AcceptOtherActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Please enter " + OtherLabel + ", and try again.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Please enter " + OtherLabel + ", and try again.");
                     CommonUtils.showMessageDilaog(AcceptOtherActivity.this, "Error Message", getResources().getString(R.string.RequiredOther).replace("Other", OtherLabel));
                 }
 
@@ -224,7 +228,7 @@ public class AcceptOtherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int InputTyp = etOther.getInputType();
-                if (InputTyp == 3) {
+                if (InputTyp == 2 || InputTyp == 3) {
                     etOther.setInputType(InputType.TYPE_CLASS_TEXT);
                     tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
@@ -259,8 +263,8 @@ public class AcceptOtherActivity extends AppCompatActivity {
     public void onBackPressed() {
         CommonUtils.hideKeyboard(AcceptOtherActivity.this);
         // ActivityHandler.removeActivity(6);
-        AppConstants.serverCallInProgressForPin = false;
-        AppConstants.serverCallInProgressForVehicle = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
         Istimeout_Sec = false;
         finish();
     }

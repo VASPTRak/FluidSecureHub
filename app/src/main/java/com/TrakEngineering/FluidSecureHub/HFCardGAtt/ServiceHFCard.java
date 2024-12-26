@@ -58,7 +58,7 @@ public class ServiceHFCard extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
-        AppConstants.RebootHF_reader = false;
+        AppConstants.REBOOT_HF_READER = false;
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -106,7 +106,7 @@ public class ServiceHFCard extends Service {
             if (LeServiceHFCard.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
 
-                Constants.HF_ReaderStatus = "HF Connected";
+                Constants.HF_READER_STATUS = "HF Connected";
                 System.out.println("ACTION_GATT_HF_CONNECTED");
 
                 timerHF = new Timer();
@@ -116,7 +116,7 @@ public class ServiceHFCard extends Service {
                     public void run() {
 
                         //Execute below code only if HF reader is  connected
-                        if (Constants.HF_ReaderStatus.equalsIgnoreCase("HF Connected") || Constants.HF_ReaderStatus.equalsIgnoreCase("HF Discovered")) {
+                        if (Constants.HF_READER_STATUS.equalsIgnoreCase("HF Connected") || Constants.HF_READER_STATUS.equalsIgnoreCase("HF Discovered")) {
                             //BLE Upgrade
                             if ((IsHFUpdate.trim().equalsIgnoreCase("Y")) && bleVersionCallCount == 0) {
                                 try {
@@ -151,20 +151,20 @@ public class ServiceHFCard extends Service {
 
             } else if (LeServiceHFCard.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                Constants.HF_ReaderStatus = "HF Disconnected";
+                Constants.HF_READER_STATUS = "HF Disconnected";
                 System.out.println("ACTION_GATT_HF_DISCONNECTED");
 
 
             } else if (LeServiceHFCard.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 System.out.println("ACTION_GATT_HF_SERVICES_DISCOVERED");
-                Constants.HF_ReaderStatus = "HF Discovered";
+                Constants.HF_READER_STATUS = "HF Discovered";
             } else if (LeServiceHFCard.ACTION_DATA_AVAILABLE.equals(action)) {
                 System.out.println("ACTION_GATT_HF_AVAILABLE");
                 System.out.println("ACTION_DATA_AVAILABLE");
-                Constants.HF_ReaderStatus = "HF Connected";
+                Constants.HF_READER_STATUS = "HF Connected";
                 displayData(intent.getStringExtra(LeServiceHFCard.EXTRA_DATA));
             } else {
-                Constants.HF_ReaderStatus = "HF Disconnected";
+                Constants.HF_READER_STATUS = "HF Disconnected";
             }
         }
     };
@@ -188,16 +188,16 @@ public class ServiceHFCard extends Service {
 
                 if (!last_val.equals("00 00 00 ") && !last_val.equalsIgnoreCase("00 00 00 00 00 00 00 00 00") && CommonUtils.ValidateFobkey(last_val)) {
 
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Display Data 1:");
+                    //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "HF Reader Display Data 1:");
                     sendHFDetailsToActivity(last_val);
 
                     SharedPreferences sharedPre = ServiceHFCard.this.getSharedPreferences("BLEUpgradeFlag", Context.MODE_PRIVATE);
                     String SRUdate = sharedPre.getString("bleHFUpdateSuccessFlag", "N");
                     if (SRUdate.equalsIgnoreCase("Y")) {
-                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Display Data 2:");
+                        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "HF Reader Display Data 2:");
                         mBluetoothLeService.writeCustomCharacteristic(0x01, "", true);
                     }
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader Display Data 3:");
+                    //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "HF Reader Display Data 3:");
                     mBluetoothLeService.writeCustomCharacteristic(0x01, "", false);  //Temp commented for issue #1667
                 }
 
@@ -265,7 +265,7 @@ public class ServiceHFCard extends Service {
                 success = folder.mkdirs();
             }
             if (!success) {
-                AppConstants.AlertDialogBox(ServiceHFCard.this, "Please check File is present in FSCardReader_HF Folder in Internal(Device) Storage");
+                AppConstants.alertDialogBox(ServiceHFCard.this, "Please check File is present in FSCardReader_HF Folder in Internal(Device) Storage");
             }
 
             if (BLEFileLocation != null) {
@@ -274,16 +274,16 @@ public class ServiceHFCard extends Service {
                 File f = new File(CheckVersionFileLocation);
                 if (f.exists()) {
                     Log.e(TAG, " BLF Upgrade File already downloaded. skip downloading..");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " File already downloaded. skip downloading..");
                 } else {
                     new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader.bin", "BLEUpdate");
                 }
 
             } else {
                 Log.e(TAG, "BLE reader upgrade File path null");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BLE reader upgrade File path null");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BLE reader upgrade File path null");
             }
 
 
@@ -307,12 +307,12 @@ public class ServiceHFCard extends Service {
 
     private void readFobKey() {
 
-        if (AppConstants.RebootHF_reader) {
+        if (AppConstants.REBOOT_HF_READER) {
             System.out.println("ACTION_GATT_HF_Reboot cmd");
             mBluetoothLeService.writeRebootCharacteristic();
-            AppConstants.RebootHF_reader = false;
+            AppConstants.REBOOT_HF_READER = false;
         } else {
-            AppConstants.RebootHF_reader = false;
+            AppConstants.REBOOT_HF_READER = false;
             mBluetoothLeService.readCustomCharacteristic(false);
         }
     }

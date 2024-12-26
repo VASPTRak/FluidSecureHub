@@ -159,9 +159,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             menu.findItem(R.id.mofline).setVisible(true);
         }
 
-        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
-        boolean FAStatus = sharedPref.getBoolean(AppConstants.FAData, false);
-        boolean BarcodeStatus = sharedPref.getBoolean(AppConstants.UseBarcode, false);
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_DATA, Context.MODE_PRIVATE);
+        boolean FAStatus = sharedPref.getBoolean(AppConstants.FA_DATA, false);
+        boolean BarcodeStatus = sharedPref.getBoolean(AppConstants.USE_BARCODE, false);
         int CameraFacing = sharedPref.getInt(AppConstants.CAMERA_FACING, 1);
 
         if (!BarcodeStatus) {
@@ -209,7 +209,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     private void barcodeCameraSwitch(){
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREF_FA_DATA, Context.MODE_PRIVATE);
         int CameraFacing = pref.getInt(AppConstants.CAMERA_FACING, 1);
 
         if (CameraFacing == 1){
@@ -348,7 +348,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         // Creates and starts the camera.  Note that this uses a higher resolution in comparison
         // to other detection examples to enable the barcode detector to detect small barcodes
         // at long distances.
-        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_DATA, Context.MODE_PRIVATE);
         int camera_facing = sharedPref.getInt(AppConstants.CAMERA_FACING, 1);
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(camera_facing)

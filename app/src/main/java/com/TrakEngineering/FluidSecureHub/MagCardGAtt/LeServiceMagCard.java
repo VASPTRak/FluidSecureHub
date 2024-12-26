@@ -29,23 +29,23 @@ public class LeServiceMagCard extends Service {
     public int cnt123 = 0;
 
 
-    private String UUID_service = "000000ff-0000-1000-8000-00805f9b34fb"; //bolong_UUID_service
-    private String UUID_char = "0000ff01-0000-1000-8000-00805f9b34fb"; //bolong_UUID_char
+    private String UUID_SERVICE = "000000ff-0000-1000-8000-00805f9b34fb"; //bolong_UUID_service
+    private String UUID_CHAR = "0000ff01-0000-1000-8000-00805f9b34fb"; //bolong_UUID_char
 
     private String BLE_Service = "000000ee-0000-1000-8000-00805f9b34fb";
     private String BLE_char = "0000ee01-0000-1000-8000-00805f9b34fb";
 
-    //    private String UUID_service = "000000ee-0000-1000-8000-00805f9b34fb"; //first service UUID
-//    private String UUID_char = "0000ee01-0000-1000-8000-00805f9b34fb"; //first    characteristic UUID
+    //    private String UUID_SERVICE = "000000ee-0000-1000-8000-00805f9b34fb"; //first service UUID
+//    private String UUID_CHAR = "0000ee01-0000-1000-8000-00805f9b34fb"; //first    characteristic UUID
 
     //Used to manage over the air updates.
-//    private String UUID_service="000000ff-0000-1000-8000-00805f9b34fb"; //Second service UUID
-//    private String UUID_char="0000ff01-0000-1000-8000-00805f9b34fb"; //Second characteristic UUID
+//    private String UUID_SERVICE="000000ff-0000-1000-8000-00805f9b34fb"; //Second service UUID
+//    private String UUID_CHAR="0000ff01-0000-1000-8000-00805f9b34fb"; //Second characteristic UUID
 
 
 //    broadcast a third characteristic that will be 1 when something is detected, and 0 if there is nothing detected.broadcast a third characteristic that will be 1 when something is detected, and 0 if there is nothing detected.
-//    private String UUID_service="000000dd-0000-1000-8000-00805f9b34fb"; //Third service UUID
-//       private String UUID_char="0000ff01-0000-1000-8000-00805f9b34fb"; //Third characteristic UUID
+//    private String UUID_SERVICE="000000dd-0000-1000-8000-00805f9b34fb"; //Third service UUID
+//       private String UUID_CHAR="0000ff01-0000-1000-8000-00805f9b34fb"; //Third characteristic UUID
     //no response for new firmware
 
 
@@ -256,8 +256,8 @@ public class LeServiceMagCard extends Service {
         } catch (Exception e) {
 
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception:" + e.toString());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Exception:" + e.toString());
             return false;
         }
         return true;
@@ -341,31 +341,31 @@ public class LeServiceMagCard extends Service {
                 return;
             }
             /*check if the service is available on the device*/
-            BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(UUID_service));
+            BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(UUID_SERVICE));
             if (mCustomService == null) {
                 Log.w(TAG, "Custom BLE Service not found");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceMagCard ~~~~~~~~~" + "readCustomCharacteristic Custom BLE Service not found");
-                //  Toast.makeText(getApplicationContext(),"Not found: "+UUID_char, Toast.LENGTH_LONG).show();
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceMagCard ~~~~~~~~~" + "readCustomCharacteristic Custom BLE Service not found");
+                //  Toast.makeText(getApplicationContext(),"Not found: "+UUID_CHAR, Toast.LENGTH_LONG).show();
                 return;
             }
             /*get the read characteristic from the service*/
-            BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_char));
+            BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_CHAR));
 
             if (mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false) {
                 Log.w(TAG, "Failed to read characteristic");
-                //if (AppConstants.GenerateLogs) AppConstants.WriteinFile("LeServiceMagCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
+                //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile("LeServiceMagCard ~~~~~~~~~" + "readCustomCharacteristic Failed to read characteristic");
                 // Toast.makeText(getApplicationContext(),"Failed to Read Characteristics: ", Toast.LENGTH_LONG).show();
 
 
             } else {
                 //Log.w(TAG, "Read Characteristics successfully");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceMagCard ~~~~~~~~~" + "Read Characteristics successfully");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceMagCard ~~~~~~~~~" + "Read Characteristics successfully");
                 //  Toast.makeText(getApplicationContext(),"Read Characteristics successfully!", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile("LeServiceMagCard ~~~~~~~~~" + "Read Characteristics Ex-" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile("LeServiceMagCard ~~~~~~~~~" + "Read Characteristics Ex-" + e.getMessage());
 
         }
     }
@@ -376,15 +376,15 @@ public class LeServiceMagCard extends Service {
             return;
         }
         /*check if the service is available on the device*/
-        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(UUID_service));//"00001110-0000-1000-8000-00805f9b34fb"
+        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(UUID_SERVICE));//"00001110-0000-1000-8000-00805f9b34fb"
         if (mCustomService == null) {
-            //Toast.makeText(getApplicationContext(), "Not found: " + UUID_char, Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile ("LeServiceMagCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + UUID_char);
+            //Toast.makeText(getApplicationContext(), "Not found: " + UUID_CHAR, Toast.LENGTH_LONG).show();
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile ("LeServiceMagCard ~~~~~~~~~" + "writeCustomCharacteristic Char Not found:" + UUID_CHAR);
             return;
         }
 
 
-        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_char));
+        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_CHAR));
         mWriteCharacteristic.setValue(value, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
 
         try {
@@ -414,10 +414,10 @@ public class LeServiceMagCard extends Service {
 
             }
 
-            mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_char));
+            mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_CHAR));
             mWriteCharacteristic.setValue(data);
 
-            //mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_char));
+            //mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(UUID_CHAR));
             //mWriteCharacteristic.setValue(bleString);
 
 
@@ -427,10 +427,10 @@ public class LeServiceMagCard extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceMagCard ~~~~~~~~~" + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceMagCard ~~~~~~~~~" + "Write Characteristics successfully!");
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceMagCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceMagCard ~~~~~~~~~" + "Failed to write Characteristics");
         }
     }
 
@@ -460,7 +460,7 @@ public class LeServiceMagCard extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Write Characteristics successfully!");
             //Toast.makeText(getApplicationContext(), "Reboot success", Toast.LENGTH_SHORT).show();
 
 
@@ -476,7 +476,7 @@ public class LeServiceMagCard extends Service {
 
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceHFCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceHFCard ~~~~~~~~~" + "Failed to write Characteristics");
             //Toast.makeText(getApplicationContext(), "Reboot fail", Toast.LENGTH_SHORT).show();
         }
     }

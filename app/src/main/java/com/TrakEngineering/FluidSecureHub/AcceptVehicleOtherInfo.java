@@ -31,7 +31,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
 
     TextView tv_otherlabel, tv_return, tv_swipekeybord;
     EditText etOther;
-    Button btnSave, btnCancel;//AppConstants.OtherLabel
+    Button btnSave, btnCancel;//AppConstants.OTHER_LABEL
     RelativeLayout footer_keybord;
     String IsOdoMeterRequire = "", IsDepartmentRequire = "", IsPersonnelPINRequire = "", IsOtherRequire = "", OtherLabelVehicle = "";
     String TimeOutinMinute;
@@ -97,52 +97,52 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
         tv_return = (TextView) findViewById(R.id.tv_return);
         tv_swipekeybord = (TextView) findViewById(R.id.tv_swipekeybord);
 
-        getSupportActionBar().setTitle(AppConstants.BrandName);
+        getSupportActionBar().setTitle(AppConstants.BRAND_NAME);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-            if (Constants.AccVehicleOther_FS1 != null) {
-                etOther.setText(Constants.AccVehicleOther_FS1);
+        if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+            if (Constants.VEHICLE_OTHER_FS1 != null) {
+                etOther.setText(Constants.VEHICLE_OTHER_FS1);
             }
 
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
 
-            if (Constants.AccVehicleOther != null) {
-                etOther.setText(Constants.AccVehicleOther);
+            if (Constants.VEHICLE_OTHER_FS2 != null) {
+                etOther.setText(Constants.VEHICLE_OTHER_FS2);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
 
-            if (Constants.AccVehicleOther_FS3 != null) {
-                etOther.setText(Constants.AccVehicleOther_FS3);
+            if (Constants.VEHICLE_OTHER_FS3 != null) {
+                etOther.setText(Constants.VEHICLE_OTHER_FS3);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
 
-            if (Constants.AccVehicleOther_FS4 != null) {
-                etOther.setText(Constants.AccVehicleOther_FS4);
+            if (Constants.VEHICLE_OTHER_FS4 != null) {
+                etOther.setText(Constants.VEHICLE_OTHER_FS4);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
 
-            if (Constants.AccVehicleOther_FS5 != null) {
-                etOther.setText(Constants.AccVehicleOther_FS5);
+            if (Constants.VEHICLE_OTHER_FS5 != null) {
+                etOther.setText(Constants.VEHICLE_OTHER_FS5);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
 
-            if (Constants.AccVehicleOther_FS6 != null) {
-                etOther.setText(Constants.AccVehicleOther_FS6);
+            if (Constants.VEHICLE_OTHER_FS6 != null) {
+                etOther.setText(Constants.VEHICLE_OTHER_FS6);
             }
         }
 
         SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        OtherLabelVehicle = sharedPrefODO.getString(AppConstants.ExtraOtherLabel, "ExtraOtherLabel");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+        OtherLabelVehicle = sharedPrefODO.getString(AppConstants.EXTRA_OTHER_LABEL, "ExtraOtherLabel");
 
         tv_otherlabel.setText(getResources().getString(R.string.EnterHeading) + " " + OtherLabelVehicle);
         etOther.setHint(getResources().getString(R.string.EnterHeading) + " " + OtherLabelVehicle);
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
@@ -150,7 +150,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
             public void run() {
                 if (Istimeout_Sec) {
                     Istimeout_Sec = false;
-                    AppConstants.ClearEdittextFielsOnBack(AcceptVehicleOtherInfo.this);
+                    AppConstants.clearEditTextFieldsOnBack(AcceptVehicleOtherInfo.this);
 
                     // ActivityHandler.GetBacktoWelcomeActivity();
 
@@ -162,7 +162,7 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
             }
         }, screenTimeOut);
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         String KeyboardType = myPrefkb.getString("KeyboardTypeOther", "1");
 
         try {
@@ -191,31 +191,31 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                 CommonUtils.hideKeyboard(AcceptVehicleOtherInfo.this);
                 Istimeout_Sec = false;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Entered Vehicle Other Info: " + etOther.getText());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Entered Vehicle Other Info: " + etOther.getText());
 
                 if (!etOther.getText().toString().trim().isEmpty()) {
 
                     boolean isascii = isAllASCII(etOther.getText().toString());
 
                     if (!isascii) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Please enter Valid String.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " Please enter Valid String.");
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptVehicleOtherInfo.this, "Message", "Please enter Valid String.");
                     } else {
-                        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
+                        if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
 
-                            Constants.AccVehicleOther_FS1 = etOther.getText().toString().trim();
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                            Constants.AccVehicleOther = etOther.getText().toString().trim();
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                            Constants.AccVehicleOther_FS3 = etOther.getText().toString().trim();
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                            Constants.AccVehicleOther_FS4 = etOther.getText().toString().trim();
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                            Constants.AccVehicleOther_FS5 = etOther.getText().toString().trim();
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                            Constants.AccVehicleOther_FS6 = etOther.getText().toString().trim();
+                            Constants.VEHICLE_OTHER_FS1 = etOther.getText().toString().trim();
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                            Constants.VEHICLE_OTHER_FS2 = etOther.getText().toString().trim();
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                            Constants.VEHICLE_OTHER_FS3 = etOther.getText().toString().trim();
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                            Constants.VEHICLE_OTHER_FS4 = etOther.getText().toString().trim();
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                            Constants.VEHICLE_OTHER_FS5 = etOther.getText().toString().trim();
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                            Constants.VEHICLE_OTHER_FS6 = etOther.getText().toString().trim();
                         }
 
                         OfflineConstants.storeCurrentTransaction(AcceptVehicleOtherInfo.this, "", "", "", "", "", "", "", "", "", "", etOther.getText().toString().trim(), "");
@@ -223,12 +223,12 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
 
                             SharedPreferences sharedPrefODO = AcceptVehicleOtherInfo.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                            String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                            String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-                            String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                            String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-                            String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
-                            String IsExtraOther = sharedPrefODO.getString(AppConstants.IsExtraOther, "");
+                            String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+                            String IsHoursRequire = sharedPrefODO.getString(AppConstants.IS_HOURS_REQUIRE, "");
+                            String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+                            String IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+                            String IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE_FOR_HUB, "");
+                            String IsExtraOther = sharedPrefODO.getString(AppConstants.IS_EXTRA_OTHER, "");
 
 
                             if (IsPersonnelPINRequireForHub.equalsIgnoreCase("True")) {
@@ -253,11 +253,11 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                                 asc.checkAllFields();
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                             //offline-------------------
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " Offline Entered Vehicle Other Info: " + etOther.getText());
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " Offline Entered Vehicle Other Info: " + etOther.getText());
                             CommonUtils.hideKeyboard(AcceptVehicleOtherInfo.this);
                             if (OfflineConstants.isOfflineAccess(AcceptVehicleOtherInfo.this)) {
                                 EntityHub obj = controller.getOfflineHubDetails(AcceptVehicleOtherInfo.this);
@@ -275,15 +275,15 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
                                     startActivity(intent);
                                 }
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Offline Access not granted to this HUB.");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " Offline Access not granted to this HUB.");
                                 Istimeout_Sec = true;
                             }
                         }
                     }
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Please enter Other, and try again.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Please enter Other, and try again.");
                     CommonUtils.showMessageDilaog(AcceptVehicleOtherInfo.this, "Error Message", getResources().getString(R.string.RequiredOther).replace("Other", OtherLabelVehicle));
                 }
 
@@ -344,8 +344,8 @@ public class AcceptVehicleOtherInfo extends AppCompatActivity {
     public void onBackPressed() {
 
         // ActivityHandler.removeActivity(6);
-        AppConstants.serverCallInProgressForPin = false;
-        AppConstants.serverCallInProgressForVehicle = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
         Istimeout_Sec = false;
         finish();
     }

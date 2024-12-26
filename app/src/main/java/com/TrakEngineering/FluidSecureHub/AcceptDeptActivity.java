@@ -99,11 +99,11 @@ public class AcceptDeptActivity extends AppCompatActivity {
         footer_keybord = (RelativeLayout) findViewById(R.id.footer_keybord);
 
 
-        getSupportActionBar().setTitle(AppConstants.BrandName);
+        getSupportActionBar().setTitle(AppConstants.BRAND_NAME);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        SharedPreferences pref_ScreenName = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences pref_ScreenName = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         ScreenNameForDepartment = pref_ScreenName.getString("ScreenNameForDepartment", "Department");
 
         if (ScreenNameForDepartment.trim().isEmpty())
@@ -127,56 +127,54 @@ public class AcceptDeptActivity extends AppCompatActivity {
             }
         });
 
-        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-            if (Constants.AccDepartmentNumber_FS1 != null) {
-                etDeptNumber.setText(Constants.AccDepartmentNumber_FS1);
+        if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+            if (Constants.DEPARTMENT_NUMBER_FS1 != null) {
+                etDeptNumber.setText(Constants.DEPARTMENT_NUMBER_FS1);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-            if (Constants.AccDepartmentNumber != null) {
-                etDeptNumber.setText(Constants.AccDepartmentNumber);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+            if (Constants.DEPARTMENT_NUMBER_FS2 != null) {
+                etDeptNumber.setText(Constants.DEPARTMENT_NUMBER_FS2);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-            if (Constants.AccDepartmentNumber_FS3 != null) {
-                etDeptNumber.setText(Constants.AccDepartmentNumber_FS3);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+            if (Constants.DEPARTMENT_NUMBER_FS3 != null) {
+                etDeptNumber.setText(Constants.DEPARTMENT_NUMBER_FS3);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-            if (Constants.AccDepartmentNumber_FS4 != null) {
-                etDeptNumber.setText(Constants.AccDepartmentNumber_FS4);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+            if (Constants.DEPARTMENT_NUMBER_FS4 != null) {
+                etDeptNumber.setText(Constants.DEPARTMENT_NUMBER_FS4);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-            if (Constants.AccDepartmentNumber_FS5 != null) {
-                etDeptNumber.setText(Constants.AccDepartmentNumber_FS5);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+            if (Constants.DEPARTMENT_NUMBER_FS5 != null) {
+                etDeptNumber.setText(Constants.DEPARTMENT_NUMBER_FS5);
             }
-        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-            if (Constants.AccDepartmentNumber_FS6 != null) {
-                etDeptNumber.setText(Constants.AccDepartmentNumber_FS6);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+            if (Constants.DEPARTMENT_NUMBER_FS6 != null) {
+                etDeptNumber.setText(Constants.DEPARTMENT_NUMBER_FS6);
             }
         }
 
         SharedPreferences sharedPrefODO = AcceptDeptActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
 
-        long screenTimeOut= Integer.parseInt(TimeOutinMinute) *60000;
+        long screenTimeOut= Integer.parseInt(TimeOutinMinute) * 60000;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (Istimeout_Sec)
-                {
+                if (Istimeout_Sec) {
                     CommonUtils.hideKeyboard(AcceptDeptActivity.this);
                     Istimeout_Sec = false;
-                    AppConstants.ClearEdittextFielsOnBack(AcceptDeptActivity.this);
+                    AppConstants.clearEditTextFieldsOnBack(AcceptDeptActivity.this);
 
                     // ActivityHandler.GetBacktoWelcomeActivity();
                     Intent i = new Intent(AcceptDeptActivity.this, WelcomeActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i);
                 }
-
             }
         }, screenTimeOut);
 
@@ -195,8 +193,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 Istimeout_Sec=false;
 
                 CommonUtils.LogMessage(TAG, TAG + "Entered Department : " + etDeptNumber.getText(), null);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Entered Department : " + etDeptNumber.getText());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Entered Department : " + etDeptNumber.getText());
 
                 if (!etDeptNumber.getText().toString().trim().isEmpty()) {
 
@@ -209,18 +207,22 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 } else {
                     Istimeout_Sec = true;
                     ResetTimeoutDeptScreen();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForDepartment + ", and try again.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Please enter " + ScreenNameForDepartment + ", and try again.");
                     CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.RequireDeptNumber).replace("Department", ScreenNameForDepartment));
                 }
             }
         });
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         String KeyboardType = myPrefkb.getString("KeyboardTypeDepartment", "2");
 
         try {
-            etDeptNumber.setInputType(Integer.parseInt(KeyboardType));
+            if (KeyboardType.equals("2")) {
+                etDeptNumber.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
+            } else {
+                etDeptNumber.setInputType(Integer.parseInt(KeyboardType));
+            }
         }catch (Exception e)
         {
             System.out.println("keyboard exception");
@@ -237,7 +239,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int InputTyp = etDeptNumber.getInputType();
-                if (InputTyp == 2) {
+                if (InputTyp == 2 || InputTyp == 3) {
                     etDeptNumber.setInputType(InputType.TYPE_CLASS_TEXT);
                     tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
                 } else {
@@ -293,12 +295,12 @@ public class AcceptDeptActivity extends AppCompatActivity {
     private void TimeoutDeptScreen() {
 
         SharedPreferences sharedPrefODO = AcceptDeptActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
         //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
 
@@ -319,7 +321,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
                             public void run() {
                                 CommonUtils.hideKeyboard(AcceptDeptActivity.this);
                                 Istimeout_Sec = false;
-                                AppConstants.ClearEdittextFielsOnBack(AcceptDeptActivity.this);
+                                AppConstants.clearEditTextFieldsOnBack(AcceptDeptActivity.this);
 
                                 Intent i = new Intent(AcceptDeptActivity.this, WelcomeActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -388,8 +390,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
     public void onBackPressed() {
         CommonUtils.hideKeyboard(AcceptDeptActivity.this);
         // ActivityHandler.removeActivity(4);
-        AppConstants.serverCallInProgressForPin = false;
-        AppConstants.serverCallInProgressForVehicle = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
         Istimeout_Sec=false;
         finish();
     }
@@ -441,24 +443,24 @@ public class AcceptDeptActivity extends AppCompatActivity {
             String pinNumber = "";
             try {
 
-                if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                    Constants.AccDepartmentNumber_FS1 = etDeptNumber.getText().toString().trim();
-                    pinNumber = Constants.AccPersonnelPIN_FS1;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                    Constants.AccDepartmentNumber = etDeptNumber.getText().toString().trim();
-                    pinNumber = Constants.AccPersonnelPIN;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                    Constants.AccDepartmentNumber_FS3 = etDeptNumber.getText().toString().trim();
-                    pinNumber = Constants.AccPersonnelPIN_FS3;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                    Constants.AccDepartmentNumber_FS4 = etDeptNumber.getText().toString().trim();
-                    pinNumber = Constants.AccPersonnelPIN_FS4;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                    Constants.AccDepartmentNumber_FS5 = etDeptNumber.getText().toString().trim();
-                    pinNumber = Constants.AccPersonnelPIN_FS5;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                    Constants.AccDepartmentNumber_FS6 = etDeptNumber.getText().toString().trim();
-                    pinNumber = Constants.AccPersonnelPIN_FS6;
+                if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                    Constants.DEPARTMENT_NUMBER_FS1 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.PERSONNEL_PIN_FS1;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                    Constants.DEPARTMENT_NUMBER_FS2 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.PERSONNEL_PIN_FS2;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                    Constants.DEPARTMENT_NUMBER_FS3 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.PERSONNEL_PIN_FS3;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                    Constants.DEPARTMENT_NUMBER_FS4 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.PERSONNEL_PIN_FS4;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                    Constants.DEPARTMENT_NUMBER_FS5 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.PERSONNEL_PIN_FS5;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                    Constants.DEPARTMENT_NUMBER_FS6 = etDeptNumber.getText().toString().trim();
+                    pinNumber = Constants.PERSONNEL_PIN_FS6;
                 }
 
                 DepartmentValidationEntity objEntityClass = new DepartmentValidationEntity();
@@ -483,7 +485,7 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -495,8 +497,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 System.out.println("response-----"+resp);
             } catch (SocketTimeoutException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality  STE2 " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CallSaveButtonFunctionality  STE2 " + e);
                 if (OfflineConstants.isOfflineAccess(AcceptDeptActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -529,14 +531,14 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
-                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +" PIN Accepted:" + etPersonnelPin.getText().toString().trim());
+                        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG +" PIN Accepted:" + etPersonnelPin.getText().toString().trim());
 
                         btnSave.setClickable(false);
 
                         OfflineConstants.storeCurrentTransaction(AcceptDeptActivity.this, "", "", "", "", "", "", "", "", "", "", "", etDeptNumber.getText().toString().trim());
 
                         SharedPreferences sharedPrefODO = AcceptDeptActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
                         if (IsOtherRequire.equalsIgnoreCase("True")) {
 
@@ -552,8 +554,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
 
                         String ResponceText = jsonObject.getString("ResponceText");
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Department rejected. Error: " + ResponceText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Department rejected. Error: " + ResponceText);
 
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 
@@ -568,8 +570,8 @@ public class AcceptDeptActivity extends AppCompatActivity {
                 }
             } else {
                 Log.i(TAG, "CallSaveButtonValidation Server Response Empty!");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CallSaveButtonValidation  Server Response Empty!");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CallSaveButtonValidation  Server Response Empty!");
             }
 
         }
@@ -640,19 +642,19 @@ public class AcceptDeptActivity extends AppCompatActivity {
                                 if (isAllowed) {
                                     allValid();
                                 } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "You are not authorized for this department. (" + DepartmentNumber + ")");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "You are not authorized for this department. (" + DepartmentNumber + ")");
                                     CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.NotAuthorizedForDept).replace("department", ScreenNameForDepartment));
                                 }
                             } else {
                                 //allValid(); //?
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "You are not authorized for this department. (" + DepartmentNumber + ")");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "You are not authorized for this department. (" + DepartmentNumber + ")");
                                 CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.NotAuthorizedForDept).replace("department", ScreenNameForDepartment));
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Pin Number (" + pinNumber + ") not found in offline db.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Pin Number (" + pinNumber + ") not found in offline db.");
                         }
                     } else {
                         allValid();
@@ -661,13 +663,13 @@ public class AcceptDeptActivity extends AppCompatActivity {
                     allValid();
                 }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Department (" + deptNumber + ") not found in offline db.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Department (" + deptNumber + ") not found in offline db.");
                 CommonUtils.showMessageDilaog(AcceptDeptActivity.this, "Error Message", getResources().getString(R.string.InvalidDept).replace("Department", ScreenNameForDepartment));
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "OfflineDepartmentValidation Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "OfflineDepartmentValidation Exception: " + ex.getMessage());
         }
     }
 

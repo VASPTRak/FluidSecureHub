@@ -35,7 +35,7 @@ public class PairDeviceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pair_device);
 
-        BTConstants.SelectedLinkForPaireddevices = getIntent().getExtras().getInt("linkNumber");
+        BTConstants.SELECTED_LINK_FOR_PAIRED_DEVICES = getIntent().getExtras().getInt("linkNumber");
         btn_pair_new_device = (Button) findViewById(R.id.btn_pair_new_device);
 
         GetPairedDevicesList();

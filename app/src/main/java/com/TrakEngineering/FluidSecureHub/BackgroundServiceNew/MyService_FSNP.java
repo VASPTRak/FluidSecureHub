@@ -124,7 +124,7 @@ public class MyService_FSNP extends Service {
             @Override
             public void run() {
                 //do something
-                SharedPreferences sharedPref = MyService_FSNP.this.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = MyService_FSNP.this.getSharedPreferences(Constants.PREF_FA_DATA, Context.MODE_PRIVATE);
                 boolean IsFaRequired = sharedPref.getBoolean("FAData", false);
 
                 if (IsFaRequired){
@@ -133,13 +133,13 @@ public class MyService_FSNP extends Service {
                     getIpOverOSVersion();
 
                     //List of Near-by FSNP/Ble mac address list
-                    if (AppConstants.DetailsServerSSIDList != null && !AppConstants.DetailsServerSSIDList.isEmpty()) {
+                    if (AppConstants.DETAILS_SERVER_SSID_LIST != null && !AppConstants.DETAILS_SERVER_SSID_LIST.isEmpty()) {
 
                         BlemacAddressList.clear();
 
-                        for (int i = 0; i < AppConstants.DetailsServerSSIDList.size(); i++) {
+                        for (int i = 0; i < AppConstants.DETAILS_SERVER_SSID_LIST.size(); i++) {
 
-                            String FSNPMacAddress = AppConstants.DetailsServerSSIDList.get(i).get("FSNPMacAddress");
+                            String FSNPMacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(i).get("FSNPMacAddress");
                             BlemacAddressList.add(FSNPMacAddress);
 
                         }
@@ -293,7 +293,7 @@ public class MyService_FSNP extends Service {
                                     ListOfConnectedDevicesHotspotFSNP.add(map);
 
                                 }
-//                                AppConstants.DetailsListOfConnectedDevices = ListOfConnectedDevices;
+//                                AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES = ListOfConnectedDevices;
 //                                System.out.println("DeviceConnected" + ListOfConnectedDevices);
 
                             }
@@ -302,15 +302,15 @@ public class MyService_FSNP extends Service {
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  GetConnectedDevicesIP 1 --Exception " + e);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "  GetConnectedDevicesIP 1 --Exception " + e);
                     } finally {
                         try {
                             br.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  GetConnectedDevicesIP 2 --Exception " + e);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "  GetConnectedDevicesIP 2 --Exception " + e);
                         }
                     }
                 }
@@ -404,13 +404,13 @@ public class MyService_FSNP extends Service {
                                 String InstanceID_cmd = ConvertHextoASCII(es.getInstanceIdAsString());
                                 Log.i(TAG, " InstanceID_cmd:" + InstanceID_cmd);
 
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "  InstanceID_cmd: " + InstanceID_cmd);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "  InstanceID_cmd: " + InstanceID_cmd);
                                 if (InstanceID_cmd.equalsIgnoreCase("sutnoz")) {//sutnoz
 
                                     Log.i(TAG, " Stop transaction process");
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "  Stop transaction process FSNP MacAddress " + BLE_MacAddress);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "  Stop transaction process FSNP MacAddress " + BLE_MacAddress);
                                     //If hose is busy then Stop transaction/background service
                                     BLE_MacAddressStp = BLE_MacAddress;
                                     Constants.FA_Message = "";
@@ -418,8 +418,8 @@ public class MyService_FSNP extends Service {
 
                                 } else {
                                     Log.i(TAG, " Start transaction process");
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "  Start transaction process FSNP MacAddress " + BLE_MacAddress);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "  Start transaction process FSNP MacAddress " + BLE_MacAddress);
                                     Constants.FA_Message = "";
                                     StartTransactionProcess();
                                 }
@@ -444,8 +444,8 @@ public class MyService_FSNP extends Service {
             boolean SCall = IsServerCallRequired();
             if (SCall == true) {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  StartTransactionProcess ServerCallRequired");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  StartTransactionProcess ServerCallRequired");
                 Log.i(TAG, " Server call");
                 String userEmail = CommonUtils.getCustomerDetails_backgroundService(MyService_FSNP.this).PersonEmail;
                 String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(MyService_FSNP.this) + ":" + userEmail + ":" + "CheckAndValidateFSNPDetails" + AppConstants.LANG_PARAM);
@@ -463,8 +463,8 @@ public class MyService_FSNP extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  StartTransactionProcess" + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  StartTransactionProcess" + e);
         }
 
     }
@@ -472,10 +472,10 @@ public class MyService_FSNP extends Service {
     public boolean IsServerCallRequired() {
 
         String HoseNO = "";
-        for (int p = 0; p < AppConstants.DetailsServerSSIDList.size(); p++) {
+        for (int p = 0; p < AppConstants.DETAILS_SERVER_SSID_LIST.size(); p++) {
 
-            String MacAddress = AppConstants.DetailsServerSSIDList.get(p).get("MacAddress");
-            String fsnpAddress = AppConstants.DetailsServerSSIDList.get(p).get("FSNPMacAddress");
+            String MacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("MacAddress");
+            String fsnpAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSNPMacAddress");
 
             if (BLE_MacAddress.equalsIgnoreCase(fsnpAddress)) {
 
@@ -485,13 +485,13 @@ public class MyService_FSNP extends Service {
             }
         }
 
-        if (HoseNO.equalsIgnoreCase("0") && Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_1OdoScreen.equalsIgnoreCase("FREE")) {
+        if (HoseNO.equalsIgnoreCase("0") && Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_1_ODO_SCREEN.equalsIgnoreCase("FREE")) {
             return true;
-        } else if (HoseNO.equalsIgnoreCase("1") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_2OdoScreen.equalsIgnoreCase("FREE")) {
+        } else if (HoseNO.equalsIgnoreCase("1") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_ODO_SCREEN.equalsIgnoreCase("FREE")) {
             return true;
-        } else if (HoseNO.equalsIgnoreCase("2") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_3OdoScreen.equalsIgnoreCase("FREE")) {
+        } else if (HoseNO.equalsIgnoreCase("2") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_ODO_SCREEN.equalsIgnoreCase("FREE")) {
             return true;
-        } else if (HoseNO.equalsIgnoreCase("3") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_4OdoScreen.equalsIgnoreCase("FREE")) {
+        } else if (HoseNO.equalsIgnoreCase("3") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_ODO_SCREEN.equalsIgnoreCase("FREE")) {
             return true;
         }
 
@@ -513,14 +513,14 @@ public class MyService_FSNP extends Service {
                 IpAddress = ListOfConnectedDevicesHotspotFSNP.get(i).get("ipAddress");
 
 
-                for (int p = 0; p < AppConstants.DetailsServerSSIDList.size(); p++) {
+                for (int p = 0; p < AppConstants.DETAILS_SERVER_SSID_LIST.size(); p++) {
 
-                    String MacAddress = AppConstants.DetailsServerSSIDList.get(p).get("MacAddress");
-                    String fsnpAddress = AppConstants.DetailsServerSSIDList.get(p).get("FSNPMacAddress");
+                    String MacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("MacAddress");
+                    String fsnpAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSNPMacAddress");
 
                     if (MacAddress.equalsIgnoreCase(Mac_Address) && BLE_MacAddressStp.equalsIgnoreCase(fsnpAddress)) {
                         HTTP_URL_FS_1 = "http://" + IpAddress + ":80/";
-                        //SelectedHoseStp = String.valueOf(AppConstants.DetailsServerSSIDList.indexOf("MacAddress"));
+                        //SelectedHoseStp = String.valueOf(AppConstants.DETAILS_SERVER_SSID_LIST.indexOf("MacAddress"));
                         SelectedHoseStp = String.valueOf(p);
                         break;
                     }
@@ -538,19 +538,19 @@ public class MyService_FSNP extends Service {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  StopTransactionProcess Execption ~1 " + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  StopTransactionProcess Execption ~1 " + e);
         }
 
 
         //On Selected hose
-        if (SelectedHoseStp.equalsIgnoreCase("0") && !Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
+        if (SelectedHoseStp.equalsIgnoreCase("0") && !Constants.FS_1_STATUS.equalsIgnoreCase("FREE")) {
 
             SelectedHoseStp = "";
             if (IpAddress != "" || IpAddress != null) {
 
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Stop Hose: "+SelectedHoseStp+" ~BackgroundService_AP_PIPE");
-                Constants.FS_1STATUS = "FREE";
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Stop Hose: "+SelectedHoseStp+" ~BackgroundService_AP_PIPE");
+                Constants.FS_1_STATUS = "FREE";
                 stopService(new Intent(MyService_FSNP.this, BackgroundService_AP_PIPE.class));
                 stopButtonFunctionality_FS1();
 
@@ -559,14 +559,14 @@ public class MyService_FSNP extends Service {
             }
 
 
-        } else if (SelectedHoseStp.equalsIgnoreCase("1") && !Constants.FS_2STATUS.equalsIgnoreCase("FREE")) {
+        } else if (SelectedHoseStp.equalsIgnoreCase("1") && !Constants.FS_2_STATUS.equalsIgnoreCase("FREE")) {
 
             SelectedHoseStp = "";
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  Stop Hose: " + SelectedHoseStp + " ~BackgroundService_AP");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  Stop Hose: " + SelectedHoseStp + " ~BackgroundService_AP");
             if (IpAddress != "" || IpAddress != null) {
 
-                Constants.FS_2STATUS = "FREE";
+                Constants.FS_2_STATUS = "FREE";
                 stopService(new Intent(MyService_FSNP.this, BackgroundService_AP.class));
                 stopButtonFunctionality_FS1();
 
@@ -575,14 +575,14 @@ public class MyService_FSNP extends Service {
             }
 
 
-        } else if (SelectedHoseStp.equalsIgnoreCase("2") && !Constants.FS_3STATUS.equalsIgnoreCase("FREE")) {
+        } else if (SelectedHoseStp.equalsIgnoreCase("2") && !Constants.FS_3_STATUS.equalsIgnoreCase("FREE")) {
 
             SelectedHoseStp = "";
             if (IpAddress != "" || IpAddress != null) {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  Stop Hose: " + SelectedHoseStp + " ~BackgroundService_FS_UNIT_3");
-                Constants.FS_3STATUS = "FREE";
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  Stop Hose: " + SelectedHoseStp + " ~BackgroundService_FS_UNIT_3");
+                Constants.FS_3_STATUS = "FREE";
                 stopService(new Intent(MyService_FSNP.this, BackgroundService_FS_UNIT_3.class));
                 stopButtonFunctionality_FS1();
 
@@ -591,13 +591,13 @@ public class MyService_FSNP extends Service {
             }
 
 
-        } else if (SelectedHoseStp.equalsIgnoreCase("3") && !Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+        } else if (SelectedHoseStp.equalsIgnoreCase("3") && !Constants.FS_4_STATUS.equalsIgnoreCase("FREE")) {
 
             SelectedHoseStp = "";
             if (IpAddress != "" || IpAddress != null) {
 
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Stop Hose: "+SelectedHoseStp+" ~BackgroundService_FS_UNIT_4");
-                Constants.FS_4STATUS = "FREE";
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Stop Hose: "+SelectedHoseStp+" ~BackgroundService_FS_UNIT_4");
+                Constants.FS_4_STATUS = "FREE";
                 stopService(new Intent(MyService_FSNP.this, BackgroundService_FS_UNIT_4.class));
                 stopButtonFunctionality_FS1();
 
@@ -628,17 +628,17 @@ public class MyService_FSNP extends Service {
                 String IpAddress = ListOfConnectedDevicesHotspotFSNP.get(i).get("ipAddress");
 
                 //List of Near-by FSNP/Ble mac address list
-                if (AppConstants.DetailsServerSSIDList != null && !AppConstants.DetailsServerSSIDList.isEmpty()) {
+                if (AppConstants.DETAILS_SERVER_SSID_LIST != null && !AppConstants.DETAILS_SERVER_SSID_LIST.isEmpty()) {
 
-                    for (int p = 0; p < AppConstants.DetailsServerSSIDList.size(); p++) {
+                    for (int p = 0; p < AppConstants.DETAILS_SERVER_SSID_LIST.size(); p++) {
 
-                        String MacAddress = AppConstants.DetailsServerSSIDList.get(p).get("MacAddress");
-                        String fsnpAddress = AppConstants.DetailsServerSSIDList.get(p).get("FSNPMacAddress");
-                        String fsnpName = AppConstants.DetailsServerSSIDList.get(p).get("FSAntenna2");
+                        String MacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("MacAddress");
+                        String fsnpAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSNPMacAddress");
+                        String fsnpName = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSAntenna2");
 
                         if (MacAddress.equalsIgnoreCase(Mac_Address) && FSNPMacAddress.equalsIgnoreCase(fsnpAddress)) {
                             HTTP_URL = "http://" + IpAddress + ":80/";
-                            //SelectedHose = String.valueOf(AppConstants.DetailsServerSSIDList.indexOf("MacAddress"));
+                            //SelectedHose = String.valueOf(AppConstants.DETAILS_SERVER_SSID_LIST.indexOf("MacAddress"));
                             SelectedHose = String.valueOf(p);
 
                         }
@@ -648,8 +648,8 @@ public class MyService_FSNP extends Service {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  ProcessFSNPDtails" + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  ProcessFSNPDtails" + e);
         }
 
         //Save response data to sharedpreferance
@@ -658,15 +658,15 @@ public class MyService_FSNP extends Service {
                 FOBNumber, Company, Location, PersonName, PrinterName, PrinterMacAddress, VehicleSum,
                 DeptSum, VehPercentage, DeptPercentage, SurchargeType, ProductPrice, parameter, IsTLDCall,EnablePrinter);
 
-        if (SelectedHose.equalsIgnoreCase("0") && !HTTP_URL.equals("") && Constants.FS_1STATUS.equalsIgnoreCase("FREE")) {
+        if (SelectedHose.equalsIgnoreCase("0") && !HTTP_URL.equals("") && Constants.FS_1_STATUS.equalsIgnoreCase("FREE")) {
 
             if (RequireManualOdo.equalsIgnoreCase("Y")) {
 
-                if (Constants.ManualOdoScreenFree.equalsIgnoreCase("Yes")) {
+                if (Constants.MANUAL_ODO_SCREEN_FREE.equalsIgnoreCase("Yes")) {
                     Log.i(TAG, " Enter Odometer manually");
-                    //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Enter Odometer manually");
-                    Constants.FS_1OdoScreen = "BUSY";
-                    Constants.ManualOdoScreenFree = "No";
+                    //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Enter Odometer manually");
+                    Constants.FS_1_ODO_SCREEN = "BUSY";
+                    Constants.MANUAL_ODO_SCREEN_FREE = "No";
                     Toast.makeText(getApplicationContext(), "Direct to AcceptManualOdoActivityFA", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MyService_FSNP.this, AcceptManualOdoActivityFA.class);
                     intent.putExtra("VehicleID", VehicleId);
@@ -675,30 +675,30 @@ public class MyService_FSNP extends Service {
 
                 } else {
                     Log.i(TAG, " Manuall Odometer screen busy");
-                    //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Manuall Odometer screen busy");
+                    //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Manuall Odometer screen busy");
                 }
 
 
             } else {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  Started BackgroundService_AP_PIPE for hose: " + SelectedHose);
-                Constants.FS_1STATUS = "BUSY";
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  Started BackgroundService_AP_PIPE for hose: " + SelectedHose);
+                Constants.FS_1_STATUS = "BUSY";
                 Intent serviceIntent = new Intent(MyService_FSNP.this, BackgroundService_AP_PIPE.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 startService(serviceIntent);
 
             }
 
-        } else if (SelectedHose.equalsIgnoreCase("1") && !HTTP_URL.equals("") && Constants.FS_2STATUS.equalsIgnoreCase("FREE")) {
+        } else if (SelectedHose.equalsIgnoreCase("1") && !HTTP_URL.equals("") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE")) {
 
             if (RequireManualOdo.equalsIgnoreCase("Y")) {
 
-                if (Constants.ManualOdoScreenFree.equalsIgnoreCase("Yes")) {
+                if (Constants.MANUAL_ODO_SCREEN_FREE.equalsIgnoreCase("Yes")) {
                     Log.i(TAG, " Enter Odometer manually");
-                    //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Enter Odometer manually");
-                    Constants.FS_2OdoScreen = "BUSY";
-                    Constants.ManualOdoScreenFree = "No";
+                    //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Enter Odometer manually");
+                    Constants.FS_2_ODO_SCREEN = "BUSY";
+                    Constants.MANUAL_ODO_SCREEN_FREE = "No";
                     Toast.makeText(getApplicationContext(), "Direct to AcceptManualOdoActivityFA", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MyService_FSNP.this, AcceptManualOdoActivityFA.class);
                     intent.putExtra("VehicleID", VehicleId);
@@ -707,7 +707,7 @@ public class MyService_FSNP extends Service {
 
                 } else {
                     Log.i(TAG, " Manuall Odometer screen busy");
-                    //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Manuall Odometer screen busy");
+                    //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Manuall Odometer screen busy");
 
                 }
 
@@ -715,8 +715,8 @@ public class MyService_FSNP extends Service {
             } else {
 
                 SelectedHose = "";
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Started BackgroundService_AP for hose: "+SelectedHose);
-                Constants.FS_2STATUS = "BUSY";
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Started BackgroundService_AP for hose: "+SelectedHose);
+                Constants.FS_2_STATUS = "BUSY";
                 Intent serviceIntent = new Intent(MyService_FSNP.this, BackgroundService_AP.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 startService(serviceIntent);
@@ -724,15 +724,15 @@ public class MyService_FSNP extends Service {
             }
 
 
-        } else if (SelectedHose.equalsIgnoreCase("2") && !HTTP_URL.equals("") && Constants.FS_3STATUS.equalsIgnoreCase("FREE")) {
+        } else if (SelectedHose.equalsIgnoreCase("2") && !HTTP_URL.equals("") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE")) {
 
             if (RequireManualOdo.equalsIgnoreCase("Y")) {
 
-                if (Constants.ManualOdoScreenFree.equalsIgnoreCase("Yes")) {
+                if (Constants.MANUAL_ODO_SCREEN_FREE.equalsIgnoreCase("Yes")) {
                     Log.i(TAG, " Enter Odometer manually");
-                    //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Enter Odometer manually");
-                    Constants.FS_3OdoScreen = "BUSY";
-                    Constants.ManualOdoScreenFree = "No";
+                    //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Enter Odometer manually");
+                    Constants.FS_3_ODO_SCREEN = "BUSY";
+                    Constants.MANUAL_ODO_SCREEN_FREE = "No";
                     Toast.makeText(getApplicationContext(), "Direct to AcceptManualOdoActivityFA", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MyService_FSNP.this, AcceptManualOdoActivityFA.class);
                     intent.putExtra("VehicleID", VehicleId);
@@ -741,13 +741,13 @@ public class MyService_FSNP extends Service {
 
                 } else {
                     Log.i(TAG, " Manuall Odometer screen busy");
-                    //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Manuall Odometer screen busy");
+                    //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Manuall Odometer screen busy");
                 }
 
             } else {
 
-                //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Started BackgroundService_FS_UNIT_3 for hose: "+SelectedHose);
-                Constants.FS_3STATUS = "BUSY";
+                //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Started BackgroundService_FS_UNIT_3 for hose: "+SelectedHose);
+                Constants.FS_3_STATUS = "BUSY";
                 Intent serviceIntent = new Intent(MyService_FSNP.this, BackgroundService_FS_UNIT_3.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 startService(serviceIntent);
@@ -755,16 +755,16 @@ public class MyService_FSNP extends Service {
             }
 
 
-        } else if (SelectedHose.equalsIgnoreCase("3") && !HTTP_URL.equals("") && Constants.FS_4STATUS.equalsIgnoreCase("FREE")) {
+        } else if (SelectedHose.equalsIgnoreCase("3") && !HTTP_URL.equals("") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE")) {
 
 
             if (RequireManualOdo.equalsIgnoreCase("Y")) {
 
-                if (Constants.ManualOdoScreenFree.equalsIgnoreCase("Yes")) {
+                if (Constants.MANUAL_ODO_SCREEN_FREE.equalsIgnoreCase("Yes")) {
                     Log.i(TAG, " Enter Odometer manually");
-                    //     if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Enter Odometer manually");
-                    Constants.FS_4OdoScreen = "BUSY";
-                    Constants.ManualOdoScreenFree = "No";
+                    //     if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Enter Odometer manually");
+                    Constants.FS_4_ODO_SCREEN = "BUSY";
+                    Constants.MANUAL_ODO_SCREEN_FREE = "No";
                     Toast.makeText(getApplicationContext(), "Direct to AcceptManualOdoActivityFA", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MyService_FSNP.this, AcceptManualOdoActivityFA.class);
                     intent.putExtra("VehicleID", VehicleId);
@@ -773,14 +773,14 @@ public class MyService_FSNP extends Service {
 
                 } else {
                     Log.i(TAG, " Manuall Odometer screen busy");
-                    //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Manuall Odometer screen busy");
+                    //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Manuall Odometer screen busy");
                 }
 
 
             } else {
 
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Started BackgroundService_FS_UNIT_4 for hose: "+SelectedHose);
-                Constants.FS_4STATUS = "BUSY";
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Started BackgroundService_FS_UNIT_4 for hose: "+SelectedHose);
+                Constants.FS_4_STATUS = "BUSY";
                 Intent serviceIntent = new Intent(MyService_FSNP.this, BackgroundService_FS_UNIT_4.class);
                 serviceIntent.putExtra("HTTP_URL", HTTP_URL);
                 startService(serviceIntent);
@@ -802,12 +802,12 @@ public class MyService_FSNP extends Service {
 
         //Parse server response and store it to Shared preferances to use in background services
         // serverRes = "{\"ResponceMessage\":\"success\",\"ResponceText\":\"success\",\"ResponceData\":{\"MinLimit\":0,\"PulseRatio\":10.00,\"VehicleId\":126,\"FuelTypeId\":134,\"PersonId\":1420,\"PhoneNumber\":\"234-585-6425\",\"ServerDate\":\"5/22/2018 4:20:30 PM\",\"PulserStopTime\":\"25\",\"PumpOnTime\":\"0\",\"PumpOffTime\":\"50\",\"TransactionId\":\"17839\",\"FirmwareVersion\":\"\",\"FilePath\":\"\",\"FOBNumber\":\"65040D1C9000\",\"Company\":\"\",\"Location\":\"20,Prabhat Soc,NDA RD, Near Bank of Maharashtra, Vidnyan Nagar Rd, Prabhat Housing Society, Sagar Co-Operative Housing Society, Bavdhan, Pune, Maharashtra 411021, India\",\"PersonName\":\"\",\"FluidSecureSiteName\":null,\"BluetoothCardReader\":null,\"BluetoothCardReaderMacAddress\":null,\"PrinterName\":\"\",\"PrinterMacAddress\":\"\",\"VehicleSum\":\"0\",\"DeptSum\":\"0\",\"VehPercentage\":\"True\",\"DeptPercentage\":null,\"SurchargeType\":\"0\",\"ProductPrice\":\"0\",\"VeederRootMacAddress\":null,\"LFBluetoothCardReader\":null,\"LFBluetoothCardReaderMacAddress\":null},\"SSIDDataObj\":null,\"objUserData\":null,\"ValidationFailFor\":\"\",\"PreAuthTransactionsObj\":null}";
-        String pinNumber = Constants.AccPersonnelPIN_FS1;
-        String vehicleNumber = Constants.AccVehicleNumber_FS1;
-        String DeptNumber = Constants.AccDepartmentNumber_FS1;
-        String accOther = Constants.AccOther_FS1;
-        Integer accOdoMeter = Constants.AccOdoMeter_FS1;
-        Integer accHours = Constants.AccHours_FS1;
+        String pinNumber = Constants.PERSONNEL_PIN_FS1;
+        String vehicleNumber = Constants.VEHICLE_NUMBER_FS1;
+        String DeptNumber = Constants.DEPARTMENT_NUMBER_FS1;
+        String accOther = Constants.OTHER_FS1;
+        Integer accOdoMeter = Constants.ODO_METER_FS1;
+        Integer accHours = Constants.HOURS_FS1;
         String CONNECTED_SSID = AppConstants.FS1_CONNECTED_SSID;
 
         if (serverRes != null) {
@@ -842,7 +842,7 @@ public class MyService_FSNP extends Service {
                         String PersonName_FS1 = PersonName_sp;
                         String PrinterMacAddress_FS1 = PrinterMacAddress_sp;
                         String PrinterName_FS1 = PrinterName_sp;
-                        AppConstants.PrinterMacAddress = PrinterMacAddress_sp;
+                        AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_sp;
                         AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_sp;
 
                         //For Print Recipt
@@ -882,7 +882,7 @@ public class MyService_FSNP extends Service {
                         String PersonName = PersonName_sp;
                         String PrinterMacAddress = PrinterMacAddress_sp;
                         String PrinterName = PrinterName_sp;
-                        AppConstants.PrinterMacAddress = PrinterMacAddress;
+                        AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress;
                         AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName;
 
                         //For Print Recipt
@@ -921,7 +921,7 @@ public class MyService_FSNP extends Service {
                         String PersonName_FS3 = PersonName_sp;
                         String PrinterMacAddress_FS3 = PrinterMacAddress_sp;
                         String PrinterName_FS3 = PrinterName_sp;
-                        AppConstants.PrinterMacAddress = PrinterMacAddress_FS3;
+                        AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS3;
                         AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS3;
 
                         //For Print Recipt
@@ -958,7 +958,7 @@ public class MyService_FSNP extends Service {
                         String PersonName_FS4 = PersonName_sp;
                         String PrinterMacAddress_FS4 = PrinterMacAddress_sp;
                         String PrinterName_FS4 = PrinterName_sp;
-                        AppConstants.PrinterMacAddress = PrinterMacAddress_FS4;
+                        AppConstants.PRINTER_MAC_ADDRESS = PrinterMacAddress_FS4;
                         AppConstants.BLUETOOTH_PRINTER_NAME = PrinterName_FS4;
                         //For Print Recipt
                         String VehicleSum_FS4 = VehicleSum_sp;
@@ -1056,7 +1056,7 @@ public class MyService_FSNP extends Service {
                 System.out.println("authString--" + authString);
 
 
-                response = serverHandler.PostTextData(MyService_FSNP.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(MyService_FSNP.this, AppConstants.WEB_URL, jsonData, authString);
 
                 System.out.println("Id..." + jsonData);
 
@@ -1098,7 +1098,7 @@ public class MyService_FSNP extends Service {
                 .client(httpClient.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .baseUrl(AppConstants.webIP)
+                .baseUrl(AppConstants.SERVER_BASE_URL)
                 .build();
         Interface service = retrofit.create(Interface.class);
 
@@ -1192,7 +1192,7 @@ public class MyService_FSNP extends Service {
 
                         // if (response.body().getVehicleId() != null && !response.body().getVehicleId().isEmpty()) {}
                         Log.i(TAG, " CheckFSNPDetails Response success");
-                        //     if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  CheckFSNPDetails Response success");
+                        //     if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  CheckFSNPDetails Response success");
 
                         ProcessFSNPDtails(response.body().getResponceMessage(), response.body().getResponceText(), BLE_MacAddress, VehicleId, MinLimit, SiteId, PulseRatio, PersonId, FuelTypeId, PhoneNumber, ServerDate,
                                 PumpOnTime, PumpOffTime, PulserStopTime, TransactionId, FirmwareVersion, FilePath,
@@ -1208,23 +1208,23 @@ public class MyService_FSNP extends Service {
                             String IpAddress = ListOfConnectedDevicesHotspotFSNP.get(i).get("ipAddress");
 
                             //List of Near-by FSNP/Ble mac address list
-                            if (AppConstants.DetailsServerSSIDList != null && !AppConstants.DetailsServerSSIDList.isEmpty()) {
+                            if (AppConstants.DETAILS_SERVER_SSID_LIST != null && !AppConstants.DETAILS_SERVER_SSID_LIST.isEmpty()) {
 
-                                for (int p = 0; p < AppConstants.DetailsServerSSIDList.size(); p++) {
+                                for (int p = 0; p < AppConstants.DETAILS_SERVER_SSID_LIST.size(); p++) {
 
-                                    String MacAddress = AppConstants.DetailsServerSSIDList.get(p).get("MacAddress");
-                                    String fsnpAddress = AppConstants.DetailsServerSSIDList.get(p).get("FSNPMacAddress");
-                                    fsnpName = AppConstants.DetailsServerSSIDList.get(p).get("WifiSSId");
+                                    String MacAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("MacAddress");
+                                    String fsnpAddress = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("FSNPMacAddress");
+                                    fsnpName = AppConstants.DETAILS_SERVER_SSID_LIST.get(p).get("WifiSSId");
 
                                     if (MacAddress.equalsIgnoreCase(Mac_Address) && BLE_MacAddress.equalsIgnoreCase(fsnpAddress)) {
                                         HTTP_URL = "http://" + IpAddress + ":80/";
-                                        //SelectedHose = String.valueOf(AppConstants.DetailsServerSSIDList.indexOf("MacAddress"));
+                                        //SelectedHose = String.valueOf(AppConstants.DETAILS_SERVER_SSID_LIST.indexOf("MacAddress"));
                                         SelectedHose = String.valueOf(p);
 
                                         if (!fsnpName.isEmpty()) {
 
                                             Constants.FA_Message = RespMsg + " " + RespTxt + " " + fsnpName;
-                                            ///   if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  CheckFSNPDetails Response fail msg: "+RespMsg + " " + RespTxt + " " + fsnpName);
+                                            ///   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  CheckFSNPDetails Response fail msg: "+RespMsg + " " + RespTxt + " " + fsnpName);
                                         }
 
                                         if (ps < 3) {
@@ -1248,15 +1248,15 @@ public class MyService_FSNP extends Service {
                     // handle execution failures like no internet connectivity
                     BusProvider.getInstance().post(new ErrorEvent(-2, t.getMessage()));
                     Log.i(TAG, "Something went wrong in retrofit call --handle execution failures like no internet connectivity.");
-                    //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Something went wrong in retrofit call --handle execution failures like no internet connectivity.");
+                    //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Something went wrong in retrofit call --handle execution failures like no internet connectivity.");
                 }
             });
 
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  CheckFSNPDetails" + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  CheckFSNPDetails" + e);
         }
     }
 
@@ -1306,14 +1306,14 @@ public class MyService_FSNP extends Service {
 
 
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  GETFINALPulsar_FS1 Result: " + result);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "  GETFINALPulsar_FS1 Result: " + result);
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  stopButtonFunctionality_FS1 Ex" + e);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  stopButtonFunctionality_FS1 Ex" + e);
                 }
             }
         }, 1000);
@@ -1392,8 +1392,8 @@ public class MyService_FSNP extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d("Ex", e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar_FS1 doInBackground Ex" + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  GETFINALPulsar_FS1 doInBackground Ex" + e);
 
             }
 
@@ -1417,8 +1417,8 @@ public class MyService_FSNP extends Service {
             } catch (Exception e) {
 
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GETFINALPulsar_FS1 onPostExecute Ex" + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  GETFINALPulsar_FS1 onPostExecute Ex" + e);
             }
 
         }

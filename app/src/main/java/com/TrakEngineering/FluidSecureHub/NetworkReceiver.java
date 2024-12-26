@@ -36,7 +36,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             //AppConstants.colorToastBigFont(context, "Online..!!", Color.BLUE);
             UpdateMacToServer(context);
 
-            if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+            if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && Constants.FS_6_STATUS.equalsIgnoreCase("FREE")) {
 
                 //sync offline transactions
                 //context.startService(new Intent(context, OffTranzSyncService.class));
@@ -57,7 +57,7 @@ public class NetworkReceiver extends BroadcastReceiver {
             }
         }
 
-        boolean PreviousState = AppConstants.PRE_STATE_MOBILEDATA;
+        boolean PreviousState = AppConstants.PRE_STATE_MOBILE_DATA;
 
         if (PreviousState == CurrentState) {
             //NoSwitch
@@ -71,10 +71,10 @@ public class NetworkReceiver extends BroadcastReceiver {
             } else {
                 MobileDataStatus = "OFF";
             }
-            AppConstants.PRE_STATE_MOBILEDATA = CurrentState;
-            Log.i(TAG, "Network Switched:" + AppConstants.IS_MOBILE_ON + " CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Status >> Mobile_Data:" + MobileDataStatus + "; CurrentNetworkType: " + Constants.CurrentNetworkType + "~~~" + Constants.CurrentSignalStrength);
+            AppConstants.PRE_STATE_MOBILE_DATA = CurrentState;
+            Log.i(TAG, "Network Switched:" + AppConstants.IS_MOBILE_ON + " CURRENT_NETWORK_TYPE: " + Constants.CURRENT_NETWORK_TYPE + "~~~" + Constants.CURRENT_SIGNAL_STRENGTH);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Status >> Mobile_Data:" + MobileDataStatus + "; CURRENT_NETWORK_TYPE: " + Constants.CURRENT_NETWORK_TYPE + "~~~" + Constants.CURRENT_SIGNAL_STRENGTH);
             //AppConstants.colorToastBigFont(context, "Network Switched", Color.BLUE);
             //context.startService(new Intent(context, StopRunningTransactionBackgroundService.class));
         }
@@ -83,7 +83,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     private void UpdateMacToServer(Context context) {
 
-        SharedPreferences sharedPref = context.getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(Constants.MAC_ADDRESS_RECONFIGURE, Context.MODE_PRIVATE);
         String jsonData = sharedPref.getString("jsonData", "");
         if (!jsonData.isEmpty())
             new UpdateMacAsynTask().execute(jsonData);
@@ -104,7 +104,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(ctx) + ":" + userEmail + ":" + "UpdateMACAddress" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(ctx, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(ctx, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -125,7 +125,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                     String ResponceMessage = jsonObject1.getString("ResponceMessage");
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
-                        AppConstants.clearSharedPrefByName(ctx, Constants.MAC_ADDR_RECONFIGURE);
+                        AppConstants.clearSharedPrefByName(ctx, Constants.MAC_ADDRESS_RECONFIGURE);
                     }
                 }
             } catch (Exception e) {

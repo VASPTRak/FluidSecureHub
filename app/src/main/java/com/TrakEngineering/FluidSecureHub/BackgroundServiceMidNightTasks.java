@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class BackgroundServiceMidNightTasks extends Service {
     String TAG = "BackgroundServiceMidNightTasks ";
     ConnectionDetector cd = new ConnectionDetector(BackgroundServiceMidNightTasks.this);
-    OffDBController offcontroller = new OffDBController(BackgroundServiceMidNightTasks.this);
+    OffDBController offController = new OffDBController(BackgroundServiceMidNightTasks.this);
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,14 +34,14 @@ public class BackgroundServiceMidNightTasks extends Service {
             super.onStart(intent, startId);
 
             Log.e(TAG, "~~~~~start into BackgroundServiceMidNightTasks~~~~~");
-            /*if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_BACKGROUND + "-" + TAG + "Started.");*/
+            /*if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_BACKGROUND + "-" + TAG + "Started.");*/
             SyncSqliteData();//Sync penting transactions
 
             this.stopSelf();
         } catch (NullPointerException e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  onStartCommand Exception: " + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  onStartCommand Exception: " + e);
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
@@ -53,13 +53,13 @@ public class BackgroundServiceMidNightTasks extends Service {
 
     public void SyncSqliteData() {
 
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+        if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && Constants.FS_6_STATUS.equalsIgnoreCase("FREE")) {
 
             if (cd.isConnecting()) {
 
                 try {
                     //sync offline transactions
-                    String off_json = offcontroller.getAllOfflineTransactionJSON(BackgroundServiceMidNightTasks.this);
+                    String off_json = offController.getAllOfflineTransactionJSON(BackgroundServiceMidNightTasks.this);
                     JSONObject jobj = new JSONObject(off_json);
                     String offtransactionArray = jobj.getString("TransactionsModelsObj");
                     JSONArray jarrsy = new JSONArray(offtransactionArray);
@@ -73,8 +73,8 @@ public class BackgroundServiceMidNightTasks extends Service {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " SyncSqliteData Exception: " + e);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " SyncSqliteData Exception: " + e);
                 }
             }
 
@@ -85,8 +85,8 @@ public class BackgroundServiceMidNightTasks extends Service {
                 ArrayList<HashMap<String, String>> uData = controller.getAllTransaction();
 
                 if (uData != null && uData.size() > 0) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Starting BackgroundService (sync online transaction)");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Starting BackgroundService (sync online transaction)");
                     startService(new Intent(BackgroundServiceMidNightTasks.this, BackgroundService.class));
                     System.out.println("BackgroundService Start...");
                 } else {

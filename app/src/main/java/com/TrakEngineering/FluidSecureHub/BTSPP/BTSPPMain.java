@@ -36,8 +36,8 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public Activity activity;
     private static final String TAG = ""; //AppConstants.LOG_TXTN_BT + "-"; //BTSPPMain.class.getSimpleName();
     private String newline = "\r\n";
-    //private String deviceAddress1 = ""; //80:7D:3A:A4:67:22
-    //private String deviceAddress2 = "";
+    //private String DEVICE_ADDRESS_1 = ""; //80:7D:3A:A4:67:22
+    //private String DEVICE_ADDRESS_2 = "";
     StringBuilder sb1 = new StringBuilder();
     StringBuilder sb2 = new StringBuilder();
     StringBuilder sb3 = new StringBuilder();
@@ -58,7 +58,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
             //edt_mac_address.setText(device1_mac);
             //tv_mac_address.setText("Mac Address:");
-            //deviceAddress1 = edt_mac_address.getText().toString().trim();
+            //DEVICE_ADDRESS_1 = edt_mac_address.getText().toString().trim();
 
         } else {
             //edt_mac_address.setText("");
@@ -71,17 +71,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     //Link One code begins....
     @Override
     public void onSerialConnectOne() {
-        BTConstants.BTLinkOneStatus = true;
+        BTConstants.BT_LINK_ONE_STATUS = true;
         status1("Connected");
     }
 
     @Override
     public void onSerialConnectErrorOne(Exception e) {
-        BTConstants.BTLinkOneStatus = false;
+        BTConstants.BT_LINK_ONE_STATUS = false;
         status1("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_1: <SerialConnectError: " + e.getMessage() + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_1: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -91,21 +91,21 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     @Override
     public void onSerialIoErrorOne(Exception e, Integer fromCode) {
-        BTConstants.BTLinkOneStatus = false;
+        BTConstants.BT_LINK_ONE_STATUS = false;
         status1("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_1: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_1: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect1() {
         try {
 
-            if (BTConstants.deviceAddress1 != null && !BTConstants.deviceAddress1.isEmpty()) {
+            if (BTConstants.DEVICE_ADDRESS_1 != null && !BTConstants.DEVICE_ADDRESS_1.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress1);
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.DEVICE_ADDRESS_1);
                 status1("Connecting...");
-                //BTConstants.BTLinkOneStatus = false;
+                //BTConstants.BT_LINK_ONE_STATUS = false;
                 SerialSocketOne socket = new SerialSocketOne(activity.getApplicationContext(), device);
                 service1.connect(socket);
             }
@@ -116,18 +116,18 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void send1(String str) {
-        if (!BTConstants.BTLinkOneStatus) {
-            BTConstants.CurrentCommand_LinkOne = "";
+        if (!BTConstants.BT_LINK_ONE_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_ONE = "";
             Log.i(TAG, "BTSPPLink_1: Link not connected");
             //Toast.makeText(activity, "BTSPPLink_1: Link not connected", Toast.LENGTH_SHORT).show();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_1: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_1: Link not connected");
             return;
         }
         try {
             //Log command sent:str
-            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-                BTConstants.CurrentCommand_LinkOne = str;
+            if (!str.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+                BTConstants.CURRENT_COMMAND_LINK_ONE = str;
             }
             Log.i(TAG, "BTSPPLink_1: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -138,11 +138,11 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void sendBytes1(byte[] data) {
-        if (!BTConstants.BTLinkOneStatus) {
-            BTConstants.CurrentCommand_LinkOne = "";
+        if (!BTConstants.BT_LINK_ONE_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_ONE = "";
             Log.i(TAG, "BTSPPLink_1: Link not connected");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_1: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_1: Link not connected");
             return;
         }
         try {
@@ -155,12 +155,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void receive1(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
-        Log.i(TAG, "BTSPPLink_1: Request>>" + BTConstants.CurrentCommand_LinkOne);
+        Log.i(TAG, "BTSPPLink_1: Request>>" + BTConstants.CURRENT_COMMAND_LINK_ONE);
         Log.i(TAG, "BTSPPLink_1: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("mac_address")) {
-            BTConstants.isNewVersionLinkOne = true;
+        if (BTConstants.CURRENT_COMMAND_LINK_ONE.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("mac_address")) {
+            BTConstants.IS_NEW_VERSION_LINK_ONE = true;
         }
         if (Response.contains("$$")) {
 
@@ -187,7 +187,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
             sb1.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkOne || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkOne.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkOne.contains(BTConstants.p_type_command)) {
+            if (BTConstants.IS_NEW_VERSION_LINK_ONE || BTConstants.FOR_OSCILLOSCOPE || (BTConstants.CURRENT_COMMAND_LINK_ONE.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.contains("BTMAC")) || BTConstants.CURRENT_COMMAND_LINK_ONE.contains(BTConstants.P_TYPE_COMMAND)) {
                 sb1.append(Response);
             } else {
                 // For old version Link response
@@ -200,7 +200,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void sendBroadcastIntentFromLinkOne(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkOneData");
-        broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkOne);
+        broadcastIntent.putExtra("Request", BTConstants.CURRENT_COMMAND_LINK_ONE);
         broadcastIntent.putExtra("Response", spn.trim());
         broadcastIntent.putExtra("Action", "BlueLinkOne");
         activity.sendBroadcast(broadcastIntent);
@@ -208,7 +208,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void status1(String str) {
         Log.i(TAG, "Status1:" + str);
-        BTConstants.BTStatusStrOne = str;
+        BTConstants.BT_STATUS_STR_ONE = str;
     }
     //Link one code ends.......
     //endregion
@@ -217,17 +217,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     //Link Two code begins..
     @Override
     public void onSerialConnectTwo() {
-        BTConstants.BTLinkTwoStatus = true;
+        BTConstants.BT_LINK_TWO_STATUS = true;
         status2("Connected");
     }
 
     @Override
     public void onSerialConnectErrorTwo(Exception e) {
-        BTConstants.BTLinkTwoStatus = false;
+        BTConstants.BT_LINK_TWO_STATUS = false;
         status2("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_2: <SerialConnectError: " + e.getMessage() + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_2: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -237,21 +237,21 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     @Override
     public void onSerialIoErrorTwo(Exception e, Integer fromCode) {
-        BTConstants.BTLinkTwoStatus = false;
+        BTConstants.BT_LINK_TWO_STATUS = false;
         status2("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_2: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_2: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect2() {
         try {
 
-            if (BTConstants.deviceAddress2 != null && !BTConstants.deviceAddress2.isEmpty()) {
+            if (BTConstants.DEVICE_ADDRESS_2 != null && !BTConstants.DEVICE_ADDRESS_2.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress2);
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.DEVICE_ADDRESS_2);
                 status2("Connecting...");
-                //BTConstants.BTLinkTwoStatus = false;
+                //BTConstants.BT_LINK_TWO_STATUS = false;
                 SerialSocketTwo socket = new SerialSocketTwo(activity.getApplicationContext(), device);
                 service2.connect(socket);
             }
@@ -262,18 +262,18 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void send2(String str) {
-        if (!BTConstants.BTLinkTwoStatus) {
-            BTConstants.CurrentCommand_LinkTwo = "";
+        if (!BTConstants.BT_LINK_TWO_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_TWO = "";
             Log.i(TAG, "BTSPPLink_2: Link not connected");
             //Toast.makeText(activity, "BTSPPLink_2: Link not connected", Toast.LENGTH_SHORT).show();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_2: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_2: Link not connected");
             return;
         }
         try {
             //Log command sent:str
-            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-                BTConstants.CurrentCommand_LinkTwo = str;
+            if (!str.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+                BTConstants.CURRENT_COMMAND_LINK_TWO = str;
             }
             Log.i(TAG, "BTSPPLink_2: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -284,11 +284,11 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void sendBytes2(byte[] data) {
-        if (!BTConstants.BTLinkTwoStatus) {
-            BTConstants.CurrentCommand_LinkTwo = "";
+        if (!BTConstants.BT_LINK_TWO_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_TWO = "";
             Log.i(TAG, "BTSPPLink_2: Link not connected");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_2: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_2: Link not connected");
             return;
         }
         try {
@@ -301,12 +301,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void receive2(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
-        Log.i(TAG, "BTSPPLink_2: Request>>" + BTConstants.CurrentCommand_LinkTwo);
+        Log.i(TAG, "BTSPPLink_2: Request>>" + BTConstants.CURRENT_COMMAND_LINK_TWO);
         Log.i(TAG, "BTSPPLink_2: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("mac_address")) {
-            BTConstants.isNewVersionLinkTwo = true;
+        if (BTConstants.CURRENT_COMMAND_LINK_TWO.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("mac_address")) {
+            BTConstants.IS_NEW_VERSION_LINK_TWO = true;
         }
         if (Response.contains("$$")) {
 
@@ -333,7 +333,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
             sb2.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkTwo || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkTwo.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkTwo.contains(BTConstants.p_type_command)) {
+            if (BTConstants.IS_NEW_VERSION_LINK_TWO || BTConstants.FOR_OSCILLOSCOPE || (BTConstants.CURRENT_COMMAND_LINK_TWO.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.contains("BTMAC")) || BTConstants.CURRENT_COMMAND_LINK_TWO.contains(BTConstants.P_TYPE_COMMAND)) {
                 sb2.append(Response);
             } else {
                 // For old version Link response
@@ -346,7 +346,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void sendBroadcastIntentFromLinkTwo(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkTwoData");
-        broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkTwo);
+        broadcastIntent.putExtra("Request", BTConstants.CURRENT_COMMAND_LINK_TWO);
         broadcastIntent.putExtra("Response", spn.trim());
         broadcastIntent.putExtra("Action", "BlueLinkTwo");
         activity.sendBroadcast(broadcastIntent);
@@ -354,7 +354,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void status2(String str) {
         Log.i(TAG, "Status2:" + str);
-        BTConstants.BTStatusStrTwo = str;
+        BTConstants.BT_STATUS_STR_TWO = str;
     }
     //endregion
 
@@ -362,17 +362,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     //Link Three code begins..
     @Override
     public void onSerialConnectThree() {
-        BTConstants.BTLinkThreeStatus = true;
+        BTConstants.BT_LINK_THREE_STATUS = true;
         status3("Connected");
     }
 
     @Override
     public void onSerialConnectErrorThree(Exception e) {
-        BTConstants.BTLinkThreeStatus = false;
+        BTConstants.BT_LINK_THREE_STATUS = false;
         status3("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_3: <SerialConnectError: " + e.getMessage() + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_3: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -382,21 +382,21 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     @Override
     public void onSerialIoErrorThree(Exception e, Integer fromCode) {
-        BTConstants.BTLinkThreeStatus = false;
+        BTConstants.BT_LINK_THREE_STATUS = false;
         status3("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_3: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_3: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect3() {
         try {
 
-            if (BTConstants.deviceAddress3 != null && !BTConstants.deviceAddress3.isEmpty()) {
+            if (BTConstants.DEVICE_ADDRESS_3 != null && !BTConstants.DEVICE_ADDRESS_3.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress3);
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.DEVICE_ADDRESS_3);
                 status3("Connecting...");
-                //BTConstants.BTLinkTwoStatus = false;
+                //BTConstants.BT_LINK_THREE_STATUS = false;
                 SerialSocketThree socket = new SerialSocketThree(activity.getApplicationContext(), device);
                 service3.connect(socket);
             }
@@ -407,18 +407,18 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void send3(String str) {
-        if (!BTConstants.BTLinkThreeStatus) {
-            BTConstants.CurrentCommand_LinkThree = "";
+        if (!BTConstants.BT_LINK_THREE_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_THREE = "";
             Log.i(TAG, "BTSPPLink_3: Link not connected");
             //Toast.makeText(activity, "BTSPPLink_3: Link not connected", Toast.LENGTH_SHORT).show();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_3: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_3: Link not connected");
             return;
         }
         try {
             //Log command sent:str
-            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-                BTConstants.CurrentCommand_LinkThree = str;
+            if (!str.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+                BTConstants.CURRENT_COMMAND_LINK_THREE = str;
             }
             Log.i(TAG, "BTSPPLink_3: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -429,11 +429,11 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void sendBytes3(byte[] data) {
-        if (!BTConstants.BTLinkThreeStatus) {
-            BTConstants.CurrentCommand_LinkThree = "";
+        if (!BTConstants.BT_LINK_THREE_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_THREE = "";
             Log.i(TAG, "BTSPPLink_3: Link not connected");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_3: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_3: Link not connected");
             return;
         }
         try {
@@ -446,12 +446,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void receive3(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
-        Log.i(TAG, "BTSPPLink_3: Request>>" + BTConstants.CurrentCommand_LinkThree);
+        Log.i(TAG, "BTSPPLink_3: Request>>" + BTConstants.CURRENT_COMMAND_LINK_THREE);
         Log.i(TAG, "BTSPPLink_3: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("mac_address")) {
-            BTConstants.isNewVersionLinkThree = true;
+        if (BTConstants.CURRENT_COMMAND_LINK_THREE.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("mac_address")) {
+            BTConstants.IS_NEW_VERSION_LINK_THREE = true;
         }
         if (Response.contains("$$")) {
 
@@ -478,7 +478,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
             sb3.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkThree || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkThree.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkThree.contains(BTConstants.p_type_command)) {
+            if (BTConstants.IS_NEW_VERSION_LINK_THREE || BTConstants.FOR_OSCILLOSCOPE || (BTConstants.CURRENT_COMMAND_LINK_THREE.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.contains("BTMAC")) || BTConstants.CURRENT_COMMAND_LINK_THREE.contains(BTConstants.P_TYPE_COMMAND)) {
                 sb3.append(Response);
             } else {
                 // For old version Link response
@@ -491,7 +491,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void sendBroadcastIntentFromLinkThree(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkThreeData");
-        broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkThree);
+        broadcastIntent.putExtra("Request", BTConstants.CURRENT_COMMAND_LINK_THREE);
         broadcastIntent.putExtra("Response", spn.trim());
         broadcastIntent.putExtra("Action", "BlueLinkThree");
         activity.sendBroadcast(broadcastIntent);
@@ -499,7 +499,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void status3(String str) {
         Log.i(TAG, "Status3:" + str);
-        BTConstants.BTStatusStrThree = str;
+        BTConstants.BT_STATUS_STR_THREE = str;
     }
     //Link Three code ends...
     //endregion
@@ -508,17 +508,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     //Link Four code begins..
     @Override
     public void onSerialConnectFour() {
-        BTConstants.BTLinkFourStatus = true;
+        BTConstants.BT_LINK_FOUR_STATUS = true;
         status4("Connected");
     }
 
     @Override
     public void onSerialConnectErrorFour(Exception e) {
-        BTConstants.BTLinkFourStatus = false;
+        BTConstants.BT_LINK_FOUR_STATUS = false;
         status4("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_4: <SerialConnectError: " + e.getMessage() + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_4: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -528,21 +528,21 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     @Override
     public void onSerialIoErrorFour(Exception e, Integer fromCode) {
-        BTConstants.BTLinkFourStatus = false;
+        BTConstants.BT_LINK_FOUR_STATUS = false;
         status4("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_4: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_4: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect4() {
         try {
 
-            if (BTConstants.deviceAddress4 != null && !BTConstants.deviceAddress4.isEmpty()) {
+            if (BTConstants.DEVICE_ADDRESS_4 != null && !BTConstants.DEVICE_ADDRESS_4.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress4);
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.DEVICE_ADDRESS_4);
                 status4("Connecting...");
-                //BTConstants.BTLinkTwoStatus = false;
+                //BTConstants.BT_LINK_FOUR_STATUS = false;
                 SerialSocketFour socket = new SerialSocketFour(activity.getApplicationContext(), device);
                 service4.connect(socket);
             }
@@ -553,18 +553,18 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void send4(String str) {
-        if (!BTConstants.BTLinkFourStatus) {
-            BTConstants.CurrentCommand_LinkFour = "";
+        if (!BTConstants.BT_LINK_FOUR_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_FOUR = "";
             Log.i(TAG, "BTSPPLink_4: Link not connected");
             //Toast.makeText(activity, "BTSPPLink_4: Link not connected", Toast.LENGTH_SHORT).show();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_4: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_4: Link not connected");
             return;
         }
         try {
             //Log command sent:str
-            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-                BTConstants.CurrentCommand_LinkFour = str;
+            if (!str.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+                BTConstants.CURRENT_COMMAND_LINK_FOUR = str;
             }
             Log.i(TAG, "BTSPPLink_4: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -575,11 +575,11 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void sendBytes4(byte[] data) {
-        if (!BTConstants.BTLinkFourStatus) {
-            BTConstants.CurrentCommand_LinkFour = "";
+        if (!BTConstants.BT_LINK_FOUR_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_FOUR = "";
             Log.i(TAG, "BTSPPLink_4: Link not connected");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_4: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_4: Link not connected");
             return;
         }
         try {
@@ -592,12 +592,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void receive4(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
-        Log.i(TAG, "BTSPPLink_4: Request>>" + BTConstants.CurrentCommand_LinkFour);
+        Log.i(TAG, "BTSPPLink_4: Request>>" + BTConstants.CURRENT_COMMAND_LINK_FOUR);
         Log.i(TAG, "BTSPPLink_4: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("mac_address")) {
-            BTConstants.isNewVersionLinkFour = true;
+        if (BTConstants.CURRENT_COMMAND_LINK_FOUR.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("mac_address")) {
+            BTConstants.IS_NEW_VERSION_LINK_FOUR = true;
         }
         if (Response.contains("$$")) {
 
@@ -624,7 +624,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
             sb4.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkFour || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkFour.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkFour.contains(BTConstants.p_type_command)) {
+            if (BTConstants.IS_NEW_VERSION_LINK_FOUR || BTConstants.FOR_OSCILLOSCOPE || (BTConstants.CURRENT_COMMAND_LINK_FOUR.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.contains("BTMAC")) || BTConstants.CURRENT_COMMAND_LINK_FOUR.contains(BTConstants.P_TYPE_COMMAND)) {
                 sb4.append(Response);
             } else {
                 // For old version Link response
@@ -637,7 +637,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void sendBroadcastIntentFromLinkFour(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkFourData");
-        broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkFour);
+        broadcastIntent.putExtra("Request", BTConstants.CURRENT_COMMAND_LINK_FOUR);
         broadcastIntent.putExtra("Response", spn.trim());
         broadcastIntent.putExtra("Action", "BlueLinkFour");
         activity.sendBroadcast(broadcastIntent);
@@ -645,7 +645,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void status4(String str) {
         Log.i(TAG, "Status4:" + str);
-        BTConstants.BTStatusStrFour = str;
+        BTConstants.BT_STATUS_STR_FOUR = str;
     }
     //endregion
 
@@ -653,17 +653,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     //Link Five code begins....
     @Override
     public void onSerialConnectFive() {
-        BTConstants.BTLinkFiveStatus = true;
+        BTConstants.BT_LINK_FIVE_STATUS = true;
         status5("Connected");
     }
 
     @Override
     public void onSerialConnectErrorFive(Exception e) {
-        BTConstants.BTLinkFiveStatus = false;
+        BTConstants.BT_LINK_FIVE_STATUS = false;
         status5("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_5: <SerialConnectError: " + e.getMessage() + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_5: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -673,21 +673,21 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     @Override
     public void onSerialIoErrorFive(Exception e, Integer fromCode) {
-        BTConstants.BTLinkFiveStatus = false;
+        BTConstants.BT_LINK_FIVE_STATUS = false;
         status5("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_5: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_5: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect5() {
         try {
 
-            if (BTConstants.deviceAddress5 != null && !BTConstants.deviceAddress5.isEmpty()) {
+            if (BTConstants.DEVICE_ADDRESS_5 != null && !BTConstants.DEVICE_ADDRESS_5.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress5);
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.DEVICE_ADDRESS_5);
                 status5("Connecting...");
-                //BTConstants.BTLinkFiveStatus = false;
+                //BTConstants.BT_LINK_FIVE_STATUS = false;
                 SerialSocketFive socket = new SerialSocketFive(activity.getApplicationContext(), device);
                 service5.connect(socket);
             }
@@ -698,17 +698,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void send5(String str) {
-        if (!BTConstants.BTLinkFiveStatus) {
-            BTConstants.CurrentCommand_LinkFive = "";
+        if (!BTConstants.BT_LINK_FIVE_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_FIVE = "";
             Log.i(TAG, "BTSPPLink_5: Link not connected");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_5: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_5: Link not connected");
             return;
         }
         try {
             //Log command sent:str
-            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-                BTConstants.CurrentCommand_LinkFive = str;
+            if (!str.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+                BTConstants.CURRENT_COMMAND_LINK_FIVE = str;
             }
             Log.i(TAG, "BTSPPLink_5: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -719,12 +719,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void sendBytes5(byte[] data) {
-        if (!BTConstants.BTLinkFiveStatus) {
-            BTConstants.CurrentCommand_LinkFive = "";
+        if (!BTConstants.BT_LINK_FIVE_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_FIVE = "";
             Log.i(TAG, "BTSPPLink_5: Link not connected");
             //Toast.makeText(activity, "BTSPPLink_5: Link not connected", Toast.LENGTH_SHORT).show();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_5: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_5: Link not connected");
             return;
         }
         try {
@@ -737,12 +737,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void receive5(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
-        Log.i(TAG, "BTSPPLink_5: Request>>" + BTConstants.CurrentCommand_LinkFive);
+        Log.i(TAG, "BTSPPLink_5: Request>>" + BTConstants.CURRENT_COMMAND_LINK_FIVE);
         Log.i(TAG, "BTSPPLink_5: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkFive.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("mac_address")) {
-            BTConstants.isNewVersionLinkFive = true;
+        if (BTConstants.CURRENT_COMMAND_LINK_FIVE.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("mac_address")) {
+            BTConstants.IS_NEW_VERSION_LINK_FIVE = true;
         }
         if (Response.contains("$$")) {
 
@@ -769,7 +769,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
             sb5.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkFive || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkFive.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkFive.contains(BTConstants.p_type_command)) {
+            if (BTConstants.IS_NEW_VERSION_LINK_FIVE || BTConstants.FOR_OSCILLOSCOPE || (BTConstants.CURRENT_COMMAND_LINK_FIVE.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.contains("BTMAC")) || BTConstants.CURRENT_COMMAND_LINK_FIVE.contains(BTConstants.P_TYPE_COMMAND)) {
                 sb5.append(Response);
             } else {
                 // For old version Link response
@@ -782,7 +782,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void sendBroadcastIntentFromLinkFive(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkFiveData");
-        broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkFive);
+        broadcastIntent.putExtra("Request", BTConstants.CURRENT_COMMAND_LINK_FIVE);
         broadcastIntent.putExtra("Response", spn.trim());
         broadcastIntent.putExtra("Action", "BlueLinkFive");
         activity.sendBroadcast(broadcastIntent);
@@ -790,7 +790,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void status5(String str) {
         Log.i(TAG, "Status5:" + str);
-        BTConstants.BTStatusStrFive = str;
+        BTConstants.BT_STATUS_STR_FIVE = str;
     }
     //Link Five code ends.......
     //endregion
@@ -799,17 +799,17 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     //Link Six code begins....
     @Override
     public void onSerialConnectSix() {
-        BTConstants.BTLinkSixStatus = true;
+        BTConstants.BT_LINK_SIX_STATUS = true;
         status6("Connected");
     }
 
     @Override
     public void onSerialConnectErrorSix(Exception e) {
-        BTConstants.BTLinkSixStatus = false;
+        BTConstants.BT_LINK_SIX_STATUS = false;
         status6("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_6: <SerialConnectError: " + e.getMessage() + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_6: <SerialConnectError: " + e.getMessage() + ">");
     }
 
     @Override
@@ -819,21 +819,21 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     @Override
     public void onSerialIoErrorSix(Exception e, Integer fromCode) {
-        BTConstants.BTLinkSixStatus = false;
+        BTConstants.BT_LINK_SIX_STATUS = false;
         status6("Disconnect");
         e.printStackTrace();
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "BTSPPLink_6: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "BTSPPLink_6: <SerialIoError: " + e.getMessage() + "; ErrorCode: " + fromCode + ">");
     }
 
     public void connect6() {
         try {
 
-            if (BTConstants.deviceAddress6 != null && !BTConstants.deviceAddress6.isEmpty()) {
+            if (BTConstants.DEVICE_ADDRESS_6 != null && !BTConstants.DEVICE_ADDRESS_6.isEmpty()) {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.deviceAddress6);
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(BTConstants.DEVICE_ADDRESS_6);
                 status6("Connecting...");
-                //BTConstants.BTLinkSixStatus = false;
+                //BTConstants.BT_LINK_SIX_STATUS = false;
                 SerialSocketSix socket = new SerialSocketSix(activity.getApplicationContext(), device);
                 service6.connect(socket);
             }
@@ -844,18 +844,18 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void send6(String str) {
-        if (!BTConstants.BTLinkSixStatus) {
-            BTConstants.CurrentCommand_LinkSix = "";
+        if (!BTConstants.BT_LINK_SIX_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_SIX = "";
             Log.i(TAG, "BTSPPLink_6: Link not connected");
             //Toast.makeText(activity, "BTSPPLink_6: Link not connected", Toast.LENGTH_SHORT).show();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_6: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_6: Link not connected");
             return;
         }
         try {
             //Log command sent:str
-            if (!str.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
-                BTConstants.CurrentCommand_LinkSix = str;
+            if (!str.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
+                BTConstants.CURRENT_COMMAND_LINK_SIX = str;
             }
             Log.i(TAG, "BTSPPLink_6: Requesting..." + str);
             byte[] data = (str + newline).getBytes();
@@ -866,11 +866,11 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     }
 
     public void sendBytes6(byte[] data) {
-        if (!BTConstants.BTLinkSixStatus) {
-            BTConstants.CurrentCommand_LinkSix = "";
+        if (!BTConstants.BT_LINK_SIX_STATUS) {
+            BTConstants.CURRENT_COMMAND_LINK_SIX = "";
             Log.i(TAG, "BTSPPLink_6: Link not connected");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "BTSPPLink_6: Link not connected");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "BTSPPLink_6: Link not connected");
             return;
         }
         try {
@@ -883,12 +883,12 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void receive6(byte[] data) {
         String Response = new String(data);
         SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
-        Log.i(TAG, "BTSPPLink_6: Request>>" + BTConstants.CurrentCommand_LinkSix);
+        Log.i(TAG, "BTSPPLink_6: Request>>" + BTConstants.CURRENT_COMMAND_LINK_SIX);
         Log.i(TAG, "BTSPPLink_6: Response>>" + spn.toString());
 
         //==========================================
-        if (BTConstants.CurrentCommand_LinkSix.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("mac_address")) {
-            BTConstants.isNewVersionLinkSix = true;
+        if (BTConstants.CURRENT_COMMAND_LINK_SIX.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("mac_address")) {
+            BTConstants.IS_NEW_VERSION_LINK_SIX = true;
         }
         if (Response.contains("$$")) {
 
@@ -915,7 +915,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
             }
             sb6.setLength(0);
         } else {
-            if (BTConstants.isNewVersionLinkSix || BTConstants.forOscilloscope || (BTConstants.CurrentCommand_LinkSix.equalsIgnoreCase(BTConstants.info_cmd) && !Response.contains("BTMAC")) || BTConstants.CurrentCommand_LinkSix.contains(BTConstants.p_type_command)) {
+            if (BTConstants.IS_NEW_VERSION_LINK_SIX || BTConstants.FOR_OSCILLOSCOPE || (BTConstants.CURRENT_COMMAND_LINK_SIX.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.contains("BTMAC")) || BTConstants.CURRENT_COMMAND_LINK_SIX.contains(BTConstants.P_TYPE_COMMAND)) {
                 sb6.append(Response);
             } else {
                 // For old version Link response
@@ -928,7 +928,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
     public void sendBroadcastIntentFromLinkSix(String spn) {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkSixData");
-        broadcastIntent.putExtra("Request", BTConstants.CurrentCommand_LinkSix);
+        broadcastIntent.putExtra("Request", BTConstants.CURRENT_COMMAND_LINK_SIX);
         broadcastIntent.putExtra("Response", spn.trim());
         broadcastIntent.putExtra("Action", "BlueLinkSix");
         activity.sendBroadcast(broadcastIntent);
@@ -936,7 +936,7 @@ public class BTSPPMain implements SerialListenerOne, SerialListenerTwo, SerialLi
 
     public void status6(String str) {
         Log.i(TAG, "Status6:" + str);
-        BTConstants.BTStatusStrSix = str;
+        BTConstants.BT_STATUS_STR_SIX = str;
     }
     //Link Six code ends.......
     //endregion

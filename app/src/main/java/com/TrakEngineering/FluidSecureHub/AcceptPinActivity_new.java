@@ -189,19 +189,19 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         AppConstants.ACS_READER = sharedPre2.getBoolean("ACS_Reader", false);
 
         SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsPersonPinAndFOBRequire = sharedPrefODO.getString(AppConstants.IsPersonPinAndFOBRequire, "");
-        AllowAccessDeviceORManualEntry = sharedPrefODO.getString(AppConstants.AllowAccessDeviceORManualEntry, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsPersonPinAndFOBRequire = sharedPrefODO.getString(AppConstants.IS_PERSON_PIN_AND_FOB_REQUIRE, "");
+        AllowAccessDeviceORManualEntry = sharedPrefODO.getString(AppConstants.ALLOW_ACCESS_DEVICE_OR_MANUAL_ENTRY, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+        IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IS_VEHICLE_NUMBER_REQUIRE, "");
 
         SharedPreferences sharedPrefGatehub = AcceptPinActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_GATE_HUB, Context.MODE_PRIVATE);
-        IsGateHub = sharedPrefGatehub.getString(AppConstants.IsGateHub, "");
-        IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IsStayOpenGate, "");
+        IsGateHub = sharedPrefGatehub.getString(AppConstants.IS_GATE_HUB, "");
+        IsStayOpenGate = sharedPrefGatehub.getString(AppConstants.IS_STAY_OPEN_GATE, "");
 
         PersonValidationInProgress = false;
-        AppConstants.serverCallInProgressForPin = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
 
         /* site id is mismatching
         SharedPreferences sharedPref = AcceptPinActivity_new.this.getSharedPreferences(Constants.PREF_COLUMN_SITE, Context.MODE_PRIVATE);
@@ -214,13 +214,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         tv_fobkey = (TextView) findViewById(R.id.tv_fobkey);
         etInput = (EditText) findViewById(R.id.etInput);
 
-        getSupportActionBar().setTitle(AppConstants.BrandName);
+        getSupportActionBar().setTitle(AppConstants.BRAND_NAME);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         InItGUI();
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         KeyboardType = myPrefkb.getString("KeyboardTypePerson", "2");
         ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Personnel");
         ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
@@ -314,8 +314,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 String pin = etPersonnelPin.getText().toString().trim();
                 String FKey = AppConstants.APDU_FOB_KEY;
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Entered PIN num: " + pin + "; Scanned Barcode:" + Barcode_pin_val);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Entered PIN num: " + pin + "; Scanned Barcode:" + Barcode_pin_val);
 
                 //////////common for online offline///////////////////////////////
                 HashMap<String, String> hmap = new HashMap<>();
@@ -341,7 +341,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         if (cd.isConnectingToInternet()) {
                             if (!isFinishing()) {
-                                // if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Onclick 1 ");
+                                // if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " templog Onclick 1 ");
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         }
@@ -356,31 +356,31 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                     new CallSaveButtonFunctionality().execute();//Press Enter fun
                                 } else {
                                     if (mDisableFOBReadingForPin.equalsIgnoreCase("Y")) {
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + "Please enter " + ScreenNameForPersonnel + ". If you still have issues, please contact your Manager.");
                                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error Message", getResources().getString(R.string.pePersonnel).replace("Personnel", ScreenNameForPersonnel));
                                     } else {
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "Please enter " + ScreenNameForPersonnel + " or present an Access Device. If you still have issues, please contact your Manager.");
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + "Please enter " + ScreenNameForPersonnel + " or present an Access Device. If you still have issues, please contact your Manager.");
                                         CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error Message", getResources().getString(R.string.pePersonnelOrAccessDevice).replace("Personnel", ScreenNameForPersonnel));
                                     }
                                 }
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + getResources().getString(R.string.CheckInternet));
                             AppConstants.colorToastBigFont(AcceptPinActivity_new.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                         }
 
                     } else if (pin.equalsIgnoreCase("") && !FKey.equalsIgnoreCase("")) {
                         if (cd.isConnectingToInternet()) {
                             if (!isFinishing()) {
-                                //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Onclick 2");
+                                //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " templog Onclick 2");
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + getResources().getString(R.string.CheckInternet));
                             AppConstants.colorToastBigFont(AcceptPinActivity_new.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                         }
 
@@ -388,21 +388,21 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         if (cd.isConnectingToInternet()) {
                             if (!isFinishing()) {
-                                //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Onclick 3 ");
+                                //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " templog Onclick 3 ");
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + getResources().getString(R.string.CheckInternet));
                             AppConstants.colorToastBigFont(AcceptPinActivity_new.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                         }
                     }
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                     AppConstants.AUTH_CALL_SUCCESS = false;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Offline Pin : " + pin);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Offline Pin : " + pin);
 
                     if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                         //offline----------
@@ -412,8 +412,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             checkPINvalidation(hmap);
                         }
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Offline Access not granted to this HUB.");
                         //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                     }
 
@@ -430,11 +430,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 AppConstants.APDU_FOB_KEY = "";
                 MagCard_personnel = "";
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Manually entered Barcode value: " + Barcode_pin_val);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Manually entered Barcode value: " + Barcode_pin_val);
 
                 if (cd.isConnectingToInternet()) {
-                    //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Onclick btnSavebar ");
+                    //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " templog Onclick btnSavebar ");
                     new GetPinNuOnFobKeyDetection().execute();
                 }
             }
@@ -457,7 +457,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         });
 
         try {
-            etPersonnelPin.setInputType(Integer.parseInt(KeyboardType));
+            if (KeyboardType.equals("2")) {
+                etPersonnelPin.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_TEXT);
+            } else {
+                etPersonnelPin.setInputType(Integer.parseInt(KeyboardType));
+            }
         } catch (Exception e) {
             System.out.println("keyboard exception");
             etPersonnelPin.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -473,7 +477,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int InputTyp = etPersonnelPin.getInputType();
-                if (InputTyp == 2) {
+                if (InputTyp == 2 || InputTyp == 3) {
                     etBarcode.setInputType(InputType.TYPE_CLASS_TEXT);
                     etPersonnelPin.setInputType(InputType.TYPE_CLASS_TEXT);
                     tv_swipekeybord.setText(getResources().getString(R.string.PressFor123));
@@ -513,9 +517,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (AppConstants.serverAuthCallCompleted) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<onResume skipped.>");
+        if (AppConstants.SERVER_AUTH_CALL_COMPLETED) {
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<onResume skipped.>");
             return;
         }
 
@@ -539,7 +543,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         DisplayScreenInit();
 
-        RegisterBroadcastForReader();//BroadcastReciver for MagCard,HF and LF Readers
+        RegisterBroadcastForReader();//BroadcastReceiver for MagCard,HF and LF Readers
 
         TimeoutPinScreen();
 
@@ -563,7 +567,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 if (!AppConstants.PinLocal_FOB_KEY.equalsIgnoreCase("")) {
 
-                    CancelTimer();
+                    cancelTimer();
                     System.out.println("Pin FOK_KEY" + AppConstants.APDU_FOB_KEY);
 
                     runOnUiThread(new Runnable() {
@@ -599,7 +603,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        CancelTimer();
+        cancelTimer();
 
         if (receiver != null) {
             this.unregisterReceiver(receiver);
@@ -612,12 +616,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         AppConstants.PinLocal_FOB_KEY = "";
         //  AppConstants.APDU_FOB_KEY = "";
-        CancelTimer();
+        cancelTimer();
         ScreenTimer();
 
     }
 
-    private void CancelTimer() {
+    private void cancelTimer() {
 
         for (int i = 0; i < TimerList.size(); i++) {
             TimerList.get(i).cancel();
@@ -680,19 +684,19 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.mreconnect_ble_readers:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Reconnect BLE Readers>");
-                AppConstants.showReaderStatus = true;
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Reconnect BLE Readers>");
+                AppConstants.SHOW_READER_STATUS = true;
                 new ReconnectBleReaders().execute();
                 return true;
             case R.id.mreboot_reader:
-                AppConstants.showReaderStatus = true;
+                AppConstants.SHOW_READER_STATUS = true;
                 CustomDialogForRebootCmd(AcceptPinActivity_new.this, "Please enter a code to continue.", "Message");
                 return true;
             case R.id.mshow_reader_status:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Show Reader Status>");
-                AppConstants.showReaderStatus = true;
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Show Reader Status>");
+                AppConstants.SHOW_READER_STATUS = true;
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -705,13 +709,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             String Str_data = data.toString().trim();
             System.out.println("FOK_KEY Pin " + Str_data);
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  Response LF: " + Str_data);
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Response LF: " + Str_data);
             String Str_check = Str_data.replace(" ", "");
 
             if (Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Unable to read fob: " + Str_data);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Unable to read fob: " + Str_data);
                 CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
@@ -745,8 +749,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 } catch (Exception ex) {
                     System.out.println(ex);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData --Exception " + ex);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  displayData --Exception " + ex);
                 }
 
             }
@@ -802,13 +806,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             String Str_data = data.toString().trim();
             System.out.println("FOK_KEY pIN " + Str_data);
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Response HF: " + Str_data);
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Response HF: " + Str_data);
             String Str_check = Str_data.replace(" ", "");
 
             if (Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Unable to read fob: " + Str_data);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Unable to read fob: " + Str_data);
                 CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to read fob.  Please Try again..");
 
             } else if (CommonUtils.ValidateFobkey(Str_check) && Str_check.length() > 4) {
@@ -842,8 +846,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 } catch (Exception ex) {
                     System.out.println(ex);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData_HF --Exception " + ex);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  displayData_HF --Exception " + ex);
                 }
 
             }
@@ -897,13 +901,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private void displayData_MagCard(String data) {
 
         System.out.println("MagCard data 002----" + data);
-        ///if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " displayData_MagCard " + data);
+        ///if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " displayData_MagCard " + data);
 
         if (data != null && !data.isEmpty()) {
 
             String Str_data = data.toString().trim();
             Log.i(TAG, "displayData MagCard:" + Str_data);
-            // if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  displayData MagCard: " + Str_data);
+            // if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  displayData MagCard: " + Str_data);
 
             String Str_check = Str_data.replace(" ", "");
             if (!CommonUtils.ValidateFobkey(Str_check) || Str_data.contains("FFFFFFFFFFFFFFFFFFFF") || Str_data.contains("FF FF FF FF FF FF FF FF FF FF")) {
@@ -922,8 +926,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 } catch (Exception ex) {
                     MagCard_personnel = "";
                     System.out.println(ex);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "  displayData Split MagCard  --Exception " + ex);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "  displayData Split MagCard  --Exception " + ex);
                 }
 
             }
@@ -935,7 +939,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     private String sendVersionToServer(String bleVersion, String bletype) {
         SharedPreferences sharedPrefODO = this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        String PersonId = sharedPrefODO.getString(AppConstants.HubId, "");
+        String PersonId = sharedPrefODO.getString(AppConstants.HUBID, "");
         BLEType = bletype;
 
         SharedPreferences sharedPref = this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -962,8 +966,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         } catch (Exception e) {
             System.out.println(e);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  response BLE LF version number  --Exception " + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  response BLE LF version number  --Exception " + e);
         }
 
         return response;
@@ -981,10 +985,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 ScreenTimer();
 
                 SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IsVehicleNumberRequire, "");
+                IsVehicleNumberRequire = sharedPrefODO.getString(AppConstants.IS_VEHICLE_NUMBER_REQUIRE, "");
 
                 if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-                    IsNonValidatePerson = sharedPrefODO.getString(AppConstants.IsNonValidatePerson, "");
+                    IsNonValidatePerson = sharedPrefODO.getString(AppConstants.IS_NON_VALIDATE_PERSON, "");
                 } else {
                     IsNonValidateVehicle = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidateVehicle;
                     IsNonValidatePerson = controller.getOfflineHubDetails(AcceptPinActivity_new.this).IsNonValidatePerson;
@@ -1003,25 +1007,25 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                         if (!isFinishing()) {
-                            //if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: MAG " + MagCard_personnel);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "MagCard read success: " + fob);
+                            //if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " templog Fob success: MAG " + MagCard_personnel);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "MagCard read success: " + fob);
                             new GetPinNuOnFobKeyDetection().execute();
                         }
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
                         //offline---------------
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Offline Personnel FOB: " + fob);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Offline Personnel FOB: " + fob);
                         if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                             checkPINvalidation(hmap);
                             String PinNumber = hmap.get("PinNumber");
                             AppConstants.OFF_PERSON_PIN = PinNumber;
                             etPersonnelPin.setText(PinNumber);
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Offline Access not granted to this HUB.");
                             //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                         }
                     }
@@ -1044,24 +1048,24 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                             if (!isFinishing()) {
-                                // if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " templog Fob success: APDU " + AppConstants.APDU_FOB_KEY);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "FOB read success: " + fob);
+                                // if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " templog Fob success: APDU " + AppConstants.APDU_FOB_KEY);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "FOB read success: " + fob);
                                 new GetPinNuOnFobKeyDetection().execute();
                             }
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Offline Personnel FOB: " + fob);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Internet Connection: " + cd.isConnectingToInternet() + "; NETWORK_STRENGTH: " + AppConstants.NETWORK_STRENGTH);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Offline Personnel FOB: " + fob);
                             if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                                 checkPINvalidation(hmap);
                                 String PinNumber = hmap.get("PinNumber");
                                 AppConstants.OFF_PERSON_PIN = PinNumber;
                                 etPersonnelPin.setText(PinNumber);
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "Offline Access not granted to this HUB.");
                                 //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                             }
                         }
@@ -1072,8 +1076,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     }
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Access Device not found");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Access Device not found");
                     AppConstants.colorToastBigFont(AcceptPinActivity_new.this, "Access Device not found", Color.BLUE);
                 }
 
@@ -1126,6 +1130,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     }
 
     public void cancelAction(View v) {
+
         onBackPressed();
     }
 
@@ -1133,21 +1138,21 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     public void onBackPressed() {
         CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
         if (IsGateHub.equalsIgnoreCase("True")) {
-            AppConstants.GoButtonAlreadyClicked = false;
+            AppConstants.GO_BUTTON_ALREADY_CLICKED = false;
         }
         // ActivityHandler.removeActivity(3);
 
-        AppConstants.serverCallInProgressForPin = false;
-        AppConstants.serverCallInProgressForVehicle = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
         Istimeout_Sec = false;
-        //AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity.this); //Clear EditText on move to welcome activity.
+        //AppConstants.clearEditTextFieldsOnBack(AcceptPinActivity.this); //Clear EditText on move to welcome activity.
         finish();
     }
 
     public void DisplayScreenInit() {
 
-        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_Data, Context.MODE_PRIVATE);
-        boolean BarcodeStatus = sharedPref.getBoolean(AppConstants.UseBarcodeForPersonnel, false);
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_FA_DATA, Context.MODE_PRIVATE);
+        boolean BarcodeStatus = sharedPref.getBoolean(AppConstants.USE_BARCODE_FOR_PERSONNEL, false);
 
         if (BarcodeStatus) {
             btn_barcode.setVisibility(View.VISIBLE);
@@ -1159,7 +1164,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
             SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-            IsPersonHasFob = sharedPrefODO.getString(AppConstants.IsPersonHasFob, "false");
+            IsPersonHasFob = sharedPrefODO.getString(AppConstants.IS_PERSON_HAS_FOB, "false");
         } else {
             IsPersonHasFob = controller.getOfflineHubDetails(AcceptPinActivity_new.this).PersonhasFOB;
 
@@ -1336,30 +1341,30 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 if (!etPersonnelPin.getText().toString().trim().isEmpty()) {
 
-                    if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                        Constants.AccPersonnelPIN_FS1 = etPersonnelPin.getText().toString().trim();
+                    if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                        Constants.PERSONNEL_PIN_FS1 = etPersonnelPin.getText().toString().trim();
 
-                        vehicleNumber = Constants.AccVehicleNumber_FS1;
+                        vehicleNumber = Constants.VEHICLE_NUMBER_FS1;
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                        Constants.AccPersonnelPIN = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                        Constants.PERSONNEL_PIN_FS2 = etPersonnelPin.getText().toString().trim();
 
-                        vehicleNumber = Constants.AccVehicleNumber;
+                        vehicleNumber = Constants.VEHICLE_NUMBER_FS2;
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                        Constants.AccPersonnelPIN_FS3 = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                        Constants.PERSONNEL_PIN_FS3 = etPersonnelPin.getText().toString().trim();
 
-                        vehicleNumber = Constants.AccVehicleNumber_FS3;
+                        vehicleNumber = Constants.VEHICLE_NUMBER_FS3;
                         Log.i("ps_Vechile no", "Step 3:" + vehicleNumber);
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                        Constants.AccPersonnelPIN_FS4 = etPersonnelPin.getText().toString().trim();
-                        vehicleNumber = Constants.AccVehicleNumber_FS4;
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                        Constants.AccPersonnelPIN_FS5 = etPersonnelPin.getText().toString().trim();
-                        vehicleNumber = Constants.AccVehicleNumber_FS5;
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                        Constants.AccPersonnelPIN_FS6 = etPersonnelPin.getText().toString().trim();
-                        vehicleNumber = Constants.AccVehicleNumber_FS6;
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                        Constants.PERSONNEL_PIN_FS4 = etPersonnelPin.getText().toString().trim();
+                        vehicleNumber = Constants.VEHICLE_NUMBER_FS4;
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                        Constants.PERSONNEL_PIN_FS5 = etPersonnelPin.getText().toString().trim();
+                        vehicleNumber = Constants.VEHICLE_NUMBER_FS5;
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                        Constants.PERSONNEL_PIN_FS6 = etPersonnelPin.getText().toString().trim();
+                        vehicleNumber = Constants.VEHICLE_NUMBER_FS6;
                     }
 
 
@@ -1408,17 +1413,17 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     AppConstants.FOB_KEY_VEHICLE = AppConstants.APDU_FOB_KEY;
 
                     Log.i(TAG, "VehicleNumber: " + vehicleNumber);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "VehicleNumber: " + vehicleNumber);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "VehicleNumber: " + vehicleNumber);
 
                     if (AppConstants.APDU_FOB_KEY.equalsIgnoreCase("")) {
                         Log.i(TAG, "PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "  Fob:" + AppConstants.APDU_FOB_KEY);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "; Fob:" + AppConstants.APDU_FOB_KEY);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "PIN EN Manually: " + etPersonnelPin.getText().toString().trim() + "; Fob:" + AppConstants.APDU_FOB_KEY);
                     } else {
                         Log.i(TAG, "PIN FOB:" + AppConstants.APDU_FOB_KEY + "  PIN No: " + String.valueOf(etPersonnelPin.getText()));
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel FOB No:" + AppConstants.APDU_FOB_KEY + "; PIN Number:" + String.valueOf(etPersonnelPin.getText()) + "; Barcode_val:" + Barcode_pin_val + "; MagCard_personnel:" + MagCard_personnel);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Personnel FOB No:" + AppConstants.APDU_FOB_KEY + "; PIN Number:" + String.valueOf(etPersonnelPin.getText()) + "; Barcode_val:" + Barcode_pin_val + "; MagCard_personnel:" + MagCard_personnel);
                     }
 
 
@@ -1438,7 +1443,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     RequestBody body = RequestBody.create(TEXT, jsonData);
                     Request request = new Request.Builder()
-                            .url(AppConstants.webURL)
+                            .url(AppConstants.WEB_URL)
                             .post(body)
                             .addHeader("Authorization", authString)
                             .build();
@@ -1452,8 +1457,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             } catch (SocketTimeoutException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " CallSaveButtonFunctionality  STE2 " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " CallSaveButtonFunctionality  STE2 " + e);
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -1492,15 +1497,15 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
-                        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +" PIN Accepted:" + etPersonnelPin.getText().toString().trim());
+                        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG +" PIN Accepted:" + etPersonnelPin.getText().toString().trim());
 
                         btnSave.setClickable(false);
 
                         SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-                        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+                        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+                        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IS_HOURS_REQUIRE, "");
+                        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+                        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
                         if (IsDepartmentRequire.equalsIgnoreCase("True") && !IsGateHub.equalsIgnoreCase("True")) {
 
@@ -1514,7 +1519,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         } else {
 
-                            AppConstants.serverCallInProgressForPin = true;
+                            AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = true;
                             barcodeReaderCall = true;
                             PersonValidationInProgress = true;
                             AcceptServiceCall asc = new AcceptServiceCall();
@@ -1525,8 +1530,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                         String ResponceText = jsonObject.getString("ResponceText");
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "PIN rejected. Error: " + ResponceText);
 
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
 
@@ -1537,24 +1542,24 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else if (ValidationFailFor.equalsIgnoreCase("Pin")) {
 
                             //Clear Pin edit text
-                            if (Constants.CurrentSelectedHose.equals("FS1")) {
-                                Constants.AccPersonnelPIN_FS1 = "";
-                            } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-                                Constants.AccPersonnelPIN = "";
-                            } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-                                Constants.AccPersonnelPIN_FS3 = "";
-                            } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-                                Constants.AccPersonnelPIN_FS4 = "";
-                            } else if (Constants.CurrentSelectedHose.equals("FS5")) {
-                                Constants.AccPersonnelPIN_FS5 = "";
-                            } else if (Constants.CurrentSelectedHose.equals("FS6")) {
-                                Constants.AccPersonnelPIN_FS6 = "";
+                            if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
+                                Constants.PERSONNEL_PIN_FS1 = "";
+                            } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS2")) {
+                                Constants.PERSONNEL_PIN_FS2 = "";
+                            } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS3")) {
+                                Constants.PERSONNEL_PIN_FS3 = "";
+                            } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS4")) {
+                                Constants.PERSONNEL_PIN_FS4 = "";
+                            } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS5")) {
+                                Constants.PERSONNEL_PIN_FS5 = "";
+                            } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS6")) {
+                                Constants.PERSONNEL_PIN_FS6 = "";
                             }
 
                             //AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.BLUE);
                             //CommonUtils.AlertDialogAutoClose(AcceptPinActivity_new.this, "Message", ResponceText);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "ValidateFor Pin: " + ResponceText);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "ValidateFor Pin: " + ResponceText);
 
                             DialogRecreate(AcceptPinActivity_new.this, "Message", ResponceText);
 
@@ -1562,11 +1567,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                             AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.BLUE);
                             //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceText);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "ValidateFor Vehicle: " + ResponceText);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "ValidateFor Vehicle: " + ResponceText);
 
                             CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
-                            AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this); //Clear EditText on move to welcome activity.
+                            AppConstants.clearEditTextFieldsOnBack(AcceptPinActivity_new.this); //Clear EditText on move to welcome activity.
                             Intent intent = new Intent(AcceptPinActivity_new.this, WelcomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
@@ -1575,12 +1580,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                             //AppConstants.colorToastBigFont(AcceptPinActivity_new.this, ResponceText, Color.BLUE);
                             CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ResponceText);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "ValidateFor Else: " + ResponceText);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "ValidateFor Else: " + ResponceText);
 
                             /*AppConstants.colorToastBigFont(this, "Some thing went wrong Please try again..\n"+ResponceText, Color.BLUE);
-                             if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG+" Some thing went wrong Please try again..(~else~)\n"+ResponceText);
-                            AppConstants.ClearEdittextFielsOnBack(DeviceControlActivity_fsnp.this); //Clear EditText on move to welcome activity.
+                             if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG+" Some thing went wrong Please try again..(~else~)\n"+ResponceText);
+                            AppConstants.clearEditTextFieldsOnBack(DeviceControlActivity_fsnp.this); //Clear EditText on move to welcome activity.
                             Intent intent = new Intent(DeviceControlActivity_fsnp.this, WelcomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);*/
@@ -1595,11 +1600,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality Temporary loss of cell service ~Switching to offline mode!!");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "CallSaveButtonFunctionality Temporary loss of cell service ~Switching to offline mode!!");
                     AppConstants.NETWORK_STRENGTH = false;
                 }
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
@@ -1607,8 +1612,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     checkPINvalidation(hmapSwitchOfflinepin);
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Offline Access not granted to this HUB.");
                     //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                 }
 
@@ -1677,8 +1682,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                 //objEntityClass.IsBothFobAndPinRequired = IsBothFobAndPinRequired_flag;
 
                 System.out.println(TAG + "Personnel PIN: Read FOB:" + AppConstants.APDU_FOB_KEY + "  PIN Number: " + String.valueOf(etPersonnelPin.getText()));
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Personnel FOB No:" + AppConstants.APDU_FOB_KEY + "; PIN Number:" + String.valueOf(etPersonnelPin.getText()) + "; Barcode_val:" + Barcode_pin_val + "; MagCard_personnel:" + MagCard_personnel);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Personnel FOB No:" + AppConstants.APDU_FOB_KEY + "; PIN Number:" + String.valueOf(etPersonnelPin.getText()) + "; Barcode_val:" + Barcode_pin_val + "; MagCard_personnel:" + MagCard_personnel);
 
                 ServerHandler serverHandler = new ServerHandler();
 
@@ -1698,7 +1703,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -1713,8 +1718,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 InScrverCall = false;
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetPinNuOnFobKeyDetection  STEP1 " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetPinNuOnFobKeyDetection  STEP1 " + e);
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -1723,8 +1728,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             } catch (Exception ex) {
                 InScrverCall = false;
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetPinNuOnFobKeyDetection  STEP2 " + ex);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetPinNuOnFobKeyDetection  STEP2 " + ex);
                 CommonUtils.LogMessage("TAG", "CheckValidPinOrFOBNUmber ", ex);
                 if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
@@ -1776,8 +1781,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     } else {
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Person Fob Read Fail. Error: " + ResponceMessage);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Person Fob Read Fail. Error: " + ResponceMessage);
 
                         ////////////////
 
@@ -1786,22 +1791,22 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             if (MagCard_personnel != null && !MagCard_personnel.isEmpty()) {
                                 if (MagCard_personnel.equalsIgnoreCase(AppConstants.NonValidateVehicle_FOB_KEY)) {
                                     //error message
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Wrong access device is presented. Please present different access device.");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "Wrong access device is presented. Please present different access device.");
                                     AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Wrong access device is presented. Please present different access device.");
                                 } else {
-                                    if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                                        Constants.AccPersonnelPIN_FS1 = MagCard_personnel;
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                                        Constants.AccPersonnelPIN = MagCard_personnel;
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                                        Constants.AccPersonnelPIN_FS3 = MagCard_personnel;
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                                        Constants.AccPersonnelPIN_FS4 = MagCard_personnel;
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                                        Constants.AccPersonnelPIN_FS5 = MagCard_personnel;
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                                        Constants.AccPersonnelPIN_FS6 = MagCard_personnel;
+                                    if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                                        Constants.PERSONNEL_PIN_FS1 = MagCard_personnel;
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                                        Constants.PERSONNEL_PIN_FS2 = MagCard_personnel;
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                                        Constants.PERSONNEL_PIN_FS3 = MagCard_personnel;
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                                        Constants.PERSONNEL_PIN_FS4 = MagCard_personnel;
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                                        Constants.PERSONNEL_PIN_FS5 = MagCard_personnel;
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                                        Constants.PERSONNEL_PIN_FS6 = MagCard_personnel;
                                     }
                                 }
                             } else if (AppConstants.APDU_FOB_KEY != null) {
@@ -1810,26 +1815,26 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 String fob = AppConstants.APDU_FOB_KEY.replace(":", "").trim();
                                 if (fob.equalsIgnoreCase(AppConstants.NonValidateVehicle_FOB_KEY)) {
                                     //error message
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + "Same access device is scanned again. Please check.");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + "Same access device is scanned again. Please check.");
                                     CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Same access device is scanned again. Please check.");
                                 } else {
 
                                     tv_enter_pin_no.setText(getResources().getString(R.string.PersonnelNumberHeading).replace("Number", "").replace("Personnel", ScreenNameForPersonnel) + " ****");//fob replace by asterisk for password
                                     etPersonnelPin.setText(fob);
 
-                                    if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                                        Constants.AccPersonnelPIN_FS1 = etPersonnelPin.getText().toString().trim();
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                                        Constants.AccPersonnelPIN = etPersonnelPin.getText().toString().trim();
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                                        Constants.AccPersonnelPIN_FS3 = etPersonnelPin.getText().toString().trim();
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                                        Constants.AccPersonnelPIN_FS4 = etPersonnelPin.getText().toString().trim();
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                                        Constants.AccPersonnelPIN_FS5 = etPersonnelPin.getText().toString().trim();
-                                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                                        Constants.AccPersonnelPIN_FS6 = etPersonnelPin.getText().toString().trim();
+                                    if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                                        Constants.PERSONNEL_PIN_FS1 = etPersonnelPin.getText().toString().trim();
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                                        Constants.PERSONNEL_PIN_FS2 = etPersonnelPin.getText().toString().trim();
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                                        Constants.PERSONNEL_PIN_FS3 = etPersonnelPin.getText().toString().trim();
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                                        Constants.PERSONNEL_PIN_FS4 = etPersonnelPin.getText().toString().trim();
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                                        Constants.PERSONNEL_PIN_FS5 = etPersonnelPin.getText().toString().trim();
+                                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                                        Constants.PERSONNEL_PIN_FS6 = etPersonnelPin.getText().toString().trim();
                                     }
 
                                 }
@@ -1842,7 +1847,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    AppConstants.serverCallInProgressForPin = true;
+                                    AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = true;
                                     barcodeReaderCall = true;
                                     PersonValidationInProgress = true;
                                     AcceptServiceCall asc = new AcceptServiceCall();
@@ -1862,8 +1867,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else if (IsBothFobAndPinRequired.equalsIgnoreCase("yes")) {
 
                             AcceptPinNumber();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<(BothFobAndPinRequired) Showing the keyboard.>");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<(BothFobAndPinRequired) Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) etPersonnelPin.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             etPersonnelPin.requestFocus();
                             inputMethodManager.showSoftInput(etPersonnelPin, 0);
@@ -1892,8 +1897,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else if (IsNewMagneticCardReaderNumber.equalsIgnoreCase("yes")) {
 
                             AcceptPinNumber();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<(NewMagneticCardReaderNumber) Showing the keyboard.>");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<(NewMagneticCardReaderNumber) Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) etPersonnelPin.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             etPersonnelPin.requestFocus();
                             inputMethodManager.showSoftInput(etPersonnelPin, 0);
@@ -1916,8 +1921,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else if (IsNewFob.equalsIgnoreCase("Yes") && IsPersonHasFob.equalsIgnoreCase("true")) {
 
                             AcceptPinNumber();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<(NewFob) Showing the keyboard.>");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<(NewFob) Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) etPersonnelPin.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             etPersonnelPin.requestFocus();
                             inputMethodManager.showSoftInput(etPersonnelPin, 0);
@@ -1935,8 +1940,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         } else {
 
                             AcceptPinNumber();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "<Showing the keyboard.>");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<Showing the keyboard.>");
                             InputMethodManager inputMethodManager = (InputMethodManager) etPersonnelPin.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             etPersonnelPin.requestFocus();
                             inputMethodManager.showSoftInput(etPersonnelPin, 0);
@@ -1978,11 +1983,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     }
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
                     if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "GetPinNuOnFobKeyDetection Temporary loss of cell service ~Switching to offline mode!!");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "GetPinNuOnFobKeyDetection Temporary loss of cell service ~Switching to offline mode!!");
                         AppConstants.NETWORK_STRENGTH = false;
                     }
                     if (OfflineConstants.isOfflineAccess(AcceptPinActivity_new.this)) {
@@ -1990,8 +1995,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         checkPINvalidation(hmapSwitchOfflinepin);
 
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Offline Access not granted to this HUB.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Offline Access not granted to this HUB.");
                         //CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Unable to connect server");
                     }
                 }
@@ -2011,13 +2016,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     public void TimeoutPinScreen() {
         Log.i("TimeoutPinScreen", "Start");
         SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IsOdoMeterRequire, "");
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HubId, "");
+        IsOdoMeterRequire = sharedPrefODO.getString(AppConstants.IS_ODO_METER_REQUIRE, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HUBID, "");
 
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
         //long screenTimeOut= (long) (Double.parseDouble(TimeOutinMinute) *60000);
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
 
@@ -2036,7 +2041,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             public void run() {
                                 CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
                                 Istimeout_Sec = false;
-                                AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this);
+                                AppConstants.clearEditTextFieldsOnBack(AcceptPinActivity_new.this);
 
 
                                 Intent i = new Intent(AcceptPinActivity_new.this, WelcomeActivity.class);
@@ -2146,35 +2151,35 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
     public void InCaseOfGateHub() {
 
-        //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG +" InCaseOfGateHub PIN Accepted:" + etPersonnelPin.getText().toString().trim());
+        //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG +" InCaseOfGateHub PIN Accepted:" + etPersonnelPin.getText().toString().trim());
         CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
         String vehicleNumber = "";
 
         if (!etPersonnelPin.getText().toString().trim().isEmpty()) {
 
-            if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                Constants.AccPersonnelPIN_FS1 = etPersonnelPin.getText().toString().trim();
+            if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                Constants.PERSONNEL_PIN_FS1 = etPersonnelPin.getText().toString().trim();
 
-                vehicleNumber = Constants.AccVehicleNumber_FS1;
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS1;
 
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                Constants.AccPersonnelPIN = etPersonnelPin.getText().toString().trim();
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                Constants.PERSONNEL_PIN_FS2 = etPersonnelPin.getText().toString().trim();
 
-                vehicleNumber = Constants.AccVehicleNumber;
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS2;
 
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                Constants.AccPersonnelPIN_FS3 = etPersonnelPin.getText().toString().trim();
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                Constants.PERSONNEL_PIN_FS3 = etPersonnelPin.getText().toString().trim();
 
-                vehicleNumber = Constants.AccVehicleNumber_FS3;
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                Constants.AccPersonnelPIN_FS4 = etPersonnelPin.getText().toString().trim();
-                vehicleNumber = Constants.AccVehicleNumber_FS4;
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                Constants.AccPersonnelPIN_FS5 = etPersonnelPin.getText().toString().trim();
-                vehicleNumber = Constants.AccVehicleNumber_FS5;
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                Constants.AccPersonnelPIN_FS6 = etPersonnelPin.getText().toString().trim();
-                vehicleNumber = Constants.AccVehicleNumber_FS6;
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS3;
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                Constants.PERSONNEL_PIN_FS4 = etPersonnelPin.getText().toString().trim();
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS4;
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                Constants.PERSONNEL_PIN_FS5 = etPersonnelPin.getText().toString().trim();
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS5;
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                Constants.PERSONNEL_PIN_FS6 = etPersonnelPin.getText().toString().trim();
+                vehicleNumber = Constants.VEHICLE_NUMBER_FS6;
             }
         }
 
@@ -2183,10 +2188,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
         btnSave.setClickable(false);
 
         SharedPreferences sharedPrefODO = AcceptPinActivity_new.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IsHoursRequire, "");
-        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+        String IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        String IsHoursRequire = sharedPrefODO.getString(AppConstants.IS_HOURS_REQUIRE, "");
+        String IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        String IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
         if (IsDepartmentRequire.equalsIgnoreCase("True") && !IsGateHub.equalsIgnoreCase("True")) {
 
@@ -2200,7 +2205,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         } else {
 
-            AppConstants.serverCallInProgressForPin = true;
+            AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = true;
             barcodeReaderCall = true;
             PersonValidationInProgress = true;
             AcceptServiceCall asc = new AcceptServiceCall();
@@ -2231,8 +2236,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (personLimitPerDay > 0) {
                         double remainingLimitPerDay = OfflineConstants.getPersonFuelLimitPerDay(AcceptPinActivity_new.this);
                         if (remainingLimitPerDay <= 0) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "You have exceeded your fuel limit for the day.");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "You have exceeded your fuel limit for the day.");
                             CommonUtils.showCustomMessageDilaog(AcceptPinActivity_new.this, "Error", getResources().getString(R.string.PerDayLimitExceeded));
                             return;
                         }
@@ -2293,28 +2298,28 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                             Intent ii = new Intent(AcceptPinActivity_new.this, DisplayMeterActivity.class);
                             startActivity(ii);
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Vehicle is not assigned for this PIN");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Vehicle is not assigned for this PIN");
                             CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ScreenNameForVehicle + " not assigned for this PIN");
                         }
 
 
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Vehicle.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Personnel is not allowed for selected Vehicle.");
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " is not allowed for selected " + ScreenNameForVehicle);
                     }
 
 
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Personnel is not allowed for selected Link");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Personnel is not allowed for selected Link");
                     CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", ScreenNameForPersonnel + " not allowed for selected Link");
                 }
 
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "not assigned any links.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "not assigned any links.");
             }
 
         } else {
@@ -2323,8 +2328,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             if (IsNonValidatePerson.equalsIgnoreCase("True")) {
                 validatePersonnel = "No";
             }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Validate person => " + validatePersonnel);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Validate person => " + validatePersonnel);
             if (IsNonValidatePerson.equalsIgnoreCase("True")) {
                 Intent ii = new Intent(AcceptPinActivity_new.this, DisplayMeterActivity.class);
                 startActivity(ii);
@@ -2336,12 +2341,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (VehicleMap.size() > 0) {
                         //vehicle fob please present pin fob
                         String msg = "This is " + ScreenNameForVehicle + " Access Device. Please use your " + ScreenNameForPersonnel + " Access Device";
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. Access Device (" + fob + ") is vehicle access device.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Personnel is not found in offline db. Access Device (" + fob + ") is vehicle access device.");
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", msg);
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Personnel is not found in offline db");
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Invalid Access Device");
                     }
 
@@ -2352,12 +2357,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     if (VehicleMap.size() > 0) {
                         //vehicle fob please present pin fob
                         String msg = "This is " + ScreenNameForVehicle + ". Please use your " + ScreenNameForPersonnel + ".";
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db. This (" + V_Number + ") is vehicle number.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Personnel is not found in offline db. This (" + V_Number + ") is vehicle number.");
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", msg);
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Personnel is not found in offline db.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Personnel is not found in offline db.");
                         CommonUtils.AutoCloseCustomMessageDialog(AcceptPinActivity_new.this, "Message", "Invalid " + ScreenNameForPersonnel);
                     }
                 }
@@ -2379,18 +2384,18 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 AppConstants.OFF_PERSON_PIN = PinNumber;
 
-                if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                    Constants.AccPersonnelPIN_FS1 = PinNumber;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                    Constants.AccPersonnelPIN = PinNumber;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                    Constants.AccPersonnelPIN_FS3 = PinNumber;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                    Constants.AccPersonnelPIN_FS4 = PinNumber;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                    Constants.AccPersonnelPIN_FS5 = PinNumber;
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                    Constants.AccPersonnelPIN_FS6 = PinNumber;
+                if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                    Constants.PERSONNEL_PIN_FS1 = PinNumber;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                    Constants.PERSONNEL_PIN_FS2 = PinNumber;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                    Constants.PERSONNEL_PIN_FS3 = PinNumber;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                    Constants.PERSONNEL_PIN_FS4 = PinNumber;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                    Constants.PERSONNEL_PIN_FS5 = PinNumber;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                    Constants.PERSONNEL_PIN_FS6 = PinNumber;
                 }
 
                 OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", PersonId, "", "", "", "", "", "");
@@ -2412,53 +2417,53 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     }
                 } catch (Exception ex) {
                     PinNumber = "";
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Exception while getting entered pin number. " + ex.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Exception while getting entered pin number. " + ex.getMessage());
                 }
 
                 if (IsNonValidatePerson.equalsIgnoreCase("True")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Pin Number (Non-validate): " + PinNumber);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Pin Number (Non-validate): " + PinNumber);
                     if (!PinNumber.isEmpty()) {
 
                         AppConstants.OFF_PERSON_PIN = PinNumber;
 
-                        if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                            Constants.AccPersonnelPIN_FS1 = PinNumber;
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                            Constants.AccPersonnelPIN = PinNumber;
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                            Constants.AccPersonnelPIN_FS3 = PinNumber;
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                            Constants.AccPersonnelPIN_FS4 = PinNumber;
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                            Constants.AccPersonnelPIN_FS5 = PinNumber;
-                        } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                            Constants.AccPersonnelPIN_FS6 = PinNumber;
+                        if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                            Constants.PERSONNEL_PIN_FS1 = PinNumber;
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                            Constants.PERSONNEL_PIN_FS2 = PinNumber;
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                            Constants.PERSONNEL_PIN_FS3 = PinNumber;
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                            Constants.PERSONNEL_PIN_FS4 = PinNumber;
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                            Constants.PERSONNEL_PIN_FS5 = PinNumber;
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                            Constants.PERSONNEL_PIN_FS6 = PinNumber;
                         }
 
                         OfflineConstants.storeCurrentTransaction(AcceptPinActivity_new.this, "", "", "", "", "", "0", "", "", "", "", "", "");
 
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Pin Number is empty.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Pin Number is empty.");
                     }
                 } else {
                     if (!cd.isConnectingToInternet()) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Pin Number (" + PinNumber + ") not found in offline db.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Pin Number (" + PinNumber + ") not found in offline db.");
                     }
                 }
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception in offlinePersonInitialization. " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Exception in offlinePersonInitialization. " + ex.getMessage());
         }
     }
 
     public void GetBackToWelcomeActivity() {
         Istimeout_Sec = false;
-        AppConstants.ClearEdittextFielsOnBack(AcceptPinActivity_new.this);
+        AppConstants.clearEditTextFieldsOnBack(AcceptPinActivity_new.this);
         CommonUtils.hideKeyboard(AcceptPinActivity_new.this);
 
         Intent i = new Intent(AcceptPinActivity_new.this, WelcomeActivity.class);
@@ -2505,7 +2510,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 RequestBody body = RequestBody.create(TEXT, strings[0]);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", strings[1])
                         .build();
@@ -2531,7 +2536,7 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     /*private void CheckForFirmwareUpgrade() {
 
         //LINK UPGRADE
-        if (AppConstants.UP_Upgrade) {
+        if (AppConstants.UP_UPGRADE) {
 
             //Check for /FSBin folder if not create one
             //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
@@ -2543,24 +2548,24 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             }
 
             *//*if (BTConstants.CurrentTransactionIsBT) {
-                AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
+                AppConstants.UP_UPGRADE_FILE_NAME = "BT_" + AppConstants.UP_UPGRADE_FILE_NAME;
             }*//*
-            String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
+            String LocalPath = binFolderPath + "/" + AppConstants.UP_UPGRADE_FILE_NAME;
             File f = new File(LocalPath);
             if (f.exists()) {
                 Log.e(TAG, "Link upgrade firmware file already exist. Skip download");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ") already exist. Skip download");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Link upgrade firmware file (" + AppConstants.UP_UPGRADE_FILE_NAME + ") already exist. Skip download");
             } else {
-                if (AppConstants.UP_FilePath != null) {
-                    //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Downloading link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ")");
-                    new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name);
+                if (AppConstants.UP_FILE_PATH != null) {
+                    //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FILE_PATH, AppConstants.UP_UPGRADE_FILE_NAME, "UP_Upgrade");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Downloading link upgrade firmware file (" + AppConstants.UP_UPGRADE_FILE_NAME + ")");
+                    new DownloadFileFromURL().execute(AppConstants.UP_FILE_PATH, binFolderPath, AppConstants.UP_UPGRADE_FILE_NAME);
                 } else {
                     Log.e(TAG, "Link upgrade File path null");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Link upgrade File path null");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Link upgrade File path null");
                 }
             }
         }
@@ -2649,23 +2654,23 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 //LF reader status on UI
                 if (mDeviceName.length() > 0 && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
-                    if (!Constants.LF_ReaderStatus.equalsIgnoreCase(LFReaderStatus)) {
-                        LFReaderStatus = Constants.LF_ReaderStatus;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "<LF Reader Status: " + LFReaderStatus + ">");
+                    if (!Constants.LF_READER_STATUS.equalsIgnoreCase(LFReaderStatus)) {
+                        LFReaderStatus = Constants.LF_READER_STATUS;
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "<LF Reader Status: " + LFReaderStatus + ">");
                     }
-                    if (Constants.LF_ReaderStatus.equals("LF Disconnected") && !AppConstants.showReaderStatus) {
+                    if (Constants.LF_READER_STATUS.equals("LF Disconnected") && !AppConstants.SHOW_READER_STATUS) {
                         retryConnect();
                     }
-                    if (AppConstants.showReaderStatus) {
+                    if (AppConstants.SHOW_READER_STATUS) {
                         ReaderStatusUI = true;
                         tv_lf_status.setVisibility(View.VISIBLE);
-                        if (Constants.LF_ReaderStatus.equals("LF Connected") || Constants.LF_ReaderStatus.equals("LF Discovered")) {
-                            tv_lf_status.setText(Constants.LF_ReaderStatus);
+                        if (Constants.LF_READER_STATUS.equals("LF Connected") || Constants.LF_READER_STATUS.equals("LF Discovered")) {
+                            tv_lf_status.setText(Constants.LF_READER_STATUS);
                             tv_lf_status.setTextColor(Color.parseColor("#4CAF50"));
                         } else {
                             retryConnect();
-                            tv_lf_status.setText(Constants.LF_ReaderStatus);
+                            tv_lf_status.setText(Constants.LF_READER_STATUS);
                             tv_lf_status.setTextColor(Color.parseColor("#ff0000"));
                         }
                     }
@@ -2675,23 +2680,23 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 //Hf reader status on UI
                 if (HFDeviceName.length() > 0 && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
-                    if (!Constants.HF_ReaderStatus.equalsIgnoreCase(HFReaderStatus)) {
-                        HFReaderStatus = Constants.HF_ReaderStatus;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "<HF Reader Status: " + HFReaderStatus + ">");
+                    if (!Constants.HF_READER_STATUS.equalsIgnoreCase(HFReaderStatus)) {
+                        HFReaderStatus = Constants.HF_READER_STATUS;
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "<HF Reader Status: " + HFReaderStatus + ">");
                     }
-                    if (Constants.HF_ReaderStatus.equals("HF Disconnected") && !AppConstants.showReaderStatus) {
+                    if (Constants.HF_READER_STATUS.equals("HF Disconnected") && !AppConstants.SHOW_READER_STATUS) {
                         retryConnect();
                     }
-                    if (AppConstants.showReaderStatus) {
+                    if (AppConstants.SHOW_READER_STATUS) {
                         ReaderStatusUI = true;
                         tv_hf_status.setVisibility(View.VISIBLE);
-                        if (Constants.HF_ReaderStatus.equals("HF Connected") || Constants.HF_ReaderStatus.equals("HF Discovered")) {
-                            tv_hf_status.setText(Constants.HF_ReaderStatus);
+                        if (Constants.HF_READER_STATUS.equals("HF Connected") || Constants.HF_READER_STATUS.equals("HF Discovered")) {
+                            tv_hf_status.setText(Constants.HF_READER_STATUS);
                             tv_hf_status.setTextColor(Color.parseColor("#4CAF50"));
                         } else {
                             retryConnect();
-                            tv_hf_status.setText(Constants.HF_ReaderStatus);
+                            tv_hf_status.setText(Constants.HF_READER_STATUS);
                             tv_hf_status.setTextColor(Color.parseColor("#ff0000"));
                         }
                     }
@@ -2701,23 +2706,23 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 //Magnetic reader status on UI
                 if (mMagCardDeviceName.length() > 0 && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
-                    if (!Constants.Mag_ReaderStatus.equalsIgnoreCase(MagReaderStatus)) {
-                        MagReaderStatus = Constants.Mag_ReaderStatus;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "<Mag Reader Status: " + MagReaderStatus + ">");
+                    if (!Constants.MAG_READER_STATUS.equalsIgnoreCase(MagReaderStatus)) {
+                        MagReaderStatus = Constants.MAG_READER_STATUS;
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "<Mag Reader Status: " + MagReaderStatus + ">");
                     }
-                    if (Constants.Mag_ReaderStatus.equals("Mag Disconnected") && !AppConstants.showReaderStatus) {
+                    if (Constants.MAG_READER_STATUS.equals("Mag Disconnected") && !AppConstants.SHOW_READER_STATUS) {
                         retryConnect();
                     }
-                    if (AppConstants.showReaderStatus) {
+                    if (AppConstants.SHOW_READER_STATUS) {
                         ReaderStatusUI = true;
                         tv_mag_status.setVisibility(View.VISIBLE);
-                        if (Constants.Mag_ReaderStatus.equals("Mag Connected") || Constants.Mag_ReaderStatus.equals("Mag Discovered")) {
-                            tv_mag_status.setText(Constants.Mag_ReaderStatus);
+                        if (Constants.MAG_READER_STATUS.equals("Mag Connected") || Constants.MAG_READER_STATUS.equals("Mag Discovered")) {
+                            tv_mag_status.setText(Constants.MAG_READER_STATUS);
                             tv_mag_status.setTextColor(Color.parseColor("#4CAF50"));
                         } else {
                             retryConnect();
-                            tv_mag_status.setText(Constants.Mag_ReaderStatus);
+                            tv_mag_status.setText(Constants.MAG_READER_STATUS);
                             tv_mag_status.setTextColor(Color.parseColor("#ff0000"));
                         }
                     }
@@ -2727,23 +2732,23 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 //QR reader status on UI
                 if (QRCodeReaderForBarcode.length() > 0 && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
-                    if (!Constants.QR_ReaderStatus.equalsIgnoreCase(QRReaderStatus)) {
-                        QRReaderStatus = Constants.QR_ReaderStatus;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "<QR Reader Status: " + QRReaderStatus + ">");
+                    if (!Constants.QR_READER_STATUS.equalsIgnoreCase(QRReaderStatus)) {
+                        QRReaderStatus = Constants.QR_READER_STATUS;
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "<QR Reader Status: " + QRReaderStatus + ">");
                     }
-                    if (Constants.QR_ReaderStatus.equals("QR Disconnected") && !AppConstants.showReaderStatus) {
+                    if (Constants.QR_READER_STATUS.equals("QR Disconnected") && !AppConstants.SHOW_READER_STATUS) {
                         retryConnect();
                     }
-                    if (AppConstants.showReaderStatus) {
+                    if (AppConstants.SHOW_READER_STATUS) {
                         ReaderStatusUI = true;
                         tv_qr_status.setVisibility(View.VISIBLE);
-                        if (Constants.QR_ReaderStatus.equals("QR Connected") || Constants.QR_ReaderStatus.equals("QR Discovered")) {
-                            tv_qr_status.setText(Constants.QR_ReaderStatus);
+                        if (Constants.QR_READER_STATUS.equals("QR Connected") || Constants.QR_READER_STATUS.equals("QR Discovered")) {
+                            tv_qr_status.setText(Constants.QR_READER_STATUS);
                             tv_qr_status.setTextColor(Color.parseColor("#4CAF50"));
                         } else {
                             retryConnect();
-                            tv_qr_status.setText(Constants.QR_ReaderStatus);
+                            tv_qr_status.setText(Constants.QR_READER_STATUS);
                             tv_qr_status.setTextColor(Color.parseColor("#ff0000"));
                         }
                     }
@@ -2789,8 +2794,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "UnRegisterBroadcastForReader Exception:" + e.toString());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "UnRegisterBroadcastForReader Exception:" + e.toString());
         }
 
     }
@@ -2833,21 +2838,21 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     String newData = notificationData.getString("HFCardValue");
                     System.out.println("HFCard data 001 pin----" + newData);
-                    // if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    // if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     displayData_HF(newData);
 
                 } else if (Action.equals("LFReader")) {
 
                     String newData = notificationData.getString("LFCardValue");
                     System.out.println("LFCard data 001 pin----" + newData);
-                    // if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    // if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     displayData_LF(newData);
 
                 } else if (Action.equals("MagReader")) {
 
                     String newData = notificationData.getString("MagCardValue");
                     System.out.println("MagCard data 002----" + newData);
-                    // if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    // if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
                     MagCard_personnel = "";
                     displayData_MagCard(newData);
 
@@ -2855,37 +2860,37 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                     String newData = notificationData.getString("QRCodeValue");
                     System.out.println("QRCode data 001 pin----" + newData);
-                    //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " " + Action + " Raw data:" + newData);
+                    //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " " + Action + " Raw data:" + newData);
 
                     if (newData != null) {
                         //Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                         Barcode_pin_val = newData.trim();
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "QR scan value: " + Barcode_pin_val);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "QR scan value: " + Barcode_pin_val);
                         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
                             if (!isFinishing() && barcodeReaderCall) {
 
                                 barcodeReaderCall = false;
 
                                 if (!Barcode_pin_val.isEmpty()) {
-                                    if (!AppConstants.serverCallInProgressForPin) {
-                                        AppConstants.serverCallInProgressForPin = true;
+                                    if (!AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN) {
+                                        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = true;
                                         new GetPinNuOnFobKeyDetection().execute();
                                     } else {
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "<Previous server call is in queue. Skipped QR validation.>");
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + "<Previous server call is in queue. Skipped QR validation.>");
                                     }
                                 }
                             }
                         } else {
                             //offline---------------
                             if (InScrverCall) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Previous call in queue Skip QRcode status:" + InScrverCall);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "Previous call in queue Skip QRcode status:" + InScrverCall);
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Offline Barcode Read: " + Barcode_pin_val);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "Offline Barcode Read: " + Barcode_pin_val);
                             }
 
                         }
@@ -2917,8 +2922,8 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.ServerCallLogs)
-                    AppConstants.WriteinFile(TAG + " ReconnectBleReaders Exception: " + e.toString());
+                if (AppConstants.SERVER_CALL_LOGS)
+                    AppConstants.writeInFile(TAG + " ReconnectBleReaders Exception: " + e.toString());
             }
 
             return null;
@@ -2931,13 +2936,13 @@ public class AcceptPinActivity_new extends AppCompatActivity {
             public void run() {
                 if (sec_count == 10) {
                     sec_count = 0;
-                    if (!Constants.HF_ReaderStatus.equals("HF Connected") && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    if (!Constants.HF_READER_STATUS.equals("HF Connected") && !HFDeviceAddress.isEmpty() && !AppConstants.ACS_READER && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
-                    } else if (!Constants.LF_ReaderStatus.equals("LF Connected") && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    } else if (!Constants.LF_READER_STATUS.equals("LF Connected") && !mDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
-                    } else if (!Constants.Mag_ReaderStatus.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2")) {
+                    } else if (!Constants.MAG_READER_STATUS.equals("Mag Connected") && !mMagCardDeviceAddress.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N") && !mMagCardDeviceName.contains("MAGCARD_READERV2")) {
                         new ReconnectBleReaders().execute();
-                    } else if (!Constants.QR_ReaderStatus.equals("QR Connected") && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
+                    } else if (!Constants.QR_READER_STATUS.equals("QR Connected") && !QRCodeBluetoothMacAddressForBarcode.isEmpty() && mDisableFOBReadingForPin.equalsIgnoreCase("N")) {
                         new ReconnectBleReaders().execute();
                     } else {
                     }
@@ -2951,10 +2956,10 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
         sec_count = 0;
         sec_countForGateHub = 0;
-        Constants.QR_ReaderStatus = "QR Waiting..";
-        Constants.HF_ReaderStatus = "HF Waiting..";
-        Constants.LF_ReaderStatus = "LF Waiting..";
-        Constants.Mag_ReaderStatus = "Mag Waiting..";
+        Constants.QR_READER_STATUS = "QR Waiting..";
+        Constants.HF_READER_STATUS = "HF Waiting..";
+        Constants.LF_READER_STATUS = "LF Waiting..";
+        Constants.MAG_READER_STATUS = "Mag Waiting..";
 
     }
 
@@ -2979,12 +2984,12 @@ public class AcceptPinActivity_new extends AppCompatActivity {
 
                 String code = edt_code.getText().toString().trim();
 
-                if (code != null && !code.isEmpty() && code.equals(AppConstants.AccessCode)) {
-                    AppConstants.RebootHF_reader = true;
+                if (code != null && !code.isEmpty() && code.equals(AppConstants.ACCESS_CODE)) {
+                    AppConstants.REBOOT_HF_READER = true;
                     //Toast.makeText(AcceptPinActivity_new.this, "Done", Toast.LENGTH_SHORT).show();
                     dialogBus.dismiss();
                 } else {
-                    if (!code.equals(AppConstants.AccessCode)) {
+                    if (!code.equals(AppConstants.ACCESS_CODE)) {
                         Toast.makeText(AcceptPinActivity_new.this, "Code did not match. Please try again", Toast.LENGTH_SHORT).show();
                     }
                     dialogBus.dismiss();
@@ -3032,15 +3037,15 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                     //Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     Barcode_pin_val = data.getStringExtra("Barcode").trim();
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Barcode scan value: " + Barcode_pin_val);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Barcode scan value: " + Barcode_pin_val);
 
                     if (cd.isConnectingToInternet()) {
                         new GetPinNuOnFobKeyDetection().execute();
                     } else {
                         //offline---------------
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Offline Barcode Read: " + Barcode_pin_val);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Offline Barcode Read: " + Barcode_pin_val);
                     }
 
                 } else {
@@ -3151,11 +3156,11 @@ public class AcceptPinActivity_new extends AppCompatActivity {
     private void retryConnect() {
 
         if (sec_countForGateHub > 20 && IsGateHub.equalsIgnoreCase("True") && !PersonValidationInProgress) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Retrying to connect to the reader...");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Retrying to connect to the reader...");
             sec_count = 0;
             sec_countForGateHub = 0;
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "HF Reader reconnection attempt:");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "HF Reader reconnection attempt:");
             recreate();
             //new ReconnectBleReaders().execute();
         }

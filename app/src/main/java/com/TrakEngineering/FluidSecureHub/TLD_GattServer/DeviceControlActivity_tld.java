@@ -91,7 +91,7 @@ public class DeviceControlActivity_tld extends Service {
             final String action = intent.getAction();
             if (BluetoothLeService_tld.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "TLD Gatt-server connected");
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "TLD Gatt-server connected");
 
                 try {
                     Thread.sleep(1000);
@@ -106,7 +106,7 @@ public class DeviceControlActivity_tld extends Service {
 
             } else if (BluetoothLeService_tld.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "TLD Gatt-server Disconnected");
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "TLD Gatt-server Disconnected");
                 //clearUI here
             } else if (BluetoothLeService_tld.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
@@ -128,7 +128,7 @@ public class DeviceControlActivity_tld extends Service {
 
         System.out.println("TLD_ConnectionService start---------");
 
-        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_TldDetails, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_TLD_DETAILS, Context.MODE_PRIVATE);
         IsTLDCall = sharedPref.getString("IsTLDCall", "");
         IsTLDFirmwareUpgrade = sharedPref.getString("IsTLDFirmwareUpgrade", "");
         TLDFirmwareFilePath = sharedPref.getString("TLDFirmwareFilePath", "");
@@ -150,7 +150,7 @@ public class DeviceControlActivity_tld extends Service {
 
         if (mBluetoothLeService_tld != null) {
 
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile("ConfigureTLD " + "MacAddress:"+mDeviceAddress);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("ConfigureTLD " + "MacAddress:"+mDeviceAddress);
             final boolean result = mBluetoothLeService_tld.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }

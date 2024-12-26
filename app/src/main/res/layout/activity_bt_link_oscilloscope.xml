@@ -1,161 +1,476 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BT_Link_Oscilloscope_Activity">
+    android:orientation="vertical"
+    tools:context=".BT_Link_Oscilloscope_Activity" >
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="550dp"
-        android:background="@color/chartBack">
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
 
-        <com.github.mikephil.charting.charts.LineChart
-
-            android:id="@+id/lineChart"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="0dp" />
-    </RelativeLayout>
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/Linear_layout_p_types"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="32dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        tools:layout_editor_absoluteX="0dp">
+            <LinearLayout
+                android:id="@+id/linearLayoutChart"
+                android:layout_width="match_parent"
+                android:layout_height="550dp"
+                android:background="@color/chartBack" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Pulser Type:"
-            android:textSize="20sp"
-            android:layout_marginStart="20dp"
-            android:textColor="@color/black"/>
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lineChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:layout_editor_absoluteX="0dp" />
 
-        <RadioGroup
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:id="@+id/rdg_p_type">
+            </LinearLayout>
 
-            <RadioButton
-                android:id="@+id/type1"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
+            <LinearLayout
+                android:id="@+id/Linear_layout_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                android:checked="false"
-                android:text="1"
-                android:textSize="20sp" />
+                android:orientation="horizontal" >
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:text="2"
-                android:id="@+id/type2"
-                android:layout_gravity="center_horizontal"
-                android:checked="false"
-                android:textSize="20sp"
-                android:layout_marginEnd="20dp" />
+                <Button
+                    android:id="@+id/btnStartScope"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="5sp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorFluid"
+                    android:text="START"
+                    android:textColor="@color/white"
+                    android:textSize="30sp" />
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:text="3"
-                android:id="@+id/type3"
-                android:layout_gravity="center_horizontal"
-                android:checked="false"
-                android:textSize="20sp"
-                android:layout_marginEnd="20dp" />
+                <Button
+                    android:id="@+id/btnDisplay"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="10sp"
+                    android:layout_weight="1"
+                    android:background="@color/colorFluid"
+                    android:text="DISPLAY AND SEND TO SERVER"
+                    android:textColor="@color/white"
+                    android:textSize="22sp" />
 
-            <RadioButton
-                android:id="@+id/type4"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:text="4"
-                android:textSize="20sp" />
+            </LinearLayout>
 
-        </RadioGroup>
+            <LinearLayout
+                android:id="@+id/linearLayout_p_types"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/btnSet"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:text="SET"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pulser Type:"
+                    android:textSize="20sp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="@color/black"/>
 
-        <Button
-            android:id="@+id/btnReconnect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_vertical"
-            android:layout_marginEnd="10dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:hint="Reconnect"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:text="Reconnect"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
+                <!--<RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:orientation="horizontal"
+                    android:id="@+id/rdg_p_type">
 
-    <LinearLayout
-        android:id="@+id/Linear_layout_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Linear_layout_p_types">
+                    <RadioButton
+                        android:id="@+id/type1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginEnd="20dp"
+                        android:checked="false"
+                        android:text="1"
+                        android:textSize="20sp" />
 
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:text="2"
+                        android:id="@+id/type2"
+                        android:layout_gravity="center_horizontal"
+                        android:checked="false"
+                        android:textSize="20sp"
+                        android:layout_marginEnd="20dp" />
 
-        <Button
-            android:id="@+id/btnStartScope"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="5sp"
-            android:layout_marginEnd="25dp"
-            android:layout_weight="1"
-            android:background="@color/colorFluid"
-            android:text="START"
-            android:textColor="@color/white"
-            android:textSize="30sp" />
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:text="3"
+                        android:id="@+id/type3"
+                        android:layout_gravity="center_horizontal"
+                        android:checked="false"
+                        android:textSize="20sp"
+                        android:layout_marginEnd="20dp" />
 
-        <Button
-            android:id="@+id/btnDisplay"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="10sp"
-            android:layout_weight="1"
-            android:background="@color/colorFluid"
-            android:text="DISPLAY AND SEND TO SERVER"
-            android:textColor="@color/white"
-            android:textSize="22sp" />
+                    <RadioButton
+                        android:id="@+id/type4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:text="4"
+                        android:textSize="20sp" />
 
+                </RadioGroup>-->
 
-    </LinearLayout>
+                <Spinner
+                    android:id="@+id/spin_pTypes"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/btnSet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/colorPrimary"
+                    android:text="SET"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:layout_marginEnd="10dp" />
+
+                <Button
+                    android:id="@+id/btnReconnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_p_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginStart="20dp" >
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvTime"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etTime"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_delayTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvDelayTime"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etDelayTime"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkDelayTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_lowAltitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvLowAltitude"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etLowAltitude"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkLowAltitude"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_highAltitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvHighAltitude"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etHighAltitude"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkHighAltitude"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_lowSample"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvLowSample"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etLowSample"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkLowSample"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_highSample"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvHighSample"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etHighSample"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkHighSample"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_lowTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvLowTotal"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etLowTotal"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkLowTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_highTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvHighTotal"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etHighTotal"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkHighTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearPSetting_sampleRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp" >
+
+                    <TextView
+                        android:id="@+id/tvSampleRate"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/etSampleRate"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:inputType="number"
+                        android:maxLength="5" />
+
+                    <CheckBox
+                        android:id="@+id/chkSampleRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

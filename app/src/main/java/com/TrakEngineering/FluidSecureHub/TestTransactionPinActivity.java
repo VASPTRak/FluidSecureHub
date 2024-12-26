@@ -81,11 +81,11 @@ public class TestTransactionPinActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test_transaction_pin);
 
         PersonValidationInProgress = false;
-        AppConstants.serverCallInProgressForPin = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
 
         InItGUI();
 
-        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.sharedPref_KeyboardType, 0);
+        SharedPreferences myPrefkb = this.getSharedPreferences(AppConstants.PREF_KEYBOARD_TYPE, 0);
         KeyboardType = myPrefkb.getString("KeyboardTypePerson", "2");
         //ScreenNameForPersonnel = myPrefkb.getString("ScreenNameForPersonnel", "Personnel");
         //ScreenNameForVehicle = myPrefkb.getString("ScreenNameForVehicle", "Vehicle");
@@ -137,21 +137,21 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                 String pin = etPersonnelPin.getText().toString().trim();
 
                 // As per #2252, Removed PIN from the logs (Only for Test Transaction)
-                //if (AppConstants.GenerateLogs)
-                //    AppConstants.WriteinFile(TAG + "Entered PIN num: " + pin);
+                //if (AppConstants.GENERATE_LOGS)
+                //    AppConstants.writeInFile(TAG + "Entered PIN num: " + pin);
 
                 if (cd.isConnectingToInternet()) {
 
                     if (!pin.isEmpty()) {
                         new CallSaveButtonFunctionality().execute();
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + getResources().getString(R.string.TestTxnPINRequired));
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + getResources().getString(R.string.TestTxnPINRequired));
                         CommonUtils.showCustomMessageDilaog(TestTransactionPinActivity.this, "Error Message", getResources().getString(R.string.TestTxnPINRequired));
                     }
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + getResources().getString(R.string.CheckInternet));
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + getResources().getString(R.string.CheckInternet));
                     AppConstants.colorToastBigFont(TestTransactionPinActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                 }
             }
@@ -226,23 +226,23 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
                 if (!etPersonnelPin.getText().toString().trim().isEmpty()) {
 
-                    if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                        Constants.AccPersonnelPIN_FS1 = etPersonnelPin.getText().toString().trim();
+                    if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                        Constants.PERSONNEL_PIN_FS1 = etPersonnelPin.getText().toString().trim();
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                        Constants.AccPersonnelPIN = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                        Constants.PERSONNEL_PIN_FS2 = etPersonnelPin.getText().toString().trim();
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                        Constants.AccPersonnelPIN_FS3 = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                        Constants.PERSONNEL_PIN_FS3 = etPersonnelPin.getText().toString().trim();
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS4")) {
-                        Constants.AccPersonnelPIN_FS4 = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS4")) {
+                        Constants.PERSONNEL_PIN_FS4 = etPersonnelPin.getText().toString().trim();
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS5")) {
-                        Constants.AccPersonnelPIN_FS5 = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS5")) {
+                        Constants.PERSONNEL_PIN_FS5 = etPersonnelPin.getText().toString().trim();
 
-                    } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS6")) {
-                        Constants.AccPersonnelPIN_FS6 = etPersonnelPin.getText().toString().trim();
+                    } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS6")) {
+                        Constants.PERSONNEL_PIN_FS6 = etPersonnelPin.getText().toString().trim();
                     }
 
                     Istimeout_Sec = false;
@@ -256,8 +256,8 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                     objEntityClass.Barcode = "";
                     objEntityClass.IsTestTransaction = "y";
 
-                    //if (AppConstants.GenerateLogs)
-                    //    AppConstants.WriteinFile(TAG + "PIN Entered Manually: " + etPersonnelPin.getText().toString().trim());
+                    //if (AppConstants.GENERATE_LOGS)
+                    //    AppConstants.writeInFile(TAG + "PIN Entered Manually: " + etPersonnelPin.getText().toString().trim());
 
                     Gson gson = new Gson();
                     String jsonData = gson.toJson(objEntityClass);
@@ -274,7 +274,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
                     RequestBody body = RequestBody.create(TEXT, jsonData);
                     Request request = new Request.Builder()
-                            .url(AppConstants.webURL)
+                            .url(AppConstants.WEB_URL)
                             .post(body)
                             .addHeader("Authorization", authString)
                             .build();
@@ -286,8 +286,8 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
             } catch (SocketTimeoutException e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " CallSaveButtonFunctionality STE: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " CallSaveButtonFunctionality STE: " + e.getMessage());
                 /*if (OfflineConstants.isOfflineAccess(TestTransactionPinActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }*/
@@ -295,8 +295,8 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality InBackground Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CallSaveButtonFunctionality InBackground Exception: " + e.getMessage());
                 /*if (OfflineConstants.isOfflineAccess(TestTransactionPinActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }*/
@@ -326,12 +326,12 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                     System.out.println("ResponceMessage.." + ResponceMessage);
 
                     if (ResponceText.equalsIgnoreCase("success")) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Support Test Transaction performed by " + PersonName);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Support Test Transaction performed by " + PersonName);
 
                         btnSave.setClickable(false);
 
-                        AppConstants.serverCallInProgressForPin = true;
+                        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = true;
                         PersonValidationInProgress = true;
                         AcceptServiceCall asc = new AcceptServiceCall();
                         asc.activity = TestTransactionPinActivity.this;
@@ -341,22 +341,22 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
                     } else {
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "PIN rejected. Error: " + ResponceMessage);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "PIN rejected. Error: " + ResponceMessage);
 
                         //Clear Pin edit text
-                        if (Constants.CurrentSelectedHose.equals("FS1")) {
-                            Constants.AccPersonnelPIN_FS1 = "";
-                        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-                            Constants.AccPersonnelPIN = "";
-                        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-                            Constants.AccPersonnelPIN_FS3 = "";
-                        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-                            Constants.AccPersonnelPIN_FS4 = "";
-                        } else if (Constants.CurrentSelectedHose.equals("FS5")) {
-                            Constants.AccPersonnelPIN_FS5 = "";
-                        } else if (Constants.CurrentSelectedHose.equals("FS6")) {
-                            Constants.AccPersonnelPIN_FS6 = "";
+                        if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
+                            Constants.PERSONNEL_PIN_FS1 = "";
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS2")) {
+                            Constants.PERSONNEL_PIN_FS2 = "";
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS3")) {
+                            Constants.PERSONNEL_PIN_FS3 = "";
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS4")) {
+                            Constants.PERSONNEL_PIN_FS4 = "";
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS5")) {
+                            Constants.PERSONNEL_PIN_FS5 = "";
+                        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS6")) {
+                            Constants.PERSONNEL_PIN_FS6 = "";
                         }
 
                         DialogRecreate(TestTransactionPinActivity.this, "Message", ResponceMessage);
@@ -364,17 +364,17 @@ public class TestTransactionPinActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality onPostExecute Exception: " + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "CallSaveButtonFunctionality onPostExecute Exception: " + e.getMessage());
                     /*if (OfflineConstants.isOfflineAccess(TestTransactionPinActivity.this)) {
                         AppConstants.NETWORK_STRENGTH = false;
                     }*/
                 }
             } else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CallSaveButtonFunctionality Response is empty.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Internet Connection: " + cd.isConnectingToInternet());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CallSaveButtonFunctionality Response is empty.");
                 /*if (OfflineConstants.isOfflineAccess(TestTransactionPinActivity.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }*/
@@ -424,9 +424,9 @@ public class TestTransactionPinActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (AppConstants.serverAuthCallCompleted) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<onResume skipped.>");
+        if (AppConstants.SERVER_AUTH_CALL_COMPLETED) {
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<onResume skipped.>");
             return;
         }
 
@@ -447,8 +447,8 @@ public class TestTransactionPinActivity extends AppCompatActivity {
     public void TimeoutPinScreen() {
         Log.i("TimeoutPinScreen", "Start");
         SharedPreferences sharedPrefODO = TestTransactionPinActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HubId, "");
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HUBID, "");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
 
         long screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
 
@@ -514,7 +514,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        CancelTimer();
+        cancelTimer();
 
         if (receiver != null) {
             this.unregisterReceiver(receiver);
@@ -524,12 +524,12 @@ public class TestTransactionPinActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        CancelTimer();
+        cancelTimer();
         ScreenTimer();
 
     }
 
-    private void CancelTimer() {
+    private void cancelTimer() {
         for (int i = 0; i < TimerList.size(); i++) {
             TimerList.get(i).cancel();
         }
@@ -586,9 +586,9 @@ public class TestTransactionPinActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AppConstants.isTestTransaction = false;
-        AppConstants.serverCallInProgressForPin = false;
-        AppConstants.serverCallInProgressForVehicle = false;
+        AppConstants.IS_TEST_TRANSACTION = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_PIN = false;
+        AppConstants.SERVER_CALL_IN_PROGRESS_FOR_VEHICLE = false;
         Istimeout_Sec = false;
         finish();
     }
@@ -596,7 +596,7 @@ public class TestTransactionPinActivity extends AppCompatActivity {
     public void GetBackToWelcomeActivity() {
         CommonUtils.hideKeyboard(TestTransactionPinActivity.this);
         Istimeout_Sec = false;
-        AppConstants.ClearEdittextFielsOnBack(TestTransactionPinActivity.this);
+        AppConstants.clearEditTextFieldsOnBack(TestTransactionPinActivity.this);
 
         Intent i = new Intent(TestTransactionPinActivity.this, WelcomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);

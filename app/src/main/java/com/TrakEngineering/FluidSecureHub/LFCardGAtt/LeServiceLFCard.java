@@ -236,8 +236,8 @@ public class LeServiceLFCard extends Service {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Exception:" + e.toString());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Exception:" + e.toString());
             return false;
 
         }
@@ -332,7 +332,7 @@ public class LeServiceLFCard extends Service {
             }
             if (mCustomService == null) {
                 Log.w(TAG, "Custom BLE Service not found");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "readCustomCharacteristic Custom BLE Service not found bleLFUpdateFlag"+bleLFUpdateFlag);
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "readCustomCharacteristic Custom BLE Service not found bleLFUpdateFlag"+bleLFUpdateFlag);
                 //  Toast.makeText(getApplicationContext(),"Not found: "+bolong_UUID_char, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -344,19 +344,19 @@ public class LeServiceLFCard extends Service {
                 mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(BLE_char));
             if (mBluetoothGatt.readCharacteristic(mReadCharacteristic) == false) {
                 Log.w(TAG, "Failed to read characteristic");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "readCustomCharacteristic Failed to read characteristic");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "readCustomCharacteristic Failed to read characteristic");
                 // Toast.makeText(getApplicationContext(),"Failed to Read Characteristics: ", Toast.LENGTH_LONG).show();
 
 
             } else {
                 Log.w(TAG, "Read Characteristics successfully");
-                //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Read Characteristics successfully");
+                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "Read Characteristics successfully");
                 //  Toast.makeText(getApplicationContext(),"Read Characteristics successfully!", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Read Characteristics Ex-" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Read Characteristics Ex-" + e.getMessage());
 
         }
     }
@@ -374,7 +374,7 @@ public class LeServiceLFCard extends Service {
             mCustomService = mBluetoothGatt.getService(UUID.fromString(BLE_Service));
         if (mCustomService == null) {
             //Toast.makeText(getApplicationContext(), "Not found: " + bolong_UUID_char, Toast.LENGTH_LONG).show();
-           //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
+           //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "writeCustomCharacteristic Char Not found:" + bolong_UUID_char);
             return;
         }
 
@@ -395,10 +395,10 @@ public class LeServiceLFCard extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "Write Characteristics successfully!");
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "Failed to write Characteristics");
         }
     }
 
@@ -428,7 +428,7 @@ public class LeServiceLFCard extends Service {
 
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             // Toast.makeText(getApplicationContext(),"Write Characteristics successfully!", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceLFCard ~~~~~~~~~" + "Write Characteristics successfully!");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceLFCard ~~~~~~~~~" + "Write Characteristics successfully!");
             //Toast.makeText(getApplicationContext(), "Reboot success", Toast.LENGTH_SHORT).show();
 
 
@@ -444,7 +444,7 @@ public class LeServiceLFCard extends Service {
 
         } else {
             // Toast.makeText(getApplicationContext(),"Failed to write Characteristics", Toast.LENGTH_LONG).show();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile("LeServiceLFCard ~~~~~~~~~" + "Failed to write Characteristics");
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile("LeServiceLFCard ~~~~~~~~~" + "Failed to write Characteristics");
             //Toast.makeText(getApplicationContext(), "Reboot fail", Toast.LENGTH_SHORT).show();
         }
     }

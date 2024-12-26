@@ -124,10 +124,10 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
         // set User Information
         UserInfoEntity userInfoEntity = CommonUtils.getCustomerDetails(SelectFSActivity.this);
 
-        AppConstants.Title = "Name : " + userInfoEntity.PersonName + "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail;
+        AppConstants.TITLE = "Name : " + userInfoEntity.PersonName + "\nMobile : " + userInfoEntity.PhoneNumber + "\nEmail : " + userInfoEntity.PersonEmail;
 
         tvTitle = (TextView) findViewById(R.id.textView);
-        tvTitle.setText(AppConstants.Title);
+        tvTitle.setText(AppConstants.TITLE);
 
         //------------------------------------------------------------------------------------------
 
@@ -221,7 +221,7 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
 
            *//*
             if (latitude == 0 && longitude == 0) {
-                AppConstants.AlertDialogFinish(WelcomeActivity.this, "Unable to get current location.\nPlease try again later!");
+                AppConstants.alertDialogFinish(WelcomeActivity.this, "Unable to get current location.\nPlease try again later!");
             }
             *//*
 
@@ -297,16 +297,16 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
 
                         if (IsHoseNameReplaced.equalsIgnoreCase("Y")) {
 
-                            AppConstants.NeedToRename = false;
+                            AppConstants.NEED_TO_RENAME = false;
 
-                            AppConstants.REPLACEBLE_WIFI_NAME = "";
+                            AppConstants.REPLACEABLE_WIFI_NAME = "";
                             AppConstants.R_HOSE_ID = "";
                             AppConstants.R_SITE_ID = "";
 
                         } else {
-                            AppConstants.NeedToRename = true;
+                            AppConstants.NEED_TO_RENAME = true;
 
-                            AppConstants.REPLACEBLE_WIFI_NAME = ReplaceableHoseName;
+                            AppConstants.REPLACEABLE_WIFI_NAME = ReplaceableHoseName;
                             AppConstants.R_HOSE_ID = HoseId;
                             AppConstants.R_SITE_ID = SiteId;
 
@@ -336,16 +336,16 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
                            // if (ssidList.contains(serverSSIDList.get(SelectedItemPos).get("item"))) {
 
                         } else {
-                            AppConstants.AlertDialogBox(WelcomeActivity.this, "Fuel site not available at this location\nPlease try again.");
+                            AppConstants.alertDialogBox(WelcomeActivity.this, "Fuel site not available at this location\nPlease try again.");
 
                             scanLocalWiFi();
                         }*/
 
                     } else {
-                        AppConstants.AlertDialogBox(SelectFSActivity.this, "Unable to get Fluid Secure list from server");
+                        AppConstants.alertDialogBox(SelectFSActivity.this, "Unable to get Fluid Secure list from server");
                     }
                 } else {
-                    AppConstants.AlertDialogBox(SelectFSActivity.this, "Please select Hose");
+                    AppConstants.alertDialogBox(SelectFSActivity.this, "Please select Hose");
                 }
             }
         } catch (Exception ex) {
@@ -442,7 +442,7 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
                 ServerHandler serverHandler = new ServerHandler();
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(SelectFSActivity.this) + ":" + Email + ":" + "AndroidSSID" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(SelectFSActivity.this, AppConstants.webURL, latLong, authString);
+                response = serverHandler.PostTextData(SelectFSActivity.this, AppConstants.WEB_URL, latLong, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -578,7 +578,7 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
 
                 String authString = "Basic " + AppConstants.convertStingToBase64(parm1);
 
-                //resp = serverHandler.PostTextData(WelcomeActivity.this, AppConstants.webURL, parm2, authString);
+                //resp = serverHandler.PostTextData(WelcomeActivity.this, AppConstants.WEB_URL, parm2, authString);
                 //----------------------------------------------------------------------------------
                 OkHttpClient client = new OkHttpClient();
                 client.setConnectTimeout(4, TimeUnit.SECONDS);
@@ -587,7 +587,7 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
 
                 RequestBody body = RequestBody.create(ServerHandler.TEXT, parm2);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -682,12 +682,12 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
                         String ResponseTextSite = jsonObjectSite.getString(AppConstants.RES_TEXT);
 
 
-                        AppConstants.AlertDialogBox(SelectFSActivity.this, ResponseTextSite);
+                        AppConstants.alertDialogBox(SelectFSActivity.this, ResponseTextSite);
 
 
                     }
                 } else {
-                    AppConstants.AlertDialogFinish(SelectFSActivity.this, "Unable to connect server. Please try again later!");
+                    AppConstants.alertDialogFinish(SelectFSActivity.this, "Unable to connect server. Please try again later!");
                 }
 
 
@@ -768,16 +768,16 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
 
                             if (IsHoseNameReplaced.equalsIgnoreCase("Y")) {
 
-                                AppConstants.NeedToRename = false;
+                                AppConstants.NEED_TO_RENAME = false;
 
-                                AppConstants.REPLACEBLE_WIFI_NAME = "";
+                                AppConstants.REPLACEABLE_WIFI_NAME = "";
                                 AppConstants.R_HOSE_ID = "";
                                 AppConstants.R_SITE_ID = "";
 
                             } else {
-                                AppConstants.NeedToRename = true;
+                                AppConstants.NEED_TO_RENAME = true;
 
-                                AppConstants.REPLACEBLE_WIFI_NAME = ReplaceableHoseName;
+                                AppConstants.REPLACEABLE_WIFI_NAME = ReplaceableHoseName;
                                 AppConstants.R_HOSE_ID = HoseId;
                                 AppConstants.R_SITE_ID = SiteId;
 
@@ -807,16 +807,16 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
                            // if (ssidList.contains(serverSSIDList.get(SelectedItemPos).get("item"))) {
 
                         } else {
-                            AppConstants.AlertDialogBox(WelcomeActivity.this, "Fuel site not available at this location\nPlease try again.");
+                            AppConstants.alertDialogBox(WelcomeActivity.this, "Fuel site not available at this location\nPlease try again.");
 
                             scanLocalWiFi();
                         }*/
 
                         } else {
-                            AppConstants.AlertDialogBox(SelectFSActivity.this, "Unable to get Fluid Secure list from server");
+                            AppConstants.alertDialogBox(SelectFSActivity.this, "Unable to get Fluid Secure list from server");
                         }
                     } else {
-                        AppConstants.AlertDialogBox(SelectFSActivity.this, "Please select Hose");
+                        AppConstants.alertDialogBox(SelectFSActivity.this, "Please select Hose");
                     }
                 }
 
@@ -859,7 +859,7 @@ public class SelectFSActivity extends AppCompatActivity { // implements GoogleAp
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();

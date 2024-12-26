@@ -82,8 +82,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         try {
             super.onStart(intent, startId);
             //Log.e(TAG, "~~~~~start~~~~~");
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "~~~~~start~~~~~");
-            if (WelcomeActivity.OnWelcomeActivity && AppConstants.IsAllHosesAreFree()) {
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "~~~~~start~~~~~");
+            if (WelcomeActivity.OnWelcomeActivity && AppConstants.isAllHosesAreFree()) {
 
                 getIpOverOSVersion();
                 ListConnectedHotspotIP_KDTA();
@@ -96,8 +96,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             //Log.e(TAG, "~~~~~stop~~~~~");
 
         } catch (NullPointerException e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " onStartCommand Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " onStartCommand Exception: " + e.getMessage());
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
@@ -124,10 +124,10 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             //Log.e(TAG, "~~~~~Second for strt~~~~~");
             if (SSIDList != null && SSIDList.size() > 0) {
 
-                //Log.i(TAG, "Hotspot connected devices: " + String.valueOf(AppConstants.DetailsListOfConnectedDevices.size()));
+                //Log.i(TAG, "Hotspot connected devices: " + String.valueOf(AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.size()));
                 for (int i = 0; i < SSIDList.size(); i++) {
 
-                    boolean IsAllHosesAreFree = AppConstants.IsAllHosesAreFree();
+                    boolean isAllHosesAreFree = AppConstants.isAllHosesAreFree();
                     String ReconfigureLink = SSIDList.get(i).get("ReconfigureLink");
                     String selSSID = SSIDList.get(i).get("WifiSSId");
                     String IsBusy = SSIDList.get(i).get("IsBusy");
@@ -139,8 +139,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     try {
                         LinkCommunicationType = SSIDList.get(i).get("LinkCommunicationType");
                     } catch (Exception e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " Exception while getting LinkCommunicationType of WifiSSId (" + selSSID + "). " + e.getMessage());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " Exception while getting LinkCommunicationType of WifiSSId (" + selSSID + "). " + e.getMessage());
                     }
 
                     if (LinkCommunicationType != null) {
@@ -161,12 +161,12 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                     }
 
-                    for (int k = 0; k < AppConstants.DetailsListOfConnectedDevices.size(); k++) {
-                        String Mac_Addr = AppConstants.DetailsListOfConnectedDevices.get(k).get("macAddress");
+                    for (int k = 0; k < AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.size(); k++) {
+                        String Mac_Addr = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(k).get("macAddress");
 
                         //Check for connected link,If connceted execute info command
                         //also include upgrate link firmware code
-                        if (IsAllHosesAreFree && selMacAddress.equalsIgnoreCase(Mac_Addr)) {
+                        if (isAllHosesAreFree && selMacAddress.equalsIgnoreCase(Mac_Addr)) {
 
                             IsConnectedToHotspot = true;
                             if (i == 0) {
@@ -188,7 +188,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                             }
 
                             try {
-                                SERVER_IP = AppConstants.DetailsListOfConnectedDevices.get(k).get("ipAddress");
+                                SERVER_IP = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(k).get("ipAddress");
                                 if (!SERVER_IP.equalsIgnoreCase("")) {
 
                                     //new TCPClientTask().execute(SERVER_IP);
@@ -234,13 +234,13 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                                 String iot_version = "";
 
                                 URL_INFO = HTTP_URL_TEST + "client?command=info";
-                                if (AppConstants.GenerateLogs)
-                                    if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " Sending getinfo to hose: " + selSSID);
+                                if (AppConstants.GENERATE_LOGS)
+                                    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " Sending getinfo to hose: " + selSSID);
                                 String FSStatus = new CommandsGET().execute(URL_INFO).get();//Info command
                                 if (FSStatus.startsWith("{") && FSStatus.contains("Version") && IsUpgrade.equalsIgnoreCase("Y")) {
                                     Log.i(TAG, "Info Command response" + FSStatus);
-                                    if (AppConstants.GenerateLogs)
-                                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " got info response from hose : " + selSSID + "\n" + FSStatus);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " got info response from hose : " + selSSID + "\n" + FSStatus);
 
                                     HTTP_URL = HTTP_URL_TEST;
                                     URL_UPGRADE_START = HTTP_URL + "upgrade?command=start";
@@ -260,16 +260,16 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                                         if (i == 0) {
                                             //Hose one selected
-                                            WelcomeActivity.IsUpgradeInprogress_FS1 = true;
+                                            WelcomeActivity.isUpgradeInProgress_FS1 = true;
                                         } else if (i == 1) {
                                             //Hose two selected
-                                            WelcomeActivity.IsUpgradeInprogress_FS2 = true;
+                                            WelcomeActivity.isUpgradeInProgress_FS2 = true;
                                         } else if (i == 2) {
                                             //Hose three selected
-                                            WelcomeActivity.IsUpgradeInprogress_FS3 = true;
+                                            WelcomeActivity.isUpgradeInProgress_FS3 = true;
                                         } else if (i == 3) {
                                             //Hose four selected
-                                            WelcomeActivity.IsUpgradeInprogress_FS4 = true;
+                                            WelcomeActivity.isUpgradeInProgress_FS4 = true;
                                         } else {
                                             //Something went wrong
                                         }
@@ -285,8 +285,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                                 } else {
                                     Log.i(TAG, "Info Command response" + FSStatus);
-                                    if (AppConstants.GenerateLogs)
-                                        if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " got info response from hose : " + selSSID + "\n" + FSStatus);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " got info response from hose : " + selSSID + "\n" + FSStatus);
                                 }*/
 
                             } catch (Exception e) {
@@ -296,16 +296,16 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     }
 
                     //CheckFor #728  Inability to Connect to Links
-                    if (IsAllHosesAreFree) {
+                    if (isAllHosesAreFree) {
                         CheckInabilityToConnectLinks(i, selSSID, IsConnectedToHotspot, IsinfoCmdSuccess);
                     }
                 }
                 // Log.e(TAG, "~~~~~Second for end~~~~~");
             } else {
                 Log.i(TAG, "SSID List Empty");
-                if (AppConstants.GenerateLogs) AppConstants.WriteinFile(TAG + " SSID List Empty");
+                if (AppConstants.GENERATE_LOGS) AppConstants.writeInFile(TAG + " SSID List Empty");
             }
-            if (AppConstants.IsAllHosesAreFree()) {
+            if (AppConstants.isAllHosesAreFree()) {
                 int s = DefectiveLinks.size();
                 System.out.println("S" + s);
 
@@ -323,9 +323,9 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                            if (Sendmail){
                                setSharedPrefDefectiveLink(BackgroundServiceKeepDataTransferAlive.this,link_name);
                                Log.i(TAG, "Defective links email sent to: "+link_name+" Message: "+Message+" TDifferance: "+Differance);
-                               if (AppConstants.GenerateLogs)
-                                   //AppConstants.WriteinFile(TAG + "Defective links email sent to: "+link_name+" Message: "+Message+" TDifference: "+Differance);
-                                   AppConstants.WriteinFile(TAG + " LINK (" + link_name + ") did not respond to KeepAlive");
+                               if (AppConstants.GENERATE_LOGS)
+                                   //AppConstants.writeInFile(TAG + "Defective links email sent to: "+link_name+" Message: "+Message+" TDifference: "+Differance);
+                                   AppConstants.writeInFile(TAG + " LINK (" + link_name + ") did not respond to KeepAlive");
                                SendDefectiveLinkInfoEmailAsyncCall(link_name);
                            }
                         }
@@ -337,26 +337,26 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " StartUpgradeProcess Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " StartUpgradeProcess Exception: " + e.getMessage());
         }
 
 
         //Check If hotspot Toggle required
-        boolean IsAllHosesAreFree = AppConstants.IsAllHosesAreFree();
+        boolean isAllHosesAreFree = AppConstants.isAllHosesAreFree();
         String CurrDate = CommonUtils.getTodaysDateTemp();
         int diff = getDate(CurrDate);
 
-        if (IsAllHosesAreFree && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_DA) {
+        if (isAllHosesAreFree && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_DA) {
             //Toggle required by Display meater activity
             //Log.i(TAG,"Toggle ~~ Display MeterActivity");
-            if (AppConstants.DisableAllRebootOptions.equalsIgnoreCase("N") && !AppConstants.IsBTLinkSelectedCurrently) {
+            if (AppConstants.DISABLE_ALL_REBOOT_OPTIONS.equalsIgnoreCase("N") && !AppConstants.IS_BT_LINK_SELECTED_CURRENTLY) {
                 ToggleHotspot();
             }
-        } else if (IsAllHosesAreFree && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_KDTA && diff > 60) {
+        } else if (isAllHosesAreFree && WelcomeActivity.OnWelcomeActivity && IstoggleRequired_KDTA && diff > 60) {
             //Toggle required by KeepDataAlive background service activity
             //Log.i(TAG,"Toggle ~~ KeepDataAlive BS");
-            if (AppConstants.DisableAllRebootOptions.equalsIgnoreCase("N") && !AppConstants.IsBTLinkSelectedCurrently) {
+            if (AppConstants.DISABLE_ALL_REBOOT_OPTIONS.equalsIgnoreCase("N") && !AppConstants.IS_BT_LINK_SELECTED_CURRENTLY) {
                 ToggleHotspot();
             }
         } else {
@@ -371,10 +371,10 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         // Log.e(TAG, "~~~~~First for strt~~~~~");
 
         try {
-            for (int k = 0; k < AppConstants.DetailsListOfConnectedDevices.size(); k++) {
+            for (int k = 0; k < AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.size(); k++) {
 
-                String macAddress = AppConstants.DetailsListOfConnectedDevices.get(k).get("macAddress");
-                String ipAddress = AppConstants.DetailsListOfConnectedDevices.get(k).get("ipAddress");
+                String macAddress = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(k).get("macAddress");
+                String ipAddress = AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES.get(k).get("ipAddress");
 
                 if (ipAddress != null || macAddress != null) {
 
@@ -458,11 +458,11 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
     public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {
 
         Log.i(TAG, "Upgrade for Hose: " + FS_selected + "\nFirmware Version: " + iot_version + "Hose ID: " + hoseid);
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "  Upgrade for Hose: " + FS_selected + "\nFirmware Version: " + iot_version + "Hose ID: " + hoseid);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "  Upgrade for Hose: " + FS_selected + "\nFirmware Version: " + iot_version + "Hose ID: " + hoseid);
 
         SharedPreferences sharedPrefODO = this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        String HubId = sharedPrefODO.getString(AppConstants.HubId, "");// HubId equals to personId
+        String HubId = sharedPrefODO.getString(AppConstants.HUBID, "");// HubId equals to personId
 
         final UpgradeVersionEntity objEntityClass = new UpgradeVersionEntity();
         objEntityClass.IMEIUDID = AppConstants.getIMEI(BackgroundServiceKeepDataTransferAlive.this);
@@ -509,12 +509,12 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i(TAG, " UpgradeCurrentVersionWithUgradableVersion 1 " + e);
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  UpgradeCurrentVersionWithUgradableVersion 1 " + e);
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  UpgradeCurrentVersionWithUgradableVersion 1 " + e);
             }
         } else {
             Log.i(TAG, "Upgrade fail Hose id empty");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  Upgrade fail Hose id empty");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  Upgrade fail Hose id empty");
         }
     }*/
 
@@ -547,7 +547,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
             } catch (Exception e) {
                 Log.i(TAG, " CommandsPOST Exception" + e);
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  CommandsPOST doInBackground Execption " + e);
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  CommandsPOST doInBackground Execption " + e);
                 stopSelf();
             }
 
@@ -565,8 +565,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 System.out.println(" OUTPUT" + result);
 
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CommandsPOST onPostExecute Execption " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  CommandsPOST onPostExecute Execption " + e);
                 Log.i(TAG, " CommandsPOST Exception" + e);
                 stopSelf();
             }
@@ -606,8 +606,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             } catch (Exception e) {
                 ChangeUpgradeProcessFlag();
                 Log.i(TAG, " OkHttpFileUpload doInBackground Exception" + e);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  OkHttpFileUpload doInBackground Exception" + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  OkHttpFileUpload doInBackground Exception" + e);
             }
 
 
@@ -629,12 +629,12 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                             String ResetRespo = new CommandsPOST().execute(URL_RESET, "").get();
                             Log.i(TAG, " Reset command Response: " + ResetRespo);
-                            //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Reset command Response: " + ResetRespo);
+                            //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  Reset command Response: " + ResetRespo);
 
                         } catch (Exception e) {
 
                             Log.i(TAG, " OkHttpFileUpload CommandsPOST Exception" + e);
-                            //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  OkHttpFileUpload CommandsPOST doInBackground Execption " + e);
+                            //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  OkHttpFileUpload CommandsPOST doInBackground Execption " + e);
                         }
                         ChangeUpgradeProcessFlag();
                         System.out.println("AFTER SECONDS 5");
@@ -645,8 +645,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
             } catch (Exception e) {
                 ChangeUpgradeProcessFlag();
                 Log.i(TAG, " OkHttpFileUpload onPostExecute Exception" + e);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  OkHttpFileUpload onPostExecute Exception" + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  OkHttpFileUpload onPostExecute Exception" + e);
 
             }
 
@@ -686,12 +686,12 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
     public void ChangeUpgradeProcessFlag() {
 
-        WelcomeActivity.IsUpgradeInprogress_FS1 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS2 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS3 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS4 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS5 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS6 = false;
+        WelcomeActivity.isUpgradeInProgress_FS1 = false;
+        WelcomeActivity.isUpgradeInProgress_FS2 = false;
+        WelcomeActivity.isUpgradeInProgress_FS3 = false;
+        WelcomeActivity.isUpgradeInProgress_FS4 = false;
+        WelcomeActivity.isUpgradeInProgress_FS5 = false;
+        WelcomeActivity.isUpgradeInProgress_FS6 = false;
 
     }
 
@@ -707,14 +707,14 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         if (success) {
             // Do something on success
         } else {
-            //AppConstants.AlertDialogBox(WelcomeActivity.this, "Please check File is present in FSBin Folder in Internal(Device) Storage");
+            //AppConstants.alertDialogBox(WelcomeActivity.this, "Please check File is present in FSBin Folder in Internal(Device) Storage");
             System.out.println("Please check File is present in FSBin Folder in Internal(Device) Storage");
             Log.i(TAG, " Please check File is present in FSBin Folder in Internal(Device) Storage");
-            //    if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  Please check File is present in FSBin Folder in Internal(Device) Storage");
+            //    if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  Please check File is present in FSBin Folder in Internal(Device) Storage");
         }
 
-        if (AppConstants.UP_FilePath != null)
-            new DownloadFileFromURL().execute(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN)), AppConstants.UP_Upgrade_File_name);
+        if (AppConstants.UP_FILE_PATH != null)
+            new DownloadFileFromURL().execute(String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN)), AppConstants.UP_UPGRADE_FILE_NAME);
 
     }*/
 
@@ -791,14 +791,14 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 System.out.println("authString--" + authString);
 
 
-                response = serverHandler.PostTextData(BackgroundServiceKeepDataTransferAlive.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(BackgroundServiceKeepDataTransferAlive.this, AppConstants.WEB_URL, jsonData, authString);
 
                 System.out.println("Id..." + jsonData);
 
             } catch (Exception e) {
                 Log.i(TAG, " GetUpgrateFirmwareStatus doInBackground " + e);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GetUpgrateFirmwareStatus doInBackground " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  GetUpgrateFirmwareStatus doInBackground " + e);
             }
 
             return response;
@@ -825,10 +825,10 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                         String cmpresponse = new CommandsPOST().execute(URL_UPGRADE_START, "").get();
                         Log.i(TAG, " GetUpgrateFirmwareStatus CommandsPOST Response" + cmpresponse);
-                        //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  GetUpgrateFirmwareStatus CommandsPOST Response" + cmpresponse);
+                        //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  GetUpgrateFirmwareStatus CommandsPOST Response" + cmpresponse);
 
                         //upgrade bin
-                        String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_Upgrade_File_name;
+                        String LocalPath = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/" + AppConstants.UP_UPGRADE_FILE_NAME;
                         File f = new File(LocalPath);
                         if (f.exists()) {
 
@@ -841,18 +841,18 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                     } else {
                         Log.i(TAG, " GetUpgrateFirmwareStatus Upgrade flag No");
-                        //AppConstants.UP_Upgrade_fs1 = false;
+                        //AppConstants.UP_UPGRADE_FS1 = false;
                         ChangeUpgradeProcessFlag();
                     }
 
                 } else {
                     ChangeUpgradeProcessFlag();
                     Log.i(TAG, " GetUpgrateFirmwareStatus Something Went wrong");
-                    //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  GetUpgrateFirmwareStatus Something Went wrong");
+                    //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  GetUpgrateFirmwareStatus Something Went wrong");
                 }
             } catch (Exception e) {
                 Log.i(TAG, " GetUpgrateFirmwareStatus onPostExecute " + e);
-                //   if (AppConstants.GenerateLogs)AppConstants.WriteinFile( TAG+"  GetUpgrateFirmwareStatus onPostExecute " + e);
+                //   if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile( TAG+"  GetUpgrateFirmwareStatus onPostExecute " + e);
             }
         }
     }*/
@@ -877,14 +877,14 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                 System.out.println("authString--" + authString);
 
 
-                response = serverHandler.PostTextData(BackgroundServiceKeepDataTransferAlive.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(BackgroundServiceKeepDataTransferAlive.this, AppConstants.WEB_URL, jsonData, authString);
 
                 System.out.println("Id..." + jsonData);
 
             } catch (Exception e) {
                 Log.i(TAG, " GetUpgrateFirmwareStatus doInBackground " + e);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  GetUpgrateFirmwareStatus doInBackground " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  GetUpgrateFirmwareStatus doInBackground " + e);
             }
 
             return response;
@@ -1062,7 +1062,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         IstoggleRequired_KDTA = false;
         IstoggleRequired_DA = false;
         Log.i(TAG, "ToggleHotspot finish");
-        AppConstants.WriteinFile(TAG + "  ToggleHotspot KDTalive");
+        AppConstants.writeInFile(TAG + "  ToggleHotspot KDTalive");
     }
 
     private int getDate(String CurrentTime) {
@@ -1193,8 +1193,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "CheckInabilityToConnectLinks Exception:" + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "CheckInabilityToConnectLinks Exception:" + e);
         }
 
     }
@@ -1291,7 +1291,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
         RequestBody body = RequestBody.create(TEXT, parm2);
         OkHttpClient httpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(AppConstants.webURL)
+                .url(AppConstants.WEB_URL)
                 .post(body)
                 .addHeader("Authorization", authString)
                 .build();
@@ -1314,8 +1314,8 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
 
                     String result = responseBody.string();
                     System.out.println("Result" + result);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " SendDefectiveLinkInfoEmailAsyncCall (LinkName: " + linkName + ") ~Result\n" + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " SendDefectiveLinkInfoEmailAsyncCall (LinkName: " + linkName + ") ~Result\n" + result);
 
                     try {
 
@@ -1325,7 +1325,7 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                         String ResponseMessageSite = jsonObjectSite.getString(AppConstants.RES_MESSAGE);
 
                         if (ResponseMessageSite.equalsIgnoreCase("success")) {
-                            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " SendEmailReaderNotConnectedAsyncCall ~success");
+                            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " SendEmailReaderNotConnectedAsyncCall ~success");
                             System.out.println("SendDefectiveLinkInfoEmail sent successfully ");
                         }
 
@@ -1376,12 +1376,12 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                     }
                 }
                 System.out.println("Check");
-                AppConstants.DetailsListOfConnectedDevices = ListOfHSConnectedDevices;
+                AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES = ListOfHSConnectedDevices;
                 System.out.println("DeviceConnected" + ListOfHSConnectedDevices);
 
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetConnectedDevicesIPOS10 Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetConnectedDevicesIPOS10 Exception " + e.getMessage());
                 e.printStackTrace();
             }
             return resp;
@@ -1429,23 +1429,23 @@ public class BackgroundServiceKeepDataTransferAlive extends BackgroundService {
                                     ListOfHSConnectedDevices.add(map);
 
                                 }
-                                AppConstants.DetailsListOfConnectedDevices = ListOfHSConnectedDevices;
+                                AppConstants.DETAILS_LIST_OF_CONNECTED_DEVICES = ListOfHSConnectedDevices;
                                 System.out.println("DeviceConnected" + ListOfHSConnectedDevices);
                             }
                         }
-                        //if (AppConstants.GenerateLogs)
-                        //    AppConstants.WriteinFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MACADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
+                        //if (AppConstants.GENERATE_LOGS)
+                        //    AppConstants.writeInFile(TAG + " Selected LINK's Mac: " + AppConstants.SELECTED_MAC_ADDRESS + "; HotspotList: " + ListOfConnectedDevices.toString());
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "  GetConnectedDevicesIP 1 --Exception " + e);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "  GetConnectedDevicesIP 1 --Exception " + e);
                     } finally {
                         try {
                             br.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "  GetConnectedDevicesIP 2 --Exception " + e);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "  GetConnectedDevicesIP 2 --Exception " + e);
                         }
                     }
                 }

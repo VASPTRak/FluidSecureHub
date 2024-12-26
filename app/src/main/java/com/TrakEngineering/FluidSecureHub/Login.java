@@ -34,7 +34,7 @@ public class Login extends AppCompatActivity {
         etPass = (EditText) findViewById(R.id.etPass);
         btnLogin = (Button) findViewById(R.id.btnLogin);
 
-        etUserId.setText(AppConstants.Login_Email);
+        etUserId.setText(AppConstants.LOGIN_EMAIL);
         etPass.requestFocus();
         //etUserId.setEnabled(false);
         //etPass.setText("Fuel@123");
@@ -49,10 +49,10 @@ public class Login extends AppCompatActivity {
 
                 if (etUserId.getText().toString().trim().isEmpty()) {
                     etUserId.requestFocus();
-                    AppConstants.AlertDialogBox(Login.this, getResources().getString(R.string.RequiredUserName));
+                    AppConstants.alertDialogBox(Login.this, getResources().getString(R.string.RequiredUserName));
                 } else if (etPass.getText().toString().trim().isEmpty()) {
                     etPass.requestFocus();
-                    AppConstants.AlertDialogBox(Login.this, getResources().getString(R.string.RequiredUserPassword));
+                    AppConstants.alertDialogBox(Login.this, getResources().getString(R.string.RequiredUserPassword));
                 } else {
 
                     ConnectionDetector cd = new ConnectionDetector(Login.this);
@@ -90,7 +90,7 @@ public class Login extends AppCompatActivity {
                 String imieNumber = AppConstants.getIMEI(Login.this);
                 RequestBody body = RequestBody.create(TEXT, "Authenticate");
                 Request request = new Request.Builder()
-                        .url(AppConstants.LoginURL)
+                        .url(AppConstants.LOGIN_URL)
                         .post(body)
                         .addHeader("Login", "Basic " + AppConstants.convertStingToBase64(imieNumber + ":" + param[0] + ":" + param[1]))
                         .build();
@@ -146,7 +146,7 @@ public class Login extends AppCompatActivity {
                 } else {
                     String ResponseText = jsonObj.getString(AppConstants.RES_TEXT);
 
-                    AppConstants.AlertDialogBox(Login.this, ResponseText);
+                    AppConstants.alertDialogBox(Login.this, ResponseText);
 
                 }
 

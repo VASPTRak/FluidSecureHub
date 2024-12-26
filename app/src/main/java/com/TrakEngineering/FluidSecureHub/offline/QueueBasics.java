@@ -36,7 +36,7 @@ public class QueueBasics {
          {
              String queTitle;
 
-             SharedPreferences sharedPref = ctx.getSharedPreferences(AppConstants.sharedPref_AzureQueueDetails, Context.MODE_PRIVATE);
+             SharedPreferences sharedPref = ctx.getSharedPreferences(AppConstants.PREF_AZURE_QUEUE_DETAILS, Context.MODE_PRIVATE);
              String QueueName = sharedPref.getString("QueueName", "");
              String QueueNameForTLD = sharedPref.getString("QueueNameForTLD", "");
              String QueueConnectionStringValue = sharedPref.getString("QueueConnectionStringValue", "");
@@ -75,15 +75,15 @@ public class QueueBasics {
                  queue.addMessage(message);
              } catch (Exception ex) {
                  ex.printStackTrace();
-                 if (AppConstants.GenerateLogs)
-                     AppConstants.WriteinFile(TAG + "addMessageOnQueue-inner Exception: " + ex.toString());
+                 if (AppConstants.GENERATE_LOGS)
+                     AppConstants.writeInFile(TAG + "addMessageOnQueue-inner Exception: " + ex.toString());
              }
          }
          catch (Exception e)
          {
              e.printStackTrace();
-             if (AppConstants.GenerateLogs)
-                 AppConstants.WriteinFile(TAG + "addMessageOnQueue Exception: " + e.toString());
+             if (AppConstants.GENERATE_LOGS)
+                 AppConstants.writeInFile(TAG + "addMessageOnQueue Exception: " + e.toString());
          }
      }
 

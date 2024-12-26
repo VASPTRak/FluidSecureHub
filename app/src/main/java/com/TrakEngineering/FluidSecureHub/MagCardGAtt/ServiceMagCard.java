@@ -46,7 +46,7 @@ public class ServiceMagCard extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
-        AppConstants.RebootHF_reader = false;
+        AppConstants.REBOOT_HF_READER = false;
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -59,7 +59,7 @@ public class ServiceMagCard extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        AppConstants.RebootHF_reader = false;
+        AppConstants.REBOOT_HF_READER = false;
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -94,7 +94,7 @@ public class ServiceMagCard extends Service {
             final String action = intent.getAction();
             if (LeServiceMagCard.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
-                Constants.Mag_ReaderStatus = "Mag Connected";
+                Constants.MAG_READER_STATUS = "Mag Connected";
                 System.out.println("ACTION_GATT_Mag_CONNECTED");
 
                 timerMag = new Timer();
@@ -104,13 +104,13 @@ public class ServiceMagCard extends Service {
                     public void run() {
 
                         //Execute below code only if Mag reader is  connected
-                        if (Constants.Mag_ReaderStatus.equalsIgnoreCase("Mag Connected") || Constants.Mag_ReaderStatus.equalsIgnoreCase("Mag Discovered")) {
-                            if (AppConstants.RebootHF_reader) {
+                        if (Constants.MAG_READER_STATUS.equalsIgnoreCase("Mag Connected") || Constants.MAG_READER_STATUS.equalsIgnoreCase("Mag Discovered")) {
+                            if (AppConstants.REBOOT_HF_READER) {
                                 System.out.println("ACTION_GATT_Mag_Reboot cmd");
                                 mBluetoothLeService.writeRebootCharacteristic();
-                                AppConstants.RebootHF_reader = false;
+                                AppConstants.REBOOT_HF_READER = false;
                             } else {
-                                AppConstants.RebootHF_reader = false;
+                                AppConstants.REBOOT_HF_READER = false;
                                 mBluetoothLeService.readCustomCharacteristic();
                             }
 
@@ -124,21 +124,21 @@ public class ServiceMagCard extends Service {
 
             } else if (LeServiceMagCard.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                Constants.Mag_ReaderStatus = "Mag Disconnected";
+                Constants.MAG_READER_STATUS = "Mag Disconnected";
                 System.out.println("ACTION_GATT_Mag_DISCONNECTED");
 
 
             } else if (LeServiceMagCard.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                Constants.Mag_ReaderStatus = "Mag Discovered";
+                Constants.MAG_READER_STATUS = "Mag Discovered";
                 System.out.println("ACTION_GATT_Mag_DISCOVERED");
 
             } else if (LeServiceMagCard.ACTION_DATA_AVAILABLE.equals(action)) {
-                Constants.Mag_ReaderStatus = "Mag Connected";
+                Constants.MAG_READER_STATUS = "Mag Connected";
                 System.out.println("ACTION_GATT_Mag_DATA_AVAILABLE");
 
                 displayData(intent.getStringExtra(LeServiceMagCard.EXTRA_DATA));
             } else {
-                Constants.Mag_ReaderStatus = "Mag Disconnected";
+                Constants.MAG_READER_STATUS = "Mag Disconnected";
             }
         }
     };
@@ -148,8 +148,8 @@ public class ServiceMagCard extends Service {
 
         if (data != null) {
 
-            //if(AppConstants.GenerateLogs)
-            //AppConstants.WriteinFile("TRANSIT- HF Raw data"+data);
+            //if(AppConstants.GENERATE_LOGS)
+            //AppConstants.writeInFile("TRANSIT- HF Raw data"+data);
 
             try {
                 String[] Seperate = data.split("\n");

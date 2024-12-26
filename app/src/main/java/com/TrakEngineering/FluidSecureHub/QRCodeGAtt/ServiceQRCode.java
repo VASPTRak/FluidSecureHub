@@ -57,7 +57,7 @@ public class ServiceQRCode extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
-        AppConstants.RebootQR_reader = false;
+        AppConstants.REBOOT_QR_READER = false;
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -105,7 +105,7 @@ public class ServiceQRCode extends Service {
             if (LeServiceQRCode.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
 
-                Constants.QR_ReaderStatus = "QR Connected";
+                Constants.QR_READER_STATUS = "QR Connected";
                 System.out.println("ACTION_GATT_QR_CONNECTED");
 
                 /*timerQR = new Timer();
@@ -115,7 +115,7 @@ public class ServiceQRCode extends Service {
                     public void run() {
 
                         //Execute below code only if QR reader is  connected
-                        if (Constants.QR_ReaderStatus.equalsIgnoreCase("QR Connected") || Constants.QR_ReaderStatus.equalsIgnoreCase("QR Discovered")) {
+                        if (Constants.QR_READER_STATUS.equalsIgnoreCase("QR Connected") || Constants.QR_READER_STATUS.equalsIgnoreCase("QR Discovered")) {
                             //BLE Upgrade
                             if ((IsQRUpdate.trim().equalsIgnoreCase("Y")) && bleVersionCallCount == 0) {
                                 try {
@@ -150,19 +150,19 @@ public class ServiceQRCode extends Service {
 
             } else if (LeServiceQRCode.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                Constants.QR_ReaderStatus = "QR Disconnected";
+                Constants.QR_READER_STATUS = "QR Disconnected";
                 System.out.println("ACTION_GATT_QR_DISCONNECTED");
 
             } else if (LeServiceQRCode.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 System.out.println("ACTION_GATT_QR_SERVICES_DISCOVERED");
-                Constants.QR_ReaderStatus = "QR Discovered";
+                Constants.QR_READER_STATUS = "QR Discovered";
             } else if (LeServiceQRCode.ACTION_DATA_AVAILABLE.equals(action)) {
                 System.out.println("ACTION_GATT_QR_AVAILABLE");
                 System.out.println("ACTION_DATA_AVAILABLE");
-                Constants.QR_ReaderStatus = "QR Connected";
+                Constants.QR_READER_STATUS = "QR Connected";
                 displayData(intent.getStringExtra(LeServiceQRCode.EXTRA_DATA));
             } else {
-                Constants.QR_ReaderStatus = "QR Disconnected";
+                Constants.QR_READER_STATUS = "QR Disconnected";
             }
         }
     };
@@ -268,7 +268,7 @@ public class ServiceQRCode extends Service {
                 success = folder.mkdirs();
             }
             if (!success) {
-                AppConstants.AlertDialogBox(ServiceQRCode.this, "Please check File is present in FSCardReader_QR Folder in Internal(Device) Storage");
+                AppConstants.alertDialogBox(ServiceQRCode.this, "Please check File is present in FSCardReader_QR Folder in Internal(Device) Storage");
             }
 
             if (BLEFileLocation != null) {
@@ -277,16 +277,16 @@ public class ServiceQRCode extends Service {
                 File f = new File(CheckVersionFileLocation);
                 if (f.exists()) {
                     Log.e(TAG, " BLF Upgrade File already downloaded. skip downloading..");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " File already downloaded. skip downloading..");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " File already downloaded. skip downloading..");
                 } else {
                     new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(BLEFileLocation, "FSCardReader_" + BLEType + ".bin", "BLEUpdate");
                 }
 
             } else {
                 Log.e(TAG, "BLE reader upgrade File path null");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BLE reader upgrade File path null");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BLE reader upgrade File path null");
             }
 
 
@@ -310,12 +310,12 @@ public class ServiceQRCode extends Service {
 
     private void readFobKey() {
 
-        if (AppConstants.RebootQR_reader) {
+        if (AppConstants.REBOOT_QR_READER) {
             System.out.println("ACTION_GATT_QR_Reboot cmd");
             mBluetoothLeService.writeRebootCharacteristic();
-            AppConstants.RebootQR_reader = false;
+            AppConstants.REBOOT_QR_READER = false;
         } else {
-            AppConstants.RebootQR_reader = false;
+            AppConstants.REBOOT_QR_READER = false;
             mBluetoothLeService.readCustomCharacteristic(false);
         }
     }

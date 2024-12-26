@@ -26,7 +26,7 @@ public class BackgroundServiceWriteTimestampToFile extends BackgroundService{
             } else {
 
                 System.out.println("Write TimeStamp to file Service is on...");
-                AppConstants.WriteTimeStamp("BackgroundServiceWriteTimestampToFile ~~~~~~~~~");
+                AppConstants.writeTimeStamp("BackgroundServiceWriteTimestampToFile ~~~~~~~~~");
 
             }
 

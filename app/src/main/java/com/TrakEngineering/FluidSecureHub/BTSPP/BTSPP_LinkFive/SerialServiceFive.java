@@ -9,17 +9,11 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 
-import com.TrakEngineering.FluidSecureHub.BuildConfig;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class SerialServiceFive extends Service implements SerialListenerFive {
-
-    static final String INTENT_ACTION_DISCONNECT = BuildConfig.APPLICATION_ID + ".Disconnect";
-    static final String NOTIFICATION_CHANNEL = BuildConfig.APPLICATION_ID + ".Channel";
-    static final String INTENT_CLASS_MAIN_ACTIVITY = BuildConfig.APPLICATION_ID + ".MainActivity";
 
     public class SerialBinder extends Binder {
         public SerialServiceFive getService() {

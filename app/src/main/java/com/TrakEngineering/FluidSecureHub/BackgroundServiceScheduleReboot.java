@@ -32,7 +32,7 @@ public class BackgroundServiceScheduleReboot extends Service {
         try {
             super.onStart(intent, startId);
             Log.e(TAG, "~~~~~start into BackgroundServiceScheduleReboot~~~~~");
-            if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+            if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && Constants.FS_6_STATUS.equalsIgnoreCase("FREE")) {
                 new CallSureMDMRebootDevice(BackgroundServiceScheduleReboot.this).execute();
             }
             else{
@@ -57,7 +57,7 @@ public class BackgroundServiceScheduleReboot extends Service {
 
 
         } catch (NullPointerException e) {
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  onStartCommand Execption " + e);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  onStartCommand Execption " + e);
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
@@ -98,7 +98,7 @@ public class BackgroundServiceScheduleReboot extends Service {
 
 
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .addHeader("Authorization", authString)
                         .addHeader("ReqType", "Normal")
                         .build();
@@ -112,8 +112,8 @@ public class BackgroundServiceScheduleReboot extends Service {
             } catch (Exception e) {
 
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CallSureMDMRebootDevice  --Exception " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  CallSureMDMRebootDevice  --Exception " + e);
             }
 
             return resp;
@@ -124,8 +124,8 @@ public class BackgroundServiceScheduleReboot extends Service {
 
             System.out.println("CallSureMDMRebootDevice = " + result);
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  CallSureMDMRebootDevice onPostExecute " + result);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  CallSureMDMRebootDevice onPostExecute " + result);
 
 
         }

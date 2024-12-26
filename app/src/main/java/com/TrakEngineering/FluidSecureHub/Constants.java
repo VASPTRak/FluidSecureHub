@@ -11,70 +11,68 @@ import java.util.List;
  */
 public class Constants {
 
-    public static final String PREF_TransactionDetails = "SaveTransactionInSharedPreff";
+    public static final String PREF_TRANSACTION_DETAILS = "SaveTransactionInSharedPref";
 
-    public static boolean hotspotstayOn = true;
+    public static boolean HOTSPOT_STAY_ON = true;
 
-    public static final String MAC_ADDR_RECONFIGURE = "saveLinkMacAddressForReconfigure";
+    public static final String MAC_ADDRESS_RECONFIGURE = "saveLinkMacAddressForReconfigure";
 
-    final public static String VEHICLE_NUMBER="vehicleNumber";
-    final public static String ODO_METER="Odometer";
-    final public static String DEPT="dept";
-    final public static String PPIN="pin";
-    final public static String OTHERR="other";
-    final public static String HOURSS="hours";
+    final public static String VEHICLE_NUMBER = "vehicleNumber";
+    final public static String ODO_METER = "Odometer";
+    final public static String DEPT = "dept";
+    final public static String PERSON_PIN = "pin";
+    final public static String OTHER = "other";
+    final public static String HOURS = "hours";
 
-    public static double Latitude=0;
-    public static double Longitude=0;
+    public static double LATITUDE = 0;
+    public static double LONGITUDE = 0;
     public static int PORT = 8080; //80;
 
-    final public static String DATE_FORMAT="MMM dd, yyyy"; // May 24, 2016
-    final public static String TIME_FORMAT="hh:mm aa";
+    final public static String DATE_FORMAT = "MMM dd, yyyy"; // May 24, 2016
+    final public static String TIME_FORMAT = "hh:mm aa";
     public static final int CONNECTION_CODE = 111;
 
-    public static String CurrFsPass;
+    public static String CURRENT_FS_PASSWORD;
     public final static int REQUEST_ENABLE_BT = 1;
 
-    public static String ManualOdoScreenFree = "Yes";
+    public static String MANUAL_ODO_SCREEN_FREE = "Yes";
     public static String FA_OdometerRequired = "Yes";
     public static boolean ON_FA_MANUAL_SCREEN;
 
-    public static String QR_ReaderStatus = "QR Waiting..";
-    public static String HF_ReaderStatus = "HF Waiting..";
-    public static String LF_ReaderStatus = "LF Waiting..";
-    public static String Mag_ReaderStatus = "Mag Waiting..";
+    public static String QR_READER_STATUS = "QR Waiting..";
+    public static String HF_READER_STATUS = "HF Waiting..";
+    public static String LF_READER_STATUS = "LF Waiting..";
+    public static String MAG_READER_STATUS = "Mag Waiting..";
 
-    public static String FS_1OdoScreen = "FREE";
-    public static String FS_2OdoScreen = "FREE";
-    public static String FS_3OdoScreen = "FREE";
-    public static String FS_4OdoScreen = "FREE";
-    public static String FS_5OdoScreen = "FREE";
-    public static String FS_6OdoScreen = "FREE";
+    public static String FS_1_ODO_SCREEN = "FREE";
+    public static String FS_2_ODO_SCREEN = "FREE";
+    public static String FS_3_ODO_SCREEN = "FREE";
+    public static String FS_4_ODO_SCREEN = "FREE";
+    public static String FS_5_ODO_SCREEN = "FREE";
+    public static String FS_6_ODO_SCREEN = "FREE";
 
     public static String FA_Message = "";
 
+    public static String FS_1_STATUS = "FREE";
+    public static String FS_2_STATUS = "FREE";
+    public static String FS_3_STATUS = "FREE";
+    public static String FS_4_STATUS = "FREE";
+    public static String FS_5_STATUS = "FREE";
+    public static String FS_6_STATUS = "FREE";
 
-    public static String FS_1STATUS = "FREE";
-    public static String FS_2STATUS = "FREE";
-    public static String FS_3STATUS = "FREE";
-    public static String FS_4STATUS = "FREE";
-    public static String FS_5STATUS = "FREE";
-    public static String FS_6STATUS = "FREE";
+    public static String FS_1_GALLONS = "";
+    public static String FS_2_GALLONS = "";
+    public static String FS_3_GALLONS = "";
+    public static String FS_4_GALLONS = "";
+    public static String FS_5_GALLONS = "";
+    public static String FS_6_GALLONS = "";
 
-    public static String FS_1Gallons = "";
-    public static String FS_2Gallons = "";
-    public static String FS_3Gallons = "";
-    public static String FS_4Gallons = "";
-    public static String FS_5Gallons = "";
-    public static String FS_6Gallons = "";
-
-
-    public static String FS_1Pulse = "00";
-    public static String FS_2Pulse = "00";
-    public static String FS_3Pulse = "00";
-    public static String FS_4Pulse = "00";
-    public static String FS_5Pulse = "00";
-    public static String FS_6Pulse = "00";
+    public static String FS_1_PULSE = "00";
+    public static String FS_2_PULSE = "00";
+    public static String FS_3_PULSE = "00";
+    public static String FS_4_PULSE = "00";
+    public static String FS_5_PULSE = "00";
+    public static String FS_6_PULSE = "00";
 
     public static final String SHARED_PREF_NAME = "UserInfo";
     public static final String PREF_COLUMN_USER = "UserData";
@@ -82,86 +80,85 @@ public class Constants {
     public static final String PREF_OFF_DB_SIZE = "OfflineDbSize";
     public static final String PREF_COLUMN_GATE_HUB = "GateHub";
     public static final String PREF_TLD_Level = "TLDLevel";
-    public static final String PREF_Log_Data = "LogData";
-    public static final String PREF_FA_Data = "FAData";
-    public static final String PREF_VehiFuel = "SaveVehiFuelInPref";
-    public static final String PREF_TldDetails = "SaveTldDetailsInPref";
+    public static final String PREF_LOG_DATA = "LogData";
+    public static final String PREF_FA_DATA = "FAData";
+    public static final String PREF_VEHI_FUEL = "SaveVehiFuelInPref";
+    public static final String PREF_TLD_DETAILS = "SaveTldDetailsInPref";
     public static final String PREF_FS_UPGRADE = "SaveFSUpgrade";
     public static final String PREF_LINK_pumpofftime = "SaveLinkPumpOffTime";
     public static final String PREF_TXTN_INTERRUPTED = "storeTxtnInterrupted";
-    public static final String PREF_CalibrationDetails = "CalibrationDetails";
-    public static final String PREF_MOStatusDetails = "MOStatusDetails";
+    public static final String PREF_CALIBRATION_DETAILS = "CalibrationDetails";
+    public static final String PREF_MO_STATUS_DETAILS = "MOStatusDetails";
 
     public static final int VERSION_CODES_NINE = 28;
 
-    public static boolean IsSignalSrtengthOk = true;
-    public static String CurrentSelectedHose = "";
-    public static String CurrentNetworkType = "";
-    public static String CurrentSignalStrength = "";
+    public static boolean IS_SIGNAL_STRENGTH_OK = true;
+    public static String CURRENT_SELECTED_HOSE = "";
+    public static String CURRENT_NETWORK_TYPE = "";
+    public static String CURRENT_SIGNAL_STRENGTH = "";
     public static String FA_MANUAL_VEHICLE = "";
 
-    public static String GateHubPinNo = "";
-    public static String GateHubvehicleNo = "";
+    public static String GATE_HUB_PIN_NUM = "";
+    public static String GATE_HUB_VEHICLE_NUM = "";
 
-    public static String AccPersonnelPIN_FS1;
-    public static String AccVehicleNumber_FS1;
-    public static String AccDepartmentNumber_FS1;
-    public static String AccOther_FS1;
-    public static String AccVehicleOther_FS1;
-    public static int AccOdoMeter_FS1=0;
-    public static int AccHours_FS1;
+    public static String PERSONNEL_PIN_FS1;
+    public static String VEHICLE_NUMBER_FS1;
+    public static String DEPARTMENT_NUMBER_FS1;
+    public static String OTHER_FS1;
+    public static String VEHICLE_OTHER_FS1;
+    public static int ODO_METER_FS1 = 0;
+    public static int HOURS_FS1;
 
-    public static String AccVehicleNumber;
-    public static String AccDepartmentNumber;
-    public static String AccPersonnelPIN;
-    public static String AccOther;
-    public static String AccVehicleOther;
-    public static int AccOdoMeter;
-    public static int AccHours;
+    public static String PERSONNEL_PIN_FS2;
+    public static String VEHICLE_NUMBER_FS2;
+    public static String DEPARTMENT_NUMBER_FS2;
+    public static String OTHER_FS2;
+    public static String VEHICLE_OTHER_FS2;
+    public static int ODO_METER_FS2;
+    public static int HOURS_FS2;
 
     //For fs number 3
-    public static String AccPersonnelPIN_FS3;
-    public static String AccVehicleNumber_FS3;
-    public static String AccDepartmentNumber_FS3;
-    public static String AccOther_FS3;
-    public static String AccVehicleOther_FS3;
-    public static int AccOdoMeter_FS3=0;
-    public static int AccHours_FS3;
+    public static String PERSONNEL_PIN_FS3;
+    public static String VEHICLE_NUMBER_FS3;
+    public static String DEPARTMENT_NUMBER_FS3;
+    public static String OTHER_FS3;
+    public static String VEHICLE_OTHER_FS3;
+    public static int ODO_METER_FS3 = 0;
+    public static int HOURS_FS3;
 
     //ForFs number 4
-    public static String AccPersonnelPIN_FS4;
-    public static String AccVehicleNumber_FS4;
-    public static String AccDepartmentNumber_FS4;
-    public static String AccOther_FS4;
-    public static String AccVehicleOther_FS4;
-    public static int AccOdoMeter_FS4=0;
-    public static int AccHours_FS4;
+    public static String PERSONNEL_PIN_FS4;
+    public static String VEHICLE_NUMBER_FS4;
+    public static String DEPARTMENT_NUMBER_FS4;
+    public static String OTHER_FS4;
+    public static String VEHICLE_OTHER_FS4;
+    public static int ODO_METER_FS4 = 0;
+    public static int HOURS_FS4;
 
     //ForFs number 5
-    public static String AccPersonnelPIN_FS5;
-    public static String AccVehicleNumber_FS5;
-    public static String AccDepartmentNumber_FS5;
-    public static String AccOther_FS5;
-    public static String AccVehicleOther_FS5;
-    public static int AccOdoMeter_FS5=0;
-    public static int AccHours_FS5;
+    public static String PERSONNEL_PIN_FS5;
+    public static String VEHICLE_NUMBER_FS5;
+    public static String DEPARTMENT_NUMBER_FS5;
+    public static String OTHER_FS5;
+    public static String VEHICLE_OTHER_FS5;
+    public static int ODO_METER_FS5 = 0;
+    public static int HOURS_FS5;
 
     //ForFs number 6
-    public static String AccPersonnelPIN_FS6;
-    public static String AccVehicleNumber_FS6;
-    public static String AccDepartmentNumber_FS6;
-    public static String AccOther_FS6;
-    public static String AccVehicleOther_FS6;
-    public static int AccOdoMeter_FS6=0;
-    public static int AccHours_FS6;
+    public static String PERSONNEL_PIN_FS6;
+    public static String VEHICLE_NUMBER_FS6;
+    public static String DEPARTMENT_NUMBER_FS6;
+    public static String OTHER_FS6;
+    public static String VEHICLE_OTHER_FS6;
+    public static int ODO_METER_FS6 = 0;
+    public static int HOURS_FS6;
 
-    static List<String> BusyVehicleNumberList = new ArrayList<String>();
+    static List<String> BUSY_VEHICLE_NUMBER_LIST = new ArrayList<String>();
 
-
-    //public static String exrSdDir= Environment.getExternalStorageDirectory()+ File.separator;
-    public static String exrSdDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator;
-    public static String logFolderName = "FuelSecureAP";
-    public static String LogPath = exrSdDir + logFolderName + File.separator + "Logs";
+    //public static String EXTERNAL_DIRECTORY= Environment.getExternalStorageDirectory()+ File.separator;
+    public static String EXTERNAL_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + File.separator;
+    public static String LOG_FOLDER_NAME = "FuelSecureAP";
+    public static String LOG_PATH = EXTERNAL_DIRECTORY + LOG_FOLDER_NAME + File.separator + "Logs";
 
     private static final int SERVER_PORT = 2901;
     private static final String SERVER_IP = "192.168.4.1";

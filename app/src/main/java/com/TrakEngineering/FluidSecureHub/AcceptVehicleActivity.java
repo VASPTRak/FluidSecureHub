@@ -81,14 +81,14 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         AppConstants.APDU_FOB_KEY = "";
 
 
-        if (Constants.CurrentSelectedHose.equals("FS1")) {
-            editVehicleNumber.setText(Constants.AccVehicleNumber_FS1);
-        } else if (Constants.CurrentSelectedHose.equals("FS2")) {
-            editVehicleNumber.setText(Constants.AccVehicleNumber);
-        } else if (Constants.CurrentSelectedHose.equals("FS3")) {
-            editVehicleNumber.setText(Constants.AccVehicleNumber_FS3);
-        } else if (Constants.CurrentSelectedHose.equals("FS4")) {
-            editVehicleNumber.setText(Constants.AccVehicleNumber_FS4);
+        if (Constants.CURRENT_SELECTED_HOSE.equals("FS1")) {
+            editVehicleNumber.setText(Constants.VEHICLE_NUMBER_FS1);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS2")) {
+            editVehicleNumber.setText(Constants.VEHICLE_NUMBER_FS2);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS3")) {
+            editVehicleNumber.setText(Constants.VEHICLE_NUMBER_FS3);
+        } else if (Constants.CURRENT_SELECTED_HOSE.equals("FS4")) {
+            editVehicleNumber.setText(Constants.VEHICLE_NUMBER_FS4);
         }
 
         DisplayScreenInit();
@@ -170,11 +170,11 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
         SharedPreferences sharedPrefODO = AcceptVehicleActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
-        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HubId, "");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
+        AppConstants.HUB_ID = sharedPrefODO.getString(AppConstants.HUBID, "");
 
 
         SharedPreferences sharedPref = AcceptVehicleActivity.this.getSharedPreferences(Constants.PREF_COLUMN_SITE, Context.MODE_PRIVATE);
@@ -184,11 +184,11 @@ public class AcceptVehicleActivity extends AppCompatActivity {
         AppConstants.SITE_ID = SITE_ID;
 
         //enable hotspot.
-        Constants.hotspotstayOn = true;
+        Constants.HOTSPOT_STAY_ON = true;
 
         //FOLDER_PATH = getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN) + "/";
 
-        if (AppConstants.UP_Upgrade) {
+        if (AppConstants.UP_UPGRADE) {
 
             //File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "FSBin");
             String binFolderPath = String.valueOf(getApplicationContext().getExternalFilesDir(AppConstants.FOLDER_BIN));
@@ -199,23 +199,23 @@ public class AcceptVehicleActivity extends AppCompatActivity {
             }
 
             /*if (BTConstants.CurrentTransactionIsBT) {
-                AppConstants.UP_Upgrade_File_name = "BT_" + AppConstants.UP_Upgrade_File_name;
+                AppConstants.UP_UPGRADE_FILE_NAME = "BT_" + AppConstants.UP_UPGRADE_FILE_NAME;
             }*/
-            String LocalPath = binFolderPath + "/" + AppConstants.UP_Upgrade_File_name;
+            String LocalPath = binFolderPath + "/" + AppConstants.UP_UPGRADE_FILE_NAME;
 
             File f = new File(LocalPath);
             if (f.exists()) {
                 Log.e(TAG, "Link upgrade firmware file already exist. Skip download");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Link upgrade firmware file (" + AppConstants.UP_Upgrade_File_name + ") already exist. Skip download");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Link upgrade firmware file (" + AppConstants.UP_UPGRADE_FILE_NAME + ") already exist. Skip download");
             } else {
-                if (AppConstants.UP_FilePath != null) {
-                    //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FilePath, AppConstants.UP_Upgrade_File_name, "UP_Upgrade");
-                    new DownloadFileFromURL().execute(AppConstants.UP_FilePath, binFolderPath, AppConstants.UP_Upgrade_File_name);
+                if (AppConstants.UP_FILE_PATH != null) {
+                    //new BackgroundServiceDownloadFirmware.DownloadLinkAndReaderFirmware().execute(AppConstants.UP_FILE_PATH, AppConstants.UP_UPGRADE_FILE_NAME, "UP_Upgrade");
+                    new DownloadFileFromURL().execute(AppConstants.UP_FILE_PATH, binFolderPath, AppConstants.UP_UPGRADE_FILE_NAME);
                 } else {
                     Log.e(TAG, "Link upgrade File path null");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Link upgrade File path null");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Link upgrade File path null");
                 }
             }
         }
@@ -386,26 +386,26 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 String vehicleNumber = "";
                 String pinNumber = "";
 
-                if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                    pinNumber = Constants.AccPersonnelPIN_FS1;
+                if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                    pinNumber = Constants.PERSONNEL_PIN_FS1;
                     vehicleNumber = editVehicleNumber.getText().toString().trim();
-                    Constants.AccVehicleNumber_FS1 = vehicleNumber;
+                    Constants.VEHICLE_NUMBER_FS1 = vehicleNumber;
 
 
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                    pinNumber = Constants.AccPersonnelPIN;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                    pinNumber = Constants.PERSONNEL_PIN_FS2;
                     vehicleNumber = editVehicleNumber.getText().toString().trim();
-                    Constants.AccVehicleNumber = vehicleNumber;
+                    Constants.VEHICLE_NUMBER_FS2 = vehicleNumber;
 
-                } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                    pinNumber = Constants.AccPersonnelPIN_FS3;
+                } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                    pinNumber = Constants.PERSONNEL_PIN_FS3;
                     vehicleNumber = editVehicleNumber.getText().toString().trim();
-                    Constants.AccVehicleNumber_FS3 = vehicleNumber;
+                    Constants.VEHICLE_NUMBER_FS3 = vehicleNumber;
 
                 } else {
-                    pinNumber = Constants.AccPersonnelPIN_FS4;
+                    pinNumber = Constants.PERSONNEL_PIN_FS4;
                     vehicleNumber = editVehicleNumber.getText().toString().trim();
-                    Constants.AccVehicleNumber_FS4 = vehicleNumber;
+                    Constants.VEHICLE_NUMBER_FS4 = vehicleNumber;
 
                 }
 
@@ -443,10 +443,10 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                         SharedPreferences sharedPrefODO = AcceptVehicleActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
-                        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-                        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-                        IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequireForHub, "");
-                        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
+                        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+                        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+                        IsPersonnelPINRequireForHub = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE_FOR_HUB, "");
+                        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
 
                         IsOdoMeterRequire = jsonObject.getString("IsOdoMeterRequire");
                         String IsHoursRequire = jsonObject.getString("IsHoursRequire");
@@ -462,8 +462,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                         SharedPreferences sharedPref = AcceptVehicleActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString(AppConstants.IsOdoMeterRequire, IsOdoMeterRequire);
-                        editor.putString(AppConstants.IsHoursRequire, IsHoursRequire);
+                        editor.putString(AppConstants.IS_ODO_METER_REQUIRE, IsOdoMeterRequire);
+                        editor.putString(AppConstants.IS_HOURS_REQUIRE, IsHoursRequire);
                         editor.putString("PreviousOdo", PreviousOdo);
                         editor.putString("OdoLimit", OdoLimit);
                         editor.putString("OdometerReasonabilityConditions", OdometerReasonabilityConditions);
@@ -508,8 +508,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                     } else {
                         String ResponceText = jsonObject.getString("ResponceText");
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Vehicle rejected. Error: " + ResponceText);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Vehicle rejected. Error: " + ResponceText);
 
                         String ValidationFailFor = jsonObject.getString("ValidationFailFor");
                         if (ValidationFailFor.equalsIgnoreCase("Pin")) {
@@ -547,8 +547,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 }
 
                 btnSave.setEnabled(true);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Please enter vehicle number or use fob key.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Please enter vehicle number or use fob key.");
                 CommonUtils.showMessageDilaog(AcceptVehicleActivity.this, "Error Message", "Please enter vehicle number or use fob key.");
             }
 
@@ -565,26 +565,26 @@ public class AcceptVehicleActivity extends AppCompatActivity {
             String vehicleNumber = "";
             String pinNumber = "";
 
-            if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS1")) {
-                pinNumber = Constants.AccPersonnelPIN_FS1;
+            if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS1")) {
+                pinNumber = Constants.PERSONNEL_PIN_FS1;
                 vehicleNumber = editVehicleNumber.getText().toString().trim();
-                Constants.AccVehicleNumber_FS1 = vehicleNumber;
+                Constants.VEHICLE_NUMBER_FS1 = vehicleNumber;
 
 
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS2")) {
-                pinNumber = Constants.AccPersonnelPIN;
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS2")) {
+                pinNumber = Constants.PERSONNEL_PIN_FS2;
                 vehicleNumber = editVehicleNumber.getText().toString().trim();
-                Constants.AccVehicleNumber = vehicleNumber;
+                Constants.VEHICLE_NUMBER_FS2 = vehicleNumber;
 
-            } else if (Constants.CurrentSelectedHose.equalsIgnoreCase("FS3")) {
-                pinNumber = Constants.AccPersonnelPIN_FS3;
+            } else if (Constants.CURRENT_SELECTED_HOSE.equalsIgnoreCase("FS3")) {
+                pinNumber = Constants.PERSONNEL_PIN_FS3;
                 vehicleNumber = editVehicleNumber.getText().toString().trim();
-                Constants.AccVehicleNumber_FS3 = vehicleNumber;
+                Constants.VEHICLE_NUMBER_FS3 = vehicleNumber;
 
             } else {
-                pinNumber = Constants.AccPersonnelPIN_FS4;
+                pinNumber = Constants.PERSONNEL_PIN_FS4;
                 vehicleNumber = editVehicleNumber.getText().toString().trim();
-                Constants.AccVehicleNumber_FS4 = vehicleNumber;
+                Constants.VEHICLE_NUMBER_FS4 = vehicleNumber;
 
             }
 
@@ -630,8 +630,8 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                     SharedPreferences sharedPref = AcceptVehicleActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString(AppConstants.IsOdoMeterRequire, IsOdoMeterRequire);
-                    editor.putString(AppConstants.IsHoursRequire, IsHoursRequire);
+                    editor.putString(AppConstants.IS_ODO_METER_REQUIRE, IsOdoMeterRequire);
+                    editor.putString(AppConstants.IS_HOURS_REQUIRE, IsHoursRequire);
                     editor.putString("PreviousOdo", PreviousOdo);
                     editor.putString("OdoLimit", OdoLimit);
                     editor.putString("OdometerReasonabilityConditions", OdometerReasonabilityConditions);
@@ -724,7 +724,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(authEntityClass.IMEIUDID + ":" + userEmail + ":" + "AuthorizationSequence" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptVehicleActivity.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptVehicleActivity.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -759,7 +759,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEIUDID + ":" + userEmail + ":" + "CheckVehicleRequireOdometerEntryAndRequireHourEntry" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AcceptVehicleActivity.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AcceptVehicleActivity.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -776,7 +776,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         // ActivityHandler.removeActivity(1);
-        AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity.this);
+        AppConstants.clearEditTextFieldsOnBack(AcceptVehicleActivity.this);
         Istimeout_Sec = false;
         AppConstants.APDU_FOB_KEY = "";
         finish();
@@ -814,10 +814,10 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
         SharedPreferences sharedPrefODO = AcceptVehicleActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
-        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IsDepartmentRequire, "");
-        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IsPersonnelPINRequire, "");
-        IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TimeOut, "1");
+        IsDepartmentRequire = sharedPrefODO.getString(AppConstants.IS_DEPARTMENT_REQUIRE, "");
+        IsPersonnelPINRequire = sharedPrefODO.getString(AppConstants.IS_PERSONNEL_PIN_REQUIRE, "");
+        IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+        TimeOutinMinute = sharedPrefODO.getString(AppConstants.TIMEOUT, "1");
 
         screenTimeOut = Integer.parseInt(TimeOutinMinute) * 60000;
         System.out.println("ScreenOutTimeVehicle" + screenTimeOut);
@@ -837,7 +837,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
                             public void run() {
                                 CommonUtils.hideKeyboard(AcceptVehicleActivity.this);
                                 Istimeout_Sec = false;
-                                AppConstants.ClearEdittextFielsOnBack(AcceptVehicleActivity.this);
+                                AppConstants.clearEditTextFieldsOnBack(AcceptVehicleActivity.this);
 
                                 // ActivityHandler.GetBacktoWelcomeActivity();
 
@@ -868,7 +868,7 @@ public class AcceptVehicleActivity extends AppCompatActivity {
 
 
         SharedPreferences sharedPrefODO = AcceptVehicleActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        IsVehicleHasFob = sharedPrefODO.getString(AppConstants.ISVehicleHasFob, "false");
+        IsVehicleHasFob = sharedPrefODO.getString(AppConstants.IS_VEHICLE_HAS_FOB, "false");
 
         if (IsVehicleHasFob.equalsIgnoreCase("true")) {
 

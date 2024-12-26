@@ -57,8 +57,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Log.d(TAG, "DEVICE NAME: " + mImageNames.get(position) + " \nDEVICE MAC: " + mImageMac.get(position));
                 Toast.makeText(mContext, mContext.getResources().getString(R.string.DeviceName).toUpperCase() + ": " + mImageNames.get(position) + " \n" + mContext.getResources().getString(R.string.DeviceMacAddress).toUpperCase() + ": " + mImageMac.get(position), Toast.LENGTH_LONG).show();
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "BTLink: Update Mac Address selected DEVICE NAME:" + mImageNames.get(position) + "DEVICE MAC:" + mImageMac.get(position));
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "BTLink: Update Mac Address selected DEVICE NAME:" + mImageNames.get(position) + "DEVICE MAC:" + mImageMac.get(position));
                 //String mac = CommonFunctions.ShiftMacAddress(mImageMac.get(position),"S",2);
                 UpdateMacAddress(mImageMac.get(position));
 
@@ -90,10 +90,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private void UpdateMacAddress(String updateMac) {
 
         UpdateMacAddressClass authEntityClass = new UpdateMacAddressClass();
-        authEntityClass.SiteId = Integer.parseInt(AppConstants.CURRENT_SELECTED_SITEID);
+        authEntityClass.SiteId = Integer.parseInt(AppConstants.CURRENT_SELECTED_SITE_ID);
         authEntityClass.MACAddress = updateMac;
         authEntityClass.RequestFrom = "AP";
-        authEntityClass.HubName = AppConstants.HubName;
+        authEntityClass.HubName = AppConstants.HUB_NAME;
 
         Gson gson = new Gson();
         final String jsonData = gson.toJson(authEntityClass);
@@ -104,7 +104,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public void saveLinkMacAddressForReconfigure(String jsonData) {
-        SharedPreferences sharedPref = mContext.getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = mContext.getSharedPreferences(Constants.MAC_ADDRESS_RECONFIGURE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("jsonData", jsonData);
         editor.commit();
@@ -113,7 +113,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public void UpdateMacToServer() {
 
-        SharedPreferences sharedPref = mContext.getSharedPreferences(Constants.MAC_ADDR_RECONFIGURE, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = mContext.getSharedPreferences(Constants.MAC_ADDRESS_RECONFIGURE, Context.MODE_PRIVATE);
         String jsonData = sharedPref.getString("jsonData", "");
         if (!jsonData.isEmpty())
             new UpdateMacAsynTask().execute(jsonData);
@@ -134,7 +134,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(mContext) + ":" + userEmail + ":" + "UpdateMACAddress" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(mContext, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(mContext, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -156,14 +156,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     String ResponceText = jsonObject1.getString("ResponceText");
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Mac Address Updated successfully");
-                        AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDR_RECONFIGURE);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Mac Address Updated successfully");
+                        AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDRESS_RECONFIGURE);
                         AppConstants.colorToastBigFont(mContext, mContext.getResources().getString(R.string.MacAddressUpdated), Color.BLUE);
                     } else if (ResponceMessage.equalsIgnoreCase("fail")) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " " + ResponceText);
-                        AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDR_RECONFIGURE);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " " + ResponceText);
+                        AppConstants.clearSharedPrefByName(mContext, Constants.MAC_ADDRESS_RECONFIGURE);
                         AppConstants.colorToastBigFont(mContext, " " + ResponceText, Color.BLUE);
                     }
                 }

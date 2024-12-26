@@ -60,7 +60,6 @@ public class BackgroundService_BTFive extends Service {
     public BroadcastBlueLinkFiveData broadcastBlueLinkFiveData = null;
     String Request = "", Response = "";
     String FDRequest = "", FDResponse = "";
-    String upgradeResponse = "";
     int PreviousRes = 0;
     boolean redpulseloop_on, RelayStatus;
     int pulseCount = 0;
@@ -73,7 +72,7 @@ public class BackgroundService_BTFive extends Service {
     long sqliteID = 0;
     String CurrentLinkMac = "", LinkCommunicationType = "", SERVER_IP = "", LinkName = "", printReceipt = "", IsFuelingStop = "0", IsLastTransaction = "0", OverrideQuantity = "0", OverridePulse = "0";
     Timer timerBt5;
-    List<Timer> TimerList_ReadpulseBT5 = new ArrayList<Timer>();
+    List<Timer> timerList_ReadPulseBT5 = new ArrayList<Timer>();
     DBController controller = new DBController(BackgroundService_BTFive.this);
     Boolean IsThisBTTrnx;
     boolean isBroadcastReceiverRegistered = false;
@@ -109,7 +108,7 @@ public class BackgroundService_BTFive extends Service {
             Bundle extras = intent.getExtras();
             if (extras == null) {
                 this.stopSelf();
-                StopTransaction(false, true); // extras == null
+                stopTransaction(false, true); // extras == null
             } else {
                 sqlite_id = (long) extras.get("sqlite_id");
                 SERVER_IP = String.valueOf(extras.get("SERVER_IP"));
@@ -117,12 +116,12 @@ public class BackgroundService_BTFive extends Service {
                 Request = "";
                 stopCount = 0;
                 Log.i(TAG, "-Started-");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: -Started-");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: -Started-");
 
-                Constants.FS_5STATUS = "BUSY";
+                Constants.FS_5_STATUS = "BUSY";
 
-                SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
                 TransactionId = sharedPref.getString("TransactionId_FS5", "");
                 VehicleId = sharedPref.getString("VehicleId_FS5", "");
                 VehicleNumber = sharedPref.getString("VehicleNumber_FS5", "");
@@ -143,12 +142,12 @@ public class BackgroundService_BTFive extends Service {
                 minFuelLimit = Double.parseDouble(MinLimit);
                 stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
-                SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
+                SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CALIBRATION_DETAILS, Context.MODE_PRIVATE);
                 PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS5", "");
                 IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS5", "0");
                 GetPulserTypeFromLINK = calibrationPref.getString("GetPulserTypeFromLINK_FS5", "False");
 
-                SharedPreferences moStatusPref = this.getSharedPreferences(Constants.PREF_MOStatusDetails, Context.MODE_PRIVATE);
+                SharedPreferences moStatusPref = this.getSharedPreferences(Constants.PREF_MO_STATUS_DETAILS, Context.MODE_PRIVATE);
                 MOStatusCheckFlag = moStatusPref.getString("MOStatusCheckFlag_FS5", "OFF");
                 IsCheckMOStatus = moStatusPref.getString("IsCheckMOStatus_FS5", "False");
                 IsResetMOCheckFlag = moStatusPref.getString("IsResetMOCheckFlag_FS5", "False");
@@ -167,22 +166,22 @@ public class BackgroundService_BTFive extends Service {
                     isOnlineTxn = true;
                 } else {
                     isOnlineTxn = false;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5:-Offline mode--");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5:-Offline mode--");
                     offlineLogicBT5();
                 }
 
                 //Register Broadcast receiver
                 broadcastBlueLinkFiveData = new BroadcastBlueLinkFiveData();
                 IntentFilter intentFilter = new IntentFilter("BroadcastBlueLinkFiveData");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: <Registering Broadcast Receiver.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: <Registering Broadcast Receiver.>");
                 registerReceiver(broadcastBlueLinkFiveData, intentFilter);
                 isBroadcastReceiverRegistered = true;
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: <Registered successfully. (" + broadcastBlueLinkFiveData + ")>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: <Registered successfully. (" + broadcastBlueLinkFiveData + ")>");
 
-                AppConstants.isRelayON_fs5 = false;
+                AppConstants.IS_RELAY_ON_FS5 = false;
                 LinkName = CommonUtils.getLinkName(4);
                 if (LinkCommunicationType.equalsIgnoreCase("BT")) {
                     IsThisBTTrnx = true;
@@ -196,9 +195,9 @@ public class BackgroundService_BTFive extends Service {
                     //Something went Wrong in hose selection.
                     IsThisBTTrnx = false;
                     Log.i(TAG, " BTLink_5: Something went Wrong in hose selection.");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: Something went wrong in hose selection. (Link CommType: " + LinkCommunicationType + ")");
-                    StopTransaction(false, true); // Link CommType unknown
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5: Something went wrong in hose selection. (Link CommType: " + LinkCommunicationType + ")");
+                    stopTransaction(false, true); // Link CommType unknown
                     this.stopSelf();
                 }
             }
@@ -209,117 +208,24 @@ public class BackgroundService_BTFive extends Service {
         return Service.START_NOT_STICKY;
     }
 
-    /*private void UDPFunctionalityAfterBTFailure() {
-        try {
-            if (CommonUtils.CheckAllHTTPLinksAreFree()) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Link not connected. Switching to UDP connection...");
-
-                // Disable Hotspot
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Turning OFF the Hotspot. (if enabled)>");
-                WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTFive.this);
-                wifiApManager.setWifiApEnabled(null, false);
-                isHotspotDisabled = true;
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                // Enable Wi-Fi
-                WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-                wifiManagerMM.setWifiEnabled(true);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        IsThisBTTrnx = false;
-                        BTConstants.SwitchedBTToUDP5 = true;
-                        BeginProcessUsingUDP();
-                    }
-                }, 5000);
-            } else {
-                TerminateBTTransaction();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    /*private void BeginProcessUsingUDP() {
-        try {
-            Toast.makeText(BackgroundService_BTFive.this, getResources().getString(R.string.PleaseWaitForWifiConnect), Toast.LENGTH_SHORT).show();
-
-            new CountDownTimer(12000, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: Connecting to WiFi...");
-                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    String ssid = "";
-                    if (wifiManager.isWifiEnabled()) {
-                        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                        ssid = wifiInfo.getSSID();
-                    }
-
-                    ssid = ssid.replace("\"", "");
-
-                    if (ssid.equalsIgnoreCase(LinkName)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Connected to " + ssid + " via WiFi.");
-                        proceedToInfoCommand();
-                        //loading.cancel();
-                        cancel();
-                    }
-                }
-
-                @Override
-                public void onFinish() {
-                    //loading.dismiss();
-                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                    String ssid = wifiInfo.getSSID();
-
-                    ssid = ssid.replace("\"", "");
-                    if (ssid.equalsIgnoreCase(LinkName)) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Connected to " + ssid + " via WiFi.");
-                        proceedToInfoCommand();
-                        //loading.cancel();
-                        cancel();
-                    } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Unable to connect to " + LinkName + " via WiFi.");
-                        TerminateBTTransaction();
-                    }
-                }
-            }.start();
-        } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in BeginProcessUsingUDP: " + e.getMessage());
-            TerminateBTTransaction();
-            e.printStackTrace();
-        }
-    }*/
-
-    private void TerminateBTTransaction() {
+    private void terminateBTTransaction() {
         try {
             IsThisBTTrnx = false;
-            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
             Log.i(TAG, " BTLink_5: Link not connected. Please try again!");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Link not connected.");
-            AppConstants.TxnFailedCount5++;
-            AppConstants.IsTransactionFailed5 = true;
-            StopTransaction(true, true); // TerminateBTTransaction
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Link not connected.");
+            AppConstants.TRANSACTION_FAILED_COUNT_5++;
+            AppConstants.IS_TRANSACTION_FAILED_5 = true;
+            stopTransaction(true, true); // terminateBTTransaction
             this.stopSelf();
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in TerminateBTTransaction: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Exception in terminateBTTransaction: " + e.getMessage());
         }
     }
 
-    public void proceedToInfoCommand() {
+    /*public void proceedToInfoCommand() {
         try {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -330,16 +236,16 @@ public class BackgroundService_BTFive extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void checkBTLinkStatus(String nextAction) {
         try {
             new CountDownTimer(10000, 2000) {
                 public void onTick(long millisUntilFinished) {
-                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                    if (BTConstants.BT_STATUS_STR_FIVE.equalsIgnoreCase("Connected")) {
                         isConnected = true;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Link is connected.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Link is connected.");
                         if (nextAction.equalsIgnoreCase("info")) {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -358,16 +264,16 @@ public class BackgroundService_BTFive extends Service {
                         }
                         cancel();
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking Connection Status...");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking Connection Status...");
                     }
                 }
 
                 public void onFinish() {
-                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                    if (BTConstants.BT_STATUS_STR_FIVE.equalsIgnoreCase("Connected")) {
                         isConnected = true;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Link is connected.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Link is connected.");
                         if (nextAction.equalsIgnoreCase("info")) {
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
@@ -387,20 +293,20 @@ public class BackgroundService_BTFive extends Service {
                     } else {
                         isConnected = false;
                         if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
-                            TerminateBTTransaction(); //UDPFunctionalityAfterBTFailure();
+                            terminateBTTransaction(); //UDPFunctionalityAfterBTFailure();
                         } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
-                            TerminateBTTxnAfterInterruption();
+                            terminateBTTxnAfterInterruption();
                         }
                     }
                 }
             }.start();
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: checkBTLinkStatus Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: checkBTLinkStatus Exception:>>" + e.getMessage());
             if (nextAction.equalsIgnoreCase("info")) { // Terminate BT Transaction
-                TerminateBTTransaction();
+                terminateBTTransaction();
             } else if (nextAction.equalsIgnoreCase("relay")) { // Terminate BT Txn After Interruption
-                TerminateBTTxnAfterInterruption();
+                terminateBTTxnAfterInterruption();
             }
         }
     }
@@ -408,121 +314,116 @@ public class BackgroundService_BTFive extends Service {
     //region Info Command
     private void infoCommand() {
         try {
-            BTConstants.isNewVersionLinkFive = false;
-            AppConstants.TxnFailedCount5 = 0;
-            AppConstants.isInfoCommandSuccess_fs5 = false;
+            BTConstants.IS_NEW_VERSION_LINK_FIVE = false;
+            AppConstants.TRANSACTION_FAILED_COUNT_5 = 0;
+            AppConstants.IS_FIRST_COMMAND_SUCCESS_FS5 = false;
             //Execute info command
             Request = "";
             Response = "";
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending Info command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending Info command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.info_cmd);
+                btspp.send5(BTConstants.INFO_COMMAND);
             }
-            /*else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending Info command (UDP) to Link: " + LinkName);
-                new Thread(new ClientSendAndListenUDPFive(BTConstants.info_cmd, ipForUDP, this)).start();
-            }*/
-            //Thread.sleep(1000);
+
             new CountDownTimer(5000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     long attempt = (5 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
-                        if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
+                        if (Request.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.equalsIgnoreCase("")) {
                             //Info command success.
                             Log.i(TAG, "BTLink_5: InfoCommand Response success 1:>>" + Response);
 
                             if (!TransactionId.isEmpty()) {
                                 if (Response.contains("mac_address")) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking Info command response. Response: true");
-                                    BTConstants.isNewVersionLinkFive = true;
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking Info command response. Response: true");
+                                    BTConstants.IS_NEW_VERSION_LINK_FIVE = true;
                                     parseInfoCommandResponse(Response); // parse info command response
                                     Response = "";
                                 } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking Info command response. Response:>>" + Response.trim());
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking Info command response. Response:>>" + Response.trim());
                                     parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                                 }
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        AppConstants.isInfoCommandSuccess_fs5 = true;
-                                        if (IsThisBTTrnx && BTConstants.isNewVersionLinkFive && CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.supportedLinkVersionForLast1)) {
-                                            last1Command();
-                                        } else {
-                                            transactionIdCommand(TransactionId);
-                                        }
+                                        AppConstants.IS_FIRST_COMMAND_SUCCESS_FS5 = true;
+                                        //if (IsThisBTTrnx && BTConstants.IS_NEW_VERSION_LINK_FIVE && CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.SUPPORTED_LINK_VERSION_FOR_LAST1)) {
+                                        //    last1Command();
+                                        //} else {
+                                        transactionIdCommand(TransactionId);
+                                        //}
                                     }
                                 }, 1000);
                             } else {
                                 Log.i(TAG, "BTLink_5: TransactionId is empty.");
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: TransactionId is empty.");
-                                StopTransaction(false, true); // TransactionId is empty in infoCommand
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: TransactionId is empty.");
+                                stopTransaction(false, true); // TransactionId is empty in infoCommand
                             }
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_5: Waiting for infoCommand Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking Info command response. Response: false");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking Info command response. Response: false");
                         }
                     }
                 }
 
                 public void onFinish() {
-                    if (Request.equalsIgnoreCase(BTConstants.info_cmd) && !Response.equalsIgnoreCase("")) {
+                    if (Request.equalsIgnoreCase(BTConstants.INFO_COMMAND) && !Response.equalsIgnoreCase("")) {
                         //Info command success.
                         Log.i(TAG, "BTLink_5: InfoCommand Response success 2:>>" + Response);
 
                         if (!TransactionId.isEmpty()) {
                             if (Response.contains("mac_address")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Checking Info command response. Response: true");
-                                BTConstants.isNewVersionLinkFive = true;
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Checking Info command response. Response: true");
+                                BTConstants.IS_NEW_VERSION_LINK_FIVE = true;
                                 parseInfoCommandResponse(Response); // parse info command response
                                 Response = "";
                             } else {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Checking Info command response. Response:>>" + Response.trim());
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Checking Info command response. Response:>>" + Response.trim());
                                 parseInfoCommandResponseForLast10txtn(Response.trim()); // parse last 10 Txtn
                             }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AppConstants.isInfoCommandSuccess_fs5 = true;
-                                    if (IsThisBTTrnx && BTConstants.isNewVersionLinkFive && CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.supportedLinkVersionForLast1)) {
-                                        last1Command();
-                                    } else {
-                                        transactionIdCommand(TransactionId);
-                                    }
+                                    AppConstants.IS_FIRST_COMMAND_SUCCESS_FS5 = true;
+                                    //if (IsThisBTTrnx && BTConstants.IS_NEW_VERSION_LINK_FIVE && CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.SUPPORTED_LINK_VERSION_FOR_LAST1)) {
+                                    //    last1Command();
+                                    //} else {
+                                    transactionIdCommand(TransactionId);
+                                    //}
                                 }
                             }, 1000);
                         } else {
                             Log.i(TAG, "BTLink_5: TransactionId is empty.");
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: TransactionId is empty.");
-                            StopTransaction(false, true); // TransactionId is empty in infoCommand onFinish
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: TransactionId is empty.");
+                            stopTransaction(false, true); // TransactionId is empty in infoCommand onFinish
                         }
                     } else {
                         if (infoCommandAttempt > 0) {
                             //UpgradeTransaction Status info command fail.
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+                            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
                             Log.i(TAG, "BTLink_5: Failed to get infoCommand Response:>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking Info command response. Response: false");
-                            AppConstants.TxnFailedCount5++;
-                            AppConstants.IsTransactionFailed5 = true;
-                            StopTransaction(true, true); // Info command Response: false
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking Info command response. Response: false");
+                            AppConstants.TRANSACTION_FAILED_COUNT_5++;
+                            AppConstants.IS_TRANSACTION_FAILED_5 = true;
+                            stopTransaction(true, true); // Info command Response: false
                         } else {
                             infoCommandAttempt++;
-                            if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
+                            if (BTConstants.BT_STATUS_STR_FIVE.equalsIgnoreCase("Connected")) {
                                 infoCommand(); // Retried one more time after failed to receive response from info command
                             } else {
-                                BTConstants.retryConnForInfoCommand5 = true;
-                                WaitForReconnectToLink();
+                                BTConstants.RETRY_CONN_FOR_INFO_COMMAND5 = true;
+                                waitForReconnectToLink();
                             }
                         }
                     }
@@ -530,21 +431,21 @@ public class BackgroundService_BTFive extends Service {
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: infoCommand Exception:>>" + e.getMessage());
-            StopTransaction(true, true); // Info command Exception
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: infoCommand Exception:>>" + e.getMessage());
+            stopTransaction(true, true); // Info command Exception
         }
     }
 
-    public void WaitForReconnectToLink() {
+    public void waitForReconnectToLink() {
         try {
             new CountDownTimer(10000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     long attempt = (10 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
-                        if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Connected to Link: " + LinkName);
+                        if (BTConstants.BT_STATUS_STR_FIVE.equalsIgnoreCase("Connected")) {
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Connected to Link: " + LinkName);
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -553,16 +454,16 @@ public class BackgroundService_BTFive extends Service {
                             }, 500);
                             cancel();
                         } else {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Waiting for Reconnect to Link: " + LinkName);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Waiting for Reconnect to Link: " + LinkName);
                         }
                     }
                 }
 
                 public void onFinish() {
-                    if (BTConstants.BTStatusStrFive.equalsIgnoreCase("Connected")) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Connected to Link: " + LinkName);
+                    if (BTConstants.BT_STATUS_STR_FIVE.equalsIgnoreCase("Connected")) {
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Connected to Link: " + LinkName);
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -570,15 +471,15 @@ public class BackgroundService_BTFive extends Service {
                             }
                         }, 500);
                     } else {
-                        TerminateBTTransaction();
+                        terminateBTTransaction();
                     }
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: WaitForReconnectToLink Exception:>>" + e.getMessage());
-            TerminateBTTransaction();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: waitForReconnectToLink Exception:>>" + e.getMessage());
+            terminateBTTransaction();
         }
     }
     //endregion
@@ -591,21 +492,21 @@ public class BackgroundService_BTFive extends Service {
             Response = "";
 
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending last1 command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending last1 command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.last1_cmd);
+                btspp.send5(BTConstants.LAST1_COMMAND);
             }
 
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     long attempt = (4 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
-                        if (Request.equalsIgnoreCase(BTConstants.last1_cmd) && Response.contains("records")) {
+                        if (Request.equalsIgnoreCase(BTConstants.LAST1_COMMAND) && Response.contains("records")) {
                             //last1 command success.
                             Log.i(TAG, "BTLink_5: last1 Command Response success 1:>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking last1 command response. Response:>>" + Response.trim());
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking last1 command response. Response:>>" + Response.trim());
                             parseLast1CommandResponse(Response);
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -616,18 +517,18 @@ public class BackgroundService_BTFive extends Service {
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_5: Waiting for last1 Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking last1 command response. Response: false");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking last1 command response. Response: false");
                         }
                     }
                 }
 
                 public void onFinish() {
-                    if (Request.equalsIgnoreCase(BTConstants.last1_cmd) && Response.contains("records")) {
+                    if (Request.equalsIgnoreCase(BTConstants.LAST1_COMMAND) && Response.contains("records")) {
                         //last1 command success.
                         Log.i(TAG, "BTLink_5: last1 Command Response success 2:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking last1 command response. Response:>>" + Response.trim());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking last1 command response. Response:>>" + Response.trim());
                         parseLast1CommandResponse(Response);
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -642,8 +543,8 @@ public class BackgroundService_BTFive extends Service {
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: last1 Command Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: last1 Command Exception:>>" + e.getMessage());
             transactionIdCommand(TransactionId);
         }
     }
@@ -656,9 +557,9 @@ public class BackgroundService_BTFive extends Service {
             Request = "";
             Response = "";
 
-            String transaction_id_cmd = BTConstants.transaction_id_cmd; //LK_COMM=txtnid:
+            String transaction_id_cmd = BTConstants.TRANSACTION_ID_COMMAND; //LK_COMM=txtnid:
 
-            if (BTConstants.isNewVersionLinkFive) {
+            if (BTConstants.IS_NEW_VERSION_LINK_FIVE) {
                 TransactionDateWithFormat = BTConstants.parseDateForNewVersion(TransactionDateWithFormat);
                 transaction_id_cmd = transaction_id_cmd.replace("txtnid:", ""); // For New version LK_COMM=T:XXXXX;D:XXXXX;V:XXXXXXXX;
                 transaction_id_cmd = transaction_id_cmd + "T:" + transactionId + ";D:" + TransactionDateWithFormat + ";V:" + VehicleNumber + ";";
@@ -667,16 +568,12 @@ public class BackgroundService_BTFive extends Service {
             }
 
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending transactionId command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending transactionId command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
                 btspp.send5(transaction_id_cmd);
             }
-            /*else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending transactionId command (UDP) to Link: " + LinkName);
-                new Thread(new ClientSendAndListenUDPFive(transaction_id_cmd, ipForUDP, this)).start();
-            }*/
+
             Thread.sleep(500);
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
@@ -685,8 +582,8 @@ public class BackgroundService_BTFive extends Service {
                         if (Request.contains(transactionId) && Response.contains(transactionId)) {
                             //transactionId command success.
                             Log.i(TAG, "BTLink_5: transactionId Command Response success 1:>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking transactionId command response. Response:>>" + Response.trim());
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking transactionId command response. Response:>>" + Response.trim());
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -696,8 +593,8 @@ public class BackgroundService_BTFive extends Service {
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_5: Waiting for transactionId Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking transactionId command response. Response: false");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking transactionId command response. Response: false");
                         }
                     }
                 }
@@ -706,8 +603,8 @@ public class BackgroundService_BTFive extends Service {
                     if (Request.contains(transactionId) && Response.contains(transactionId)) {
                         //transactionId command success.
                         Log.i(TAG, "BTLink_5: transactionId Command Response success 2:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking transactionId command response. Response:>>" + Response.trim());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking transactionId command response. Response:>>" + Response.trim());
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -716,19 +613,19 @@ public class BackgroundService_BTFive extends Service {
                         }, 1000);
                     } else {
                         //UpgradeTransaction Status Transactionid command fail.
-                        CommonUtils.UpgradeTransactionStatusToSqlite(transactionId, "6", BackgroundService_BTFive.this);
+                        CommonUtils.upgradeTransactionStatusToSqlite(transactionId, "6", BackgroundService_BTFive.this);
                         Log.i(TAG, "BTLink_5: Failed to get transactionId Command Response:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking transactionId command response. Response: false");
-                        StopTransaction(true, true); // transactionId command Response: false
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking transactionId command response. Response: false");
+                        stopTransaction(true, true); // transactionId command Response: false
                     }
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: transactionId Command Exception:>>" + e.getMessage());
-            StopTransaction(true, true); // transactionId Command Exception
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: transactionId Command Exception:>>" + e.getMessage());
+            stopTransaction(true, true); // transactionId Command Exception
         }
     }
     //endregion
@@ -737,26 +634,21 @@ public class BackgroundService_BTFive extends Service {
     private void relayOnCommand(boolean isAfterReconnect) {
         try {
             if (isAfterReconnect) {
-                BTConstants.isReconnectCalled5 = false;
+                BTConstants.IS_RECONNECT_CALLED_5 = false;
             }
             //Execute relayOn Command
             Request = "";
             Response = "";
 
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOn command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending relayOn command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.relay_on_cmd);
+                btspp.send5(BTConstants.RELAY_ON_COMMAND);
             }
-            /*else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOn command (UDP) to Link: " + LinkName);
-                new Thread(new ClientSendAndListenUDPFive(BTConstants.relay_on_cmd, ipForUDP, this)).start();
-            }*/
 
             if (!isAfterReconnect) {
-                InsertInitialTransactionToSqlite();//Insert empty transaction into sqlite
+                insertInitialTransactionToSqlite();//Insert empty transaction into sqlite
             }
 
             Thread.sleep(500);
@@ -765,49 +657,49 @@ public class BackgroundService_BTFive extends Service {
                     long attempt = (4 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
                         if (RelayStatus) {
-                            BTConstants.isRelayOnAfterReconnect5 = isAfterReconnect;
+                            BTConstants.IS_RELAY_ON_AFTER_RECONNECT_5 = isAfterReconnect;
                             //relayOn command success.
                             Log.i(TAG, "BTLink_5: relayOn Command Response success 1:>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOn command response. Response: ON");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOn command response. Response: ON");
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_5: Waiting for relayOn Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOn command response. Response: false");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOn command response. Response: false");
                         }
                     }
                 }
 
                 public void onFinish() {
                     if (RelayStatus) {
-                        BTConstants.isRelayOnAfterReconnect5 = isAfterReconnect;
+                        BTConstants.IS_RELAY_ON_AFTER_RECONNECT_5 = isAfterReconnect;
                         //relayOn command success.
                         Log.i(TAG, "BTLink_5: relayOn Command Response success 2:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOn command response. Response: ON");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOn command response. Response: ON");
                     } else {
                         //UpgradeTransaction Status RelayON command fail.
                         if (isAfterReconnect && (Pulses > 0 || fillqty > 0)) {
                             if (isOnlineTxn) {
-                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
+                                CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
                             } else {
                                 offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
                             }
                         } else {
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+                            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
                         }
                         Log.i(TAG, "BTLink_5: Failed to get relayOn Command Response:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOn command response. Response: false");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOn command response. Response: false");
                         relayOffCommand(); //RelayOff
                     }
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: relayOn Command Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: relayOn Command Exception:>>" + e.getMessage());
             relayOffCommand(); //RelayOff
         }
     }
@@ -821,16 +713,11 @@ public class BackgroundService_BTFive extends Service {
             Response = "";
             //relayOffAttemptCount++;
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOff command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending relayOff command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.relay_off_cmd);
+                btspp.send5(BTConstants.RELAY_OFF_COMMAND);
             }
-            /*else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending relayOff command (UDP) to Link: " + LinkName);
-                new Thread(new ClientSendAndListenUDPFive(BTConstants.relay_off_cmd, ipForUDP, this)).start();
-            }*/
 
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
@@ -839,16 +726,16 @@ public class BackgroundService_BTFive extends Service {
                         if (!RelayStatus) {
                             //relayOff command success.
                             Log.i(TAG, "BTLink_5: relayOff Command Response success 1:>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOff command response. Response:>>" + Response.trim());
-                            if (!AppConstants.isRelayON_fs5) {
-                                TransactionCompleteFunction();
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOff command response. Response:>>" + Response.trim());
+                            if (!AppConstants.IS_RELAY_ON_FS5) {
+                                transactionCompleteFunction();
                             }
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_5: Waiting for relayOff Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOff command response. Response: false");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOff command response. Response: false");
                         }
                     }
                 }
@@ -856,47 +743,47 @@ public class BackgroundService_BTFive extends Service {
                 public void onFinish() {
                     if (!RelayStatus) {
                         Log.i(TAG, "BTLink_5: relayOff Command Response success 2:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOff command response. Response:>>" + Response.trim());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOff command response. Response:>>" + Response.trim());
                     } else {
                         Log.i(TAG, "BTLink_5: Failed to get relayOff Command Response:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking relayOff command response. Response: false");
-                        if (BTConstants.isRelayOnAfterReconnect5) {
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking relayOff command response. Response: false");
+                        if (BTConstants.IS_RELAY_ON_AFTER_RECONNECT_5) {
                             if (Pulses > 0 || fillqty > 0) {
                                 if (isOnlineTxn) {
-                                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
+                                    CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
                                 } else {
                                     offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
                                 }
                             }
                         }
-                        StopTransaction(true, true);
+                        stopTransaction(true, true);
                     }
-                    if (!AppConstants.isRelayON_fs5) {
-                        TransactionCompleteFunction();
+                    if (!AppConstants.IS_RELAY_ON_FS5) {
+                        transactionCompleteFunction();
                     }
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: relayOff Command Exception:>>" + e.getMessage());
-            if (!AppConstants.isRelayON_fs5) {
-                TransactionCompleteFunction();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: relayOff Command Exception:>>" + e.getMessage());
+            if (!AppConstants.IS_RELAY_ON_FS5) {
+                transactionCompleteFunction();
             }
         }
     }
     //endregion
 
-    private void TransactionCompleteFunction() {
+    private void transactionCompleteFunction() {
 
         if (isOnlineTxn) {
-            if (BTConstants.BT5REPLACEBLE_WIFI_NAME == null) {
-                BTConstants.BT5REPLACEBLE_WIFI_NAME = "";
+            if (BTConstants.BT5_REPLACEABLE_WIFI_NAME == null) {
+                BTConstants.BT5_REPLACEABLE_WIFI_NAME = "";
             }
             //BTLink Rename functionality
-            if (BTConstants.BT5NeedRename && !BTConstants.BT5REPLACEBLE_WIFI_NAME.isEmpty()) {
+            if (BTConstants.BT5_NEED_RENAME && !BTConstants.BT5_REPLACEABLE_WIFI_NAME.isEmpty()) {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -904,20 +791,20 @@ public class BackgroundService_BTFive extends Service {
                     }
                 }, 1000);
             } else {
-                ProceedToPostTransactionCommands();
+                proceedToPostTransactionCommands();
             }
         } else {
-            ProceedToPostTransactionCommands();
+            proceedToPostTransactionCommands();
         }
     }
 
-    public void ProceedToPostTransactionCommands() {
+    public void proceedToPostTransactionCommands() {
         // Free the link and continue to post transaction commands
-        StopTransaction(true, false); // Free the link
-        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.supportedLinkVersionForLast20)) { // Last20 command supported from this version onwards
+        stopTransaction(true, false); // Free the link
+        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.SUPPORTED_LINK_VERSION_FOR_LAST20)) { // Last20 command supported from this version onwards
             last20Command();
         } else {
-            ProceedToNextCommand();
+            proceedToNextCommand();
         }
     }
 
@@ -929,16 +816,11 @@ public class BackgroundService_BTFive extends Service {
             Response = "";
 
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending rename command to Link: " + LinkName + " (New Name: " + BTConstants.BT5REPLACEBLE_WIFI_NAME + ")");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending rename command to Link: " + LinkName + " (New Name: " + BTConstants.BT5_REPLACEABLE_WIFI_NAME + ")");
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.namecommand + BTConstants.BT5REPLACEBLE_WIFI_NAME);
+                btspp.send5(BTConstants.RENAME_COMMAND + BTConstants.BT5_REPLACEABLE_WIFI_NAME);
             }
-            /*else {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending rename command (UDP) to Link: " + LinkName + " (New Name: " + BTConstants.BT5REPLACEBLE_WIFI_NAME + ")");
-                new Thread(new ClientSendAndListenUDPFive(BTConstants.namecommand + BTConstants.BT5REPLACEBLE_WIFI_NAME, ipForUDP, this)).start();
-            }*/
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag" + AppConstants.LANG_PARAM);
@@ -951,16 +833,16 @@ public class BackgroundService_BTFive extends Service {
             Gson gson = new Gson();
             String jsonData = gson.toJson(rhose);
 
-            storeIsRenameFlag(this, BTConstants.BT5NeedRename, jsonData, authString);
+            storeIsRenameFlag(this, BTConstants.BT5_NEED_RENAME, jsonData, authString);
 
             Thread.sleep(1000);
-            ProceedToPostTransactionCommands();
+            proceedToPostTransactionCommands();
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: rename Command Exception:>>" + e.getMessage());
-            ProceedToPostTransactionCommands();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: rename Command Exception:>>" + e.getMessage());
+            proceedToPostTransactionCommands();
         }
     }
     //endregion
@@ -974,64 +856,64 @@ public class BackgroundService_BTFive extends Service {
             IsAnyPostTxnCommandExecuted = true;
 
             if (IsThisBTTrnx) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending last20 command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending last20 command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.last20_cmd);
+                btspp.send5(BTConstants.LAST20_COMMAND);
             }
 
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     long attempt = (4 - (millisUntilFinished / 1000));
                     if (attempt > 0) {
-                        if (Request.equalsIgnoreCase(BTConstants.last20_cmd) && Response.contains("records")) {
+                        if (Request.equalsIgnoreCase(BTConstants.LAST20_COMMAND) && Response.contains("records")) {
                             //last20 command success.
                             Log.i(TAG, "BTLink_5: last20 Command Response success 1:>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking last20 command response. Response: true"); //>>" + Response.trim()
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking last20 command response. Response: true"); //>>" + Response.trim()
                             parseLast20CommandResponse(Response.trim());
-                            ProceedToNextCommand();
+                            proceedToNextCommand();
                             cancel();
                         } else {
                             Log.i(TAG, "BTLink_5: Waiting for last20 Command Response: " + millisUntilFinished / 1000 + " Response>>" + Response);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " BTLink_5: Checking last20 command response. Response: false");
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " BTLink_5: Checking last20 command response. Response: false");
                         }
                     }
                 }
 
                 public void onFinish() {
-                    if (Request.equalsIgnoreCase(BTConstants.last20_cmd) && Response.contains("records")) {
+                    if (Request.equalsIgnoreCase(BTConstants.LAST20_COMMAND) && Response.contains("records")) {
                         //last20 command success.
                         Log.i(TAG, "BTLink_5: last20 Command Response success 2:>>" + Response);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Checking last20 command response. Response: true"); //>>" + Response.trim()
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Checking last20 command response. Response: true"); //>>" + Response.trim()
                         parseLast20CommandResponse(Response.trim());
                     }
-                    ProceedToNextCommand();
+                    proceedToNextCommand();
                 }
             }.start();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: last20 Command Exception:>>" + e.getMessage());
-            ProceedToNextCommand();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: last20 Command Exception:>>" + e.getMessage());
+            proceedToNextCommand();
         }
     }
     //endregion
 
-    private void ProceedToNextCommand() {
-        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.supportedLinkVersionForMOStatus)) { // CheckMOStatus command supported from this version onwards
-            CheckMOStatusCommand();
-        } else if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.supportedLinkVersionForP_Type)) { // Set P_Type command supported from this version onwards
-            P_Type_Command();
+    private void proceedToNextCommand() {
+        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.SUPPORTED_LINK_VERSION_FOR_MO_STATUS)) { // CheckMOStatus command supported from this version onwards
+            checkMOStatusCommand();
+        } else if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkFive, BTConstants.SUPPORTED_LINK_VERSION_FOR_P_TYPE)) { // Set P_Type command supported from this version onwards
+            pTypeCommand();
         } else {
-            CloseTransaction(false); // ProceedToNextCommand
+            closeTransaction(false); // proceedToNextCommand
         }
     }
 
     //region CheckMOStatus Command
-    private void CheckMOStatusCommand() {
+    private void checkMOStatusCommand() {
         try {
             if (IsCheckMOStatus != null) {
                 if (IsCheckMOStatus.trim().equalsIgnoreCase("True") && !MOStatusCheckFlag.isEmpty() && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTFive.this, "storeCheckMOStatusFlag5")) {
@@ -1041,55 +923,55 @@ public class BackgroundService_BTFive extends Service {
                     IsAnyPostTxnCommandExecuted = true;
 
                     if (IsThisBTTrnx) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Sending (Check MO Status: " + MOStatusCheckFlag + ") command to Link: " + LinkName);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Sending (Check MO Status: " + MOStatusCheckFlag + ") command to Link: " + LinkName);
                         BTSPPMain btspp = new BTSPPMain();
-                        btspp.send5(BTConstants.checkMOStatus_command + MOStatusCheckFlag);
+                        btspp.send5(BTConstants.CHECK_MO_STATUS_COMMAND + MOStatusCheckFlag);
                     }
 
                     new CountDownTimer(4000, 1000) {
                         public void onTick(long millisUntilFinished) {
                             long attempt = (4 - (millisUntilFinished / 1000));
                             if (attempt > 0) {
-                                if (Request.contains(BTConstants.checkMOStatus_command) && Response.contains("if_check_mo_status")) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking (Check MO Status) command response:>> " + Response);
-                                    UpdateCheckMOStatusFlagOfLink();
-                                    ResetMOCheckFlagCommand();
+                                if (Request.contains(BTConstants.CHECK_MO_STATUS_COMMAND) && Response.contains("if_check_mo_status")) {
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking (Check MO Status) command response:>> " + Response);
+                                    updateCheckMOStatusFlagOfLink();
+                                    resetMOCheckFlagCommand();
                                     cancel();
                                 } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking (Check MO Status) command response. Response: false");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking (Check MO Status) command response. Response: false");
                                 }
                             }
                         }
 
                         public void onFinish() {
-                            if (Request.contains(BTConstants.checkMOStatus_command) && Response.contains("if_check_mo_status")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Checking (Check MO Status) command response:>> " + Response);
-                                UpdateCheckMOStatusFlagOfLink();
+                            if (Request.contains(BTConstants.CHECK_MO_STATUS_COMMAND) && Response.contains("if_check_mo_status")) {
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Checking (Check MO Status) command response:>> " + Response);
+                                updateCheckMOStatusFlagOfLink();
                             }
-                            ResetMOCheckFlagCommand();
+                            resetMOCheckFlagCommand();
                         }
                     }.start();
                 } else {
-                    ResetMOCheckFlagCommand();
+                    resetMOCheckFlagCommand();
                 }
             } else {
-                ResetMOCheckFlagCommand();
+                resetMOCheckFlagCommand();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Check MO Status Command Exception:>>" + e.getMessage());
-            ResetMOCheckFlagCommand();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Check MO Status Command Exception:>>" + e.getMessage());
+            resetMOCheckFlagCommand();
         }
     }
     //endregion
 
     //region ResetMOCheckFlag Command
-    private void ResetMOCheckFlagCommand() {
+    private void resetMOCheckFlagCommand() {
         try {
             if (IsResetMOCheckFlag != null) {
                 if (IsResetMOCheckFlag.trim().equalsIgnoreCase("True") && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTFive.this, "storeResetMOCheckFlag5")) {
@@ -1099,59 +981,59 @@ public class BackgroundService_BTFive extends Service {
                     IsAnyPostTxnCommandExecuted = true;
 
                     if (IsThisBTTrnx) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Sending Reset MO Check Flag command to Link: " + LinkName);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Sending Reset MO Check Flag command to Link: " + LinkName);
                         BTSPPMain btspp = new BTSPPMain();
-                        btspp.send5(BTConstants.resetMOCheckFlag_command);
+                        btspp.send5(BTConstants.RESET_MO_CHECK_FLAG_COMMAND);
                     }
 
                     new CountDownTimer(4000, 1000) {
                         public void onTick(long millisUntilFinished) {
                             long attempt = (4 - (millisUntilFinished / 1000));
                             if (attempt > 0) {
-                                if (Request.contains(BTConstants.resetMOCheckFlag_command) && Response.contains("mo_check_flag")) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking Reset MO Check Flag command response:>> " + Response);
-                                    UpdateResetMOCheckFlagOfLink();
-                                    P_Type_Command();
+                                if (Request.contains(BTConstants.RESET_MO_CHECK_FLAG_COMMAND) && Response.contains("mo_check_flag")) {
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking Reset MO Check Flag command response:>> " + Response);
+                                    updateResetMOCheckFlagOfLink();
+                                    pTypeCommand();
                                     cancel();
                                 } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking Reset MO Check Flag command response. Response: false");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking Reset MO Check Flag command response. Response: false");
                                 }
                             }
                         }
 
                         public void onFinish() {
-                            if (Request.contains(BTConstants.resetMOCheckFlag_command) && Response.contains("mo_check_flag")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Checking Reset MO Check Flag command response:>> " + Response);
-                                UpdateResetMOCheckFlagOfLink();
+                            if (Request.contains(BTConstants.RESET_MO_CHECK_FLAG_COMMAND) && Response.contains("mo_check_flag")) {
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Checking Reset MO Check Flag command response:>> " + Response);
+                                updateResetMOCheckFlagOfLink();
                             }
-                            P_Type_Command();
+                            pTypeCommand();
                         }
                     }.start();
                 } else {
-                    P_Type_Command();
+                    pTypeCommand();
                 }
             } else {
-                P_Type_Command();
+                pTypeCommand();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Reset MO Check Flag Command Exception:>>" + e.getMessage());
-            P_Type_Command();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Reset MO Check Flag Command Exception:>>" + e.getMessage());
+            pTypeCommand();
         }
     }
     //endregion
 
     //region P_Type Command
-    private void P_Type_Command() {
+    private void pTypeCommand() {
         boolean isSetPTypeCommandSent = false;
         try {
             if (IsResetSwitchTimeBounce != null) {
-                if (IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1") && !PulserTimingAdjust.isEmpty() && Arrays.asList(BTConstants.p_types).contains(PulserTimingAdjust) && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTFive.this, "storeSwitchTimeBounceFlag5")) {
+                if (IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1") && !PulserTimingAdjust.isEmpty() && Arrays.asList(BTConstants.P_TYPES).contains(PulserTimingAdjust) && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTFive.this, "storeSwitchTimeBounceFlag5")) {
                     //Execute p_type Command
                     Request = "";
                     Response = "";
@@ -1159,61 +1041,61 @@ public class BackgroundService_BTFive extends Service {
 
                     if (IsThisBTTrnx) {
                         isSetPTypeCommandSent = true;
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Sending set p_type command to Link: " + LinkName);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Sending set p_type command to Link: " + LinkName);
                         BTSPPMain btspp = new BTSPPMain();
-                        btspp.send5(BTConstants.p_type_command + PulserTimingAdjust);
+                        btspp.send5(BTConstants.P_TYPE_COMMAND + PulserTimingAdjust);
                     }
 
                     new CountDownTimer(4000, 1000) {
                         public void onTick(long millisUntilFinished) {
                             long attempt = (4 - (millisUntilFinished / 1000));
                             if (attempt > 0) {
-                                if (Request.contains(BTConstants.p_type_command) && Response.contains("pulser_type")) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking set p_type command response:>> " + Response);
+                                if (Request.contains(BTConstants.P_TYPE_COMMAND) && Response.contains("pulser_type")) {
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking set p_type command response:>> " + Response);
                                     //BTConstants.isPTypeCommandExecuted5 = true;
-                                    UpdateSwitchTimeBounceForLink();
-                                    CloseTransaction(true); // set p_type command success
+                                    updateSwitchTimeBounceForLink();
+                                    closeTransaction(true); // set p_type command success
                                     cancel();
                                 } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking set p_type command response. Response: false");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking set p_type command response. Response: false");
                                 }
                             }
                         }
 
                         public void onFinish() {
-                            if (Request.contains(BTConstants.p_type_command) && Response.contains("pulser_type")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Checking set p_type command response:>> " + Response);
+                            if (Request.contains(BTConstants.P_TYPE_COMMAND) && Response.contains("pulser_type")) {
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Checking set p_type command response:>> " + Response);
                                 //BTConstants.isPTypeCommandExecuted5 = true;
-                                UpdateSwitchTimeBounceForLink();
+                                updateSwitchTimeBounceForLink();
                             }
-                            CloseTransaction(true); // set p_type command finish
+                            closeTransaction(true); // set p_type command finish
                         }
                     }.start();
                 } else {
-                    GetPulserTypeCommand();
+                    getPulserTypeCommand();
                 }
             } else {
-                GetPulserTypeCommand();
+                getPulserTypeCommand();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Set P_Type Command Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Set P_Type Command Exception:>>" + e.getMessage());
             if (isSetPTypeCommandSent) {
-                CloseTransaction(true); // Set P_Type Command Exception
+                closeTransaction(true); // Set P_Type Command Exception
             } else {
-                GetPulserTypeCommand();
+                getPulserTypeCommand();
             }
         }
     }
     //endregion
 
     //region Get P_Type Command
-    private void GetPulserTypeCommand() {
+    private void getPulserTypeCommand() {
         try {
             if (GetPulserTypeFromLINK != null) {
                 if (GetPulserTypeFromLINK.trim().equalsIgnoreCase("True") && !CommonUtils.CheckDataStoredInSharedPref(BackgroundService_BTFive.this, "UpdatePulserType5")) {
@@ -1223,112 +1105,112 @@ public class BackgroundService_BTFive extends Service {
                     IsAnyPostTxnCommandExecuted = true;
 
                     if (IsThisBTTrnx) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Sending get p_type command to Link: " + LinkName);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Sending get p_type command to Link: " + LinkName);
                         BTSPPMain btspp = new BTSPPMain();
-                        btspp.send5(BTConstants.get_p_type_command);
+                        btspp.send5(BTConstants.GET_P_TYPE_COMMAND);
                     }
 
                     new CountDownTimer(4000, 1000) {
                         public void onTick(long millisUntilFinished) {
                             long attempt = (4 - (millisUntilFinished / 1000));
                             if (attempt > 0) {
-                                if (Request.contains(BTConstants.get_p_type_command) && Response.contains("pulser_type")) {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(TAG + " BTLink_5: Checking get p_type command response:>> " + Response);
-                                    ParseGetPulserTypeCommandResponse(Response.trim());
-                                    CloseTransaction(true); // get p_type command success
+                                if (Request.contains(BTConstants.GET_P_TYPE_COMMAND) && Response.contains("pulser_type")) {
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(TAG + " BTLink_5: Checking get p_type command response:>> " + Response);
+                                    parseGetPulserTypeCommandResponse(Response.trim());
+                                    closeTransaction(true); // get p_type command success
                                     cancel();
                                 }
                             }
                         }
 
                         public void onFinish() {
-                            if (Request.contains(BTConstants.get_p_type_command) && Response.contains("pulser_type")) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Checking get p_type command response:>> " + Response);
-                                ParseGetPulserTypeCommandResponse(Response.trim());
+                            if (Request.contains(BTConstants.GET_P_TYPE_COMMAND) && Response.contains("pulser_type")) {
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Checking get p_type command response:>> " + Response);
+                                parseGetPulserTypeCommandResponse(Response.trim());
                             }
-                            CloseTransaction(true); // get p_type command finish
+                            closeTransaction(true); // get p_type command finish
                         }
                     }.start();
                 } else {
-                    CloseTransaction(true); // after checking GetPulserTypeFromLINK
+                    closeTransaction(true); // after checking GetPulserTypeFromLINK
                 }
             } else {
-                CloseTransaction(true); // GetPulserTypeFromLINK flag is null
+                closeTransaction(true); // GetPulserTypeFromLINK flag is null
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Get P_Type Command (to get the pulser type from LINK) Exception:>>" + e.getMessage());
-            CloseTransaction(true); // Get P_Type Command Exception
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Get P_Type Command (to get the pulser type from LINK) Exception:>>" + e.getMessage());
+            closeTransaction(true); // Get P_Type Command Exception
         }
     }
     //endregion
 
-    private void StopTransaction(boolean startBackgroundServices, boolean isTransactionCompleted) {
+    private void stopTransaction(boolean startBackgroundServices, boolean isTransactionCompleted) {
         try {
-            AppConstants.IsTransactionCompleted5 = false;
-            BTConstants.isRelayOnAfterReconnect5 = false;
+            AppConstants.IS_TRANSACTION_COMPLETED_5 = false;
+            BTConstants.IS_RELAY_ON_AFTER_RECONNECT_5 = false;
             AppConstants.clearSharedPrefByName(BackgroundService_BTFive.this, "LastQuantity_BT5");
-            CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);
-            Constants.FS_5STATUS = "FREE";
-            Constants.FS_5Pulse = "00";
-            AppConstants.GoButtonAlreadyClicked = false;
-            AppConstants.isInfoCommandSuccess_fs5 = false;
+            CommonUtils.addRemoveCurrentTransactionList(false, TransactionId);
+            Constants.FS_5_STATUS = "FREE";
+            Constants.FS_5_PULSE = "00";
+            AppConstants.GO_BUTTON_ALREADY_CLICKED = false;
+            AppConstants.IS_FIRST_COMMAND_SUCCESS_FS5 = false;
             //BTConstants.SwitchedBTToUDP5 = false;
             //DisableWifiConnection();
-            CancelTimer();
+            cancelTimer();
             IsAnyPostTxnCommandExecuted = true;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Transaction stopped.");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Transaction stopped.");
             if (isTransactionCompleted) {
-                CloseTransaction(startBackgroundServices); // from StopTransaction
+                closeTransaction(startBackgroundServices); // from stopTransaction
             } else if (startBackgroundServices) {
-                PostTransactionBackgroundTasks(false);
+                postTransactionBackgroundTasks(false);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: StopTransaction Exception:>>" + e.getMessage());
-            CloseTransaction(startBackgroundServices); // from StopTransaction exception
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: stopTransaction Exception:>>" + e.getMessage());
+            closeTransaction(startBackgroundServices); // from stopTransaction exception
         }
     }
 
-    private void CloseTransaction(boolean startBackgroundServices) {
+    private void closeTransaction(boolean startBackgroundServices) {
         clearEditTextFields();
-        AppConstants.IsTransactionCompleted5 = true;
+        AppConstants.IS_TRANSACTION_COMPLETED_5 = true;
         try {
             try {
                 if (isBroadcastReceiverRegistered) {
                     unregisterReceiver(broadcastBlueLinkFiveData);
                     isBroadcastReceiverRegistered = false;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: <Receiver unregistered successfully. (" + broadcastBlueLinkFiveData + ")>");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5: <Receiver unregistered successfully. (" + broadcastBlueLinkFiveData + ")>");
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: <Receiver is not registered. (" + broadcastBlueLinkFiveData + ")>");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5: <Receiver is not registered. (" + broadcastBlueLinkFiveData + ")>");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: <Exception occurred while unregistering receiver: " + e.getMessage() + " (" + broadcastBlueLinkFiveData + ")>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: <Exception occurred while unregistering receiver: " + e.getMessage() + " (" + broadcastBlueLinkFiveData + ")>");
             }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Transaction Completed. \n==============================================================================");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Transaction Completed. \n==============================================================================");
             if (startBackgroundServices) {
-                PostTransactionBackgroundTasks(true);
+                postTransactionBackgroundTasks(true);
             }
             this.stopSelf();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: CloseTransaction Exception:>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: closeTransaction Exception:>>" + e.getMessage());
         }
     }
 
-    private void ParseGetPulserTypeCommandResponse(String response) {
+    private void parseGetPulserTypeCommandResponse(String response) {
         try {
             String pulserType;
 
@@ -1336,9 +1218,9 @@ public class BackgroundService_BTFive extends Service {
                 JSONObject jsonObj = new JSONObject(response);
                 pulserType = jsonObj.getString("pulser_type");
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Pulser Type from Link >> " + pulserType);
-                if (!pulserType.isEmpty() && Arrays.asList(BTConstants.p_types).contains(pulserType)) {
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Pulser Type from Link >> " + pulserType);
+                if (!pulserType.isEmpty() && Arrays.asList(BTConstants.P_TYPES).contains(pulserType)) {
                     // Create object and save data to upload
                     String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
 
@@ -1359,8 +1241,8 @@ public class BackgroundService_BTFive extends Service {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in ParseGetPulserTypeCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Exception in parseGetPulserTypeCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -1384,13 +1266,13 @@ public class BackgroundService_BTFive extends Service {
     }
 
     private void clearEditTextFields() {
-        Constants.AccVehicleNumber_FS5 = "";
-        Constants.AccOdoMeter_FS5 = 0;
-        Constants.AccDepartmentNumber_FS5 = "";
-        Constants.AccPersonnelPIN_FS5 = "";
-        Constants.AccOther_FS5 = "";
-        Constants.AccVehicleOther_FS5 = "";
-        Constants.AccHours_FS5 = 0;
+        Constants.VEHICLE_NUMBER_FS5 = "";
+        Constants.ODO_METER_FS5 = 0;
+        Constants.DEPARTMENT_NUMBER_FS5 = "";
+        Constants.PERSONNEL_PIN_FS5 = "";
+        Constants.OTHER_FS5 = "";
+        Constants.VEHICLE_OTHER_FS5 = "";
+        Constants.HOURS_FS5 = 0;
     }
 
     public void storeIsRenameFlag(Context context, boolean flag, String jsonData, String authString) {
@@ -1409,10 +1291,10 @@ public class BackgroundService_BTFive extends Service {
         editor.commit();
     }
 
-    private void CancelTimer() {
+    private void cancelTimer() {
         try {
-            for (int i = 0; i < TimerList_ReadpulseBT5.size(); i++) {
-                TimerList_ReadpulseBT5.get(i).cancel();
+            for (int i = 0; i < timerList_ReadPulseBT5.size(); i++) {
+                timerList_ReadPulseBT5.get(i).cancel();
             }
             redpulseloop_on = false;
         } catch (Exception e) {
@@ -1420,7 +1302,7 @@ public class BackgroundService_BTFive extends Service {
         }
     }
 
-    private void ReadPulse() {
+    private void readPulse() {
         //Record pulse start time..for puls
         Date currDT = new Date();
         String strCurDT = sdformat.format(currDT);
@@ -1431,24 +1313,24 @@ public class BackgroundService_BTFive extends Service {
         PreviousRes = 0;
         redpulseloop_on = true;
         timerBt5 = new Timer();
-        TimerList_ReadpulseBT5.add(timerBt5);
+        timerList_ReadPulseBT5.add(timerBt5);
         TimerTask tt = new TimerTask() {
             @Override
             public void run() {
                 //Repaeting code..
-                //CancelTimer(); cancel all once done.
+                //cancelTimer(); cancel all once done.
 
                 Log.i(TAG, "BTLink_5: Timer count..");
 
                 String checkPulses;
-                if (BTConstants.isNewVersionLinkFive) {
+                if (BTConstants.IS_NEW_VERSION_LINK_FIVE) {
                     checkPulses = "pulse";
                 } else {
                     checkPulses = "pulse:";
                 }
 
-                if (BTConstants.isReconnectCalled5 && !BTConstants.isRelayOnAfterReconnect5) {
-                    CancelTimer();
+                if (BTConstants.IS_RECONNECT_CALLED_5 && !BTConstants.IS_RELAY_ON_AFTER_RECONNECT_5) {
+                    cancelTimer();
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -1458,7 +1340,7 @@ public class BackgroundService_BTFive extends Service {
                     return;
                 }
 
-                CheckResponse();
+                checkResponse();
 
                 if (Response.contains(checkPulses) && RelayStatus) {
                     pulseCount = 0;
@@ -1489,7 +1371,7 @@ public class BackgroundService_BTFive extends Service {
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                TransactionCompleteFunction();
+                                transactionCompleteFunction();
                             }
                         }, delay);
 
@@ -1502,8 +1384,8 @@ public class BackgroundService_BTFive extends Service {
                             }
                         }, 100);
                         Log.i(TAG, "BTLink_5: Check pulse");
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Check pulse >> Response: " + Response.trim());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Check pulse >> Response: " + Response.trim());
                     }
                 } else if (!Response.contains(checkPulses)) {
                     stopCount++;
@@ -1517,10 +1399,10 @@ public class BackgroundService_BTFive extends Service {
 
                     if (stopCount >= autoStopSeconds) {
                         if (Pulses <= 0) {
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTFive.this);
+                            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTFive.this);
                         }
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " BTLink_5: Auto Stop Hit. Response >> " + Response.trim());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " BTLink_5: Auto Stop Hit. Response >> " + Response.trim());
                         stopCount = 0;
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
@@ -1535,27 +1417,28 @@ public class BackgroundService_BTFive extends Service {
         timerBt5.schedule(tt, 1000, 1000);
     }
 
-    private void TerminateBTTxnAfterInterruption() {
+    private void terminateBTTxnAfterInterruption() {
         try {
             IsThisBTTrnx = false;
             if (Pulses > 0 || fillqty > 0) {
                 if (isOnlineTxn) {
-                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
+                    CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_BTFive.this);
                 } else {
                     offlineController.updateOfflineTransactionStatus(sqlite_id + "", "10");
                 }
             } else {
-                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
+                CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_BTFive.this);
             }
             Log.i(TAG, " BTLink_5: Link not connected. Please try again!");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Link not connected.");
-            BTConstants.isReconnectCalled5 = false;
-            AppConstants.TxnFailedCount5++;
-            AppConstants.IsTransactionFailed5 = true;
-            StopTransaction(true, true); // TerminateBTTxnAfterInterruption
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Link not connected.");
+            BTConstants.IS_RECONNECT_CALLED_5 = false;
+            AppConstants.TRANSACTION_FAILED_COUNT_5++;
+            AppConstants.IS_TRANSACTION_FAILED_5 = true;
+            stopTransaction(true, true); // terminateBTTxnAfterInterruption
         } catch (Exception e) {
-            e.printStackTrace();
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " terminateBTTxnAfterInterruption Exception:>>" + e.getMessage());
         }
     }
 
@@ -1564,8 +1447,8 @@ public class BackgroundService_BTFive extends Service {
             //Disable wifi connection
             WifiManager wifiManagerMM = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
             if (wifiManagerMM.isWifiEnabled()) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Turning OFF the Wifi.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " <Turning OFF the Wifi.>");
                 wifiManagerMM.setWifiEnabled(false);
             }
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -1574,9 +1457,9 @@ public class BackgroundService_BTFive extends Service {
                     if (isHotspotDisabled) {
                         //Enable Hotspot
                         WifiApManager wifiApManager = new WifiApManager(BackgroundService_BTFive.this);
-                        if (!CommonUtils.isHotspotEnabled(BackgroundService_BTFive.this) && !AppConstants.isAllLinksAreBTLinks) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + " <Turning ON the Hotspot.>");
+                        if (!CommonUtils.isHotspotEnabled(BackgroundService_BTFive.this) && !AppConstants.IS_ALL_LINKS_ARE_BT_LINKS) {
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + " <Turning ON the Hotspot.>");
                             wifiApManager.setWifiApEnabled(null, true);
                         }
                         isHotspotDisabled = false;
@@ -1590,8 +1473,8 @@ public class BackgroundService_BTFive extends Service {
                 }
             }, 2000);
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: DisableWifiConnection Exception>> " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: DisableWifiConnection Exception>> " + e.getMessage());
         }
     }*/
 
@@ -1600,7 +1483,7 @@ public class BackgroundService_BTFive extends Service {
             pumpTimingsOnOffFunction();//PumpOn/PumpOff functionality
             String outputQuantity;
 
-            if (BTConstants.isNewVersionLinkFive) {
+            if (BTConstants.IS_NEW_VERSION_LINK_FIVE) {
                 if (Response.contains("pulse")) {
                     JSONObject jsonObj = new JSONObject(Response);
                     outputQuantity = jsonObj.getString("pulse");
@@ -1624,24 +1507,24 @@ public class BackgroundService_BTFive extends Service {
             fillqty = fillqty / numPulseRatio;//convert to gallons
             fillqty = AppConstants.roundNumber(fillqty, 2);
             DecimalFormat precision = new DecimalFormat("0.00");
-            Constants.FS_5Gallons = (precision.format(fillqty));
-            Constants.FS_5Pulse = outputQuantity;
+            Constants.FS_5_GALLONS = (precision.format(fillqty));
+            Constants.FS_5_PULSE = outputQuantity;
 
             if (isOnlineTxn) { // || BTConstants.SwitchedBTToUDP5
-                UpdateTransactionToSqlite(outputQuantity);
+                updateTransactionToSqlite(outputQuantity);
             } else {
                 if (Pulses > 0 || fillqty > 0) {
                     offlineController.updateOfflinePulsesQuantity(sqlite_id + "", outputQuantity, fillqty + "", OffLastTXNid);
                 }
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Offline >> BTLink_5: LINK:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Offline >> BTLink_5: LINK:" + LinkName + "; P:" + Integer.parseInt(outputQuantity) + "; Q:" + fillqty);
             }
 
             reachMaxLimit();
 
         } catch (Exception e) {
             e.printStackTrace();
-            //if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + " BTLink_5: pulse count Exception>>" + e.getMessage());
+            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + " BTLink_5: pulse count Exception>>" + e.getMessage());
         }
     }
 
@@ -1649,7 +1532,7 @@ public class BackgroundService_BTFive extends Service {
         String newQty = outputQuantity;
         try {
 
-            if (BTConstants.isRelayOnAfterReconnect5) {
+            if (BTConstants.IS_RELAY_ON_AFTER_RECONNECT_5) {
                 SharedPreferences sharedPrefLastQty = this.getSharedPreferences("LastQuantity_BT5", Context.MODE_PRIVATE);
                 long storedPulsesCount = sharedPrefLastQty.getLong("Last_Quantity", 0);
 
@@ -1662,8 +1545,8 @@ public class BackgroundService_BTFive extends Service {
                 newQty = outputQuantity;
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: addStoredQtyToCurrentQty Exception:" + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: addStoredQtyToCurrentQty Exception:" + ex.getMessage());
         }
         return newQty;
     }
@@ -1680,15 +1563,12 @@ public class BackgroundService_BTFive extends Service {
                     Request = notificationData.getString("Request");
                     Response = notificationData.getString("Response");
 
-                    if (Request.equalsIgnoreCase(BTConstants.fdcheckcommand)) {
+                    if (Request.equalsIgnoreCase(BTConstants.FD_CHECK_COMMAND)) {
                         FDRequest = Request;
                         FDResponse = Response;
                     }
-                    if (Request.contains(BTConstants.linkUpgrade_cmd) && upgradeResponse.isEmpty()) {
-                        upgradeResponse = Response;
-                    }
 
-                    if (Request.contains(BTConstants.info_cmd)) {
+                    if (Request.contains(BTConstants.INFO_COMMAND)) {
                         if (Response.contains("records")) {
                             JSONObject jsonObject = new JSONObject(Response);
                             jsonObject.remove("records"); // As per #2357
@@ -1698,17 +1578,17 @@ public class BackgroundService_BTFive extends Service {
                     //Used only for debug
                     Log.i(TAG, "BTLink_5: Link Request>>" + Request);
                     Log.i(TAG, "BTLink_5: Link Response>>" + Response);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: Response from Link >>" + Response);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5: Response from Link >>" + Response);
 
                     //Set Relay status.
-                    if (Request.contains(BTConstants.relay_off_cmd) && Response.contains("OFF")) {
+                    if (Request.contains(BTConstants.RELAY_OFF_COMMAND) && Response.contains("OFF")) {
                         RelayStatus = false;
-                    } else if (Request.contains(BTConstants.relay_on_cmd) && Response.contains("ON")) {
+                    } else if (Request.contains(BTConstants.RELAY_ON_COMMAND) && Response.contains("ON")) {
                         RelayStatus = true;
-                        AppConstants.isRelayON_fs5 = true;
+                        AppConstants.IS_RELAY_ON_FS5 = true;
                         if (!redpulseloop_on) {
-                            ReadPulse();
+                            readPulse();
                         }
                     }
 
@@ -1716,21 +1596,21 @@ public class BackgroundService_BTFive extends Service {
                         if (Response.contains("**")) {
                             if (!isManualOverrideDetected) {
                                 isManualOverrideDetected = true;
-                                UpdateManualOverrideStatusOfLink();
+                                updateManualOverrideStatusOfLink();
                             }
                         }
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: <onReceive Exception: " + e.getMessage() + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: <onReceive Exception: " + e.getMessage() + ">");
             }
         }
     }
 
     //Sqlite code
-    private void InsertInitialTransactionToSqlite() {
+    private void insertInitialTransactionToSqlite() {
         String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
         String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTFive.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
 
@@ -1739,10 +1619,10 @@ public class BackgroundService_BTFive extends Service {
         imap.put("authString", authString);
 
         sqliteID = controller.insertTransactions(imap);
-        CommonUtils.AddRemovecurrentTransactionList(true, TransactionId);//Add transaction Id to list
+        CommonUtils.addRemoveCurrentTransactionList(true, TransactionId);//Add transaction Id to list
     }
 
-    private void UpdateTransactionToSqlite(String outputQuantity) {
+    private void updateTransactionToSqlite(String outputQuantity) {
         ////////////////////////////////////-Update transaction ---
         TrazComp authEntityClass = new TrazComp();
         authEntityClass.TransactionId = TransactionId;
@@ -1758,8 +1638,8 @@ public class BackgroundService_BTFive extends Service {
         Gson gson = new Gson();
         String jsonData = gson.toJson(authEntityClass);
 
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " BTLink_5: ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(outputQuantity) + "; Qty:" + fillqty);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + " BTLink_5: ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(outputQuantity) + "; Qty:" + fillqty);
 
         String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
         String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTFive.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
@@ -1773,7 +1653,7 @@ public class BackgroundService_BTFive extends Service {
         if (Pulses > 0 || fillqty > 0) {
 
             //in progress (transaction recently started, no new information): Transaction ongoing = 8  --non zero qty
-            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_BTFive.this);
+            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_BTFive.this);
             int rowseffected = controller.updateTransactions(imap);
             System.out.println("rowseffected-" + rowseffected);
             if (rowseffected == 0) {
@@ -1782,7 +1662,7 @@ public class BackgroundService_BTFive extends Service {
         }
     }
 
-    private void SaveLastBTTransactionInLocalDB(String txnId, String counts) {
+    private void saveLastBTTransactionInLocalDB(String txnId, String counts) {
         try {
             double lastCnt = Double.parseDouble(counts);
             double Lastqty = lastCnt / numPulseRatio; //convert to gallons
@@ -1801,8 +1681,8 @@ public class BackgroundService_BTFive extends Service {
             Gson gson = new Gson();
             String jsonData = gson.toJson(authEntityClass);
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: <Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: <Last Transaction saved in local DB. LastTXNid:" + txnId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + Lastqty + ">");
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_BTFive.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
@@ -1826,12 +1706,12 @@ public class BackgroundService_BTFive extends Service {
                 controller.insertTransactions(imap);
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: SaveLastBTTransactionInLocalDB Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: saveLastBTTransactionInLocalDB Exception: " + e.getMessage());
         }
     }
 
-    private void PostTransactionBackgroundTasks(boolean isTransactionCompleted) {
+    private void postTransactionBackgroundTasks(boolean isTransactionCompleted) {
         try {
             if (isOnlineTxn) {
                 if (!isTransactionCompleted) {
@@ -1864,12 +1744,12 @@ public class BackgroundService_BTFive extends Service {
             if (!isTransactionCompleted) {
                 // Offline transaction data sync
                 if (OfflineConstants.isOfflineAccess(BackgroundService_BTFive.this)) {
-                    SyncOfflineData();
+                    syncOfflineData();
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: PostTransactionBackgroundTasks Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: postTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 
@@ -1878,10 +1758,10 @@ public class BackgroundService_BTFive extends Service {
         if (minFuelLimit > 0 && fillqty >= minFuelLimit && !isTxnLimitReached) {
             isTxnLimitReached = true;
             Log.i(TAG, "BTLink_5: Auto Stop Hit>> You reached MAX fuel limit.");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Auto Stop Hit>> " + LimitReachedMessage);
-            AppConstants.DisplayToastmaxlimit = true;
-            AppConstants.MaxlimitMessage = LimitReachedMessage;
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Auto Stop Hit>> " + LimitReachedMessage);
+            AppConstants.DISPLAY_TOAST_MAX_LIMIT = true;
+            AppConstants.MAX_LIMIT_MESSAGE = LimitReachedMessage;
             relayOffCommand(); //RelayOff
         }
     }
@@ -1894,11 +1774,11 @@ public class BackgroundService_BTFive extends Service {
                 stopCount++;
                 if (stopCount >= pumpOnpoint) {
                     //Timed out (Start was pressed, and pump on timer hit): Pump Time On limit reached* = 4
-                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTFive.this);
+                    CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_BTFive.this);
                     Log.i(TAG, " BTLink_5: PumpOnTime Hit>>" + stopCount);
                     stopCount = 0;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: PumpOnTime Hit.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5: PumpOnTime Hit.");
                     relayOffCommand(); //RelayOff
                 }
             } else {//PumpOff Time logic
@@ -1913,8 +1793,8 @@ public class BackgroundService_BTFive extends Service {
                 if (stopCount >= stopAutoFuelSeconds) {
                     Log.i(TAG, " BTLink_5: PumpOffTime Hit>>" + stopCount);
                     stopCount = 0;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " BTLink_5: PumpOffTime Hit.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " BTLink_5: PumpOffTime Hit.");
                     relayOffCommand(); //RelayOff
                 }
             }
@@ -1924,9 +1804,9 @@ public class BackgroundService_BTFive extends Service {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
-    private void CheckResponse() {
+    private void checkResponse() {
         try {
-            if (RelayStatus && !BTConstants.CurrentCommand_LinkFive.contains(BTConstants.relay_off_cmd)) {
+            if (RelayStatus && !BTConstants.CURRENT_COMMAND_LINK_FIVE.contains(BTConstants.RELAY_OFF_COMMAND)) {
                 if (RespCount < 4) {
                     RespCount++;
                 } else {
@@ -1961,14 +1841,14 @@ public class BackgroundService_BTFive extends Service {
             if (IsThisBTTrnx) {
                 Request = "";
                 Response = "";
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: Sending FD_check command to Link: " + LinkName);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: Sending FD_check command to Link: " + LinkName);
                 BTSPPMain btspp = new BTSPPMain();
-                btspp.send5(BTConstants.fdcheckcommand);
+                btspp.send5(BTConstants.FD_CHECK_COMMAND);
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: FD_check command Exception:>>" + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: FD_check command Exception:>>" + ex.getMessage());
         }
     }
 
@@ -1977,14 +1857,14 @@ public class BackgroundService_BTFive extends Service {
             JSONObject jsonObject = new JSONObject(response);
             JSONObject versionJsonObj = jsonObject.getJSONObject("version");
             String version = versionJsonObj.getString("version");
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: LINK Version >> " + version);
-            storeUpgradeFSVersion(BackgroundService_BTFive.this, AppConstants.UP_HoseId_fs5, version);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: LINK Version >> " + version);
+            storeUpgradeFSVersion(BackgroundService_BTFive.this, AppConstants.UP_HOSE_ID_FS5, version);
             versionNumberOfLinkFive = CommonUtils.getVersionFromLink(version);
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in parseInfoCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Exception in parseInfoCommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -1993,7 +1873,7 @@ public class BackgroundService_BTFive extends Service {
         String jsonfromLink;
     }
 
-    private String ReturnQty(String outputQuantity) {
+    private String returnQty(String outputQuantity) {
         String return_qty = "";
         try {
 
@@ -2046,12 +1926,12 @@ public class BackgroundService_BTFive extends Service {
                                     pulse = removeLastChar(pulse.trim());
 
                                     if (!txn_id.isEmpty() && !txn_id.equalsIgnoreCase("0")) {
-                                        SaveLastBTTransactionInLocalDB(txn_id, pulse);
+                                        saveLastBTTransactionInLocalDB(txn_id, pulse);
                                     }
                                 }
                             } catch (Exception e) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: Last10 txtn parsing exception:>>" + e.getMessage());
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: Last10 txtn parsing exception:>>" + e.getMessage());
                             }
                         } else {
 
@@ -2059,17 +1939,17 @@ public class BackgroundService_BTFive extends Service {
                                 version = res.substring(res.indexOf(":") + 1).trim();
                             }
                             if (!version.isEmpty()) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " BTLink_5: LINK Version >> " + version);
-                                storeUpgradeFSVersion(BackgroundService_BTFive.this, AppConstants.UP_HoseId_fs5, version);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " BTLink_5: LINK Version >> " + version);
+                                storeUpgradeFSVersion(BackgroundService_BTFive.this, AppConstants.UP_HOSE_ID_FS5, version);
                             }
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in parseInfoCommandResponseForLast10txtn. response>> " + response + "; Exception>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Exception in parseInfoCommandResponseForLast10txtn. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -2103,22 +1983,22 @@ public class BackgroundService_BTFive extends Service {
             EnablePrinter = offlineController.getOfflineHubDetails(BackgroundService_BTFive.this).EnablePrinter;
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_BTFive.this);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: <Fuel Limit: " + minFuelLimit + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: <Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
             Calendar calendar = Calendar.getInstance();
-            TransactionDateWithFormat = BTConstants.dateFormatForOldVersion.format(calendar.getTime());
+            TransactionDateWithFormat = BTConstants.DATE_FORMAT_FOR_OLD_VERSION.format(calendar.getTime());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void SyncOfflineData() {
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+    private void syncOfflineData() {
+        if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && Constants.FS_6_STATUS.equalsIgnoreCase("FREE")) {
 
             if (isOnlineTxn) {
                 try {
@@ -2165,16 +2045,16 @@ public class BackgroundService_BTFive extends Service {
 
                 Gson gson = new Gson();
                 String jsonData = gson.toJson(objUpgrade);
-                //AppConstants.WriteinFile(TAG + " BTLink_5: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
+                //AppConstants.writeInFile(TAG + " BTLink_5: UpgradeCurrentVersionWithUpgradableVersion (" + jsonData + ")");
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(objUpgrade.IMEIUDID + ":" + objUpgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(BackgroundService_BTFive.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(BackgroundService_BTFive.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: UpgradeCurrentVersionWithUpgradableVersion Exception: " + ex.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: UpgradeCurrentVersionWithUpgradableVersion Exception: " + ex.getMessage());
             }
             return response;
         }
@@ -2192,13 +2072,13 @@ public class BackgroundService_BTFive extends Service {
                     storeUpgradeFSVersion(BackgroundService_BTFive.this, "", "");
                 }
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " BTLink_5: UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " BTLink_5: UpgradeCurrentVersionWithUpgradableVersion onPostExecute Exception: " + e.getMessage());
             }
         }
     }
 
-    private void UpdateSwitchTimeBounceForLink() {
+    private void updateSwitchTimeBounceForLink() {
         try {
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
 
@@ -2214,8 +2094,8 @@ public class BackgroundService_BTFive extends Service {
             storeSwitchTimeBounceFlag(BackgroundService_BTFive.this, jsonData, authString);
 
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: UpdateSwitchTimeBounceForLink Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: updateSwitchTimeBounceForLink Exception: " + ex.getMessage());
         }
     }
 
@@ -2248,13 +2128,13 @@ public class BackgroundService_BTFive extends Service {
                 String txtn = j.getString("txtn");
                 String pulse = j.getString("pulse");
 
-                if (!txtn.equalsIgnoreCase("N/A") && !pulse.equalsIgnoreCase("-1")) {
-                    SaveLastBTTransactionInLocalDB(txtn, pulse);
+                if (!txtn.equalsIgnoreCase("N/A") && !txtn.isEmpty() && !pulse.equalsIgnoreCase("-1") && !pulse.isEmpty()) {
+                    saveLastBTTransactionInLocalDB(txtn, pulse);
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in parseLast1CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Exception in parseLast1CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
@@ -2283,7 +2163,7 @@ public class BackgroundService_BTFive extends Service {
                 HashMap<String, String> Hmap = new HashMap<>();
                 Hmap.put("TransactionID", txtn);//TransactionID
                 Hmap.put("Pulses", pulse);//Pulses
-                Hmap.put("FuelQuantity", ReturnQty(pulse));//FuelQuantity
+                Hmap.put("FuelQuantity", returnQty(pulse));//FuelQuantity
                 Hmap.put("TransactionDateTime", date); //TransactionDateTime
                 Hmap.put("VehicleId", vehicle); //VehicleId
                 Hmap.put("dflag", dflag);
@@ -2303,12 +2183,12 @@ public class BackgroundService_BTFive extends Service {
             editor.apply();
         } catch (Exception e) {
             e.printStackTrace();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: Exception in parseLast20CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: Exception in parseLast20CommandResponse. response>> " + response + "; Exception>>" + e.getMessage());
         }
     }
 
-    private void UpdateCheckMOStatusFlagOfLink() {
+    private void updateCheckMOStatusFlagOfLink() {
         try {
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
 
@@ -2333,12 +2213,12 @@ public class BackgroundService_BTFive extends Service {
             // commit changes
             editor.commit();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: UpdateCheckMOStatusFlagOfLink Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: updateCheckMOStatusFlagOfLink Exception: " + ex.getMessage());
         }
     }
 
-    private void UpdateResetMOCheckFlagOfLink() {
+    private void updateResetMOCheckFlagOfLink() {
         try {
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
 
@@ -2363,12 +2243,12 @@ public class BackgroundService_BTFive extends Service {
             // commit changes
             editor.commit();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: UpdateResetMOCheckFlagOfLink Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: updateResetMOCheckFlagOfLink Exception: " + ex.getMessage());
         }
     }
 
-    private void UpdateManualOverrideStatusOfLink() {
+    private void updateManualOverrideStatusOfLink() {
         try {
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceBT(BackgroundService_BTFive.this).PersonEmail;
 
@@ -2394,8 +2274,8 @@ public class BackgroundService_BTFive extends Service {
             // commit changes
             editor.commit();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " BTLink_5: UpdateManualOverrideStatusOfLink Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " BTLink_5: updateManualOverrideStatusOfLink Exception: " + ex.getMessage());
         }
     }
 

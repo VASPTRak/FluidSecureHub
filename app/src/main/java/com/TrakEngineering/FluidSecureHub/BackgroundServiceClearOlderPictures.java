@@ -26,7 +26,7 @@ public class BackgroundServiceClearOlderPictures extends BackgroundService {
 
 
         } catch (NullPointerException e) {
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "  onStartCommand Execption " + e);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  onStartCommand Execption " + e);
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }

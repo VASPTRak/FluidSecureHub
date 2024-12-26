@@ -239,8 +239,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             @Override
             public void onChanged(@Nullable String s) {
                AlertDialogBox(AddNewLinkToCloud.this, s);
-                /*if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " SaveLinkFromAPP Response: " + s);*/
+                /*if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " SaveLinkFromAPP Response: " + s);*/
             }
         });
 
@@ -296,8 +296,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                             }
                         }
                     } catch (Exception e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + " SaveLinkFromAPP Exception while getting PulseRatio: " + e.getMessage());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + " SaveLinkFromAPP Exception while getting PulseRatio: " + e.getMessage());
                     }
                     addnewlinkViewModel.ProcessData(edt_linkname.getText().toString().trim(), edt_pumpOnTime.getText().toString().trim(),
                             edt_pumpOffTime.getText().toString().trim(), edt_LinkNewName.getText().toString().trim(),
@@ -329,7 +329,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
         SetToolTips();
 
-        if (AppConstants.showWelcomeDialogForAddNewLink) {
+        if (AppConstants.SHOW_WELCOME_DIALOG_FOR_ADD_NEW_LINK) {
             welcomeDialog();
         }
 
@@ -408,24 +408,24 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         switch (item.getItemId()) {
 
             case R.id.mrestartapp:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<Restart app.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Restart app.>");
                 Intent i = new Intent(AddNewLinkToCloud.this, SplashActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
                 break;
 
             case R.id.menuSpanish:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <Spanish language selected.>");
-                AppConstants.languageChanged = true;
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " <Spanish language selected.>");
+                AppConstants.LANGUAGE_CHANGED = true;
                 StoreLanguageSettings("es");
                 break;
 
             case R.id.menuEnglish:
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <English language selected.>");
-                AppConstants.languageChanged = true;
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " <English language selected.>");
+                AppConstants.LANGUAGE_CHANGED = true;
                 StoreLanguageSettings("en");
                 break;
 
@@ -459,21 +459,21 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             editor.apply();
 
             //recreate();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<Restarting the activity.>");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<Restarting the activity.>");
             Intent i = new Intent(AddNewLinkToCloud.this, AddNewLinkToCloud.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             this.startActivity(i);
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception occurred in StoreLanguageSettings: " + e.getMessage());
         }
     }
 
     private void SetSubscriptionKeyForAzureMap() {
         try {
-            SharedPreferences sharedPref = this.getSharedPreferences(AppConstants.sharedPref_AzureMapDetails, Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = this.getSharedPreferences(AppConstants.PREF_AZURE_MAP_DETAILS, Context.MODE_PRIVATE);
             SubscriptionKeyForAzureMap = sharedPref.getString("SubscriptionKey", "");
 
             AzureMaps.setSubscriptionKey(SubscriptionKeyForAzureMap);
@@ -483,8 +483,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 AzureMaps.setLanguage(AppConstants.LANG_PARAM.replace(":", ""));
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " SetSubscriptionKeyForAzureMap Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " SetSubscriptionKeyForAzureMap Exception: " + ex.getMessage());
         }
     }
 
@@ -563,8 +563,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             dialog.show();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " alertAddNewTankDialog Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " alertAddNewTankDialog Exception: " + ex.getMessage());
         }
     }
 
@@ -612,8 +612,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             //Wait until the map resources are ready.
             mapControl.onReady(map -> {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " <map resources are ready.>");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " <map resources are ready.>");
                 InitializeMap(map);
 
                 tv_SearchAddress.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -644,10 +644,10 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             btnSaveMap.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AppConstants.Latitude = selectedLatitude;
-                    AppConstants.Longitude = selectedLongitude;
+                    AppConstants.LATITUDE = selectedLatitude;
+                    AppConstants.LONGITUDE = selectedLongitude;
                     isLocationSelected = true;
-                    GetAddressByLatLng(Double.parseDouble(AppConstants.Latitude), Double.parseDouble(AppConstants.Longitude));
+                    GetAddressByLatLng(Double.parseDouble(AppConstants.LATITUDE), Double.parseDouble(AppConstants.LONGITUDE));
                     mapControl.onDestroy();
                     dialog.dismiss();
                 }
@@ -664,18 +664,18 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             mapControl.onResume();
             dialog.show();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " alertMapDialog Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " alertMapDialog Exception: " + ex.getMessage());
         }
     }
 
     private void InitializeMap(AzureMap map) {
         try {
-            AddSymbolLayerToMap(map, Double.parseDouble(AppConstants.Longitude), Double.parseDouble(AppConstants.Latitude));
+            AddSymbolLayerToMap(map, Double.parseDouble(AppConstants.LONGITUDE), Double.parseDouble(AppConstants.LATITUDE));
 
             /*//Set the camera of the map.
             map.setCamera(
-                    center(Point.fromLngLat(Double.parseDouble(AppConstants.Longitude), Double.parseDouble(AppConstants.Latitude))),
+                    center(Point.fromLngLat(Double.parseDouble(AppConstants.LONGITUDE), Double.parseDouble(AppConstants.LATITUDE))),
                     zoom(15),
                     animationType(AnimationType.FLY),
                     animationDuration(2000)
@@ -696,8 +696,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 return true;
             });
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " InitializeMap Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " InitializeMap Exception: " + ex.getMessage());
         }
     }
 
@@ -723,8 +723,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     animationDuration(2000)
             );
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " AddSymbolLayerToMap Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " AddSymbolLayerToMap Exception: " + ex.getMessage());
         }
     }
 
@@ -787,8 +787,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             });
             //===============================================================
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " SetToolTips Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " SetToolTips Exception: " + ex.getMessage());
         }
     }
 
@@ -813,8 +813,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     .build();
             toolTipView.show();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " CreateToolTip Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " CreateToolTip Exception: " + ex.getMessage());
         }
     }
 
@@ -963,8 +963,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                             //finish();
                             // Save newly added link into arraylist to configure
                             boolean linkNameExist = false;
-                            if (AppConstants.newlyAddedLinks != null) {
-                                for (HashMap<String, String> hashMap : AppConstants.newlyAddedLinks) {
+                            if (AppConstants.NEWLY_ADDED_LINKS != null) {
+                                for (HashMap<String, String> hashMap : AppConstants.NEWLY_ADDED_LINKS) {
                                     if (hashMap.containsValue(linkName)) {
                                         linkNameExist = true;
                                         break;
@@ -973,9 +973,9 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                             }
                             if (!linkNameExist) {
                                 HashMap<String, String> map = new HashMap<>();
-                                map.put("SiteId", AppConstants.NewlyAddedSiteId);
+                                map.put("SiteId", AppConstants.NEWLY_ADDED_SITE_ID);
                                 map.put("LinkName", linkName);
-                                AppConstants.newlyAddedLinks.add(map);
+                                AppConstants.NEWLY_ADDED_LINKS.add(map);
                             }
                             //==============================================================
 
@@ -1065,7 +1065,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -1075,8 +1075,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetTanksAndProducts InBackground Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetTanksAndProducts InBackground Exception: " + e.getMessage());
                 if (OfflineConstants.isOfflineAccess(AddNewLinkToCloud.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -1094,8 +1094,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             try {
                 JSONObject jsonObject = new JSONObject(Response);
 
-                /*if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " Response: " + jsonObject);*/
+                /*if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " Response: " + jsonObject);*/
                 String ResponseMessage = jsonObject.getString("ResponseMessage");
                 if (ResponseMessage.equalsIgnoreCase("success")) {
 
@@ -1110,8 +1110,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetTanksAndProducts onPostExecute Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetTanksAndProducts onPostExecute Exception: " + e.getMessage());
                 if (OfflineConstants.isOfflineAccess(AddNewLinkToCloud.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -1165,7 +1165,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                 RequestBody body = RequestBody.create(TEXT, jsonData);
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .post(body)
                         .addHeader("Authorization", authString)
                         .build();
@@ -1175,8 +1175,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " AddTankFromAPP InBackground Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " AddTankFromAPP InBackground Exception: " + e.getMessage());
                 if (OfflineConstants.isOfflineAccess(AddNewLinkToCloud.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -1193,8 +1193,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 String ResponseMessage = jsonObject.getString("ResponseMessage");
                 String ResponseText = jsonObject.getString("ResponseText");
                 if (ResponseMessage.equalsIgnoreCase("success")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " Tank Added Successfully. (" + tankNumber + ")");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " Tank Added Successfully. (" + tankNumber + ")");
                     String tanksForLinksObj = jsonObject.getString(AppConstants.RES_TANK_DATA);
                     CommonUtils.BindTankData(tanksForLinksObj, false);
                     //showCustomMessageDialog(AddNewLinkToCloud.this, ResponseMessage, ResponseText, addTankDialog);
@@ -1215,8 +1215,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     if (alertDialog.isShowing()) {
                         alertDialog.dismiss();
                     }
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " AddTankFromAPP Response: " + ResponseText);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " AddTankFromAPP Response: " + ResponseText);
                     showCustomMessageDialog(AddNewLinkToCloud.this, ResponseText, "");
                 }
 
@@ -1225,8 +1225,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     alertDialog.dismiss();
                 }
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " AddTankFromAPP onPostExecute Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " AddTankFromAPP onPostExecute Exception: " + e.getMessage());
                 if (OfflineConstants.isOfflineAccess(AddNewLinkToCloud.this)) {
                     AppConstants.NETWORK_STRENGTH = false;
                 }
@@ -1235,8 +1235,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     }
 
     public void showCustomMessageDialog(final Activity context, String message, String input) {
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + " " + message + input);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + " " + message + input);
         androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setCancelable(false);
@@ -1292,8 +1292,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                /*if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAddressByLatLng onResponse: " + response.body());*/
+                /*if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAddressByLatLng onResponse: " + response.body());*/
                 if (response.body() != null) {
                     parseResponseAddressByLatLng(pdAddress, response.body().toString());
                 } else {
@@ -1303,8 +1303,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " GetAddressByLatLng onFailure: " + t.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " GetAddressByLatLng onFailure: " + t.getMessage());
                 pdAddress.dismiss();
             }
         });
@@ -1338,8 +1338,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             if (pdAddress != null) {
                 pdAddress.dismiss();
             }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " parseResponseAddressByLatLng Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " parseResponseAddressByLatLng Exception: " + ex.getMessage());
         }
     }
 
@@ -1365,13 +1365,13 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         apiInterface = retrofit.create(AzureMapApi.class);
 
         Call<JsonObject> call = apiInterface.GetAddressSuggestions("true", SubscriptionKeyForAzureMap, "1.0", query,
-                AppConstants.LANG_PARAM.replace(":", ""), AppConstants.Longitude, AppConstants.Latitude, "", "Auto");
+                AppConstants.LANG_PARAM.replace(":", ""), AppConstants.LONGITUDE, AppConstants.LATITUDE, "", "Auto");
 
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                /*if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " retrieveAddressDataFromApi onResponse: " + response.body());*/
+                /*if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " retrieveAddressDataFromApi onResponse: " + response.body());*/
                 if (response.body() != null) {
                     parseAddressesFromResponse(response.body().toString());
                 }
@@ -1379,8 +1379,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " retrieveAddressDataFromApi onFailure: " + t.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " retrieveAddressDataFromApi onFailure: " + t.getMessage());
             }
         });
     }
@@ -1426,8 +1426,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 }
             }
         }  catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " parseAddressesFromResponse Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " parseAddressesFromResponse Exception: " + ex.getMessage());
         }
     }
 
@@ -1479,7 +1479,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     @Override
                     public void onClick(DialogInterface dialog, int arg1) {
                         dialog.dismiss();
-                        AppConstants.showWelcomeDialogForAddNewLink = false;
+                        AppConstants.SHOW_WELCOME_DIALOG_FOR_ADD_NEW_LINK = false;
                         finish();
                         Intent in = new Intent(AddNewLinkToCloud.this, AddNewLinkToCloud.class);
                         startActivity(in);
@@ -1510,9 +1510,9 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (AppConstants.newlyAddedLinks != null) {
-                        if (AppConstants.newlyAddedLinks.size() > 0) {
-                            for (HashMap<String, String> hashMap : AppConstants.newlyAddedLinks) {
+                    if (AppConstants.NEWLY_ADDED_LINKS != null) {
+                        if (AppConstants.NEWLY_ADDED_LINKS.size() > 0) {
+                            for (HashMap<String, String> hashMap : AppConstants.NEWLY_ADDED_LINKS) {
                                 String linkName = hashMap.get("LinkName");
                                 String siteId = hashMap.get("SiteId");
                                 String HubLinkCommunication = "HTTP";
@@ -1525,11 +1525,11 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                 if (!configurationProcessStarted) {
                                     configurationProcessStarted = true;
                                 }
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + " Proceed to Link Configuration: " + linkName);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + " Proceed to Link Configuration: " + linkName);
                                 if (HubLinkCommunication.equalsIgnoreCase("BT")) {
                                     // BT link Configuration
-                                    AppConstants.newlyAddedLinks.remove(hashMap);
+                                    AppConstants.NEWLY_ADDED_LINKS.remove(hashMap);
                                     CommonUtils.AutoCloseBTLinkMessage(AddNewLinkToCloud.this, "", getResources().getString(R.string.BTLinkNotInPairList));
 
                                 } else {
@@ -1551,7 +1551,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            AppConstants.newlyAddedLinks.remove(hashMap);
+                                            AppConstants.NEWLY_ADDED_LINKS.remove(hashMap);
                                             HTTPLinkConfiguration();
                                         }
                                     }, 2000);
@@ -1568,8 +1568,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             }, waitingTimeInMillis);
 
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " ProceedToLinkConfiguration Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " ProceedToLinkConfiguration Exception: " + ex.getMessage());
         }
     }
 
@@ -1578,17 +1578,17 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         int waitingTime = 100;
         if(enableHotspotAfterNewLinkConfigure) {
             waitingTime = 2000;
-            Constants.hotspotstayOn = true;
+            Constants.HOTSPOT_STAY_ON = true;
             skipOnResume = true;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " <Enabling hotspot.>");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " <Enabling hotspot.>");
             wifiApManager.setWifiApEnabled(null, true);  //Hotspot enabled
         }
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (AppConstants.languageChanged) {
-                    AppConstants.languageChanged = false;
+                if (AppConstants.LANGUAGE_CHANGED) {
+                    AppConstants.LANGUAGE_CHANGED = false;
                     Intent i = new Intent(AddNewLinkToCloud.this, WelcomeActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i);
@@ -1614,15 +1614,15 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 if (loading != null) {
                     loading.dismiss();
                 }
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " HotSpot SSID cannot be blank. Please contact Support.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " HotSpot SSID cannot be blank. Please contact Support.");
                 showMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.HotSpotSSIDCannotBeBlank));
             } else if (HotSpotPassword.isEmpty()) {
                 if (loading != null) {
                     loading.dismiss();
                 }
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " HotSpot Password cannot be blank. Please contact Support.");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " HotSpot Password cannot be blank. Please contact Support.");
                 showMessageDialog(AddNewLinkToCloud.this, getResources().getString(R.string.HotSpotPasswordCannotBeBlank));
             } else {
 
@@ -1630,8 +1630,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             }
 
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " HTTPLinkConfiguration Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " HTTPLinkConfiguration Exception: " + ex.getMessage());
             ProceedToLinkConfiguration(true); // Continue to configure next link
         }
     }
@@ -1639,7 +1639,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
     private void configurationProcess() {
 
         try {
-            Constants.hotspotstayOn = false; //hotspot enable/disable flag
+            Constants.HOTSPOT_STAY_ON = false; //hotspot enable/disable flag
 
             if (CommonUtils.isHotspotEnabled(AddNewLinkToCloud.this)) {
                 skipOnResume = true;
@@ -1667,8 +1667,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
         } catch (Exception e) {
             ChangeWifiState(false);//turn wifi off
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Link Configuration process -Step 1 Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Link Configuration process -Step 1 Exception: " + e.getMessage());
             ProceedToLinkConfiguration(true); // Continue to configure next link
         }
     }
@@ -1685,7 +1685,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         loading.show();
 
-        Constants.hotspotstayOn = false; //hotspot enable/disable flag
+        Constants.HOTSPOT_STAY_ON = false; //hotspot enable/disable flag
         if (CommonUtils.isHotspotEnabled(AddNewLinkToCloud.this)) {
             skipOnResume = true;
             wifiApManager.setWifiApEnabled(null, false);
@@ -1717,12 +1717,12 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                         new WiFiConnectTask().execute();
 
                     } else {
-                        Constants.hotspotstayOn = false;
+                        Constants.HOTSPOT_STAY_ON = false;
                         configurationProcessStarted = false;
                         if (loading != null)
                             loading.dismiss();
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Unable to auto connect to " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +". Started manual process..");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Unable to auto connect to " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +". Started manual process..");
                         AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.UnableToAutoConnect) + " " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE + ". " + getResources().getString(R.string.StartedManualProcess), Color.BLUE);
                         LinkConfigurationProcessStep1();
                     }
@@ -1752,7 +1752,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
         try {
 
-            Constants.hotspotstayOn = false; //hotspot enable/disable flag
+            Constants.HOTSPOT_STAY_ON = false; //hotspot enable/disable flag
             if (CommonUtils.isHotspotEnabled(AddNewLinkToCloud.this)) {
                 skipOnResume = true;
                 wifiApManager.setWifiApEnabled(null, false);
@@ -1769,8 +1769,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 @Override
                 public void run() {
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step1 Link Configuration enable wifi manually.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step1 Link Configuration enable wifi manually.");
 
                     AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.EnableWifiManually) + " " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE + " " + getResources().getString(R.string.UsingWifiList), Color.BLUE);
                     startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
@@ -1788,8 +1788,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                 ssid = wifiInfo.getSSID().trim().replace("\"", "");
                             }
 
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; Connected to: " + ssid);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; Connected to: " + ssid);
                         }
 
                         public void onFinish() {
@@ -1814,8 +1814,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                 }
                                 /*ChangeWifiState(false);//turn wifi off*/
                                 proceedAfterManualWifiConnect = true;
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step1 => Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; Connected to: " + ssid);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step1 => Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; Connected to: " + ssid);
                                 //ProceedToLinkConfiguration(true); // Continue to configure next link
                             }
                         }
@@ -1827,8 +1827,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             ChangeWifiState(false);//turn wifi off
             ConfigurationStep1IsInProgress = false;
             Log.i(TAG, "Link Configuration process -Step 1 Exception" + e);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link Configuration process -Step 1 Exception " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Link Configuration process -Step 1 Exception " + e.getMessage());
             ProceedToLinkConfiguration(true); // Continue to configure next link
         }
     }
@@ -1838,8 +1838,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Started configuration process...");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Started configuration process...");
             String s = "Started configuration process. Please wait...";
             SpannableString ss2 = new SpannableString(s);
             ss2.setSpan(new RelativeSizeSpan(2f), 0, ss2.length(), 0);
@@ -1870,8 +1870,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                     if (ssid.equalsIgnoreCase(AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE)) {
 
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Connected to wifi " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Connected to wifi " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE);
                         AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.ConnectedToWifi) + " " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE, Color.parseColor("#4CAF50"));
 
                         new Handler().postDelayed(new Runnable() {
@@ -1881,13 +1881,13 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                 HTTP_URL = "http://192.168.4.1:80/";
                                 URL_INFO = HTTP_URL + "client?command=info";
                                 try {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Sending INFO command to Link: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Sending INFO command to Link: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE);
                                     String result = new CommandsGET_INFO().execute(URL_INFO).get();
                                     String mac_address = "";
 
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " InfoCMD- " + ssid + " -Result >> " + result);
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " InfoCMD- " + ssid + " -Result >> " + result);
 
                                     if (result.contains("Version")) {
                                         JSONObject jsonObject = new JSONObject(result);
@@ -1899,8 +1899,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                             if (loading != null) {
                                                 loading.dismiss();
                                             }
-                                            if (AppConstants.GenerateLogs)
-                                                AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Configuration process fail. Could not get mac address.");
+                                            if (AppConstants.GENERATE_LOGS)
+                                                AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Configuration process fail. Could not get mac address.");
                                             AppConstants.colorToastBigFont(AddNewLinkToCloud.this, "Configuration process fail. Could not get mac address.", Color.BLUE);
 
                                             //Disable wifi connection
@@ -1918,8 +1918,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                                     String HotSpotSSID = sharedPref.getString("HotSpotSSID", "");
                                                     String HotSpotPassword = sharedPref.getString("HotSpotPassword", "");
 
-                                                    if (AppConstants.GenerateLogs)
-                                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Setting SSID and PASS to Link");
+                                                    if (AppConstants.GENERATE_LOGS)
+                                                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Setting SSID and PASS to Link");
                                                     AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.SettingSSIDAndPASS), Color.BLUE);
 
                                                     HTTP_URL = "http://192.168.4.1:80/";
@@ -1935,8 +1935,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                                             loading.dismiss();
                                                         }
                                                         ChangeWifiState(false);//turn wifi off
-                                                        if (AppConstants.GenerateLogs)
-                                                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " CommandsPOST_ChangeHotspotSettings. Exception: " + e.getMessage());
+                                                        if (AppConstants.GENERATE_LOGS)
+                                                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " CommandsPOST_ChangeHotspotSettings. Exception: " + e.getMessage());
                                                         ProceedToLinkConfiguration(true); // Continue to configure next link
                                                     }
                                                 }
@@ -1947,8 +1947,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                         if (loading != null) {
                                             loading.dismiss();
                                         }
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Configuration process fail.");
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Configuration process fail.");
                                         AppConstants.colorToastBigFont(AddNewLinkToCloud.this, "Configuration process fail. Please retry.", Color.BLUE);
 
                                         //Disable wifi connection
@@ -1959,15 +1959,15 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                     e.printStackTrace();
                                     if (loading != null)
                                         loading.dismiss();
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " WiFiConnectTask OnPostExecution --Exception: " + e.getMessage());
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " WiFiConnectTask OnPostExecution --Exception: " + e.getMessage());
                                 }
                             }
                         }, 1000);
 
                     } else {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " WiFiConnectTask => Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; WiFi Connected to: " + ssid);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " WiFiConnectTask => Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; WiFi Connected to: " + ssid);
                         AppConstants.colorToastBigFont(AddNewLinkToCloud.this, " Selected SSID: " + AppConstants.CURRENT_NEW_LINK_SELECTED_FOR_CONFIGURE +"; WiFi Connected to: " + ssid, Color.BLUE);
                         if (loading != null)
                             loading.dismiss();
@@ -2002,8 +2002,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             } catch (Exception e) {
                 ChangeWifiState(false);//turn wifi off
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " CommandsGET_INFO InBackground --Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " CommandsGET_INFO InBackground --Exception: " + e.getMessage());
                 if (loading != null) {
                     loading.dismiss();
                 }
@@ -2019,8 +2019,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                 System.out.println("2:" + Calendar.getInstance().getTime());
             } catch (Exception e) {
                 ChangeWifiState(false);//turn wifi off
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + " CommandsGET_INFO PostExecute --Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " CommandsGET_INFO PostExecute --Exception: " + e.getMessage());
                 Log.d("Ex", e.getMessage());
             }
         }
@@ -2052,8 +2052,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                 ChangeWifiState(false);//turn wifi off
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Set SSID and PASS to Link (Link reset) InBackground-Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Set SSID and PASS to Link (Link reset) InBackground-Exception: " + e.getMessage());
             }
             return resp;
         }
@@ -2067,8 +2067,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     ChangeWifiState(false);//turn wifi off
                     AppConstants.colorToastBigFont(AddNewLinkToCloud.this, "Configuration process fail. Please retry.", Color.BLUE);
                     Log.i(TAG, "Step2 Failed while changing Hotspot Settings Please try again.. exception:" + result);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step2 Failed while changing Hotspot Settings Please try again.. exception: " + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Step2 Failed while changing Hotspot Settings Please try again.. exception: " + result);
                     if (loading != null)
                         loading.dismiss();
                     try {
@@ -2090,8 +2090,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                     //wifiApManager.setWifiApEnabled(null, true);
 
                     Log.i(TAG, " Set SSID and PASS to Link (Result) " + result);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Set SSID and PASS to Link Result >> " + result);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Set SSID and PASS to Link Result >> " + result);
 
                     //============================================================
 
@@ -2100,8 +2100,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                         public void run() {
 
                             AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.MacAddressHeading) + " " + AppConstants.NEW_LINK_UPDATE_MAC_ADDRESS, Color.BLUE);
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Mac address: " + AppConstants.NEW_LINK_UPDATE_MAC_ADDRESS);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Mac address: " + AppConstants.NEW_LINK_UPDATE_MAC_ADDRESS);
 
                             //Update mac address to server and mac address status
                             try {
@@ -2110,7 +2110,7 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                 authEntityClass1.SiteId = Integer.parseInt(AppConstants.CURRENT_NEW_LINK_SITE_ID);
                                 authEntityClass1.MACAddress = AppConstants.NEW_LINK_UPDATE_MAC_ADDRESS;
                                 authEntityClass1.RequestFrom = "AP";
-                                authEntityClass1.HubName = AppConstants.HubName;
+                                authEntityClass1.HubName = AppConstants.HUB_NAME;
 
                                 //------
                                 Gson gson = new Gson();
@@ -2124,13 +2124,13 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
                                     new UpdateMacAsyncTask().execute(jsonData);
 
                                 } else {
-                                    if (AppConstants.GenerateLogs)
-                                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Please check Internet Connection.");
+                                    if (AppConstants.GENERATE_LOGS)
+                                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + "Please check Internet Connection.");
                                     AppConstants.colorToast(AddNewLinkToCloud.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
                                 }
                             } catch (Exception e) {
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " ChangeHotspotSettings UpdateMacAddressClass --Exception: " + e.getMessage());
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " ChangeHotspotSettings UpdateMacAddressClass --Exception: " + e.getMessage());
                             }
 
                             if (loading != null)
@@ -2143,8 +2143,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
             } catch (Exception e) {
                 ChangeWifiState(false);//turn wifi off
                 e.printStackTrace();
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Set SSID and PASS to Link (Link reset) -Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Set SSID and PASS to Link (Link reset) -Exception: " + e.getMessage());
             }
         }
     }
@@ -2163,15 +2163,15 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(AddNewLinkToCloud.this) + ":" + userEmail + ":" + "UpdateMACAddress" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(AddNewLinkToCloud.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(AddNewLinkToCloud.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
                 if (loading != null)
                     loading.dismiss();
                 CommonUtils.LogMessage("", "UpdateMACAddress ", ex);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " UpdateMacAsyncTask InBackground--Exception: " + ex.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " UpdateMacAsyncTask InBackground--Exception: " + ex.getMessage());
                 response = "err";
             }
             return response;
@@ -2182,8 +2182,8 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
             try {
                 if (serverRes.equalsIgnoreCase("err")) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Link Re-configuration is partially completed.");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Link Re-configuration is partially completed.");
                     // AppConstants.alertBigFinishActivity(AddNewLinkToCloud.this, getResources().getString(R.string.PartiallyCompleted)); // Removed this to avoid app close
                 } else if (serverRes != null) {
 
@@ -2193,34 +2193,34 @@ public class AddNewLinkToCloud extends AppCompatActivity implements LifecycleObs
 
                     if (ResponceMessage.equalsIgnoreCase("success")) {
 
-                        AppConstants.clearSharedPrefByName(AddNewLinkToCloud.this, Constants.MAC_ADDR_RECONFIGURE);
+                        AppConstants.clearSharedPrefByName(AddNewLinkToCloud.this, Constants.MAC_ADDRESS_RECONFIGURE);
 
                         if (loading != null)
                             loading.dismiss();
                         AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.MacAddressUpdated), Color.parseColor("#4CAF50"));
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Mac Address Updated.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " Mac Address Updated.");
                         ChangeWifiState(false);
 
                     } else if (ResponceMessage.equalsIgnoreCase("fail")) {
                         if (loading != null)
                             loading.dismiss();
                         AppConstants.colorToastBigFont(AddNewLinkToCloud.this, getResources().getString(R.string.MacAddressNotUpdated), Color.BLUE);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " MAC address could not be updated.");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " MAC address could not be updated.");
                         ChangeWifiState(false);
                     }
 
                 } else {
                     Log.i(TAG, "UpdateMacAsyncTask Server Response Empty!");
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " UpdateMacAsyncTask Server Response Empty!");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " UpdateMacAsyncTask Server Response Empty!");
                 }
 
             } catch (Exception e) {
 
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(AppConstants.LOG_RECONFIG + "-" + TAG + " UpdateMacAsyncTask onPostExecute--Exception: " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(AppConstants.LOG_RECONFIG + "-" + TAG + " UpdateMacAsyncTask onPostExecute--Exception: " + e.getMessage());
             }
         }
     }

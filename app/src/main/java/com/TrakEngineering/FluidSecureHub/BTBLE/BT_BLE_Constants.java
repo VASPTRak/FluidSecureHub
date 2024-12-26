@@ -2,53 +2,53 @@ package com.TrakEngineering.FluidSecureHub.BTBLE;
 
 public class BT_BLE_Constants {
 
-    public static String UUID_service = "725e0bc8-6f00-4d2d-a4af-96138ce599b6"; //first service UUID
-    public static String UUID_char = "e49227e8-659f-4d7e-8e23-8c6eea5b9173"; //first characteristic UUID
-    public static String UUID_service_BT = "725e0bc8-6f00-4d2d-a4af-96138ce599b9"; //BT LINK NEW service UUID
-    public static String UUID_service_file = "725e0bc8-6f00-4d2d-a4af-96138ce599b7";//7
-    public static String UUID_char_file = "e49227e8-659f-4d7e-8e23-8c6eea5b9174";//4
+    public static String UUID_SERVICE = "725e0bc8-6f00-4d2d-a4af-96138ce599b6"; //first service UUID
+    public static String UUID_CHAR = "e49227e8-659f-4d7e-8e23-8c6eea5b9173"; //first characteristic UUID
+    public static String UUID_SERVICE_BT = "725e0bc8-6f00-4d2d-a4af-96138ce599b9"; //BT LINK NEW service UUID
+    public static String UUID_SERVICE_FILE = "725e0bc8-6f00-4d2d-a4af-96138ce599b7";//7
+    public static String UUID_CHAR_FILE = "e49227e8-659f-4d7e-8e23-8c6eea5b9174";//4
 
-    public static String BTBLEStatusStrOne = "";
-    public static String BTBLEStatusStrTwo = "";
-    public static String BTBLEStatusStrThree = "";
-    public static String BTBLEStatusStrFour = "";
-    public static String BTBLEStatusStrFive = "";
-    public static String BTBLEStatusStrSix = "";
+    public static String BT_BLE_STATUS_STR_ONE = "";
+    public static String BT_BLE_STATUS_STR_TWO = "";
+    public static String BT_BLE_STATUS_STR_THREE = "";
+    public static String BT_BLE_STATUS_STR_FOUR = "";
+    public static String BT_BLE_STATUS_STR_FIVE = "";
+    public static String BT_BLE_STATUS_STR_SIX = "";
 
-    public static boolean BTBLELinkOneStatus = false;
-    public static boolean BTBLELinkTwoStatus = false;
-    public static boolean BTBLELinkThreeStatus = false;
-    public static boolean BTBLELinkFourStatus = false;
-    public static boolean BTBLELinkFiveStatus = false;
-    public static boolean BTBLELinkSixStatus = false;
+    public static boolean BT_BLE_LINK_ONE_STATUS = false;
+    public static boolean BT_BLE_LINK_TWO_STATUS = false;
+    public static boolean BT_BLE_LINK_THREE_STATUS = false;
+    public static boolean BT_BLE_LINK_FOUR_STATUS = false;
+    public static boolean BT_BLE_LINK_FIVE_STATUS = false;
+    public static boolean BT_BLE_LINK_SIX_STATUS = false;
 
-    public static boolean isNewVersionLinkOne = false;
-    public static boolean isNewVersionLinkTwo = false;
-    public static boolean isNewVersionLinkThree = false;
-    public static boolean isNewVersionLinkFour = false;
-    public static boolean isNewVersionLinkFive = false;
-    public static boolean isNewVersionLinkSix = false;
+    public static boolean IS_NEW_VERSION_LINK_ONE = false;
+    public static boolean IS_NEW_VERSION_LINK_TWO = false;
+    public static boolean IS_NEW_VERSION_LINK_THREE = false;
+    public static boolean IS_NEW_VERSION_LINK_FOUR = false;
+    public static boolean IS_NEW_VERSION_LINK_FIVE = false;
+    public static boolean IS_NEW_VERSION_LINK_SIX = false;
 
-    public static boolean isLinkOneNotifyEnabled = false;
-    public static boolean isLinkTwoNotifyEnabled = false;
-    public static boolean isLinkThreeNotifyEnabled = false;
-    public static boolean isLinkFourNotifyEnabled = false;
-    public static boolean isLinkFiveNotifyEnabled = false;
-    public static boolean isLinkSixNotifyEnabled = false;
+    public static boolean IS_LINK_ONE_NOTIFY_ENABLED = false;
+    public static boolean IS_LINK_TWO_NOTIFY_ENABLED = false;
+    public static boolean IS_LINK_THREE_NOTIFY_ENABLED = false;
+    public static boolean IS_LINK_FOUR_NOTIFY_ENABLED = false;
+    public static boolean IS_LINK_FIVE_NOTIFY_ENABLED = false;
+    public static boolean IS_LINK_SIX_NOTIFY_ENABLED = false;
 
-    public static String CurrentCommand_LinkOne = "";
-    public static String CurrentCommand_LinkTwo = "";
-    public static String CurrentCommand_LinkThree = "";
-    public static String CurrentCommand_LinkFour = "";
-    public static String CurrentCommand_LinkFive = "";
-    public static String CurrentCommand_LinkSix = "";
+    public static String CURRENT_COMMAND_LINK_ONE = "";
+    public static String CURRENT_COMMAND_LINK_TWO = "";
+    public static String CURRENT_COMMAND_LINK_THREE = "";
+    public static String CURRENT_COMMAND_LINK_FOUR = "";
+    public static String CURRENT_COMMAND_LINK_FIVE = "";
+    public static String CURRENT_COMMAND_LINK_SIX = "";
 
-    public static boolean isStopButtonPressed1 = false;
-    public static boolean isStopButtonPressed2 = false;
-    public static boolean isStopButtonPressed3 = false;
-    public static boolean isStopButtonPressed4 = false;
-    public static boolean isStopButtonPressed5 = false;
-    public static boolean isStopButtonPressed6 = false;
+    public static boolean IS_STOP_BUTTON_PRESSED_1 = false;
+    public static boolean IS_STOP_BUTTON_PRESSED_2 = false;
+    public static boolean IS_STOP_BUTTON_PRESSED_3 = false;
+    public static boolean IS_STOP_BUTTON_PRESSED_4 = false;
+    public static boolean IS_STOP_BUTTON_PRESSED_5 = false;
+    public static boolean IS_STOP_BUTTON_PRESSED_6 = false;
 
-    public static String BTBLEUpgradeProgressValue = "0";
+    public static String BT_BLE_UPGRADE_PROGRESS_VALUE = "0";
 }

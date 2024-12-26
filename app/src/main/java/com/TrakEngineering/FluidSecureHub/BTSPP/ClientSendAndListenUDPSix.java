@@ -49,11 +49,11 @@ public class ClientSendAndListenUDPSix implements Runnable {
                     String Response = new String(message, 0, p.getLength());
                     //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
                     Log.d("Received text", Response);
-                    //AppConstants.WriteinFile(TAG + " Link 6: Received text: " + Response);
+                    //AppConstants.writeInFile(TAG + " Link 6: Received text: " + Response);
                     //run = false;
 
-                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
-                        BTConstants.isNewVersionLinkSix = true;
+                    if (strcmd.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("records")) {
+                        BTConstants.IS_NEW_VERSION_LINK_SIX = true;
                     }
 
                     if (Response.contains("$$")) {
@@ -67,7 +67,7 @@ public class ClientSendAndListenUDPSix implements Runnable {
                         sendBroadcastIntentFromLinkSix(sb6.toString());
                         sb6.setLength(0);
                     } else {
-                        if (BTConstants.isNewVersionLinkSix) {
+                        if (BTConstants.IS_NEW_VERSION_LINK_SIX) {
                             sb6.append(Response);
                         } else {
                             // For old version Link response
@@ -90,7 +90,7 @@ public class ClientSendAndListenUDPSix implements Runnable {
     }
 
     public void sendBroadcastIntentFromLinkSix(String resp) {
-        //AppConstants.WriteinFile(TAG + " Link 6: Final Response: " + resp);
+        //AppConstants.writeInFile(TAG + " Link 6: Final Response: " + resp);
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkSixData");
         broadcastIntent.putExtra("Request", strcmd);

@@ -41,7 +41,7 @@ public class BatteryBackgroundService extends Service {
 
             System.out.println(String.valueOf(level) + "%");
 
-            if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_1STATUS.equalsIgnoreCase(Constants.FS_2STATUS) && Constants.FS_3STATUS.equalsIgnoreCase(Constants.FS_4STATUS)) {
+            if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && Constants.FS_6_STATUS.equalsIgnoreCase("FREE")) {
                 if (level < BATTERY_LEVEL_THRESHOLD) {
 
                     System.out.println("BatteryReceiver :: " + String.valueOf(level) + "%");
@@ -57,7 +57,7 @@ public class BatteryBackgroundService extends Service {
             }
 
         } catch (Exception e) {
-            AppConstants.WriteinFile("BatteryBackgroundService- " + e.getMessage());
+            AppConstants.writeInFile("BatteryBackgroundService- " + e.getMessage());
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -126,7 +126,7 @@ public class BatteryBackgroundService extends Service {
 
 
                 Request request = new Request.Builder()
-                        .url(AppConstants.webURL)
+                        .url(AppConstants.WEB_URL)
                         .addHeader("Authorization", authString)
                         .addHeader("ReqType", "battery")
                         .build();
@@ -138,8 +138,8 @@ public class BatteryBackgroundService extends Service {
             } catch (Exception e) {
 
                 System.out.println("Ex" + e.getMessage());
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "  CallSureMDMRebootDevice  --Exception " + e);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "  CallSureMDMRebootDevice  --Exception " + e);
             }
 
             return resp;
@@ -154,8 +154,8 @@ public class BatteryBackgroundService extends Service {
             if (result.toLowerCase().contains("success"))
                 setSharedPrefBatteryDate(classContext, "go");
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "  CallSureMDMRebootDevice onPostExecute " + result);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "  CallSureMDMRebootDevice onPostExecute " + result);
 
 
         }

@@ -49,11 +49,11 @@ public class ClientSendAndListenUDPFive implements Runnable {
                     String Response = new String(message, 0, p.getLength());
                     //SpannableStringBuilder spn = new SpannableStringBuilder(Response + '\n');
                     Log.d("Received text", Response);
-                    //AppConstants.WriteinFile(TAG + " Link 5: Received text: " + Response);
+                    //AppConstants.writeInFile(TAG + " Link 5: Received text: " + Response);
                     //run = false;
 
-                    if (strcmd.equalsIgnoreCase(BTConstants.info_cmd) && Response.contains("records")) {
-                        BTConstants.isNewVersionLinkFive = true;
+                    if (strcmd.equalsIgnoreCase(BTConstants.INFO_COMMAND) && Response.contains("records")) {
+                        BTConstants.IS_NEW_VERSION_LINK_FIVE = true;
                     }
 
                     if (Response.contains("$$")) {
@@ -67,7 +67,7 @@ public class ClientSendAndListenUDPFive implements Runnable {
                         sendBroadcastIntentFromLinkFive(sb5.toString());
                         sb5.setLength(0);
                     } else {
-                        if (BTConstants.isNewVersionLinkFive) {
+                        if (BTConstants.IS_NEW_VERSION_LINK_FIVE) {
                             sb5.append(Response);
                         } else {
                             // For old version Link response
@@ -90,7 +90,7 @@ public class ClientSendAndListenUDPFive implements Runnable {
     }
 
     public void sendBroadcastIntentFromLinkFive(String resp) {
-        //AppConstants.WriteinFile(TAG + " Link 5: Final Response: " + resp);
+        //AppConstants.writeInFile(TAG + " Link 5: Final Response: " + resp);
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("BroadcastBlueLinkFiveData");
         broadcastIntent.putExtra("Request", strcmd);

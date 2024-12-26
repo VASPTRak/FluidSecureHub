@@ -143,7 +143,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
     String printReceipt = "", IsFuelingStop = "0", IsLastTransaction = "0";
     DBController controller = new DBController(BackgroundService_FS_UNIT_3.this);
-    OffDBController offcontroller = new OffDBController(BackgroundService_FS_UNIT_3.this);
+    OffDBController offController = new OffDBController(BackgroundService_FS_UNIT_3.this);
 
     @Nullable
     @Override
@@ -158,23 +158,23 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             super.onStart(intent, startId);
 
             try {
-                if (AppConstants.DetailsServerSSIDList != null) {
-                    if (AppConstants.DetailsServerSSIDList.size() > 2) {
-                        LinkName = AppConstants.DetailsServerSSIDList.get(2).get("WifiSSId");
+                if (AppConstants.DETAILS_SERVER_SSID_LIST != null) {
+                    if (AppConstants.DETAILS_SERVER_SSID_LIST.size() > 2) {
+                        LinkName = AppConstants.DETAILS_SERVER_SSID_LIST.get(2).get("WifiSSId");
                     }
                 }
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "Something went wrong. please check Link name. Ex:" + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "Something went wrong. please check Link name. Ex:" + e.getMessage());
             }
 
             Bundle extras = intent.getExtras();
             if (extras == null) {
                 Log.d("Service", "null");
-                if (Constants.BusyVehicleNumberList != null) {
-                    Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+                if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                    Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
                 }
-                StopTransaction(false, true); // extras == null
+                stopTransaction(false, true); // extras == null
             } else {
                 stopTimer = true;
                 AttemptCount = 0;
@@ -212,25 +212,25 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 jsonRelayOn = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":1}}";
                 jsonRelayOff = "{\"relay_request\":{\"Password\":\"12345678\",\"Status\":0}}";
 
-                jsonRename = "{\"Request\":{\"Softap\":{\"Connect_Softap\":{\"authmode\":\"WPAPSK/WPA2PSK\",\"channel\":6,\"ssid\":\"" + AppConstants.REPLACEBLE_WIFI_NAME_FS3 + "\",\"password\":\"123456789\"}}}}";
+                jsonRename = "{\"Request\":{\"Softap\":{\"Connect_Softap\":{\"authmode\":\"WPAPSK/WPA2PSK\",\"channel\":6,\"ssid\":\"" + AppConstants.REPLACEABLE_WIFI_NAME_FS3 + "\",\"password\":\"123456789\"}}}}";
 
-                Constants.FS_3STATUS = "BUSY";
-                AppConstants.isHTTPTxnRunningFS3 = true;
+                Constants.FS_3_STATUS = "BUSY";
+                AppConstants.IS_HTTP_TXN_RUNNING_FS3 = true;
 
-                Constants.BusyVehicleNumberList.add(Constants.AccVehicleNumber_FS3);
+                Constants.BUSY_VEHICLE_NUMBER_LIST.add(Constants.VEHICLE_NUMBER_FS3);
 
                 if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS) {
                     CurrTxnMode = "online";
                 } else {
                     if (AppConstants.AUTH_CALL_SUCCESS) {
-                        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+                        SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
                         TransactionId = sharedPref.getString("TransactionId_FS3", "");
                         OffLastTXNid = TransactionId;//Set transaction id to offline
                     }
                     CurrTxnMode = "offline";
                 }
 
-                SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
                 TransactionId = sharedPref.getString("TransactionId_FS3", "");
                 VehicleId = sharedPref.getString("VehicleId_FS3", "");
                 PhoneNumber = sharedPref.getString("PhoneNumber_FS3", "");
@@ -254,8 +254,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Sending SET_TXNID command to Link: " + LinkName);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Sending SET_TXNID command to Link: " + LinkName);
                             new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + TransactionId + "}", "");
                         }
                     }, 1000);
@@ -269,11 +269,11 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                     imap.put("authString", authString);
 
                     sqliteID = controller.insertTransactions(imap);
-                    CommonUtils.AddRemovecurrentTransactionList(true, TransactionId);//Add transaction Id to list
+                    CommonUtils.addRemoveCurrentTransactionList(true, TransactionId);//Add transaction Id to list
                     //////////////////////////////////////////////////////////////
 
                     //UpgradeTransaction Status initial in background service
-                    CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_FS_UNIT_3.this);
+                    CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_FS_UNIT_3.this);
 
                     minFuelLimit = Double.parseDouble(MinLimit);
 
@@ -281,7 +281,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                     stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
-                    if (AppConstants.EnableFA) {
+                    if (AppConstants.ENABLE_FA) {
                         stopAutoFuelSeconds = stopAutoFuelSeconds * 3;
                     }
                 } else {
@@ -290,13 +290,13 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             }
             quantityRecords.clear();
         } catch (NullPointerException e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "onStartCommand Exception " + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "onStartCommand Exception " + e);
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
 
-        AppConstants.isRelayON_fs3 = false;
+        AppConstants.IS_RELAY_ON_FS3 = false;
         if (numPulseRatio <= 0) {
             ExitServicePulsarRatioZero();
         } else {
@@ -312,14 +312,14 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                             String relay_status1 = null;
                             relay_status1 = jsonObject.getString("relay_response");
                             if (relay_status1.equalsIgnoreCase("{\"status\":1}")) {
-                                AppConstants.isRelayON_fs3 = true;
+                                AppConstants.IS_RELAY_ON_FS3 = true;
                                 startQuantityInterval();
                             } else {
                                 ExitBackgroundService();
                             }
                         } catch (JSONException e) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "RelayOnCheck Exception: " + e.getMessage());
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "RelayOnCheck Exception: " + e.getMessage());
                         }
                     } else {
                         ExitBackgroundService();
@@ -334,26 +334,26 @@ public class BackgroundService_FS_UNIT_3 extends Service {
     }
 
     private void ExitBackgroundService() {
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Relay status error");
-        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "Relay status error");
+        CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
         relayOffCommand();
-        ProceedToPostTransactionCommands(); //Failed to turn ON the relay
+        proceedToPostTransactionCommands(); //Failed to turn ON the relay
     }
 
     private void ExitServicePulsarRatioZero() {
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "pulser ratio error>>" + numPulseRatio);
-        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "pulser ratio error>>" + numPulseRatio);
+        CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
         relayOffCommand();
-        ProceedToPostTransactionCommands(); // Pulsar Ratio Zero
+        proceedToPostTransactionCommands(); // Pulsar Ratio Zero
     }
 
     private String RelayOnThreeAttempts() {
         String IsRelayOn = "";
         try {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 1)");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 1)");
             IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn, "").get(); //Relay ON First Attempt
 
             if (IsRelayOn != null && !IsRelayOn.equalsIgnoreCase("")) {
@@ -363,8 +363,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 if (!relay_status1.equalsIgnoreCase("{\"status\":1}")) {
 
                     Thread.sleep(1000);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 2)");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 2)");
                     IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn, "").get(); //Relay ON Second attempt
 
                     JSONObject jsonObjectSite = new JSONObject(IsRelayOn);
@@ -373,15 +373,15 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                     if (!relay_status2.equalsIgnoreCase("{\"status\":1}")) {
 
                         Thread.sleep(1000);
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 3)");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Sending RELAY ON command to Link: " + LinkName + " (Attempt 3)");
                         IsRelayOn = new CommandsPOST().execute(URL_RELAY, jsonRelayOn, "").get(); //Relay ON Third attempt
                     }
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "RelayOnThreeAttempts. --Exception " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "RelayOnThreeAttempts. --Exception " + e.getMessage());
         }
         return IsRelayOn;
     }
@@ -431,14 +431,14 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             } catch (SocketException se) {
                 StoreLinkDisconnectInfo(se);
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<CommandsPOST URL: " + param[0] + ">");
-                StopTransaction(true, true); //CommandsPOST - SocketException
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<CommandsPOST URL: " + param[0] + ">");
+                stopTransaction(true, true); //CommandsPOST - SocketException
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "<CommandsPOST URL: " + param[0] + ">");
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CommandsPOST InBackground Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<CommandsPOST URL: " + param[0] + ">");
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CommandsPOST InBackground Exception " + e.getMessage());
             }
             return resp;
         }
@@ -451,12 +451,12 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                     CommonUtils.sharedPrefTxtnInterrupted(BackgroundService_FS_UNIT_3.this, TransactionId, false);
 
                 } else if (calledFrom.equalsIgnoreCase("sampling_time")) {
-                    UpdateSwitchTimeBounceForLink();
-                    CloseTransaction(true);
+                    updateSwitchTimeBounceForLink();
+                    closeTransaction(true);
                 }
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CommandsPOST onPostExecute Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CommandsPOST onPostExecute Exception " + e.getMessage());
             }
         }
     }
@@ -478,8 +478,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             } catch (SocketException se){
                 StoreLinkDisconnectInfo(se);
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CommandsGET InBackground Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CommandsGET InBackground Exception " + e.getMessage());
             }
             return resp;
         }
@@ -489,8 +489,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             try {
                 System.out.println("APFS_3 OUTPUT" + result);
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CommandsGET onPostExecute Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CommandsGET onPostExecute Exception " + e.getMessage());
             }
         }
     }
@@ -516,10 +516,10 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                             if (AttemptCount > 2) {
                                 //FS Link DisConnected
                                 System.out.println("FS Link not connected" + listOfConnectedIP);
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Link not connected");
-                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
-                                StopTransaction(true, true); //Link not connected
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "Link not connected");
+                                CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "6", BackgroundService_FS_UNIT_3.this);
+                                stopTransaction(true, true); //Link not connected
                             } else {
                                 getIpOverOSVersion();
 
@@ -530,8 +530,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                         }
                     }
                 } catch (Exception e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "startQuantityInterval Exception: " + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "startQuantityInterval Exception: " + e.getMessage());
                 }
             }
         };
@@ -573,19 +573,19 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                     Log.e(TAG, "error in getting response using async okhttp call");
                     GetPulsarAttemptFailCount++;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "GETPulsarQuantity onFailure Exception: " + e.toString());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "GETPulsarQuantity onFailure Exception: " + e.toString());
                 }
                 if (GetPulsarAttemptFailCount == 3) {
                     if (Pulses > 0 || fillqty > 0) {
                         if (CurrTxnMode.equalsIgnoreCase("online")) {
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_FS_UNIT_3.this);
+                            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_FS_UNIT_3.this);
                         } else {
-                            offcontroller.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                            offController.updateOfflineTransactionStatus(sqlite_id + "", "10");
                         }
                     }
                     relayOffCommand();
-                    ProceedToPostTransactionCommands(); //GetPulsar Attempt Failed
+                    proceedToPostTransactionCommands(); //GetPulsar Attempt Failed
                 }
             }
 
@@ -618,8 +618,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                                 pulsarQtyLogic(result);
                         }
                     } catch (Exception e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "GETPulsarQuantity onPostExecute Exception " + e.getMessage());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "GETPulsarQuantity onPostExecute Exception " + e.getMessage());
                     }
                 }
                 responseBody.close();
@@ -643,19 +643,19 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 } else if (pulsar_status.trim().equalsIgnoreCase("0")) {
                     pulsarConnected = false;
 
-                    if (Constants.BusyVehicleNumberList != null) {
-                        Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+                    if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                        Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
                     }
 
                     IsFuelingStop = "1";
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Link:" + LinkName + "; Pulsar status: " + pulsar_status); // some txns stopped unexpectedly, so added log here.
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Link:" + LinkName + "; Pulsar status: " + pulsar_status); // some txns stopped unexpectedly, so added log here.
 
                     if (GetPulsarAttemptFailCount > 0) {
                         if (CurrTxnMode.equalsIgnoreCase("online")) {
-                            CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_FS_UNIT_3.this);
+                            CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "10", BackgroundService_FS_UNIT_3.this);
                         } else {
-                            offcontroller.updateOfflineTransactionStatus(sqlite_id + "", "10");
+                            offController.updateOfflineTransactionStatus(sqlite_id + "", "10");
                         }
                     }
 
@@ -670,7 +670,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 if (CNT_current > 0 && ongoingStatusSend) {
                     ongoingStatusSend = false;
                     if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                        CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_FS_UNIT_3.this);
+                        CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "8", BackgroundService_FS_UNIT_3.this);
                 }
 
                 if (CNT_LAST > 0 && CNT_current == 0) {
@@ -682,8 +682,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                     convertCountToQuantity(counts);
                 } else {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "pulsarQtyLogic: Count from the link: " + counts + "; Last count: " + CNT_LAST);
 
                     if (CNT_LAST > 0 && CNT_current > 0 && CNT_LAST > CNT_current) {
                         CNT_current = CNT_LAST + CNT_current;
@@ -693,8 +693,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                 if (countForZeroPulses > 2) {
                     countForZeroPulses = 0;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "<Auto Stop Hit (ZeroPulses).>");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "<Auto Stop Hit (ZeroPulses).>");
                     stopTimer = false;
                     stopButtonFunctionality(); //Auto Stop Hit (ZeroPulses)
                     return;
@@ -727,14 +727,14 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                         //linearTimer.setVisibility(View.GONE);
                         //tvCountDownTimer.setText("1");
 
-                        if (Constants.BusyVehicleNumberList != null) {
-                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+                        if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                            Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
                         }
 
                         IsFuelingStop = "1";
                         System.out.println("Auto Stop! Count down timer completed");
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Link:" + LinkName + " Auto Stop! Count down timer completed");
                         //AppConstants.colorToastBigFont(BackgroundService_FS_UNIT_3.this, AppConstants.FS3_CONNECTED_SSID + " Auto Stop!\n\nCount down timer completed.", Color.BLUE);
                         stopButtonFunctionality(); //Auto Stop Hit (secure_status >= 5)
                     }
@@ -758,37 +758,37 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 try {
                     if (minFuelLimit > 0) {
                         if (fillqty >= minFuelLimit) {
-                            if (Constants.BusyVehicleNumberList != null) {
-                                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+                            if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                                Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
                             }
                             IsFuelingStop = "1";
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "Link: " + LinkName + "; Auto Stop! You reached MAX fuel limit.");
-                            AppConstants.DisplayToastmaxlimit = true;
-                            AppConstants.MaxlimitMessage = LimitReachedMessage;
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "Link: " + LinkName + "; Auto Stop! You reached MAX fuel limit.");
+                            AppConstants.DISPLAY_TOAST_MAX_LIMIT = true;
+                            AppConstants.MAX_LIMIT_MESSAGE = LimitReachedMessage;
                             stopButtonFunctionality(); //Auto Stop! MAX fuel limit reached.
                         }
                     } else if (minFuelLimit == -1) {
-                        if (Constants.BusyVehicleNumberList != null) {
-                            Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+                        if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                            Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
                         }
                         IsFuelingStop = "1";
                         System.out.println("Auto Stop! You reached MAX fuel limit.");
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop! You reached MAX fuel limit.");
-                        AppConstants.DisplayToastmaxlimit = true;
-                        AppConstants.MaxlimitMessage = LimitReachedMessage;
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "Link:" + LinkName + " Auto Stop! You reached MAX fuel limit.");
+                        AppConstants.DISPLAY_TOAST_MAX_LIMIT = true;
+                        AppConstants.MAX_LIMIT_MESSAGE = LimitReachedMessage;
                         stopButtonFunctionality(); //Auto Stop! minFuelLimit = -1
                     }
                 } catch (Exception e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "quantity reach max limit1 Exception " + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "quantity reach max limit1 Exception " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             System.out.println(e);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "quantity reach max limit2 Exception " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "quantity reach max limit2 Exception " + e.getMessage());
         }
     }
 
@@ -835,8 +835,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                                         convertCountToQuantity(counts);
                                     } else {
-                                        if (AppConstants.GenerateLogs)
-                                            AppConstants.WriteinFile(TAG + "<Count from the link: " + counts + ">");
+                                        if (AppConstants.GENERATE_LOGS)
+                                            AppConstants.writeInFile(TAG + "<Count from the link: " + counts + ">");
                                     }
 
                                     /*if (i == 0)
@@ -867,8 +867,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                                 }
                             }
                         } catch (Exception e) {
-                            if (AppConstants.GenerateLogs)
-                                AppConstants.WriteinFile(TAG + "stopButtonFunctionality Exception: " + e.getMessage());
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "stopButtonFunctionality Exception: " + e.getMessage());
                         }
                     }
                 }, 1000);
@@ -880,10 +880,10 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (AppConstants.NeedToRenameFS3) {
+                if (AppConstants.NEED_TO_RENAME_FS3) {
                     consoleString += "RENAME:\n" + jsonRename;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Sending RENAME command to Link: " + LinkName + " (New Name: " + AppConstants.REPLACEBLE_WIFI_NAME_FS3 + ")");
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Sending RENAME command to Link: " + LinkName + " (New Name: " + AppConstants.REPLACEABLE_WIFI_NAME_FS3 + ")");
                     new CommandsPOST().execute(URL_WIFI, jsonRename, "");
                 }
             }
@@ -891,16 +891,16 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
         long secondsTime = 500; //3000
 
-        if (AppConstants.NeedToRenameFS3) {
+        if (AppConstants.NEED_TO_RENAME_FS3) {
             secondsTime = 2000; //5000
         }
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                GetDetails();
-                TransactionCompleteFunction();
-                ProceedToPostTransactionCommands(); //finalLastStep
+                getDetails();
+                transactionCompleteFunction();
+                proceedToPostTransactionCommands(); //finalLastStep
             }
         }, secondsTime);
     }
@@ -920,8 +920,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "GETFINALPulsar InBackground Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "GETFINALPulsar InBackground Exception " + e.getMessage());
             }
             return resp;
         }
@@ -932,8 +932,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 consoleString += "OUTPUT- " + result + "\n";
                 // tvConsole.setText(consoleString);
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "GETFINALPulsar onPostExecute Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "GETFINALPulsar onPostExecute Exception " + e.getMessage());
                 System.out.println(e);
             }
         }
@@ -955,12 +955,12 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                         if (seconds >= pont) {
                             //Timed out (Start was pressed, and pump on timer hit): Pump Time On limit reached* = 4
                             if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-                                CommonUtils.UpgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_FS_UNIT_3.this);
+                                CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "4", BackgroundService_FS_UNIT_3.this);
                             commonForAutoStopQtySameForSeconds();
                         }
                     } catch (Exception e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "secondsTimeLogic Exception: " + e.getMessage() + "; LinkName: " + LinkName + "; PumpOnTime: " + PumpOnTime);
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "secondsTimeLogic Exception: " + e.getMessage() + "; LinkName: " + LinkName + "; PumpOnTime: " + PumpOnTime);
                     }
                 } else {
                     if (stopAutoFuelSeconds > 0) {
@@ -968,10 +968,10 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                             if (qtyFrequencyCount()) {
                                 //qty is same for some time
                                 IsFuelingStop = "1";
-                                if (AppConstants.GenerateLogs)
-                                    AppConstants.WriteinFile(TAG + "Link:" + LinkName + " Auto Stop!Quantity is same for last");
-                                if (Constants.BusyVehicleNumberList != null) {
-                                    Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "Link:" + LinkName + " Auto Stop!Quantity is same for last");
+                                if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                                    Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
                                 }
                                 stopButtonFunctionality(); //Auto Stop! Same quantity (Pulses > 0)
                             } else {
@@ -985,18 +985,18 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "secondsTimeLogic Exception " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "secondsTimeLogic Exception " + e.getMessage());
         }
     }
 
     public void commonForAutoStopQtySameForSeconds() {
         if (qtyFrequencyCount()) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " Link:" + LinkName + " >>Auto Stop!Quantity is same for last");
             IsFuelingStop = "1";
-            if (Constants.BusyVehicleNumberList != null) {
-                Constants.BusyVehicleNumberList.remove(Constants.AccVehicleNumber_FS3);
+            if (Constants.BUSY_VEHICLE_NUMBER_LIST != null) {
+                Constants.BUSY_VEHICLE_NUMBER_LIST.remove(Constants.VEHICLE_NUMBER_FS3);
             }
             stopButtonFunctionality();  //Auto Stop! Quantity is same
         } else {
@@ -1034,8 +1034,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         fillqty = AppConstants.roundNumber(fillqty, 2);
 
         DecimalFormat precision = new DecimalFormat("0.00");
-        Constants.FS_3Gallons = (precision.format(fillqty));
-        Constants.FS_3Pulse = outputQuantity;
+        Constants.FS_3_GALLONS = (precision.format(fillqty));
+        Constants.FS_3_PULSE = outputQuantity;
 
         if (CurrTxnMode.equalsIgnoreCase("online")) {
 
@@ -1051,8 +1051,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             Gson gson = new Gson();
             String jsonData = gson.toJson(authEntityClass);
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + fillqty);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "ID:" + TransactionId + "; LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + fillqty);
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceHTTP(BackgroundService_FS_UNIT_3.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_FS_UNIT_3.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
@@ -1071,20 +1071,20 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             }
         } else {
             if (Pulses > 0 || fillqty > 0) {
-                offcontroller.updateOfflinePulsesQuantity(sqlite_id + "", counts, fillqty + "", OffLastTXNid);
+                offController.updateOfflinePulsesQuantity(sqlite_id + "", counts, fillqty + "", OffLastTXNid);
             }
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Offline LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + fillqty);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Offline LINK:" + LinkName + "; Pulses:" + Integer.parseInt(counts) + "; Qty:" + fillqty);
         }
     }
 
-    public void GetDetails() {
-        vehicleNumber = Constants.AccVehicleNumber_FS3;
-        odometerTenths = Constants.AccOdoMeter_FS3 + "";
-        dNumber = Constants.AccDepartmentNumber_FS3;
-        pNumber = Constants.AccPersonnelPIN_FS3;
-        oText = Constants.AccOther_FS3;
-        hNumber = Constants.AccHours_FS3 + "";
+    public void getDetails() {
+        vehicleNumber = Constants.VEHICLE_NUMBER_FS3;
+        odometerTenths = Constants.ODO_METER_FS3 + "";
+        dNumber = Constants.DEPARTMENT_NUMBER_FS3;
+        pNumber = Constants.PERSONNEL_PIN_FS3;
+        oText = Constants.OTHER_FS3;
+        hNumber = Constants.HOURS_FS3 + "";
 
         if (dNumber == null) {
             dNumber = "";
@@ -1099,13 +1099,13 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         }
     }
 
-    public void TransactionCompleteFunction() {
+    public void transactionCompleteFunction() {
         try {
             SharedPreferences sharedPrefODO = this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-            IsOtherRequire = sharedPrefODO.getString(AppConstants.IsOtherRequire, "");
-            OtherLabel = sharedPrefODO.getString(AppConstants.OtherLabel, "Other");
+            IsOtherRequire = sharedPrefODO.getString(AppConstants.IS_OTHER_REQUIRE, "");
+            OtherLabel = sharedPrefODO.getString(AppConstants.OTHER_LABEL, "Other");
 
-            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
             TransactionId = sharedPref.getString("TransactionId_FS3", "");
             VehicleId = sharedPref.getString("VehicleId_FS3", "");
             PhoneNumber = sharedPref.getString("PhoneNumber_FS3", "");
@@ -1127,11 +1127,11 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             _OdoMeter = sharedPref.getString("OdoMeter_FS3", "");
             _Hours = sharedPref.getString("Hours_FS3", "");
 
-            EntityOffTranz tzc = offcontroller.getTransactionDetailsBySqliteId(sqlite_id);
+            EntityOffTranz tzc = offController.getTransactionDetailsBySqliteId(sqlite_id);
             String siteid = tzc.SiteId;
             String IsTLDCallOffline = null;
             if (siteid != null && !siteid.equalsIgnoreCase("")) {
-                HashMap<String, String> linkmap = offcontroller.getLinksDetailsBySiteId(siteid);
+                HashMap<String, String> linkmap = offController.getLinksDetailsBySiteId(siteid);
                 IsTLDCallOffline = linkmap.get("IsTLDCall");
             }
 
@@ -1172,31 +1172,31 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                 consoleString = "";
 
-                if (AppConstants.NeedToRenameFS3) {
+                if (AppConstants.NEED_TO_RENAME_FS3) {
                     String userEmail = CommonUtils.getCustomerDetails_backgroundServiceHTTP(BackgroundService_FS_UNIT_3.this).PersonEmail;
 
                     String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(this) + ":" + userEmail + ":" + "SetHoseNameReplacedFlag" + AppConstants.LANG_PARAM);
 
                     RenameHose rhose = new RenameHose();
-                    rhose.SiteId = AppConstants.UP_SiteId_fs3;//AppConstants.R_SITE_ID;
-                    rhose.HoseId = AppConstants.UP_HoseId_fs3;//AppConstants.R_HOSE_ID;
+                    rhose.SiteId = AppConstants.UP_SITE_ID_FS3;//AppConstants.R_SITE_ID;
+                    rhose.HoseId = AppConstants.UP_HOSE_ID_FS3;//AppConstants.R_HOSE_ID;
                     rhose.IsHoseNameReplaced = "Y";
 
                     Gson gson = new Gson();
                     String jsonData = gson.toJson(rhose);
 
-                    storeIsRenameFlag(this, AppConstants.NeedToRenameFS3, jsonData, authString);
+                    storeIsRenameFlag(this, AppConstants.NEED_TO_RENAME_FS3, jsonData, authString);
                 }
             }
             ///////////////////////////////////
             AppConstants.BUSY_STATUS = true;
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "TransactionCompleteFunction Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "transactionCompleteFunction Exception: " + e.getMessage());
         }
     }
 
-    private void PostTransactionBackgroundTasks(boolean isTransactionCompleted) {
+    private void postTransactionBackgroundTasks(boolean isTransactionCompleted) {
         try {
             if (CurrTxnMode.equalsIgnoreCase("online")) {
                 //boolean BSRunning = CommonUtils.checkServiceRunning(BackgroundService_FS_UNIT_3.this, AppConstants.PACKAGE_BACKGROUND_SERVICE);
@@ -1210,11 +1210,11 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
             if (!isTransactionCompleted) {
                 if (OfflineConstants.isOfflineAccess(BackgroundService_FS_UNIT_3.this))
-                    SyncOfflineData();
+                    syncOfflineData();
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "PostTransactionBackgroundTasks Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "postTransactionBackgroundTasks Exception: " + e.getMessage());
         }
     }
 
@@ -1228,15 +1228,15 @@ public class BackgroundService_FS_UNIT_3 extends Service {
         String Tem_data = "";
 
         try {
-            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VehiFuel, Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = this.getSharedPreferences(Constants.PREF_VEHI_FUEL, Context.MODE_PRIVATE);
             TransactionId = sharedPref.getString("TransactionId_FS3", "");
 
             ServerDate = sharedPref.getString("ServerDate_FS3", "");
             PrintDate = sharedPref.getString("PrintDate_FS3", "");
 
             //Get TankMonitoring details from FluidSecure Link
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Sending TLD_INFO command to Link: " + LinkName);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Sending TLD_INFO command to Link: " + LinkName);
             String response1 = new CommandsGET().execute(URL_TDL_info).get();
 
             if (response1.equalsIgnoreCase("")) {
@@ -1255,8 +1255,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                     Tem_data = tld.getString("Tem_data");
                     String Checksum = tld.getString("Checksum");
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "TLD Reading:" + " Mac Address:" + mac_address + " Sensor ID:" + Sensor_ID + " Response code:" + Response_code + " LSB:" + LSB + " MSB:" + MSB + " Temperature data:" + Tem_data + " Checksum:" + Checksum);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "TLD Reading:" + " Mac Address:" + mac_address + " Sensor ID:" + Sensor_ID + " Response code:" + Response_code + " LSB:" + LSB + " MSB:" + MSB + " Temperature data:" + Tem_data + " Checksum:" + Checksum);
 
                     //Get mac address of probe
                     //String mac_str = GetMacAddressOfProbe(level);
@@ -1267,8 +1267,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                     //probe_temperature = CalculateTemperature(Tem_data);
                 } catch (JSONException e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "TankMonitorReading ~~~JSONException~~" + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "TankMonitorReading ~~~JSONException~~" + e.getMessage());
                 }
                 //-----------------------------------------------------------
                 String CurrentDeviceDate = CommonUtils.getTodaysDateInString();
@@ -1292,15 +1292,15 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
                     String serverRes = TestAsynTask.response;
 
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + " TankMonitorReading ~~~serverRes~~" + serverRes);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + " TankMonitorReading ~~~serverRes~~" + serverRes);
                 } else {
-                    offcontroller.insertTLDReadings(mac_address, "", AppConstants.SITE_ID, "", AppConstants.getIMEI(BackgroundService_FS_UNIT_3.this), LSB, MSB, Tem_data, CurrentDeviceDate, Response_code, "n");
+                    offController.insertTLDReadings(mac_address, "", AppConstants.SITE_ID, "", AppConstants.getIMEI(BackgroundService_FS_UNIT_3.this), LSB, MSB, Tem_data, CurrentDeviceDate, Response_code, "n");
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "TankMonitorReading ~~~Exception~~" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "TankMonitorReading ~~~Exception~~" + e.getMessage());
         }
     }
 
@@ -1322,13 +1322,13 @@ public class BackgroundService_FS_UNIT_3 extends Service {
 
     public void clearEditTextFields() {
         CNT_LAST = 0;
-        Constants.AccVehicleNumber_FS3 = "";
-        Constants.AccOdoMeter_FS3 = 0;
-        Constants.AccDepartmentNumber_FS3 = "";
-        Constants.AccPersonnelPIN_FS3 = "";
-        Constants.AccOther_FS3 = "";
-        Constants.AccVehicleOther_FS3 = "";
-        Constants.AccHours_FS3 = 0;
+        Constants.VEHICLE_NUMBER_FS3 = "";
+        Constants.ODO_METER_FS3 = 0;
+        Constants.DEPARTMENT_NUMBER_FS3 = "";
+        Constants.PERSONNEL_PIN_FS3 = "";
+        Constants.OTHER_FS3 = "";
+        Constants.VEHICLE_OTHER_FS3 = "";
+        Constants.HOURS_FS3 = 0;
     }
 
     public boolean getPulsarResponseEmptyFor3times() {
@@ -1389,7 +1389,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 System.out.println("jsonDatajsonDatajsonData" + jsonData);
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(vrentity.IMEI_UDID + ":" + userEmail + ":" + "SaveTankMonitorReading" + AppConstants.LANG_PARAM);
-                response = serverHandler.PostTextData(BackgroundService_FS_UNIT_3.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(BackgroundService_FS_UNIT_3.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
 
             } catch (Exception ex) {
@@ -1410,8 +1410,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             }
             System.out.println("MacAddress of probe: " + MacAddress);
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + " GetMacAddressOfProbe ~~~Exception~~" + e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " GetMacAddressOfProbe ~~~Exception~~" + e);
         }
         return MacAddress;
     }
@@ -1445,8 +1445,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             int finalpd = CommonUtils.hex2decimal(Combine_hex);
             prove = finalpd / 128;
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "GetProbeReading ~~~Exception~~" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "GetProbeReading ~~~Exception~~" + e.getMessage());
         }
         return String.valueOf(prove);
     }
@@ -1498,8 +1498,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 }
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "ListConnectedHotspotIPOS10_AsyncCall ~~Exception~~" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "ListConnectedHotspotIPOS10_AsyncCall ~~Exception~~" + e.getMessage());
         }
     }
 
@@ -1535,14 +1535,14 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                         }
                     }
                 } catch (Exception e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "ListConnectedHotspotIP_AsyncCall ~~Exception~~" + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "ListConnectedHotspotIP_AsyncCall ~~Exception~~" + e.getMessage());
                 } finally {
                     try {
                         br.close();
                     } catch (IOException e) {
-                        if (AppConstants.GenerateLogs)
-                            AppConstants.WriteinFile(TAG + "ListConnectedHotspotIP_AsyncCall (final) ~~Exception~~" + e.getMessage());
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile(TAG + "ListConnectedHotspotIP_AsyncCall (final) ~~Exception~~" + e.getMessage());
                     }
                 }
             }
@@ -1551,47 +1551,47 @@ public class BackgroundService_FS_UNIT_3 extends Service {
     }
 
     private void relayOffCommand() {
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "Sending RELAY OFF command to Link: " + LinkName);
         new CommandsPOST().execute(URL_RELAY, jsonRelayOff, "");
     }
 
-    public void ProceedToPostTransactionCommands() {
+    public void proceedToPostTransactionCommands() {
         // Free the link and continue to post transaction commands
-        StopTransaction(true, false); // Free the link
+        stopTransaction(true, false); // Free the link
         GetLastTransaction();
     }
 
-    private void StopTransaction(boolean startBackgroundServices, boolean isTransactionCompleted) {
-        AppConstants.IsTransactionCompleted3 = false;
-        CommonUtils.AddRemovecurrentTransactionList(false, TransactionId);//Remove transaction Id from list
+    private void stopTransaction(boolean startBackgroundServices, boolean isTransactionCompleted) {
+        AppConstants.IS_TRANSACTION_COMPLETED_3 = false;
+        CommonUtils.addRemoveCurrentTransactionList(false, TransactionId);//Remove transaction Id from list
         IsFuelingStop = "1";
         stopTimer = false;
-        CancelTimer();
-        Constants.FS_3STATUS = "FREE";
-        Constants.FS_3Pulse = "00";
+        cancelTimer();
+        Constants.FS_3_STATUS = "FREE";
+        Constants.FS_3_PULSE = "00";
         IsAnyPostTxnCommandExecuted = true;
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Transaction stopped.");
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "Transaction stopped.");
         if (isTransactionCompleted) {
-            CloseTransaction(startBackgroundServices);
+            closeTransaction(startBackgroundServices);
         } else {
-            PostTransactionBackgroundTasks(false);
+            postTransactionBackgroundTasks(false);
         }
     }
 
-    private void CloseTransaction(boolean startBackgroundServices) {
+    private void closeTransaction(boolean startBackgroundServices) {
         clearEditTextFields();
-        AppConstants.IsTransactionCompleted3 = true;
-        if (AppConstants.GenerateLogs)
-            AppConstants.WriteinFile(TAG + "Transaction Completed. \n==============================================================================");
+        AppConstants.IS_TRANSACTION_COMPLETED_3 = true;
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + "Transaction Completed. \n==============================================================================");
         if (startBackgroundServices) {
-            PostTransactionBackgroundTasks(true);
+            postTransactionBackgroundTasks(true);
         }
         this.stopSelf();
     }
 
-    private void CancelTimer() {
+    private void cancelTimer() {
         try {
             for (int i = 0; i < TimerList.size(); i++) {
                 TimerList.get(i).cancel();
@@ -1618,31 +1618,31 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                     System.out.println("curr_date" + curr_date);
 
                     OffLastTXNid = "99999999";//+sqlite_id+curr_date;
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Sending SET_TXNID (offline) command to Link: " + LinkName);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Sending SET_TXNID (offline) command to Link: " + LinkName);
                     new CommandsPOST().execute(URL_SET_TXNID, "{\"txtnid\":" + OffLastTXNid + "}", "");
                 }
             }, 1000);
 
-            EntityOffTranz tzc = offcontroller.getTransactionDetailsBySqliteId(sqlite_id);
+            EntityOffTranz tzc = offController.getTransactionDetailsBySqliteId(sqlite_id);
 
             VehicleId = tzc.VehicleId;
             PersonId = tzc.PersonId;
             String siteid = tzc.SiteId;
 
-            HashMap<String, String> linkmap = offcontroller.getLinksDetailsBySiteId(siteid);
+            HashMap<String, String> linkmap = offController.getLinksDetailsBySiteId(siteid);
             PumpOnTime = linkmap.get("PumpOnTime");
             IntervalToStopFuel = linkmap.get("PumpOffTime");
             PulseRatio = linkmap.get("Pulserratio");
             SiteId = siteid;
 
-            EnablePrinter = offcontroller.getOfflineHubDetails(BackgroundService_FS_UNIT_3.this).EnablePrinter;
+            EnablePrinter = offController.getOfflineHubDetails(BackgroundService_FS_UNIT_3.this).EnablePrinter;
 
             getIpOverOSVersion();
 
             minFuelLimit = OfflineConstants.getFuelLimit(BackgroundService_FS_UNIT_3.this);
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<Fuel Limit: " + minFuelLimit + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<Fuel Limit: " + minFuelLimit + ">");
             numPulseRatio = Double.parseDouble(PulseRatio);
 
             System.out.println("numPulseRatio-" + numPulseRatio);
@@ -1650,18 +1650,18 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             stopAutoFuelSeconds = Long.parseLong(IntervalToStopFuel);
 
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "offlineLogic ~~Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "offlineLogic ~~Exception: " + e.getMessage());
         }
     }
 
-    private void SyncOfflineData() {
-        if (Constants.FS_1STATUS.equalsIgnoreCase("FREE") && Constants.FS_2STATUS.equalsIgnoreCase("FREE") && Constants.FS_3STATUS.equalsIgnoreCase("FREE") && Constants.FS_4STATUS.equalsIgnoreCase("FREE") && Constants.FS_5STATUS.equalsIgnoreCase("FREE") && Constants.FS_6STATUS.equalsIgnoreCase("FREE")) {
+    private void syncOfflineData() {
+        if (Constants.FS_1_STATUS.equalsIgnoreCase("FREE") && Constants.FS_2_STATUS.equalsIgnoreCase("FREE") && Constants.FS_3_STATUS.equalsIgnoreCase("FREE") && Constants.FS_4_STATUS.equalsIgnoreCase("FREE") && Constants.FS_5_STATUS.equalsIgnoreCase("FREE") && Constants.FS_6_STATUS.equalsIgnoreCase("FREE")) {
 
             if (CurrTxnMode.equalsIgnoreCase("online")) {
                 try {
                     //sync offline transactions
-                    String off_json = offcontroller.getAllOfflineTransactionJSON(BackgroundService_FS_UNIT_3.this);
+                    String off_json = offController.getAllOfflineTransactionJSON(BackgroundService_FS_UNIT_3.this);
                     JSONObject jobj = new JSONObject(off_json);
                     String offtransactionArray = jobj.getString("TransactionsModelsObj");
                     JSONArray jarrsy = new JSONArray(offtransactionArray);
@@ -1670,8 +1670,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                         startService(new Intent(BackgroundService_FS_UNIT_3.this, OffTranzSyncService.class));
                     }
                 } catch (Exception e) {
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "SyncOfflineData ~~Exception: " + e.getMessage());
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "syncOfflineData ~~Exception: " + e.getMessage());
                 }
             }
         }
@@ -1687,8 +1687,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             String dt = GetDateString(System.currentTimeMillis());
             String  errorfileame = "/Log_" + dt + ".txt";
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SocketException " + se);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "SocketException " + se);
             SocketErrorEntityClass soc_obj = new SocketErrorEntityClass();
             soc_obj.SiteId =  SiteId;
             soc_obj.LogDateTime = UseDate;
@@ -1698,7 +1698,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             Gson gson = new Gson();
             final String jsonData = gson.toJson(soc_obj);
 
-            SharedPreferences sharedPref = BackgroundService_FS_UNIT_3.this.getSharedPreferences(AppConstants.LinkConnectionIssuePref, Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = BackgroundService_FS_UNIT_3.this.getSharedPreferences(AppConstants.PREF_LINK_CONNECTION_ISSUE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("NLINK3", jsonData);
             editor.apply();
@@ -1763,7 +1763,7 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 String authString = param[1];
                 String jsonData = param[2];
 
-                response = serverHandler.PostTextData(BackgroundService_FS_UNIT_3.this, AppConstants.webURL, jsonData, authString);
+                response = serverHandler.PostTextData(BackgroundService_FS_UNIT_3.this, AppConstants.WEB_URL, jsonData, authString);
 
             } catch (Exception ex) {
                 CommonUtils.LogMessage(TAG, " UpdateInterruptedTransactionFlag>>doInBackground ", ex);
@@ -1895,8 +1895,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             }
             SET_PULSAR_Command();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "GetLastTransaction ~~Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "GetLastTransaction ~~Exception: " + ex.getMessage());
             SET_PULSAR_Command();
         }
     }
@@ -1904,12 +1904,12 @@ public class BackgroundService_FS_UNIT_3 extends Service {
     public String getCMDLastSingleTXn() {
         String txn1 = "";
         try {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "Sending TXN_LAST10 (to get Last Single Txn) command to Link: " + LinkName);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Sending TXN_LAST10 (to get Last Single Txn) command to Link: " + LinkName);
             String resp = new CommandsGET_CmdTxt10_Single().execute(URL_GET_TXN_LAST10).get();
 
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "TXN_LAST10 Response: " + resp);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "TXN_LAST10 Response: " + resp);
             if (resp.contains("cmtxtnid_10_record")) {
                 JSONObject jobj = new JSONObject(resp);
                 JSONObject cm = jobj.getJSONObject("cmtxtnid_10_record");
@@ -1917,8 +1917,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 txn1 = cm.getString("2:TXTNINFO:"); // This is post transaction command so taking the 2nd position object
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "getCMDLastSingleTXn ~~Exception: " + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "getCMDLastSingleTXn ~~Exception: " + e.getMessage());
         }
         return txn1;
     }
@@ -1940,8 +1940,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 Response response = client.newCall(request).execute();
                 resp = response.body().string();
             } catch (Exception e) {
-                if (AppConstants.GenerateLogs)
-                    AppConstants.WriteinFile(TAG + "CmdTxt10_Single InBackground Exception " + e.getMessage());
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "CmdTxt10_Single InBackground Exception " + e.getMessage());
             }
             return resp;
         }
@@ -1969,8 +1969,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             String jsonData = gson.toJson(authEntityClass);
 
             String AppInfo = " Version:" + CommonUtils.getVersionCode(BackgroundService_FS_UNIT_3.this) + " " + AppConstants.getDeviceName() + " Android " + Build.VERSION.RELEASE;
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "<Last Transaction saved in local DB. LastTXNid: " + txnid + "; Quantity: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo: " + AppInfo + ">");
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "<Last Transaction saved in local DB. LastTXNid: " + txnid + "; Quantity: " + Lastqty + "; Pulses: " + Pulses + "; AppInfo: " + AppInfo + ">");
 
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceHTTP(BackgroundService_FS_UNIT_3.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_FS_UNIT_3.this) + ":" + userEmail + ":" + "TransactionComplete" + AppConstants.LANG_PARAM);
@@ -1994,39 +1994,39 @@ public class BackgroundService_FS_UNIT_3 extends Service {
                 controller.insertTransactions(imap);
             }
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SaveLastTransactionInLocalDB Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "SaveLastTransactionInLocalDB Exception: " + ex.getMessage());
         }
     }
 
     public void SET_PULSAR_Command() {
         try {
             IsAnyPostTxnCommandExecuted = true;
-            SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CalibrationDetails, Context.MODE_PRIVATE);
+            SharedPreferences calibrationPref = this.getSharedPreferences(Constants.PREF_CALIBRATION_DETAILS, Context.MODE_PRIVATE);
             String PulserTimingAdjust = calibrationPref.getString("PulserTimingAdjust_FS3", "");
             String IsResetSwitchTimeBounce = calibrationPref.getString("IsResetSwitchTimeBounce_FS3", "");
 
             if (IsResetSwitchTimeBounce != null) {
                 if (IsResetSwitchTimeBounce.trim().equalsIgnoreCase("1")) {
                     Thread.sleep(500);
-                    if (AppConstants.GenerateLogs)
-                        AppConstants.WriteinFile(TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "Sending SET_PULSAR (sampling_time_ms) command to Link: " + LinkName);
                     new CommandsPOST().execute(URL_SET_PULSAR, "{\"pulsar_status\":{\"sampling_time_ms\":" + PulserTimingAdjust + "}}", "sampling_time");
 
                 } else {
-                    CloseTransaction(true);
+                    closeTransaction(true);
                 }
             } else {
-                CloseTransaction(true);
+                closeTransaction(true);
             }
         } catch (Exception e) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "SET_PULSAR_Command Exception: " + e.getMessage());
-            CloseTransaction(true);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "SET_PULSAR_Command Exception: " + e.getMessage());
+            closeTransaction(true);
         }
     }
 
-    private void UpdateSwitchTimeBounceForLink() {
+    private void updateSwitchTimeBounceForLink() {
         try {
             String userEmail = CommonUtils.getCustomerDetails_backgroundServiceHTTP(BackgroundService_FS_UNIT_3.this).PersonEmail;
             String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(BackgroundService_FS_UNIT_3.this) + ":" + userEmail + ":" + "UpdateSwitchTimeBounceForLink" + AppConstants.LANG_PARAM);
@@ -2051,8 +2051,8 @@ public class BackgroundService_FS_UNIT_3 extends Service {
             // commit changes
             editor.commit();
         } catch (Exception ex) {
-            if (AppConstants.GenerateLogs)
-                AppConstants.WriteinFile(TAG + "UpdateSwitchTimeBounceForLink Exception: " + ex.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "updateSwitchTimeBounceForLink Exception: " + ex.getMessage());
         }
     }
 }

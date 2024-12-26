@@ -78,7 +78,7 @@ public class BackgroundServiceUpgradeFirmware extends BackgroundService {
                 ChangeUpgradeProcessFlag();
             }
         } catch (NullPointerException e) {
-            if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "onStartCommand Execption " + e);
+            if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "onStartCommand Execption " + e);
             Log.d("Ex", e.getMessage());
             this.stopSelf();
         }
@@ -114,7 +114,7 @@ public class BackgroundServiceUpgradeFirmware extends BackgroundService {
 
             } catch (Exception e) {
                 Log.d("Ex", e.getMessage());
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG+ "CommandsPOST doInBackground Execption " + e);
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG+ "CommandsPOST doInBackground Execption " + e);
                 stopSelf();
             }
 
@@ -132,7 +132,7 @@ public class BackgroundServiceUpgradeFirmware extends BackgroundService {
 
             } catch (Exception e) {
 
-                if (AppConstants.GenerateLogs)AppConstants.WriteinFile(TAG + "CommandsPOST onPostExecute Execption " + e);
+                if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "CommandsPOST onPostExecute Execption " + e);
                 System.out.println(e);
                 stopSelf();
             }
@@ -249,10 +249,10 @@ public class BackgroundServiceUpgradeFirmware extends BackgroundService {
 
     public void ChangeUpgradeProcessFlag(){
 
-        WelcomeActivity.IsUpgradeInprogress_FS1 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS1 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS1 = false;
-        WelcomeActivity.IsUpgradeInprogress_FS1 = false;
+        WelcomeActivity.isUpgradeInProgress_FS1 = false;
+        WelcomeActivity.isUpgradeInProgress_FS1 = false;
+        WelcomeActivity.isUpgradeInProgress_FS1 = false;
+        WelcomeActivity.isUpgradeInProgress_FS1 = false;
 
     }
 
