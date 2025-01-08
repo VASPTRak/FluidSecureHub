@@ -884,10 +884,10 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     @SuppressLint("ResourceAsColor")
-    public void CompleteTasksbeforeStartbuttonClick() {
+    public void completeTasksBeforeStartButtonClick() {
         try {
             CommonUtils.hideKeyboard(DisplayMeterActivity.this);
-            BtnStartStateChange(false);
+            btnStartStateChange(false);
             //btnCancel.setClickable(false);
 
             int SelectedPosition = WelcomeActivity.SelectedItemPos;
@@ -993,7 +993,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
             }
         } catch (Exception e) {
             if (AppConstants.GENERATE_LOGS)
-                AppConstants.writeInFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Exception in CompleteTasksbeforeStartbuttonClick: " + e.getMessage() + "; (Selected LINK => " + AppConstants.CURRENT_SELECTED_SSID + ")");
+                AppConstants.writeInFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "Exception in completeTasksBeforeStartButtonClick: " + e.getMessage() + "; (Selected LINK => " + AppConstants.CURRENT_SELECTED_SSID + ")");
             TerminateTransaction("HTTP");
         }
     }
@@ -1111,67 +1111,20 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    /*public void CheckForUpdateFirmware(final String hoseid, String iot_version, final String FS_selected) {
-
-        SharedPreferences sharedPrefODO = DisplayMeterActivity.this.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        String HubId = sharedPrefODO.getString(AppConstants.HUBID, "");// HubId equals to personId
-
-
-        //First call which will Update Fs firmware to Server--
+    public void updateCurrentFirmwareVersionToServer(final String hoseId, String iot_version) {
         final UpgradeVersionEntity objEntityClass = new UpgradeVersionEntity();
         objEntityClass.IMEIUDID = AppConstants.getIMEI(DisplayMeterActivity.this);
         objEntityClass.Email = CommonUtils.getCustomerDetails(this).PersonEmail;
-        objEntityClass.HoseId = hoseid;
+        objEntityClass.HoseId = hoseId;
         objEntityClass.Version = iot_version;
 
         if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
-            if (hoseid != null && !hoseid.trim().isEmpty()) {
-                new DisplayMeterActivity.UpgradeCurrentVersionWithUgradableVersion(objEntityClass).execute();
-
-                *//*try {
-                    JSONObject jsonObject = new JSONObject(objUP.response);
-                    String ResponceMessage = jsonObject.getString("ResponceMessage");
-                    String ResponceText = jsonObject.getString("ResponceText");
-
-                    if (ResponceMessage.equalsIgnoreCase("success")) {
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*//*
+            if (hoseId != null && !hoseId.trim().isEmpty()) {
+                new UpgradeCurrentVersionWithUpgradableVersion(objEntityClass).execute();
             }
-        } else {
-            if (AppConstants.GENERATE_LOGS)
-                AppConstants.writeInFile(TAG + getResources().getString(R.string.CheckInternet));
-            toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
-            Istimeout_Sec = true;
-            ResetTimeoutDisplayMeterScreen();
         }
-
-        //Second call will get Status for firwareupdate
-        StatusForUpgradeVersionEntity objEntityClass1 = new StatusForUpgradeVersionEntity();
-        objEntityClass1.IMEIUDID = AppConstants.getIMEI(DisplayMeterActivity.this);
-        objEntityClass1.Email = CommonUtils.getCustomerDetails(this).PersonEmail;
-        objEntityClass1.HoseId = hoseid;
-        objEntityClass1.PersonId = HubId;
-
-        Gson gson = new Gson();
-        String jsonData = gson.toJson(objEntityClass1);
-
-        String userEmail = CommonUtils.getCustomerDetails(DisplayMeterActivity.this).PersonEmail;
-        String authString = "Basic " + AppConstants.convertStingToBase64(AppConstants.getIMEI(DisplayMeterActivity.this) + ":" + userEmail + ":" + "IsUpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
-
-
-        if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH)
-            new GetUpgradeFirmwareStatus().execute(FS_selected, jsonData, authString);
-        else {
-            if (AppConstants.GENERATE_LOGS)
-                AppConstants.writeInFile(TAG + getResources().getString(R.string.CheckInternet));
-            toastDialog = AppConstants.colorToastBigFont(DisplayMeterActivity.this, getResources().getString(R.string.CheckInternet), Color.BLUE);
-            Istimeout_Sec = true;
-            ResetTimeoutDisplayMeterScreen();
-        }
-    }*/
+        btnStartStateChange(true);
+    }
 
     /*public class GetUpgradeFirmwareStatus extends AsyncTask<String, Void, String> {
 
@@ -1227,7 +1180,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         protected void onPostExecute(String resp) {
 
             pd.dismiss();
-            BtnStartStateChange(true);
+            btnStartStateChange(true);
             System.out.println("resp..." + resp);
 
             try {
@@ -1297,39 +1250,35 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }*/
 
-    /*public class UpgradeCurrentVersionWithUgradableVersion extends AsyncTask<Void, Void, Void> {
+    public class UpgradeCurrentVersionWithUpgradableVersion extends AsyncTask<Void, Void, Void> {
 
         UpgradeVersionEntity objupgrade;
         public String response = null;
 
-        public UpgradeCurrentVersionWithUgradableVersion(UpgradeVersionEntity objupgrade) {
-
+        public UpgradeCurrentVersionWithUpgradableVersion(UpgradeVersionEntity objupgrade) {
             this.objupgrade = objupgrade;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             try {
                 ServerHandler serverHandler = new ServerHandler();
 
                 Gson gson = new Gson();
                 String jsonData = gson.toJson(objupgrade);
 
-
                 //----------------------------------------------------------------------------------
                 String authString = "Basic " + AppConstants.convertStingToBase64(objupgrade.IMEIUDID + ":" + objupgrade.Email + ":" + "UpgradeCurrentVersionWithUgradableVersion" + AppConstants.LANG_PARAM);
                 response = serverHandler.PostTextData(DisplayMeterActivity.this, AppConstants.WEB_URL, jsonData, authString);
                 //----------------------------------------------------------------------------------
-
             } catch (Exception ex) {
                 if (AppConstants.GENERATE_LOGS)
-                    AppConstants.writeInFile(TAG + " UpgradeCurrentVersionWithUgradableVersion doInBackground Exception " + ex.getMessage());
-                CommonUtils.LogMessage("BS", "UpgradeCurrentVersionWithUgradableVersion ", ex);
+                    AppConstants.writeInFile(TAG + " UpgradeCurrentVersionWithUpgradableVersion InBackground Exception: " + ex.getMessage());
+                CommonUtils.LogMessage("BS", "UpgradeCurrentVersionWithUpgradableVersion ", ex);
             }
             return null;
         }
-    }*/
+    }
 
     /*public void GetLastTransaction() {
         try {
@@ -1883,7 +1832,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                 if (calledFor.equalsIgnoreCase("sampling_time")) {
                     updateSwitchTimeBounceForLink();
                     //checkFirmwareUpdateMain(); //StorePumpOffTimeForLink();
-                    BtnStartStateChange(true);
+                    btnStartStateChange(true);
                 }
                 *//*else if (calledFor.equalsIgnoreCase("pulsar_off_time")) {
                     checkFirmwareUpdateMain();
@@ -2693,7 +2642,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
     }
 
     @SuppressLint("ResourceAsColor")
-    public void BtnStartStateChange(boolean btnState) {
+    public void btnStartStateChange(boolean btnState) {
 
         if (btnState) {
             btnStart.setClickable(true);
@@ -2953,7 +2902,8 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         e.printStackTrace();
                     }
 
-                    BtnStartStateChange(true); // As per #2693
+                    checkFirmwareUpdateMain();
+                    //btnStartStateChange(true); // As per #2693
 
                     /*//Skip in offline mode
                     if (cd.isConnectingToInternet() && AppConstants.AUTH_CALL_SUCCESS && AppConstants.NETWORK_STRENGTH) {
@@ -3016,7 +2966,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                CompleteTasksbeforeStartbuttonClick(); //retry
+                                completeTasksBeforeStartButtonClick(); //retry
                             }
                         }, 2000);
                     }
@@ -3044,16 +2994,16 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
                 } else {
                     //checkFirmwareUpdateMain();
-                    BtnStartStateChange(true);
+                    btnStartStateChange(true);
                 }
             } else {
                 //checkFirmwareUpdateMain();
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
         } catch (Exception e) {
             if (AppConstants.GENERATE_LOGS)
                 AppConstants.writeInFile(AppConstants.LOG_TXTN_HTTP + "-" + TAG + "SET_PULSAR_Command Exception: " + e.getMessage());
-            BtnStartStateChange(true);
+            btnStartStateChange(true);
         }
     }*/
 
@@ -3554,106 +3504,96 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    /*public void checkFirmwareUpdateMain() {
+    public void checkFirmwareUpdateMain() {
 
         if (AppConstants.FS_SELECTED.equalsIgnoreCase("0")) {
-
-            //Store Hose ID and Firmware version in sharedpreferance
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("hoseid_fs1", AppConstants.UP_HOSE_ID_FS1);
             editor.putString("fsversion_fs1", iot_version);
             editor.commit();
 
-
-            //IF upgrade firmware true check below
-            if (AppConstants.UP_UPGRADE) {
-                CheckForUpdateFirmware(AppConstants.UP_HOSE_ID_FS1, iot_version, AppConstants.FS_SELECTED);
+            //if (AppConstants.UP_UPGRADE) {
+            if (!iot_version.isEmpty() && cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                updateCurrentFirmwareVersionToServer(AppConstants.UP_HOSE_ID_FS1, iot_version);
             } else {
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
 
-
         } else if (AppConstants.FS_SELECTED.equalsIgnoreCase("1")) {
-
-            //Store Hose ID and Firmware version in sharedpreferance
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("hoseid_fs2", AppConstants.UP_HOSE_ID_FS2);
             editor.putString("fsversion_fs2", iot_version);
             editor.commit();
 
-            //IF upgrade firmware true check below
-            if (AppConstants.UP_UPGRADE) {
-                CheckForUpdateFirmware(AppConstants.UP_HOSE_ID_FS2, iot_version, AppConstants.FS_SELECTED);
+            //if (AppConstants.UP_UPGRADE) {
+            if (!iot_version.isEmpty() && cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                updateCurrentFirmwareVersionToServer(AppConstants.UP_HOSE_ID_FS2, iot_version);
             } else {
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
 
         } else if (AppConstants.FS_SELECTED.equalsIgnoreCase("2")) {
-
-            //Store Hose ID and Firmware version in sharedpreferance
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("hoseid_fs3", AppConstants.UP_HOSE_ID_FS3);
             editor.putString("fsversion_fs3", iot_version);
             editor.commit();
 
-            //IF upgrade firmware true check below
-            if (AppConstants.UP_UPGRADE) {
-                CheckForUpdateFirmware(AppConstants.UP_HOSE_ID_FS3, iot_version, AppConstants.FS_SELECTED);
+            //if (AppConstants.UP_UPGRADE) {
+            if (!iot_version.isEmpty() && cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                updateCurrentFirmwareVersionToServer(AppConstants.UP_HOSE_ID_FS3, iot_version);
             } else {
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
-        } else if (AppConstants.FS_SELECTED.equalsIgnoreCase("3")) {
 
-            //Store Hose ID and Firmware version in sharedpreferance
+        } else if (AppConstants.FS_SELECTED.equalsIgnoreCase("3")) {
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("hoseid_fs4", AppConstants.UP_HOSE_ID_FS4);
             editor.putString("fsversion_fs4", iot_version);
             editor.commit();
 
-            //IF upgrade firmware true check below
-            if (AppConstants.UP_UPGRADE) {
-                CheckForUpdateFirmware(AppConstants.UP_HOSE_ID_FS4, iot_version, AppConstants.FS_SELECTED);
+            //if (AppConstants.UP_UPGRADE) {
+            if (!iot_version.isEmpty() && cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                updateCurrentFirmwareVersionToServer(AppConstants.UP_HOSE_ID_FS4, iot_version);
             } else {
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
 
         } else if (AppConstants.FS_SELECTED.equalsIgnoreCase("4")) {
-
-            //Store Hose ID and Firmware version in sharedpreferance
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("hoseid_fs5", AppConstants.UP_HOSE_ID_FS5);
             editor.putString("fsversion_fs5", iot_version);
             editor.commit();
 
-            //IF upgrade firmware true check below
-            if (AppConstants.UP_UPGRADE) {
-                CheckForUpdateFirmware(AppConstants.UP_HOSE_ID_FS5, iot_version, AppConstants.FS_SELECTED);
+            //if (AppConstants.UP_UPGRADE) {
+            if (!iot_version.isEmpty() && cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                updateCurrentFirmwareVersionToServer(AppConstants.UP_HOSE_ID_FS5, iot_version);
             } else {
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
 
         } else if (AppConstants.FS_SELECTED.equalsIgnoreCase("5")) {
-
-            //Store Hose ID and Firmware version in sharedpreferance
             SharedPreferences sharedPref = DisplayMeterActivity.this.getSharedPreferences(Constants.PREF_FS_UPGRADE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("hoseid_fs6", AppConstants.UP_HOSE_ID_FS6);
             editor.putString("fsversion_fs6", iot_version);
             editor.commit();
 
-            //IF upgrade firmware true check below
-            if (AppConstants.UP_UPGRADE) {
-                CheckForUpdateFirmware(AppConstants.UP_HOSE_ID_FS6, iot_version, AppConstants.FS_SELECTED);
+            //if (AppConstants.UP_UPGRADE) {
+            if (!iot_version.isEmpty() && cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                updateCurrentFirmwareVersionToServer(AppConstants.UP_HOSE_ID_FS6, iot_version);
             } else {
-                BtnStartStateChange(true);
+                btnStartStateChange(true);
             }
+
+        } else {
+            btnStartStateChange(true);
         }
-    }*/
+    }
 
     public void SetOverrideQty(int i) {
 
@@ -3781,9 +3721,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         } else {
             switch (BTConstants.CURRENT_SELECTED_BT_LINK_POSITION) {
                 case 1://Link 1
-                    // BtnStartStateChange(true);
+                    // btnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected One>>");
-                    // BtnStartStateChange(false);
+                    // btnStartStateChange(false);
                     Intent serviceIntent1;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent1 = new Intent(DisplayMeterActivity.this, BS_BLE_BTOne.class);
@@ -3798,9 +3738,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
                 case 2://Link 2
 
-                    // BtnStartStateChange(true);
+                    // btnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Two>>");
-                    // BtnStartStateChange(false);
+                    // btnStartStateChange(false);
                     Intent serviceIntent2;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent2 = new Intent(DisplayMeterActivity.this, BS_BLE_BTTwo.class);
@@ -3814,9 +3754,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     BackToWelcomeActivity();
                     break;
                 case 3://Link 3
-                    // BtnStartStateChange(true);
+                    // btnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Three>>");
-                    //  BtnStartStateChange(false);
+                    //  btnStartStateChange(false);
                     Intent serviceIntent3;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent3 = new Intent(DisplayMeterActivity.this, BS_BLE_BTThree.class);
@@ -3830,9 +3770,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     BackToWelcomeActivity();
                     break;
                 case 4://Link 4
-                    // BtnStartStateChange(true);
+                    // btnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Four>>");
-                    /// BtnStartStateChange(false);
+                    /// btnStartStateChange(false);
                     Intent serviceIntent4;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent4 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFour.class);
@@ -3846,9 +3786,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     BackToWelcomeActivity();
                     break;
                 case 5://Link 5
-                    // BtnStartStateChange(true);
+                    // btnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Five>>");
-                    /// BtnStartStateChange(false);
+                    /// btnStartStateChange(false);
                     Intent serviceIntent5;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent5 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFive.class);
@@ -3862,9 +3802,9 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     BackToWelcomeActivity();
                     break;
                 case 6://Link 6
-                    // BtnStartStateChange(true);
+                    // btnStartStateChange(true);
                     Log.i(TAG, "BTServiceSelected Six>>");
-                    /// BtnStartStateChange(false);
+                    /// btnStartStateChange(false);
                     Intent serviceIntent6;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent6 = new Intent(DisplayMeterActivity.this, BS_BLE_BTSix.class);
@@ -3885,12 +3825,12 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
 
     /*private void UDPServiceSelectionFunction() {
         if (!SERVER_IP.isEmpty()) {
-            BtnStartStateChange(true);
+            btnStartStateChange(true);
             Log.i(TAG, "UDP Link ");
             switch (WelcomeActivity.SelectedItemPos) {
                 case 0://Link 1
 
-                    BtnStartStateChange(false);
+                    btnStartStateChange(false);
                     Intent serviceIntent1;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent1 = new Intent(DisplayMeterActivity.this, BS_BLE_BTOne.class);
@@ -3905,7 +3845,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
                 case 1://Link 2
 
-                    BtnStartStateChange(false);
+                    btnStartStateChange(false);
                     Intent serviceIntent2;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent2 = new Intent(DisplayMeterActivity.this, BS_BLE_BTTwo.class);
@@ -3920,7 +3860,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
                 case 2://Link 3
 
-                    BtnStartStateChange(false);
+                    btnStartStateChange(false);
                     Intent serviceIntent3;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent3 = new Intent(DisplayMeterActivity.this, BS_BLE_BTThree.class);
@@ -3935,7 +3875,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
                 case 3://Link 4
 
-                    BtnStartStateChange(false);
+                    btnStartStateChange(false);
                     Intent serviceIntent4;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent4 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFour.class);
@@ -3950,7 +3890,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
                 case 4://Link 5
 
-                    BtnStartStateChange(false);
+                    btnStartStateChange(false);
                     Intent serviceIntent5;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent5 = new Intent(DisplayMeterActivity.this, BS_BLE_BTFive.class);
@@ -3965,7 +3905,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                     break;
                 case 5://Link 6
 
-                    BtnStartStateChange(false);
+                    btnStartStateChange(false);
                     Intent serviceIntent6;
                     if (BTLinkCommType.equalsIgnoreCase("BLE")) {
                         serviceIntent6 = new Intent(DisplayMeterActivity.this, BS_BLE_BTSix.class);
@@ -4001,7 +3941,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
         /*} else if (LinkCommunicationType.equalsIgnoreCase("UDP")) {
             //cHECK UDP INFO COMMAND HERE*/
         } else if (LinkCommunicationType.equalsIgnoreCase("HTTP")) {
-            CompleteTasksbeforeStartbuttonClick();
+            completeTasksBeforeStartButtonClick();
         } else {
             //Something went wrong in hose selection.
         }
@@ -4142,7 +4082,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                         public void run() {
                             //pd.dismiss();
                             SetSPPtoBLEFlagByPosition(WelcomeActivity.SelectedItemPos, false);
-                            BtnStartStateChange(true);
+                            btnStartStateChange(true);
                         }
                     }, 1000);
                 }
@@ -4193,7 +4133,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void run() {
                                 SetSPPtoBLEFlagByPosition(linkPosition, false);
-                                BtnStartStateChange(true); // Continue
+                                btnStartStateChange(true); // Continue
                             }
                         }, 1000);
                         cancel();
@@ -4211,7 +4151,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void run() {
                                 SetSPPtoBLEFlagByPosition(linkPosition, false);
-                                BtnStartStateChange(true); // Continue
+                                btnStartStateChange(true); // Continue
                             }
                         }, 1000);
                     } else {
@@ -4227,7 +4167,7 @@ public class DisplayMeterActivity extends AppCompatActivity implements View.OnCl
                                 public void run() {
                                     BTLinkCommType = "BLE";
                                     SetSPPtoBLEFlagByPosition(linkPosition, true);
-                                    BtnStartStateChange(true); // Continue with BLE
+                                    btnStartStateChange(true); // Continue with BLE
                                 }
                             }, 1000);
                         } else {
