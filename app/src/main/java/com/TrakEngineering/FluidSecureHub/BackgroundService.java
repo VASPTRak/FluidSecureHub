@@ -98,38 +98,37 @@ public class BackgroundService extends Service {
                     //Log.i(TAG, "Transaction UploadTask Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
                     //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "  Transaction UploadTask Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
 
-                    if (!jsonData.equals("")) {
-                        JSONObject jsonObject = new JSONObject(jsonData);
-                        String txnId = String.valueOf(jsonObject.get("TransactionId"));
-                        String pulses = String.valueOf(jsonObject.get("Pulses"));
-                        if (AppConstants.LIST_OF_RUNNING_TRANSACTIONS.contains(txnId)) {
-                            //transaction running
-                            Log.i(TAG, "Transaction is in progress" + txnId);
-                            if (AppConstants.GENERATE_LOGS)
-                                AppConstants.writeInFile(TAG + "Transaction is in progress. TransactionId: " + txnId);
-                        } else {
-                            //transaction completed
-                            //new UploadTask().execute(Id, jsonData, authString);
-                            if (!AppConstants.List_Of_Uploading_Transactions.contains(txnId)) {
-                                AppConstants.List_Of_Uploading_Transactions.add(txnId);
-                                UploadTaskRetroFit(Id, jsonData, authString, txnId, pulses);
+                    if (jsonData != null) {
+                        if (!jsonData.isEmpty()) {
+                            JSONObject jsonObject = new JSONObject(jsonData);
+                            String txnId = String.valueOf(jsonObject.get("TransactionId"));
+                            String pulses = String.valueOf(jsonObject.get("Pulses"));
+                            if (AppConstants.LIST_OF_RUNNING_TRANSACTIONS.contains(txnId)) {
+                                //transaction running
+                                Log.i(TAG, "Transaction is in progress" + txnId);
+                                if (AppConstants.GENERATE_LOGS)
+                                    AppConstants.writeInFile(TAG + "Transaction is in progress. TransactionId: " + txnId);
+                            } else {
+                                //transaction completed
+                                //new UploadTask().execute(Id, jsonData, authString);
+                                if (!AppConstants.List_Of_Uploading_Transactions.contains(txnId)) {
+                                    AppConstants.List_Of_Uploading_Transactions.add(txnId);
+                                    UploadTaskRetroFit(Id, jsonData, authString, txnId, pulses);
+                                }
+                                //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "TempLog  Transaction UploadTask Id:" + Id + " jsonData:" + jsonData);
                             }
-                            //if (AppConstants.GENERATE_LOGS)AppConstants.writeInFile(TAG + "TempLog  Transaction UploadTask Id:" + Id + " jsonData:" + jsonData);
+                        } else {
+                            controller.deleteTransactions(Id);
+                            if (AppConstants.GENERATE_LOGS)
+                                AppConstants.writeInFile(TAG + "<Transaction deleted from local DB. (Empty json): Id: " + Id + ">");
                         }
-                    } else {
-                        controller.deleteTransactions(Id);
-                        System.out.println("deleteTransactions..." + Id);
-                        Log.i(TAG, " Empty json Id:" + Id + " jsonData:" + jsonData + " authString:" + authString);
-
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
                     if (AppConstants.GENERATE_LOGS)
-                        AppConstants.writeInFile(TAG + " Transaction UploadTask--JSONException " + e);
+                        AppConstants.writeInFile(TAG + "Transaction UploadTask--JSONException " + e);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
                     if (AppConstants.GENERATE_LOGS)
-                        AppConstants.writeInFile(TAG + " Transaction UploadTask--Exception " + ex);
+                        AppConstants.writeInFile(TAG + "Transaction UploadTask--Exception " + ex);
                 }
 
             }

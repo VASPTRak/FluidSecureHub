@@ -569,13 +569,14 @@ public class BS_BLE_BTTwo extends Service {
         imap.put("sqliteId", sqliteID + "");
 
         if (Pulses > 0 || fillqty > 0) {
-
             //in progress (transaction recently started, no new information): Transaction ongoing = 8  --non zero qty
             CommonUtils.upgradeTransactionStatusToSqlite(TransactionId, "8", BS_BLE_BTTwo.this);
-            int rowseffected = controller.updateTransactions(imap);
-            System.out.println("rowseffected-" + rowseffected);
-            if (rowseffected == 0) {
-                controller.insertTransactions(imap);
+            int rowsAffected = controller.updateTransactions(imap);
+            System.out.println("rowsAffected-" + rowsAffected);
+            if (rowsAffected == 0) {
+                sqliteID = controller.insertTransactions(imap);
+                if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + " <Transaction saved in local DB. LocalTxnId: " + sqliteID + "; LINK: " + LinkName + ">");
             }
         }
     }
@@ -1661,6 +1662,8 @@ public class BS_BLE_BTTwo extends Service {
         imap.put("authString", authString);
 
         sqliteID = controller.insertTransactions(imap);
+        if (AppConstants.GENERATE_LOGS)
+            AppConstants.writeInFile(TAG + " <Transaction saved in local DB. LocalTxnId: " + sqliteID + "; LINK: " + LinkName + ">");
         CommonUtils.addRemoveCurrentTransactionList(true, TransactionId);//Add transaction Id to list
     }
 

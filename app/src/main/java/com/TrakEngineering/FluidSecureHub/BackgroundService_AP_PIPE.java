@@ -269,6 +269,8 @@ public class BackgroundService_AP_PIPE extends Service {
                     imap.put("authString", authString);
 
                     sqliteID = controller.insertTransactions(imap);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "<Transaction saved in local DB. LocalTxnId: " + sqliteID + "; LINK: " + LinkName + ">");
                     CommonUtils.addRemoveCurrentTransactionList(true, TransactionId);//Add transaction Id to list
                     //////////////////////////////////////////////////////////////
 
@@ -1063,10 +1065,12 @@ public class BackgroundService_AP_PIPE extends Service {
             imap.put("sqliteId", sqliteID + "");
 
             if (Pulses > 0 || fillqty > 0) {
-                int rowseffected = controller.updateTransactions(imap);
-                System.out.println("rowseffected-" + rowseffected);
-                if (rowseffected == 0) {
+                int rowsAffected = controller.updateTransactions(imap);
+                System.out.println("rowsAffected-" + rowsAffected);
+                if (rowsAffected == 0) {
                     sqliteID = controller.insertTransactions(imap);
+                    if (AppConstants.GENERATE_LOGS)
+                        AppConstants.writeInFile(TAG + "<Transaction saved in local DB. LocalTxnId: " + sqliteID + "; LINK: " + LinkName + ">");
                 }
             }
         } else {

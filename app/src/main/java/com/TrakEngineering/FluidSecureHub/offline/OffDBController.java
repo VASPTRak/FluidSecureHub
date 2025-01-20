@@ -469,7 +469,7 @@ public class OffDBController extends SQLiteOpenHelper {
             database.close();
             if (LinkCommunicationType.isEmpty()) {
                 if (AppConstants.GENERATE_LOGS)
-                    AppConstants.writeInFile(TAG + "<Transaction saved in local DB.>");
+                    AppConstants.writeInFile(TAG + "<Transaction inserted in local DB.>");
             } else {
 
                 String txtnTypeForLog = "";
@@ -480,7 +480,7 @@ public class OffDBController extends SQLiteOpenHelper {
                 }
 
                 if (AppConstants.GENERATE_LOGS)
-                    AppConstants.writeInFile(txtnTypeForLog + "- <Transaction saved in local DB.>");
+                    AppConstants.writeInFile(txtnTypeForLog + "- <Transaction inserted in local DB.>");
             }
 
         } catch (Exception e) {
