@@ -905,8 +905,8 @@ public class BackgroundService_BTSix extends Service {
     private void proceedToNextCommand() {
         if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkSix, BTConstants.SUPPORTED_LINK_VERSION_FOR_MO_STATUS)) { // CheckMOStatus command supported from this version onwards
             checkMOStatusCommand();
-        } else if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkSix, BTConstants.SUPPORTED_LINK_VERSION_FOR_P_TYPE)) { // Set P_Type command supported from this version onwards
-            pTypeCommand();
+        /*} else if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkSix, BTConstants.SUPPORTED_LINK_VERSION_FOR_P_TYPE)) { // Set P_Type command supported from this version onwards
+            pTypeCommand();*/
         } else {
             closeTransaction(false); // proceedToNextCommand
         }
@@ -995,7 +995,7 @@ public class BackgroundService_BTSix extends Service {
                                     if (AppConstants.GENERATE_LOGS)
                                         AppConstants.writeInFile(TAG + " BTLink_6: Checking Reset MO Check Flag command response:>> " + Response);
                                     updateResetMOCheckFlagOfLink();
-                                    pTypeCommand();
+                                    getPulserTypeCommand(); //pTypeCommand();
                                     cancel();
                                 } else {
                                     if (AppConstants.GENERATE_LOGS)
@@ -1010,26 +1010,26 @@ public class BackgroundService_BTSix extends Service {
                                     AppConstants.writeInFile(TAG + " BTLink_6: Checking Reset MO Check Flag command response:>> " + Response);
                                 updateResetMOCheckFlagOfLink();
                             }
-                            pTypeCommand();
+                            getPulserTypeCommand(); //pTypeCommand();
                         }
                     }.start();
                 } else {
-                    pTypeCommand();
+                    getPulserTypeCommand(); //pTypeCommand();
                 }
             } else {
-                pTypeCommand();
+                getPulserTypeCommand(); //pTypeCommand();
             }
         } catch (Exception e) {
             e.printStackTrace();
             if (AppConstants.GENERATE_LOGS)
                 AppConstants.writeInFile(TAG + " BTLink_6: Reset MO Check Flag Command Exception:>>" + e.getMessage());
-            pTypeCommand();
+            getPulserTypeCommand(); //pTypeCommand();
         }
     }
     //endregion
 
     //region P_Type Command
-    private void pTypeCommand() {
+    /*private void pTypeCommand() {
         boolean isSetPTypeCommandSent = false;
         try {
             if (IsResetSwitchTimeBounce != null) {
@@ -1091,7 +1091,7 @@ public class BackgroundService_BTSix extends Service {
                 getPulserTypeCommand();
             }
         }
-    }
+    }*/
     //endregion
 
     //region Get P_Type Command

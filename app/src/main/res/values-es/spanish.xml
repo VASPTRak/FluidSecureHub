@@ -296,7 +296,7 @@
     <string name="HUBNumber">HUB número:</string>
     <string name="VersionHeading">Versión</string>
     <string name="ConnectingStatus">Conectando...</string>
-    <string name="HoseInUse">Manguera en uso.</string>
+    <string name="HoseInUse">La bomba está activada. Por favor, enciéndala.</string>
     <string name="PairingMode">modo de emparejamiento...</string>
     <string name="SelectHoseAlert">Por favor, seleccione Manguera</string>
     <string name="UnableToGetHoseList">No se puede obtener la lista de mangueras desde el servidor</string>

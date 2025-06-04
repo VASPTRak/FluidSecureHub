@@ -1397,7 +1397,7 @@ public class BS_BLE_BTTwo extends Service {
         // Free the link and continue to post transaction commands
         stopTransaction(true, false); // Free the link
         if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkTwo, BTConstants.SUPPORTED_LINK_VERSION_FOR_P_TYPE)) { // Set P_Type command supported from this version onwards
-            pTypeCommand();
+            getPulserTypeCommand(); //pTypeCommand();
         } else {
             closeTransaction(false); // proceedToPostTransactionCommands
         }
@@ -1440,7 +1440,7 @@ public class BS_BLE_BTTwo extends Service {
     //endregion
 
     //region P_Type Command
-    private void pTypeCommand() {
+    /*private void pTypeCommand() {
         boolean isSetPTypeCommandSent = false;
         try {
             if (IsResetSwitchTimeBounce != null) {
@@ -1498,7 +1498,7 @@ public class BS_BLE_BTTwo extends Service {
                 getPulserTypeCommand();
             }
         }
-    }
+    }*/
     //endregion
 
     //region Get P_Type Command

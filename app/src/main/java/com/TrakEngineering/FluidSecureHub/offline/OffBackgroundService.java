@@ -1,9 +1,13 @@
 package com.TrakEngineering.FluidSecureHub.offline;
 
+import android.app.DownloadManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -23,11 +27,11 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.thin.downloadmanager.DefaultRetryPolicy;
+/*import com.thin.downloadmanager.DefaultRetryPolicy;
 import com.thin.downloadmanager.DownloadRequest;
 import com.thin.downloadmanager.DownloadStatusListener;
 import com.thin.downloadmanager.DownloadStatusListenerV1;
-import com.thin.downloadmanager.ThinDownloadManager;
+import com.thin.downloadmanager.ThinDownloadManager;*/
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +64,10 @@ public class OffBackgroundService extends Service {
     SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
     public String IsDepartmentRequire = "false";
     public static final String ACTION_SHOW_DIALOG = BuildConfig.APPLICATION_ID + ".action.SHOW_DIALOG";
+    private long downloadId;
+    private DownloadManager downloadManager;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable progressRunnable;
 
     public OffBackgroundService() {
     }
@@ -208,11 +216,7 @@ public class OffBackgroundService extends Service {
 
         try {
             if (!OfflineConstants.isOfflineAccess(OffBackgroundService.this)) {
-                ThinDownloadManager downloadManager = new ThinDownloadManager();
-                if (AppConstants.OFFLINE_DOWNLOAD_IDS != null && AppConstants.OFFLINE_DOWNLOAD_IDS.size() > 0) {
-                    downloadManager.cancelAll();
-                    AppConstants.OFFLINE_DOWNLOAD_IDS.clear();
-                }
+                cancelThinDownloadManager();
             }
         } catch (Exception e) {
         }
@@ -1018,8 +1022,80 @@ public class OffBackgroundService extends Service {
         return status;
     }
 
-
     public void downloadLibrary(String downloadUrl, String fileName) {
+
+        handler.removeCallbacks(progressRunnable);
+
+        downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+
+        Uri downloadUri = Uri.parse(downloadUrl);
+        String dataFilePath = getApplicationContext().getExternalFilesDir(AppConstants.OFFLINE_DATA_FOLDER_NAME) + "/" + fileName + ".txt";
+        File file = new File(dataFilePath);
+        Uri destinationUri = Uri.fromFile(file);
+
+        DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+        request.setTitle("Downloading " + fileName + ".txt");
+        request.setDescription("Please wait...");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        request.setDestinationUri(destinationUri);
+
+        downloadId = downloadManager.enqueue(request);
+
+        trackDownloadProgress(fileName);
+
+        try {
+            AppConstants.OFFLINE_DOWNLOAD_IDS.add(downloadId + "");
+        } catch (Exception e) {
+        }
+    }
+
+    private void trackDownloadProgress(String fileName) {
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadId);
+                Cursor cursor = downloadManager.query(query);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int bytesDownloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    int bytesTotal = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+
+                    if (status == DownloadManager.STATUS_FAILED) {
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile("download-Failed--" + fileName);
+                        insertDownloadFileStatus(fileName, "2");
+                        cursor.close();
+                        return;
+                    } else if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        if (AppConstants.GENERATE_LOGS)
+                            AppConstants.writeInFile("download-Complete--" + fileName);
+                        insertDownloadFileStatus(fileName, "1");
+
+                        if (!AppConstants.SELECT_HOSE_PRESSED) {
+                            readEncryptedFileParseJsonInSqlite(fileName);
+                        }
+                        cursor.close();
+                        return;
+                    }
+
+                    if (bytesTotal > 0) {
+                        int progress = (int) ((bytesDownloaded * 100L) / bytesTotal);
+                        if (progress > 0) {
+                            insertDownloadFileStatus(fileName, "3");
+                        }
+                    }
+
+                    cursor.close();
+                    handler.postDelayed(this, 1000); // repeat every 1s
+                }
+            }
+        };
+
+        handler.post(progressRunnable);
+    }
+
+    /*public void downloadLibrary(String downloadUrl, String fileName) {
         //https://github.com/smanikandan14/ThinDownloadManager
 
         ThinDownloadManager downloadManager = new ThinDownloadManager();
@@ -1064,7 +1140,7 @@ public class OffBackgroundService extends Service {
                         //AppConstants.writeInFile("download-onProgress--" + fileName + " " + totalBytes + " " + downloadedBytes + " " + progress);
                     }
                 });
-                /*.setDownloadListener(new DownloadStatusListener() {
+                *//*.setDownloadListener(new DownloadStatusListener() {
                     @Override
                     public void onDownloadComplete(int id) {
                         AppConstants.writeInFile("download-Complete--" + fileName);
@@ -1096,7 +1172,7 @@ public class OffBackgroundService extends Service {
                         insertDownloadFileStatus(fileName, "3");
                         //AppConstants.writeInFile("download-onProgress--" + fileName + " " + totalBytes + " " + downlaodedBytes + " " + progress);
                     }
-                });*/
+                });*//*
 
 
         int downloadId = downloadManager.add(downloadRequest);
@@ -1107,7 +1183,7 @@ public class OffBackgroundService extends Service {
         }
 
 
-    }
+    }*/
 
     public void readEncryptedFileParseJsonInSqlite(String file_name) {
 
@@ -1164,13 +1240,11 @@ public class OffBackgroundService extends Service {
                     departmentJsonParsing(decryptedJson);
 
                 }
-
             }
         } catch (Exception e) {
-            System.out.println(e);
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " readEncryptedFileParseJsonInSqlite Exception: " + e.getMessage());
         }
-
-
     }
 
     public void deleteAllDownloadedFiles() {
@@ -1184,22 +1258,39 @@ public class OffBackgroundService extends Service {
                 }
             }
         } catch (Exception e) {
-            AppConstants.writeInFile("deleteAllDownloadedFiles-" + e.getMessage());
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " deleteAllDownloadedFiles Exception: " + e.getMessage());
         }
     }
 
     public void cancelThinDownloadManager() {
         try {
             AppConstants.IS_OFFLINE_DOWNLOAD_STARTED = false;
-            ThinDownloadManager downloadManager = new ThinDownloadManager();
-            downloadManager.cancelAll();
-            if (AppConstants.OFFLINE_DOWNLOAD_IDS != null && AppConstants.OFFLINE_DOWNLOAD_IDS.size() > 0) {
+            if (AppConstants.OFFLINE_DOWNLOAD_IDS != null && !AppConstants.OFFLINE_DOWNLOAD_IDS.isEmpty()) {
                 AppConstants.OFFLINE_DOWNLOAD_IDS.clear();
             }
             deleteIncompleteOfflineDataFiles();
-            //AppConstants.writeInFile("WelAct- cancel offline Download...");
 
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterByStatus(DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_PAUSED);
+
+            if (downloadManager != null) {
+                Cursor cursor = downloadManager.query(query);
+                if (cursor != null) {
+                    try {
+                        while (cursor.moveToNext()) {
+                            long downloadId = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID));
+                            downloadManager.remove(downloadId); // Cancel the download
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                }
+            }
+            handler.removeCallbacks(progressRunnable);
         } catch (Exception e) {
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " cancelThinDownloadManager Exception: " + e.getMessage());
         }
     }
 

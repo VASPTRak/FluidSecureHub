@@ -1,0 +1,88 @@
+<html lang="en">
+<head>
+    <title>Azure Maps</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
+    <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" type="text/css"/>
+    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+    <style>
+        html,
+        body,
+        #map {
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1 1 auto;
+        }
+    </style>
+    <script type="text/javascript">
+        var map;
+
+        function initMap() {
+            map = new atlas.Map("map", {
+                center: [strLng, strLat],
+                zoom: 12,
+                language: 'languageParam',
+                authOptions: {
+                    authType: "subscriptionKey",
+                    subscriptionKey: "SUBSCRIPTION_KEY"
+                }
+            });
+
+            map.events.add("ready", function () {
+                map.resize();
+                document.querySelector('h1').style.display = 'none';
+
+                addSymbolLayerToMap(map);
+
+                map.controls.add(new atlas.control.ZoomControl(), {
+                    position: 'bottom-right'
+                });
+            });
+        }
+
+        function addSymbolLayerToMap(map) {
+
+            var dataSource = new atlas.source.DataSource();
+            map.sources.add(dataSource);
+            var point = new atlas.Shape(new atlas.data.Point([strLng, strLat]));
+            dataSource.add(point);
+            var layer = new atlas.layer.SymbolLayer(dataSource);
+
+            map.events.add('click', function(e) {
+                point.setCoordinates(e.position);
+                if (window.Android) {
+                    var positions = e.position.toString().split(',');
+                    window.Android.sendCoordinates(parseFloat(positions[0]), parseFloat(positions[1]));
+                }
+            });
+            map.layers.add(layer);
+        }
+
+        function updateMapLocation(lat, lng) {
+            if (map) {
+                var pos = [lng, lat];
+                map.setCamera({ center: pos, zoom: 14 });
+
+                if (window.Android) {
+                    window.Android.sendCoordinates(lng, lat);
+                }
+            }
+        }
+
+    </script>
+</head>
+<body onload="initMap()">
+<main>
+    <div id="map"></div>
+    <h1 id="mapLoader">Please wait...</h1>
+</main>
+</body>
+</html>

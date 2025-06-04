@@ -30,12 +30,26 @@
         android:padding="10dp"
         android:textSize="20sp" />
 
-    <com.azure.android.maps.control.MapControl
+    <!--<com.azure.android.maps.control.MapControl
         android:id="@+id/map_control"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="5"
-        app:azure_maps_zoom="15" />
+        app:azure_maps_zoom="15" />-->
+
+    <LinearLayout
+        android:id="@+id/linearMap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:orientation="vertical">
+
+        <WebView
+            android:id="@+id/map_control"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

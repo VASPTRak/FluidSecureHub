@@ -296,7 +296,7 @@
     <string name="HUBNumber">HUB Number:</string>
     <string name="VersionHeading">Version</string>
     <string name="ConnectingStatus">Connecting...</string>
-    <string name="HoseInUse">Hose in use.</string>
+    <string name="HoseInUse">Pump is activated. Please turn on the pump.</string>
     <string name="PairingMode">Pairing Mode...</string>
     <string name="SelectHoseAlert">Please select Hose</string>
     <string name="UnableToGetHoseList">Unable to get hose list from server</string>

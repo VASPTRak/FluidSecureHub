@@ -2,8 +2,9 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
+        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -15,10 +16,11 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url "https://atlas.microsoft.com/sdk/android" }
+        //maven { url "https://atlas.microsoft.com/sdk/android" }
     }
 }
 
