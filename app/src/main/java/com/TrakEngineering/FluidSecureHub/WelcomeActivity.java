@@ -15952,56 +15952,69 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void ContinueToTheTransaction(String linkType, int linkPosition, String btLinkCommType) {
-        AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS = false;
-        if (isBroadcastReceiverRegistered) {
-            isBroadcastReceiverRegistered = false;
-            UnregisterReceiver();
-        }
-        if (pdUpgradeProcess != null) {
-            if (pdUpgradeProcess.isShowing()) {
-                pdUpgradeProcess.dismiss();
+        try {
+            AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS = false;
+            if (isBroadcastReceiverRegistered) {
+                isBroadcastReceiverRegistered = false;
+                UnregisterReceiver();
             }
-        }
+            if (pdUpgradeProcess != null) {
+                if (pdUpgradeProcess.isShowing()) {
+                    pdUpgradeProcess.dismiss();
+                }
+            }
 
-        // Check for the p_type before continue to the transaction
-        if (linkType.equalsIgnoreCase("BT")) {
-            String isResetSwitchTimeBounce = serverSSIDList.get(linkPosition).get("IsResetSwitchTimeBounce");
-            String pulserTimingAdjust = serverSSIDList.get(linkPosition).get("PulserTimingAdjust");
+            if (cd.isConnectingToInternet() && AppConstants.NETWORK_STRENGTH) {
+                // Check for the p_type before continue to the transaction
+                if (linkType.equalsIgnoreCase("BT")) {
+                    String isResetSwitchTimeBounce = serverSSIDList.get(linkPosition).get("IsResetSwitchTimeBounce");
+                    String pulserTimingAdjust = serverSSIDList.get(linkPosition).get("PulserTimingAdjust");
 
-            if (isResetSwitchTimeBounce.trim().equalsIgnoreCase("1") && !pulserTimingAdjust.isEmpty() && Arrays.asList(BTConstants.P_TYPES).contains(pulserTimingAdjust) && !CommonUtils.CheckDataStoredInSharedPref(WelcomeActivity.this, "storeSwitchTimeBounceFlag" + (linkPosition + 1))) {
-                if (versionNumberOfLink.isEmpty()) {
-                    // Send info command and get version number of the LINK
-                    if (btLinkCommType.equalsIgnoreCase("SPP")) {
-                        RegisterBTReceiver(linkPosition);
-                        checkBTSPPLinkStatus(linkPosition, "info");
-                    } else {
-                        startBTBLEServicesAndRegisterReceiver(linkPosition);
-                        try {
-                            Thread.sleep(2000);
-                        } catch (Exception e) { e.printStackTrace(); }
-                        checkBTBLELinkStatus(linkPosition, "info");
-                    }
-                } else {
-                    if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLink, BTConstants.SUPPORTED_LINK_VERSION_FOR_P_TYPE)) { // Set P_Type command supported from this version onwards
-                        if (btLinkCommType.equalsIgnoreCase("SPP")) {
-                            RegisterBTReceiver(linkPosition);
-                            checkBTSPPLinkStatus(linkPosition, "ptype");
+                    if (isResetSwitchTimeBounce.trim().equalsIgnoreCase("1") && !pulserTimingAdjust.isEmpty() && Arrays.asList(BTConstants.P_TYPES).contains(pulserTimingAdjust) && !CommonUtils.CheckDataStoredInSharedPref(WelcomeActivity.this, "storeSwitchTimeBounceFlag" + (linkPosition + 1))) {
+                        if (versionNumberOfLink.isEmpty()) {
+                            // Send info command and get version number of the LINK
+                            if (btLinkCommType.equalsIgnoreCase("SPP")) {
+                                RegisterBTReceiver(linkPosition);
+                                checkBTSPPLinkStatus(linkPosition, "info");
+                            } else {
+                                startBTBLEServicesAndRegisterReceiver(linkPosition);
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                checkBTBLELinkStatus(linkPosition, "info");
+                            }
                         } else {
-                            startBTBLEServicesAndRegisterReceiver(linkPosition);
-                            try {
-                                Thread.sleep(2000);
-                            } catch (Exception e) { e.printStackTrace(); }
-                            checkBTBLELinkStatus(linkPosition, "ptype");
+                            if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLink, BTConstants.SUPPORTED_LINK_VERSION_FOR_P_TYPE)) { // Set P_Type command supported from this version onwards
+                                if (btLinkCommType.equalsIgnoreCase("SPP")) {
+                                    RegisterBTReceiver(linkPosition);
+                                    checkBTSPPLinkStatus(linkPosition, "ptype");
+                                } else {
+                                    startBTBLEServicesAndRegisterReceiver(linkPosition);
+                                    try {
+                                        Thread.sleep(2000);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    checkBTBLELinkStatus(linkPosition, "ptype");
+                                }
+                            } else {
+                                proceedToTransaction();
+                            }
                         }
                     } else {
                         proceedToTransaction();
                     }
+                } else {
+                    proceedToTransaction();
                 }
             } else {
                 proceedToTransaction();
             }
-        } else {
-            proceedToTransaction();
+        } catch (Exception ex) {
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "ContinueToTheTransaction Exception:>> " + ex.getMessage() + "; LinkType: " + linkType + "; LinkPosition: " + linkPosition + "; BTLinkCommType: " + btLinkCommType);
         }
     }
 
