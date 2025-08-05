@@ -801,11 +801,12 @@ public class BackgroundService_BTThree extends Service {
     public void proceedToPostTransactionCommands() {
         // Free the link and continue to post transaction commands
         stopTransaction(true, false); // Free the link
-        if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkThree, BTConstants.SUPPORTED_LINK_VERSION_FOR_LAST20)) { // Last20 command supported from this version onwards
+        /*if (CommonUtils.checkBTVersionCompatibility(versionNumberOfLinkThree, BTConstants.SUPPORTED_LINK_VERSION_FOR_LAST20)) { // Last20 command supported from this version onwards
             last20Command();
         } else {
             proceedToNextCommand();
-        }
+        }*/ // Commented as per #2955
+        proceedToNextCommand();
     }
 
     //region Rename Command

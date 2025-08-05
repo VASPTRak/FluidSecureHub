@@ -1367,6 +1367,9 @@ public class AcceptPinActivity_new extends AppCompatActivity {
                         vehicleNumber = Constants.VEHICLE_NUMBER_FS6;
                     }
 
+                    if (vehicleNumber == null) {
+                        vehicleNumber = "";
+                    }
 
                     Istimeout_Sec = false;
 

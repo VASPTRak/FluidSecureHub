@@ -81,8 +81,8 @@ public class OffBackgroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            if (AppConstants.GENERATE_LOGS)
-                AppConstants.writeInFile(TAG + " <Started.>");
+            /*if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + " <Started.>");*/
             if (AppConstants.isAllHosesAreFree()) {
                 AppConstants.SELECT_HOSE_PRESSED = false;
                 Log.i(TAG, " onStartCommand -------------- _templog");
@@ -201,7 +201,7 @@ public class OffBackgroundService extends Service {
                 if (AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA) {
                     AppConstants.FORCE_DOWNLOAD_OFFLINE_DATA = false;
                     if (AppConstants.GENERATE_LOGS)
-                        AppConstants.writeInFile(TAG + " One of the hose is busy, Offline data download skipped");
+                        AppConstants.writeInFile(TAG + " One of the hose is busy, Offline data download skipped.");
                 }
                 cancelThinDownloadManager();
             }

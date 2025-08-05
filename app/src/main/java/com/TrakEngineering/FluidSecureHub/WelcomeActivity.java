@@ -850,10 +850,21 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             MidnightTaskExecute();
         }
 
+        setAlarmsForAppLaunchCheck();
         //============= WorkManager ================
-        WorkManager workManager = WorkManager.getInstance(WelcomeActivity.this);
-        WorkRequest workRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 15, TimeUnit.MINUTES).build();
-        workManager.enqueue(workRequest);
+        /*WorkManager workManager = WorkManager.getInstance(WelcomeActivity.this);
+        WorkRequest workRequest = new PeriodicWorkRequest.Builder(BackgroundWorker.class, 5, TimeUnit.MINUTES).build();
+        workManager.enqueue(workRequest);*/
+        /*PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                BackgroundWorker.class,
+                16, TimeUnit.MINUTES
+        ).build();
+
+        workManager.enqueueUniquePeriodicWork(
+                "BackgroundWorker",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+        );*/
         //==========================================
 
         //Network signal strength check
@@ -1390,6 +1401,60 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         long delay = 1000L;
         long period = 1000L;
         timerBTKeepAlive.scheduleAtFixedRate(repeatedTask, delay, period);
+    }
+
+    public void setAlarmsForAppLaunchCheck() {
+        try {
+            //for (int hour = 0; hour < 24; hour += 2) {
+            for (int hour = 0; hour < 24; hour++) {
+                boolean isAlarmHour = false;
+                if (hour < 4) { // Checking every 1 hour between 12 and 4.
+                    isAlarmHour = true;
+                } else {
+                    if ((hour - 4) % 2 == 0) { // Checking every 2 hours interval
+                        isAlarmHour = true;
+                    }
+                }
+
+                if (isAlarmHour) {
+
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(System.currentTimeMillis());
+                    cal.set(Calendar.HOUR_OF_DAY, hour);
+                    cal.set(Calendar.MINUTE, 00);
+                    cal.set(Calendar.SECOND, 00);
+                    if(cal.before(Calendar.getInstance())) {
+                        cal.add(Calendar.DATE, 1);
+                    }
+
+                    /*SimpleDateFormat sdFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                    Date dt = new Date(cal.getTimeInMillis());
+                    AppConstants.writeInFile(TAG + "Setting alarm for: " + sdFormat.format(dt));*/
+
+                    Intent intent = new Intent(getApplicationContext(), AppLaunchReceiver.class);
+
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            WelcomeActivity.this,
+                            hour,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                    );
+
+                    if (alarmManager != null) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                cal.getTimeInMillis(),
+                                pendingIntent
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (AppConstants.GENERATE_LOGS)
+                AppConstants.writeInFile(TAG + "Exception in setAlarmsForAppLaunchCheck. Exception: " + e.getMessage());
+        }
     }
 
     @Override

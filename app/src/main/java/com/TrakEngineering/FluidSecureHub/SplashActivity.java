@@ -92,6 +92,7 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
     private static final int CODE_WRITE_SETTINGS_PERMISSION = 5;
     private static final int CODE_MANAGE_ALL_FILES_PERMISSION = 6;
     private static final int CODE_BLUETOOTH_CONNECT = 7;
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 8;
 
     //GoogleApiClient mGoogleApiClient;
 
@@ -148,6 +149,16 @@ public class SplashActivity extends AppCompatActivity { // implements GoogleApiC
                 //return;
             } else {
                 ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_SETTINGS}, CODE_WRITE_SETTINGS_PERMISSION);
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + SplashActivity.this.getPackageName()));
+                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+            } else {
+                //Permission Granted-System will work
             }
         }
 

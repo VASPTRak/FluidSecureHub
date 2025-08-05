@@ -73,7 +73,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
         try {
             super.onStart(intent, startId);
 
-            if (WelcomeActivity.OnWelcomeActivity && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
+            if (WelcomeActivity.OnWelcomeActivity && AppConstants.isAllHosesAreFree() && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
                 boolean startProcess = false;
                 if (SSIDList != null && SSIDList.size() > 0) {
                     for (int i = 0; i < SSIDList.size(); i++) {
@@ -93,9 +93,9 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
                 }
 
             } else {
-                Log.i(TAG, "Skip keepAlive not on Welcome activity or upgrade process is running.");
-                if (AppConstants.GENERATE_LOGS)
-                    AppConstants.writeInFile(TAG + "<Skipped>");
+                Log.i(TAG, "Skipped keepAlive not on Welcome activity or upgrade process is running.");
+                /*if (AppConstants.GENERATE_LOGS)
+                    AppConstants.writeInFile(TAG + "<Skipped>");*/
             }
 
         } catch (NullPointerException e) {
@@ -839,7 +839,7 @@ public class BackgroundServiceKeepAliveBT extends BackgroundService {
             if (AppConstants.GENERATE_LOGS)
                 AppConstants.writeInFile(TAG + "==============================================================================");
         }
-        if (WelcomeActivity.OnWelcomeActivity && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
+        if (WelcomeActivity.OnWelcomeActivity && AppConstants.isAllHosesAreFree() && !AppConstants.IS_BT_LINK_UPGRADE_IN_PROGRESS) {
             StartProcess(); // Next Link
         }
     }
